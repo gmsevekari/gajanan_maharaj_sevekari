@@ -1,0 +1,1 @@
+enum ParayanType { oneDay, threeDay }
