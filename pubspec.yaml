@@ -43,6 +43,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -92,3 +93,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "resources/images/logo/App_Logo.png"
+  adaptive_icon_background: "#FFA500" # Saffron/Orange Background
+  adaptive_icon_foreground: "resources/images/logo/App_Logo.png"
