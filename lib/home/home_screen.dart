@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari_app_demo/event_calendar/event_calendar_screen.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/utils/routes.dart';
 
@@ -65,30 +66,42 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildUpcomingEventCard(BuildContext context, AppLocalizations localizations) {
-    return Card(
-      elevation: 4.0,
-      color: Colors.orange[50],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
-      ),
-      margin: const EdgeInsets.all(8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              localizations.upcomingEvent,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange[600], 
-                  ),
-            ),
-            const SizedBox(height: 8.0),
-            Text(localizations.prakatDinUtsav, style: TextStyle(color: Colors.orange[600])),
-            Text('February 21, 2025', style: TextStyle(color: Colors.orange[600])),
-          ],
+    final eventDate = DateTime(2025, 2, 21);
+
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventCalendarScreen(initialDate: eventDate),
+          ),
+        );
+      },
+      child: Card(
+        elevation: 4.0,
+        color: Colors.orange[50],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
+        ),
+        margin: const EdgeInsets.all(8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                localizations.upcomingEvent,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[600],
+                    ),
+              ),
+              const SizedBox(height: 8.0),
+              Text(localizations.prakatDinUtsav, style: TextStyle(color: Colors.orange[600])),
+              Text('February 21, 2025', style: TextStyle(color: Colors.orange[600])),
+            ],
+          ),
         ),
       ),
     );

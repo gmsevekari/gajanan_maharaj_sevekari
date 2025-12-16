@@ -11,12 +11,13 @@ class DonationsScreen extends StatelessWidget {
 
     final buttonStyle = ElevatedButton.styleFrom(
       backgroundColor: Colors.orange[100],
+      foregroundColor: Colors.orange[600], // Lighter text/icon color
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
         side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
       ),
       padding: const EdgeInsets.symmetric(vertical: 16.0),
-      textStyle: TextStyle(color: Colors.orange[800], fontWeight: FontWeight.bold, fontSize: 16),
+      textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
     );
 
     return Scaffold(
@@ -53,7 +54,6 @@ class DonationsScreen extends StatelessWidget {
               child: Text(
                 localizations.donateViaZelle,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.orange[800]),
               ),
             ),
           ],

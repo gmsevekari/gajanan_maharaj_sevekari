@@ -42,18 +42,31 @@ class LanguageSelectionScreen extends StatelessWidget {
 
   Widget _buildLanguageOption(
       BuildContext context, String title, bool isSelected, VoidCallback onTap) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    Color cardColor;
+    Color textColor;
+
+    if (isSelected) {
+      cardColor = Colors.orange[100]!;
+      textColor = Colors.orange[800]!;
+    } else {
+      cardColor = isDarkMode ? Colors.grey[850]! : Colors.white;
+      textColor = isDarkMode ? Colors.white70 : Colors.black87;
+    }
+
     return Card(
       elevation: 4.0,
-      color: isSelected ? Colors.orange[100] : Colors.white,
+      color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
         side: BorderSide(color: isSelected ? Colors.orange : Colors.grey.withOpacity(0.5), width: 1),
       ),
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: ListTile(
-        title: Text(title, style: TextStyle(color: isSelected ? Colors.orange[600] : Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(title, style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18)),
         trailing: isSelected
-            ? Icon(Icons.check, color: Colors.orange[400])
+            ? Icon(Icons.check, color: Colors.orange[600])
             : null,
         onTap: onTap,
       ),

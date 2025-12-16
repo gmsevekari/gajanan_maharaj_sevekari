@@ -3,7 +3,9 @@ import 'package:gajanan_maharaj_sevekari_app_demo/l10n/app_localizations.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class EventCalendarScreen extends StatefulWidget {
-  const EventCalendarScreen({super.key});
+  final DateTime? initialDate;
+
+  const EventCalendarScreen({super.key, this.initialDate});
 
   @override
   _EventCalendarScreenState createState() => _EventCalendarScreenState();
@@ -11,8 +13,15 @@ class EventCalendarScreen extends StatefulWidget {
 
 class _EventCalendarScreenState extends State<EventCalendarScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
+  late DateTime _focusedDay;
   DateTime? _selectedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusedDay = widget.initialDate ?? DateTime.now();
+    _selectedDay = widget.initialDate ?? DateTime.now();
+  }
 
   @override
   Widget build(BuildContext context) {
