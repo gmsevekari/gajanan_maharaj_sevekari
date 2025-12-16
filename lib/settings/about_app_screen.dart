@@ -10,7 +10,7 @@ class AboutAppScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.about),
+        title: Text(localizations.about, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
       ),
       body: const SingleChildScrollView(
         padding: EdgeInsets.all(16.0),

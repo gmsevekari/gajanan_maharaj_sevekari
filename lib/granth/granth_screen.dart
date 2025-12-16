@@ -11,23 +11,29 @@ class GranthScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.granthTitle),
+        title: Text(localizations.granthTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
       ),
       body: ListView.builder(
         itemCount: 21,
         itemBuilder: (context, index) {
           final adhyayNumber = index + 1;
           return Card(
+            elevation: 4.0,
+            color: Colors.orange[50],
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
+            ),
             margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             child: ListTile(
               leading: CircleAvatar(
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: Colors.orange[300],
                 child: Text(
                   '$adhyayNumber',
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
-              title: Text('${localizations.adhyay} $adhyayNumber'),
+              title: Text('${localizations.adhyay} $adhyayNumber', style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold)),
               onTap: () {
                 Navigator.push(
                   context,

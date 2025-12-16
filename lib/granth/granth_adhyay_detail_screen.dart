@@ -32,7 +32,7 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${localizations.adhyay} ${widget.adhyayNumber}'),
+        title: Text('${localizations.adhyay} ${widget.adhyayNumber}', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
         bottom: TabBar(
           controller: _tabController,
           tabs: [

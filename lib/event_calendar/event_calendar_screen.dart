@@ -20,7 +20,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.calendarTitle),
+        title: Text(localizations.calendarTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
       ),
       body: Column(
         children: [

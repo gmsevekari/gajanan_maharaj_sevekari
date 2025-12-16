@@ -47,7 +47,7 @@ class _ParayanProgressChecklistScreenState
       appBar: AppBar(
         title: Text(widget.parayanType == ParayanType.oneDay
             ? localizations.oneDayParayanProgress
-            : localizations.threeDayParayanProgress),
+            : localizations.threeDayParayanProgress, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
       ),
       body: FutureBuilder<List<bool>>(
         future: _loadProgressFuture,
@@ -68,7 +68,9 @@ class _ParayanProgressChecklistScreenState
 
   Widget _buildChecklist(AppLocalizations localizations) {
     if (widget.parayanType == ParayanType.oneDay) {
-      return _buildDayList(1, 21, localizations);
+      return ListView.builder(
+          itemCount: 21,
+          itemBuilder: (context, index) => _buildChecklistItem(index, localizations));
     } else {
       return ListView(
         children: [
@@ -82,37 +84,57 @@ class _ParayanProgressChecklistScreenState
 
   Widget _buildDayCard(int day, int startAdhyay, int endAdhyay, AppLocalizations localizations) {
     return Card(
+      elevation: 4.0,
+      color: Colors.orange[50],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
+      ),
       margin: const EdgeInsets.all(8.0),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${localizations.day} $day', style: Theme.of(context).textTheme.titleLarge),
-            _buildDayList(startAdhyay, endAdhyay, localizations),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('${localizations.day} $day', style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 20.0)),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: endAdhyay - startAdhyay + 1,
+              itemBuilder: (context, index) {
+                final adhyayIndex = startAdhyay + index - 1;
+                return _buildChecklistItem(adhyayIndex, localizations);
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDayList(int startAdhyay, int endAdhyay, AppLocalizations localizations) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: endAdhyay - startAdhyay + 1,
-      itemBuilder: (context, index) {
-        final adhyayNumber = startAdhyay + index;
-        return CheckboxListTile(
-          title: Text('${localizations.adhyay} $adhyayNumber'),
-          value: _completedAdhyays[adhyayNumber - 1],
-          onChanged: (bool? value) {
-            if (value != null) {
-              _saveProgress(adhyayNumber - 1, value);
-            }
-          },
-        );
-      },
+  Widget _buildChecklistItem(int adhyayIndex, AppLocalizations localizations) {
+    final adhyayNumber = adhyayIndex + 1;
+    return Card(
+      elevation: 2.0,
+      color: _completedAdhyays[adhyayIndex] ? Colors.green[100] : Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+        side: BorderSide(color: _completedAdhyays[adhyayIndex] ? Colors.green : Colors.grey.withOpacity(0.5), width: 1),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: CheckboxListTile(
+        title: Text('${localizations.adhyay} $adhyayNumber', style: TextStyle(fontWeight: FontWeight.bold, color: _completedAdhyays[adhyayIndex] ? Colors.green[800] : Colors.black)),
+        value: _completedAdhyays[adhyayIndex],
+        onChanged: (bool? value) {
+          if (value != null) {
+            _saveProgress(adhyayIndex, value);
+          }
+        },
+        activeColor: Colors.green,
+      ),
     );
   }
 }

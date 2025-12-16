@@ -34,7 +34,7 @@ class _AartiDetailScreenState extends State<AartiDetailScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.aartiTitle),
+        title: Text(widget.aartiTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: const Icon(Icons.text_decrease),

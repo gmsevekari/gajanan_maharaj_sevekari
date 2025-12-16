@@ -16,17 +16,23 @@ class BhajanScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.bhajanTitle),
+        title: Text(localizations.bhajanTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
       ),
       body: ListView.builder(
         itemCount: bhajans.length,
         itemBuilder: (context, index) {
           final bhajanTitle = bhajans[index];
           return Card(
+            elevation: 4.0,
+            color: Colors.orange[50],
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
+            ),
             margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             child: ListTile(
-              title: Text(bhajanTitle),
-              trailing: const Icon(Icons.arrow_forward_ios),
+              title: Text(bhajanTitle, style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold)),
+              trailing: Icon(Icons.arrow_forward_ios, color: Colors.orange[400]),
               onTap: () {
                 Navigator.push(
                   context,

@@ -12,7 +12,7 @@ class ParayanScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.parayanTitle),
+        title: Text(localizations.parayanTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -37,8 +37,13 @@ class ParayanScreen extends StatelessWidget {
 
   Widget _buildParayanTypeCard(BuildContext context, String title, ParayanType parayanType) {
     return Card(
-      elevation: 2.0,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      elevation: 4.0,
+      color: Colors.orange[50],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
+      ),
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -52,7 +57,7 @@ class ParayanScreen extends StatelessWidget {
           padding: const EdgeInsets.all(24.0),
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleLarge,
+            style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 18.0),
             textAlign: TextAlign.center,
           ),
         ),

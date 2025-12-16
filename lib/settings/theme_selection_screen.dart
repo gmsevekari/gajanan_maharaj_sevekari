@@ -12,7 +12,7 @@ class ThemeSelectionScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.theme),
+        title: Text(localizations.theme, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
       ),
       body: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -49,10 +49,17 @@ class ThemeSelectionScreen extends StatelessWidget {
   Widget _buildThemeOption(
       BuildContext context, String title, bool isSelected, VoidCallback onTap) {
     return Card(
+      elevation: 4.0,
+      color: isSelected ? Colors.orange[100] : Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: isSelected ? Colors.orange : Colors.grey.withOpacity(0.5), width: 1),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: ListTile(
-        title: Text(title, style: const TextStyle(fontSize: 18)),
+        title: Text(title, style: TextStyle(color: isSelected ? Colors.orange[600] : Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
         trailing: isSelected
-            ? Icon(Icons.check, color: Theme.of(context).primaryColor)
+            ? Icon(Icons.check, color: Colors.orange[400])
             : null,
         onTap: onTap,
       ),

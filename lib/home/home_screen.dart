@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Image.asset('resources/images/logo/App_Logo.png'),
         ),
-        title: Text(localizations.appName),
+        title: Text(localizations.appName, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -66,8 +66,13 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildUpcomingEventCard(BuildContext context, AppLocalizations localizations) {
     return Card(
-      margin: const EdgeInsets.all(8.0),
       elevation: 4.0,
+      color: Colors.orange[50],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
+      ),
+      margin: const EdgeInsets.all(8.0),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -77,12 +82,12 @@ class HomeScreen extends StatelessWidget {
               localizations.upcomingEvent,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Colors.orange[600], 
                   ),
             ),
             const SizedBox(height: 8.0),
-            Text(localizations.prakatDinUtsav),
-            const Text('February 21, 2025'),
+            Text(localizations.prakatDinUtsav, style: TextStyle(color: Colors.orange[600])),
+            Text('February 21, 2025', style: TextStyle(color: Colors.orange[600])),
           ],
         ),
       ),
@@ -91,18 +96,26 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildGridItem(BuildContext context, String title, IconData icon, String route) {
     return Card(
-      elevation: 2.0,
+      elevation: 8.0,
+      color: Colors.orange[50],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
+      ),
       child: InkWell(
         onTap: () => Navigator.pushNamed(context, route),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40.0, color: Theme.of(context).colorScheme.primary),
+            Icon(icon, size: 40.0, color: Colors.orange[400]),
             const SizedBox(height: 8.0),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleSmall,
+              style: TextStyle(
+                color: Colors.orange[600],
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),

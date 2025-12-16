@@ -10,7 +10,7 @@ class DisclaimerScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.disclaimer),
+        title: Text(localizations.disclaimer, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
       ),
       body: const SingleChildScrollView(
         padding: EdgeInsets.all(16.0),

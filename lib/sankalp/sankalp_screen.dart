@@ -40,9 +40,20 @@ class _SankalpScreenState extends State<SankalpScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
 
+    final buttonStyle = ElevatedButton.styleFrom(
+      backgroundColor: Colors.orange[100],
+      foregroundColor: Colors.orange[600], // Set text color for the button
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+      textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+    );
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.sankalpTitle),
+        title: Text(localizations.sankalpTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -65,7 +76,9 @@ class _SankalpScreenState extends State<SankalpScreen> {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),
+                const SizedBox(width: 8.0),
                 ElevatedButton(
+                  style: buttonStyle,
                   onPressed: () => _selectDate(context),
                   child: Text(localizations.selectDate),
                 ),
@@ -73,6 +86,9 @@ class _SankalpScreenState extends State<SankalpScreen> {
             ),
             const SizedBox(height: 24.0),
             ElevatedButton(
+              style: buttonStyle.copyWith(
+                padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 16.0)),
+              ),
               onPressed: _generateSankalp,
               child: Text(localizations.generateSankalp),
             ),
@@ -80,6 +96,11 @@ class _SankalpScreenState extends State<SankalpScreen> {
             if (_sankalpText.isNotEmpty)
               Card(
                 elevation: 4.0,
+                color: Colors.orange[50],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(

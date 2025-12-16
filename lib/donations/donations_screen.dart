@@ -9,9 +9,19 @@ class DonationsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
 
+    final buttonStyle = ElevatedButton.styleFrom(
+      backgroundColor: Colors.orange[100],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      textStyle: TextStyle(color: Colors.orange[800], fontWeight: FontWeight.bold, fontSize: 16),
+    );
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.donationsTitle),
+        title: Text(localizations.donationsTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -38,13 +48,12 @@ class DonationsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 40),
             ElevatedButton(
+              style: buttonStyle,
               onPressed: () => _launchZelle(context, localizations),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
               child: Text(
                 localizations.donateViaZelle,
                 textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.orange[800]),
               ),
             ),
           ],

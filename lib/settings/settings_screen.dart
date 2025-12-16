@@ -14,7 +14,7 @@ class SettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.settings),
+        title: Text(localizations.settings, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
       ),
       body: ListView(
         children: [
@@ -37,11 +37,17 @@ class SettingsScreen extends StatelessWidget {
 
   Widget _buildSettingsItem(BuildContext context, String title, IconData icon, VoidCallback onTap) {
     return Card(
+      elevation: 4.0,
+      color: Colors.orange[50],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: Colors.orange.withOpacity(0.5), width: 1),
+      ),
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: ListTile(
-        leading: Icon(icon),
-        title: Text(title, style: const TextStyle(fontSize: 18)),
-        trailing: const Icon(Icons.arrow_forward_ios),
+        leading: Icon(icon, color: Colors.orange[400]),
+        title: Text(title, style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 18)),
+        trailing: Icon(Icons.arrow_forward_ios, color: Colors.orange[400]),
         onTap: onTap,
       ),
     );

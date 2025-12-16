@@ -32,7 +32,7 @@ class _StotraDetailScreenState extends State<StotraDetailScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.stotraTitle),
+        title: Text(widget.stotraTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
         bottom: TabBar(
           controller: _tabController,
           tabs: [

@@ -34,7 +34,7 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.bhajanTitle),
+        title: Text(widget.bhajanTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: const Icon(Icons.text_decrease),
