@@ -21,6 +21,7 @@ class AppLocalizations {
       'aboutMaharajTitle': 'About Maharaj',
       'calendarTitle': 'Event Calendar',
       'donationsTitle': 'Donations',
+      'galleryTitle': 'Gallery',
       'appName': 'Gajanan Maharaj Sevekari',
       'settings': 'Settings',
       'language': 'Language',
@@ -84,6 +85,7 @@ class AppLocalizations {
       'aboutMaharajTitle': 'महाराजांबद्दल',
       'calendarTitle': 'कार्यक्रम दिनदर्शिका',
       'donationsTitle': 'देणग्या',
+      'galleryTitle': 'गॅलरी',
       'appName': 'गजानन महाराज सेवेकरी',
       'settings': 'सेटिंग्ज',
       'language': 'भाषा',
@@ -148,6 +150,7 @@ class AppLocalizations {
   String get aboutMaharajTitle => _localizedValues[locale.languageCode]!['aboutMaharajTitle']!;
   String get calendarTitle => _localizedValues[locale.languageCode]!['calendarTitle']!;
   String get donationsTitle => _localizedValues[locale.languageCode]!['donationsTitle']!;
+  String get galleryTitle => _localizedValues[locale.languageCode]!['galleryTitle']!;
   String get appName => _localizedValues[locale.languageCode]!['appName']!;
   String get settings => _localizedValues[locale.languageCode]!['settings']!;
   String get language => _localizedValues[locale.languageCode]!['language']!;

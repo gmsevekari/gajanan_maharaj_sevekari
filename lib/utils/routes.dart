@@ -11,5 +11,6 @@ class Routes {
   static const String aboutMaharaj = '/about_maharaj';
   static const String calendar = '/event_calendar';
   static const String donations = '/donations';
+  static const String gallery = '/gallery';
   static const String settings = '/settings';
 }

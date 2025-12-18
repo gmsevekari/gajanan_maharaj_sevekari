@@ -44,14 +44,15 @@ class _HomeScreenState extends State<HomeScreen> {
     final List<Map<String, dynamic>> modules = [
       {'title': localizations.granthTitle, 'icon': Icons.book, 'route': Routes.granth},
       {'title': localizations.stotraTitle, 'icon': Icons.queue_music, 'route': Routes.stotra},
-      {'title': localizations.namavaliTitle, 'icon': Icons.format_list_numbered, 'route': Routes.namavali},
-      {'title': localizations.aartiTitle, 'icon': Icons.audiotrack, 'route': Routes.aarti},
       {'title': localizations.bhajanTitle, 'icon': Icons.music_note, 'route': Routes.bhajan},
-      {'title': localizations.sankalpTitle, 'icon': Icons.calendar_today, 'route': Routes.sankalp},
-      {'title': localizations.parayanTitle, 'icon': Icons.group_work, 'route': Routes.parayan},
-      {'title': localizations.aboutMaharajTitle, 'icon': Icons.info, 'route': Routes.aboutMaharaj},
+      {'title': localizations.aartiTitle, 'icon': Icons.audiotrack, 'route': Routes.aarti},
+      {'title': localizations.namavaliTitle, 'icon': Icons.format_list_numbered, 'route': Routes.namavali},
       {'title': localizations.calendarTitle, 'icon': Icons.event, 'route': Routes.calendar},
+      {'title': localizations.galleryTitle, 'icon': Icons.photo_album, 'route': Routes.gallery},
       {'title': localizations.donationsTitle, 'icon': Icons.volunteer_activism, 'route': Routes.donations},
+      {'title': localizations.sankalpTitle, 'icon': Icons.calendar_today, 'route': Routes.sankalp},
+      {'title': localizations.aboutMaharajTitle, 'icon': Icons.info, 'route': Routes.aboutMaharaj},
+      {'title': localizations.parayanTitle, 'icon': Icons.group_work, 'route': Routes.parayan},
     ];
 
     return Scaffold(

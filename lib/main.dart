@@ -8,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari_app_demo/bhajan/bhajan_screen.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/donations/donations_screen.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/event_calendar/event_calendar_screen.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/firebase_options.dart';
+import 'package:gajanan_maharaj_sevekari_app_demo/gallery/gallery_screen.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/granth/granth_screen.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/home/home_screen.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/l10n/app_localizations.dart';
@@ -79,6 +80,7 @@ class MyApp extends StatelessWidget {
             Routes.aboutMaharaj: (context) => const AboutMaharajScreen(),
             Routes.calendar: (context) => const EventCalendarScreen(),
             Routes.donations: (context) => const DonationsScreen(),
+            Routes.gallery: (context) => const GalleryScreen(),
             Routes.settings: (context) => const SettingsScreen(),
           },
         );
