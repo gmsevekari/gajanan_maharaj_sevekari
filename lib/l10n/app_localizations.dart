@@ -63,6 +63,7 @@ class AppLocalizations {
       'oneDayParayanProgress': '1-Day Parayan Progress',
       'threeDayParayanProgress': '3-Day Parayan Progress',
       'day': 'Day',
+      'donationInstruction': 'Please scan the QR code or click the button below to donate. Jai Gajanan 🙏🏻',
       'donateViaZelle': 'Donate via Zelle to gajananmaharajseattle@gmail.com',
       'zelleQRCode': 'Zelle QR Code Placeholder',
       'qrCodeHere': 'QR Code Here',
@@ -125,6 +126,7 @@ class AppLocalizations {
       'oneDayParayanProgress': '१-दिवसीय पारायण प्रगती',
       'threeDayParayanProgress': '३-दिवसीय पारायण प्रगती',
       'day': 'दिवस',
+      'donationInstruction': 'कृपया देणगीसाठी QR कोड स्कॅन करा किंवा खालील बटणावर क्लिक करा. जय गजानन 🙏🏻',
       'donateViaZelle': 'gajananmaharajseattle@gmail.com वर Zelle द्वारे देणगी द्या',
       'zelleQRCode': 'Zelle QR कोड',
       'qrCodeHere': 'येथे QR कोड',
@@ -188,6 +190,7 @@ class AppLocalizations {
   String get oneDayParayanProgress => _localizedValues[locale.languageCode]!['oneDayParayanProgress']!;
   String get threeDayParayanProgress => _localizedValues[locale.languageCode]!['threeDayParayanProgress']!;
   String get day => _localizedValues[locale.languageCode]!['day']!;
+  String get donationInstruction => _localizedValues[locale.languageCode]!['donationInstruction']!;
   String get donateViaZelle => _localizedValues[locale.languageCode]!['donateViaZelle']!;
   String get zelleQRCode => _localizedValues[locale.languageCode]!['zelleQRCode']!;
   String get qrCodeHere => _localizedValues[locale.languageCode]!['qrCodeHere']!;

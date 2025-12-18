@@ -37,9 +37,20 @@ class DonationsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Text(
+              localizations.donationInstruction,
+              textAlign: TextAlign.center,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: Colors.orange)
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
             // QR code image
             Image.asset(
-              'resources/images/qr_code/Zelle_QR_Code.png'
+              'resources/images/qr_code/Zelle_QR_Code.png',
             ),
             const SizedBox(height: 40),
             ElevatedButton(
