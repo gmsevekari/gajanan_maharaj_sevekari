@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "33491188906",
+    "project_id": "app-event-calendar",
+    "storage_bucket": "app-event-calendar.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33491188906:android:e939d3abd6b679c9c6e4d3",
+        "android_client_info": {
+          "package_name": "com.example.gajanan_maharaj_sevekari_app_demo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLORajkeC3JlsVzZFhWr_fqmDJRZPs2Lc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

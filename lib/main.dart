@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/about_maharaj/about_maharaj_screen.dart';
@@ -6,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari_app_demo/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/bhajan/bhajan_screen.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/donations/donations_screen.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/event_calendar/event_calendar_screen.dart';
+import 'package:gajanan_maharaj_sevekari_app_demo/firebase_options.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/granth/granth_screen.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/home/home_screen.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/l10n/app_localizations.dart';
@@ -22,6 +24,10 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   final themeProvider = ThemeProvider();
   final localeProvider = LocaleProvider();
