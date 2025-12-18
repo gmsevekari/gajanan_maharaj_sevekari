@@ -73,6 +73,19 @@ class AppLocalizations {
       'aboutMaharajContent': 'Comprehensive information and history about Gajanan Maharaj will be displayed here. The content is presented in large, legible Marathi text, designed for easy reading by elderly users.',
       'upcomingEvent': 'Upcoming Event',
       'prakatDinUtsav': 'Prakat Din Utsav',
+      'aboutMaharajScreenTitle': 'Shri Sant Gajanan Maharaj',
+      'aboutMaharajLocation': 'Shegaon, Maharashtra',
+      'aboutMaharajPragatDin': 'Pragat Din: February 23, 1878 (Magh Vadya Saptami)',
+      'aboutMaharajChant': '|| Gan Gan Ganat Bote ||',
+      'cardTitleJeevanParichay': 'Introduction to Life',
+      'cardContentJeevanParichay': 'Sant Shree Gajanan Maharaj is one of Maharashtra’s most revered saints, known for his simplicity, divine presence, and miraculous acts. Through His incarnation, He illuminated the paths of numerous lives in His short but divine life of 32 years.\n\nThough His origins, birth, and lineage remain unknown, His impact is eternal. For 32 years, He graced the holy land of Shegaon, transforming it into a spiritual sanctuary. He was a "Yogiraj" in the truest sense, guiding countless souls through His miraculous Leelas (divine plays) and His mere presence, which radiated peace and absolute divinity.',
+      'cardTitlePragatItihas': 'History of Appearance',
+      'cardContentPragatItihas': 'Maharaj first appeared in Shegaon (in the Buldhana district of Maharashtra) on February 23, 1878 (Magh Vadya Saptami).\n\nMaharaj was seen as a young man with a radiant aura, sitting in the street and picking rice grains from discarded patravali (leaf plates) to eat. This act conveyed his first profound teaching: Annam Brahmeti ("Food is Brahma/God") — food should never be wasted and that for a realized soul, all matter is one. From the moment of his appearance, devotees recognized him as a spiritually awakened soul - “Yogiraj” and “Ansuya putra” (a child of divine detachment).',
+      'cardTitleShikvan': 'Teachings and Philosophy',
+      'cardContentShikvan': 'Maharaj is often associated with the Avadhut Sampradaya, characterized by saints who transcend material norms, express innocence and divine madness, and live in constant union with the Supreme.\n\nHis core philosophy is encapsulated in his constant chant: "Gan Gan Ganat Bote." This mantra signifies that the individual soul (Jiva) is woven into the Universal Soul (Brahma), and God is present in every atom of existence.\n\nKey Pillars of His Teachings:\n* Annam Brahma: Respect for food as a divine entity.\n* Equality: He treated rich and poor, humans and animals, with equal love, rejecting caste and creed.\n* Karma Yoga: He emphasized doing one\'s duty without attachment to the fruit of actions.\n* Values: He guided devotees to follow the path of Bhakti (Devotion), Seva (Selfless Service), Sadachaar (Moral Conduct), and Tyag (Detachment).',
+      'cardTitleSamadhi': 'Samadhi Details',
+      'cardContentSamadhi': 'He spent 32 years in Shegaon, performing countless miracles (Leelas) to guide devotees toward the path of righteousness before taking Sanjeevan Samadhi — a state where a saint voluntarily exits the body while remaining conscious in the super-conscious state - on September 8, 1910 (Rishi Panchami).\n\nHis physical body rests in the Samadhi Mandir in Shegaon, but His spiritual presence is timeless. Before taking Samadhi, He assured His devotees: "I am here, though I leave my body. Do not let your devotion waver, I will always be with you to protect you."\n\nToday, Shegaon is known as the "Pandharpur of Vidarbha," where millions flock to experience the living presence of the Master.',
+      'footerQuote': 'An ocean of mercy who rushes to the call of devotees',
     },
     'mr': {
       'granthTitle': 'गजानन विजय ग्रंथ',
@@ -137,6 +150,19 @@ class AppLocalizations {
       'aboutMaharajContent': 'श्री गजानन महाराजांबद्दलची सविस्तर माहिती आणि इतिहास येथे प्रदर्शित केला जाईल. सामग्री मोठ्या, सुवाच्य मराठी मजकुरात सादर केली आहे, जी वृद्ध वापरकर्त्यांना सहज वाचता येईल.',
       'upcomingEvent': 'आगामी कार्यक्रम',
       'prakatDinUtsav': 'प्रकट दिन उत्सव',
+      'aboutMaharajScreenTitle': 'श्री संत गजानन महाराज',
+      'aboutMaharajLocation': 'शेगाव, महाराष्ट्र',
+      'aboutMaharajPragatDin': 'प्रगट दिन: २३ फेब्रुवारी १८७८ (माघ वद्य सप्तमी)',
+      'aboutMaharajChant': '|| गण गण गणात बोते ||',
+      'cardTitleJeevanParichay': 'जीवन परिचय',
+      'cardContentJeevanParichay': 'संत श्री गजानन महाराज हे महाराष्ट्रातील सर्वात प्रतिष्ठित संतांपैकी एक आहेत, जे त्यांच्या साधेपणासाठी, दिव्य अस्तित्वासाठी आणि चमत्कारी कार्यांसाठी ओळखले जातात. त्यांच्या ३२ वर्षांच्या लहान पण दिव्य आयुष्यात त्यांनी अनेक लोकांच्या जीवनाचा मार्ग प्रकाशित केला.\n\nत्यांचे मूळ, जन्म आणि वंश अज्ञात असले तरी त्यांचा प्रभाव शाश्वत आहे. ३२ वर्षे त्यांनी शेगावच्या पवित्र भूमीला पावन केले आणि तिचे एका आध्यात्मिक तीर्थक्षेत्रात रूपांतर केले. ते खऱ्या अर्थाने "योगीराज" होते, ज्यांनी त्यांच्या चमत्कारी लीलांद्वारे आणि केवळ त्यांच्या उपस्थितीने असंख्य जीवांना मार्गदर्शन केले, ज्यातून शांतता आणि पूर्ण देवत्व पसरत असे.',
+      'cardTitlePragatItihas': 'प्रगट इतिहास',
+      'cardContentPragatItihas': 'महाराज प्रथम २३ फेब्रुवारी १८७८ (माघ वद्य सप्तमी) रोजी शेगाव (महाराष्ट्रातील बुलढाणा जिल्हा) येथे प्रकट झाले.\n\nमहाराज एका तेजस्वी तरुणाच्या रूपात रस्त्यावर बसून टाकून दिलेल्या पत्रावळीवरील अन्नाचे कण वेचून खाताना दिसले. त्यांच्या या कृतीतून त्यांची पहिली महान शिकवण मिळाली: \'अन्नं ब्रह्मेति\' (अन्न हे पूर्णब्रह्म आहे) — अन्नाची नासाडी कधीही करू नये आणि एका आत्मज्ञानी जीवासाठी सर्व पदार्थ एकसमान असतात. त्यांच्या प्रकटीकरणाच्या क्षणापासूनच भक्तांनी त्यांना "योगीराज" म्हणून ओळखले.',
+      'cardTitleShikvan': 'शिकवण आणि तत्त्वज्ञान',
+      'cardContentShikvan': 'त्यांची वागणूक बालकासारखी निरागस आणि काहीशी \'उन्मन\' (divine madness) असते, आणि ते सदैव परब्रह्माशी एकरूप होऊन जगतात.\n\nत्यांच्या तत्त्वज्ञानाचे सार त्यांच्या मुखी सतत असणाऱ्या "गण गण गणात बोते" या मंत्रात सामावलेले आहे. या मंत्राचा अर्थ असा आहे की, प्रत्येक जीवाचा आत्मा हा त्या विश्वव्यापी ब्रह्माचाच एक अंश आहे आणि ईश्वराचा वास चराचरातील कणाकणात आहे.\n\nत्यांच्या शिकवणीचे मुख्य स्तंभ:\n* अन्न हे पूर्णब्रह्म: अन्नाला देवाचे रूप मानून त्याचा आदर करणे.\n* समभाव: त्यांनी श्रीमंत-गरीब, उच्च-नीच किंवा मानव-प्राणी असा कोणताही भेद न करता सर्वांवर समान प्रेम केले.\n* कर्मयोग: फळाची अपेक्षा न ठेवता आपले कर्तव्य करत राहणे, यावर त्यांनी भर दिला.\n* जीवनमूल्ये: भक्ती, सेवा, सदाचार आणि त्याग या मार्गांवर चालण्याचे मार्गदर्शन त्यांनी भक्तांना केले.',
+      'cardTitleSamadhi': 'समाधी विवरण',
+      'cardContentSamadhi': 'महाराजांनी शेगावमध्ये ३२ वर्षे वास्तव्य केले. या काळात त्यांनी भक्तांना सन्मार्गावर आणण्यासाठी असंख्य चमत्कार (लीला) केले. त्यानंतर, ८ सप्टेंबर १९१० (ऋषी पंचमी) रोजी त्यांनी \'संजीवन समाधी\' घेतली. संजीवन समाधी ही अशी अवस्था आहे, जिथे संत स्वतःहून आपला देह त्यागतात, पण त्यांचे चैतन्य त्या समाधीत जागृत असते.\n\nत्यांचा पार्थिव देह जरी शेगावच्या समाधी मंदिरात विसावला असला, तरी त्यांचे आध्यात्मिक अस्तित्व हे काळाच्या पलीकडचे आणि शाश्वत आहे. समाधी घेण्यापूर्वी त्यांनी आपल्या भक्तांना आश्वस्त केले होते: "मी गेलो असे मानू नका, भक्तीत अंतर करू नका. तुमच्या रक्षणासाठी मी सदैव तुमच्या पाठीशी असेन."\n\nआज शेगाव हे "विदर्भाचे पंढरपूर" म्हणून ओळखले जाते, जिथे लाखो भाविक या महापुरुषाच्या अस्तित्वाची अनुभूती घेण्यासाठी येतात.',
+      'footerQuote': 'भक्तांच्या हाकेला धावून जाणारे दयासागर',
     }
   };
 
@@ -202,6 +228,20 @@ class AppLocalizations {
   String get aboutMaharajContent => _localizedValues[locale.languageCode]!['aboutMaharajContent']!;
   String get upcomingEvent => _localizedValues[locale.languageCode]!['upcomingEvent']!;
   String get prakatDinUtsav => _localizedValues[locale.languageCode]!['prakatDinUtsav']!;
+
+  String get aboutMaharajScreenTitle => _localizedValues[locale.languageCode]!['aboutMaharajScreenTitle']!;
+  String get aboutMaharajLocation => _localizedValues[locale.languageCode]!['aboutMaharajLocation']!;
+  String get aboutMaharajPragatDin => _localizedValues[locale.languageCode]!['aboutMaharajPragatDin']!;
+  String get aboutMaharajChant => _localizedValues[locale.languageCode]!['aboutMaharajChant']!;
+  String get cardTitleJeevanParichay => _localizedValues[locale.languageCode]!['cardTitleJeevanParichay']!;
+  String get cardContentJeevanParichay => _localizedValues[locale.languageCode]!['cardContentJeevanParichay']!;
+  String get cardTitlePragatItihas => _localizedValues[locale.languageCode]!['cardTitlePragatItihas']!;
+  String get cardContentPragatItihas => _localizedValues[locale.languageCode]!['cardContentPragatItihas']!;
+  String get cardTitleShikvan => _localizedValues[locale.languageCode]!['cardTitleShikvan']!;
+  String get cardContentShikvan => _localizedValues[locale.languageCode]!['cardContentShikvan']!;
+  String get cardTitleSamadhi => _localizedValues[locale.languageCode]!['cardTitleSamadhi']!;
+  String get cardContentSamadhi => _localizedValues[locale.languageCode]!['cardContentSamadhi']!;
+  String get footerQuote => _localizedValues[locale.languageCode]!['footerQuote']!;
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

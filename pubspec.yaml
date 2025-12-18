@@ -73,6 +73,7 @@ flutter:
     - resources/images/logo/App_Logo.png
     - resources/images/splash/App_Splash.png
     - resources/images/qr_code/
+    - resources/images/about/
     - resources/texts/stotras/
     - resources/texts/bhajans/
     - resources/texts/aartis/daily/
