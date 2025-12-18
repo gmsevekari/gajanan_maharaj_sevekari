@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari_app_demo/utils/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DonationsScreen extends StatelessWidget {
@@ -23,6 +24,12 @@ class DonationsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.donationsTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

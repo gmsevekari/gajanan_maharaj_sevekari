@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari_app_demo/utils/routes.dart';
 
 class NamavaliScreen extends StatefulWidget {
   const NamavaliScreen({super.key});
@@ -13,6 +14,7 @@ class NamavaliScreen extends StatefulWidget {
 
 class _NamavaliScreenState extends State<NamavaliScreen> {
   late Future<List<dynamic>> _namavaliFuture;
+  double _fontSize = 18.0;
 
   @override
   void initState() {
@@ -26,6 +28,12 @@ class _NamavaliScreenState extends State<NamavaliScreen> {
     return data['names'];
   }
 
+  void _changeFontSize(double delta) {
+    setState(() {
+      _fontSize = (_fontSize + delta).clamp(12.0, 30.0);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -34,6 +42,12 @@ class _NamavaliScreenState extends State<NamavaliScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.namavaliTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          ),
+        ],
       ),
       body: FutureBuilder<List<dynamic>>(
         future: _namavaliFuture,
@@ -46,6 +60,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> {
             final names = snapshot.data!;
 
             return ListView.builder(
+              padding: const EdgeInsets.only(bottom: 120), // Padding for FloatingActionButtons
               itemCount: names.length,
               itemBuilder: (context, index) {
                 final nameData = names[index];
@@ -69,7 +84,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> {
                     ),
                     title: Text(
                       name,
-                      style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 18.0),
+                      style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: _fontSize),
                     ),
                   ),
                 );
@@ -79,6 +94,28 @@ class _NamavaliScreenState extends State<NamavaliScreen> {
             return const Center(child: Text('No names found'));
           }
         },
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: 'add',
+            mini: true,
+            backgroundColor: Colors.orange.withAlpha(179),
+            foregroundColor: Colors.white,
+            onPressed: () => _changeFontSize(2.0),
+            child: const Icon(Icons.add, size: 20),
+          ),
+          const SizedBox(height: 8),
+          FloatingActionButton(
+            heroTag: 'remove',
+            mini: true,
+            backgroundColor: Colors.orange.withAlpha(179),
+            foregroundColor: Colors.white,
+            onPressed: () => _changeFontSize(-2.0),
+            child: const Icon(Icons.remove, size: 20),
+          ),
+        ],
       ),
     );
   }

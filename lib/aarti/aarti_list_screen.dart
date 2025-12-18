@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/aarti/aarti_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari_app_demo/utils/routes.dart';
 
 enum AartiCategory { daily, event }
 
@@ -69,6 +70,12 @@ class _AartiListScreenState extends State<AartiListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          ),
+        ],
       ),
       body: FutureBuilder<List<Map<String, String>>>(
         future: _aartiListFuture,

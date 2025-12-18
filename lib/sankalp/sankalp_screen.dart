@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/settings/locale_provider.dart';
+import 'package:gajanan_maharaj_sevekari_app_demo/utils/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -60,6 +61,12 @@ class _SankalpScreenState extends State<SankalpScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.sankalpTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

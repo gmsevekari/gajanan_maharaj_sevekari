@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari_app_demo/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari_app_demo/utils/routes.dart';
 
 class AartiDetailScreen extends StatefulWidget {
   final String aartiFileName;
@@ -71,18 +72,12 @@ class _AartiDetailScreenState extends State<AartiDetailScreen> with SingleTicker
             }
           },
         ),
-        actions: _currentIndex == 0
-            ? [
-                TextButton(
-                  onPressed: () => _changeFontSize(-2.0),
-                  child: const Text('A-', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                ),
-                TextButton(
-                  onPressed: () => _changeFontSize(2.0),
-                  child: const Text('A+', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                ),
-              ]
-            : [],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: Material(
@@ -116,15 +111,39 @@ class _AartiDetailScreenState extends State<AartiDetailScreen> with SingleTicker
               } else if (snapshot.hasData) {
                 final aarti = snapshot.data!;
                 final text = locale.languageCode == 'mr' ? aarti['aarti_mr'] : aarti['aarti_en'];
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Text(
-                      text,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: _fontSize),
+                return Scaffold(
+                  body: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 120), // Added bottom padding
+                    child: Center(
+                      child: Text(
+                        text,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: _fontSize),
+                      ),
                     ),
                   ),
+                  floatingActionButton: _currentIndex == 0 ? Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      FloatingActionButton(
+                        heroTag: 'add',
+                        mini: true,
+                        backgroundColor: Colors.orange.withAlpha(179),
+                        foregroundColor: Colors.white,
+                        onPressed: () => _changeFontSize(2.0),
+                        child: const Icon(Icons.add, size: 20),
+                      ),
+                      const SizedBox(height: 8),
+                      FloatingActionButton(
+                        heroTag: 'remove',
+                        mini: true,
+                        backgroundColor: Colors.orange.withAlpha(179),
+                        foregroundColor: Colors.white,
+                        onPressed: () => _changeFontSize(-2.0),
+                        child: const Icon(Icons.remove, size: 20),
+                      ),
+                    ],
+                  ) : null,
                 );
               } else {
                 return const Center(child: Text('No data'));
