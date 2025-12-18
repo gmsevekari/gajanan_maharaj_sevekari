@@ -5,7 +5,7 @@ class AppTheme {
     primarySwatch: Colors.orange,
     visualDensity: VisualDensity.adaptivePlatformDensity,
     appBarTheme: const AppBarTheme(
-      color: Colors.orange,
+      backgroundColor: Colors.orange,
       foregroundColor: Colors.white,
     ),
     colorScheme: ColorScheme.fromSeed(

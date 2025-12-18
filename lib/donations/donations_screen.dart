@@ -37,22 +37,9 @@ class DonationsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(
-              child: Text(
-                localizations.zelleQRCode,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Placeholder for QR code image
-            Container(
-              height: 200,
-              width: 200,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Center(child: Text(localizations.qrCodeHere)),
+            // QR code image
+            Image.asset(
+              'resources/images/qr_code/Zelle_QR_Code.png'
             ),
             const SizedBox(height: 40),
             ElevatedButton(
@@ -70,7 +57,7 @@ class DonationsScreen extends StatelessWidget {
   }
 
   void _launchZelle(BuildContext context, AppLocalizations localizations) async {
-    const zelleUrl = 'mailto:gajananmaharajseattle@gmail.com'; // Zelle URLs can be complex; this is a simple mailto link.
+    const zelleUrl = 'https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiU0FJQkFCQSBTRUFUVExFIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiZ2FqYW5hbm1haGFyYWpzZWF0dGxlQGdtYWlsLmNvbSJ9';
     if (await canLaunchUrl(Uri.parse(zelleUrl))) {
       await launchUrl(Uri.parse(zelleUrl));
     } else {
