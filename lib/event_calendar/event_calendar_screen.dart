@@ -226,7 +226,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
           endTime = event.end_time != null ? timeFormatter.format(event.end_time!.toDate()) : null;
         }
 
-        final eventDateString = DateFormat.yMMMMd(locale).format(event.start_time.toDate());
+        final eventDateString = DateFormat.yMMMMEEEEd(locale).format(event.start_time.toDate());
 
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

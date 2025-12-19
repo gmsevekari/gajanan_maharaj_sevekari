@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
         final locale = Localizations.localeOf(context).languageCode;
         final eventTitle = locale == 'mr' ? event.title_mr : event.title_en;
         final eventDate = (eventData['start_time'] as Timestamp).toDate();
-        final eventDateString = DateFormat.yMMMMd(locale).format(eventDate);
+        final eventDateString = DateFormat.yMMMMEEEEd(locale).format(eventDate);
 
         return InkWell(
           onTap: () {
