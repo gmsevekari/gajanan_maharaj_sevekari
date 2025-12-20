@@ -43,6 +43,7 @@ dependencies:
   provider: ^6.1.2
   firebase_core: ^3.1.1
   cloud_firestore: ^5.0.2
+  flutter_markdown: ^0.7.1
 
 dev_dependencies:
   flutter_test:
@@ -80,6 +81,7 @@ flutter:
     - resources/texts/aartis/event/
     - resources/texts/grantha/
     - resources/texts/namavali/
+    - resources/texts/disclaimer/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
