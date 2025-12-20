@@ -42,17 +42,17 @@ class _HomeScreenState extends State<HomeScreen> {
     final localizations = AppLocalizations.of(context);
 
     final List<Map<String, dynamic>> modules = [
-      {'title': localizations.granthTitle, 'icon': Icons.book, 'route': Routes.granth},
+      {'title': localizations.granthTitle, 'icon': Icons.menu_book_outlined, 'route': Routes.granth},
       {'title': localizations.stotraTitle, 'icon': Icons.queue_music, 'route': Routes.stotra},
-      {'title': localizations.bhajanTitle, 'icon': Icons.music_note, 'route': Routes.bhajan},
-      {'title': localizations.aartiTitle, 'icon': Icons.audiotrack, 'route': Routes.aarti},
+      {'title': localizations.bhajanTitle, 'icon': Icons.lyrics_outlined, 'route': Routes.bhajan},
+      {'title': localizations.aartiTitle, 'icon': Icons.library_music_outlined, 'route': Routes.aarti},
       {'title': localizations.namavaliTitle, 'icon': Icons.format_list_numbered, 'route': Routes.namavali},
-      {'title': localizations.calendarTitle, 'icon': Icons.event, 'route': Routes.calendar},
-      {'title': localizations.galleryTitle, 'icon': Icons.photo_album, 'route': Routes.gallery},
-      {'title': localizations.donationsTitle, 'icon': Icons.volunteer_activism, 'route': Routes.donations},
-      {'title': localizations.sankalpTitle, 'icon': Icons.calendar_today, 'route': Routes.sankalp},
-      {'title': localizations.aboutMaharajTitle, 'icon': Icons.info, 'route': Routes.aboutMaharaj},
-      {'title': localizations.parayanTitle, 'icon': Icons.group_work, 'route': Routes.parayan},
+      {'title': localizations.calendarTitle, 'icon': Icons.calendar_month_outlined, 'route': Routes.calendar},
+      {'title': localizations.galleryTitle, 'icon': Icons.photo_library_outlined, 'route': Routes.gallery},
+      {'title': localizations.donationsTitle, 'icon': Icons.volunteer_activism_outlined, 'route': Routes.donations},
+      {'title': localizations.sankalpTitle, 'icon': Icons.event_repeat_outlined, 'route': Routes.sankalp},
+      {'title': localizations.aboutMaharajTitle, 'icon': Icons.info_outline, 'route': Routes.aboutMaharaj},
+      {'title': localizations.parayanTitle, 'icon': Icons.track_changes_outlined, 'route': Routes.parayan},
     ];
 
     return Scaffold(

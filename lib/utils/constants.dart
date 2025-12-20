@@ -11,5 +11,5 @@ class Constants {
   static const String parayanTitle = 'पारायण आयोजन';
   static const String aboutMaharajTitle = 'महाराजांबद्दल';
   static const String calendarTitle = 'कार्यक्रम कॅलेंडर';
-  static const String donationsTitle = 'देणग्या';
+  static const String donationsTitle = 'देणगी';
 }
