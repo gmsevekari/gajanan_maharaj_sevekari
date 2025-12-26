@@ -52,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
       {'title': localizations.donationsTitle, 'icon': Icons.volunteer_activism_outlined, 'route': Routes.donations},
       //{'title': localizations.sankalpTitle, 'icon': Icons.event_repeat_outlined, 'route': Routes.sankalp},
       {'title': localizations.aboutMaharajTitle, 'icon': Icons.info_outline, 'route': Routes.aboutMaharaj},
+      {'title': localizations.socialMediaTitle, 'icon': Icons.connect_without_contact, 'route': Routes.socialMedia},
       //{'title': localizations.parayanTitle, 'icon': Icons.track_changes_outlined, 'route': Routes.parayan},
     ];
 

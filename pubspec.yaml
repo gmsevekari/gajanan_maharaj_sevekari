@@ -75,6 +75,7 @@ flutter:
     - resources/images/splash/App_Splash.png
     - resources/images/qr_code/
     - resources/images/about/
+    - resources/images/social/
     - resources/texts/stotras/
     - resources/texts/bhajans/
     - resources/texts/aartis/daily/

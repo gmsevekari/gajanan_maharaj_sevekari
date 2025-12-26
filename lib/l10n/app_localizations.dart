@@ -86,6 +86,20 @@ class AppLocalizations {
       'cardTitleSamadhi': 'Samadhi Details',
       'cardContentSamadhi': 'He spent 32 years in Shegaon, performing countless miracles (Leelas) to guide devotees toward the path of righteousness before taking Sanjeevan Samadhi — a state where a saint voluntarily exits the body while remaining conscious in the super-conscious state - on September 8, 1910 (Rishi Panchami).\n\nHis physical body rests in the Samadhi Mandir in Shegaon, but His spiritual presence is timeless. Before taking Samadhi, He assured His devotees: "I am here, though I leave my body. Do not let your devotion waver, I will always be with you to protect you."\n\nToday, Shegaon is known as the "Pandharpur of Vidarbha," where millions flock to experience the living presence of the Master.',
       'footerQuote': 'An ocean of mercy who rushes to the call of devotees',
+      'socialMediaTitle': 'Social Media',
+      'officialSocialMediaHandles': 'The official social media handles',
+      'facebook': 'Facebook',
+      'youtube': 'YouTube',
+      'instagram': 'Instagram',
+      'googlePhotos': 'Google Photos',
+      'whatsapp': 'WhatsApp',
+      'officialPage': 'Official Page',
+      'videosAndStreams': 'Videos and Live Streams',
+      'photosAndReels': 'Photos and Reels',
+      'photoGallery': 'Festival Photo Gallery',
+      'whatsappAdminContact': 'WhatsApp Group Admin Contact',
+      'officialLinks': 'Official Links',
+      'socialMedia': 'Social Media',
     },
     'mr': {
       'granthTitle': 'गजानन विजय ग्रंथ',
@@ -163,6 +177,20 @@ class AppLocalizations {
       'cardTitleSamadhi': 'समाधी विवरण',
       'cardContentSamadhi': 'महाराजांनी शेगावमध्ये ३२ वर्षे वास्तव्य केले. या काळात त्यांनी भक्तांना सन्मार्गावर आणण्यासाठी असंख्य चमत्कार (लीला) केले. त्यानंतर, ८ सप्टेंबर १९१० (ऋषी पंचमी) रोजी त्यांनी \'संजीवन समाधी\' घेतली. संजीवन समाधी ही अशी अवस्था आहे, जिथे संत स्वतःहून आपला देह त्यागतात, पण त्यांचे चैतन्य त्या समाधीत जागृत असते.\n\nत्यांचा पार्थिव देह जरी शेगावच्या समाधी मंदिरात विसावला असला, तरी त्यांचे आध्यात्मिक अस्तित्व हे काळाच्या पलीकडचे आणि शाश्वत आहे. समाधी घेण्यापूर्वी त्यांनी आपल्या भक्तांना आश्वस्त केले होते: "मी गेलो असे मानू नका, भक्तीत अंतर करू नका. तुमच्या रक्षणासाठी मी सदैव तुमच्या पाठीशी असेन."\n\nआज शेगाव हे "विदर्भाचे पंढरपूर" म्हणून ओळखले जाते, जिथे लाखो भाविक या महापुरुषाच्या अस्तित्वाची अनुभूती घेण्यासाठी येतात.',
       'footerQuote': 'भक्तांच्या हाकेला धावून जाणारे दयासागर',
+      'socialMediaTitle': 'सोशल मीडिया',
+      'officialSocialMediaHandles': 'अधिकृत सोशल मीडिया हँडल्स',
+      'facebook': 'फेसबुक',
+      'youtube': 'यूट्यूब',
+      'instagram': 'इंस्टाग्राम',
+      'googlePhotos': 'गूगल फोटोज़',
+      'whatsapp': 'व्हॉट्सॲप',
+      'officialPage': 'अधिकृत पेज',
+      'videosAndStreams': 'व्हिडिओज आणि लाईव्ह स्ट्रीम्स',
+      'photosAndReels': 'फोटोज आणि रील्स',
+      'photoGallery': 'फोटो गॅलरी',
+      'whatsappAdminContact': 'व्हॉटसअँप ग्रुप ऍडमिन कॉन्टॅक्ट',
+      'officialLinks': 'अधिकृत लिंक्स',
+      'socialMedia': 'सोशल मीडिया',
     }
   };
 
@@ -242,6 +270,21 @@ class AppLocalizations {
   String get cardTitleSamadhi => _localizedValues[locale.languageCode]!['cardTitleSamadhi']!;
   String get cardContentSamadhi => _localizedValues[locale.languageCode]!['cardContentSamadhi']!;
   String get footerQuote => _localizedValues[locale.languageCode]!['footerQuote']!;
+
+  String get socialMediaTitle => _localizedValues[locale.languageCode]!['socialMediaTitle']!;
+  String get officialSocialMediaHandles => _localizedValues[locale.languageCode]!['officialSocialMediaHandles']!;
+  String get facebook => _localizedValues[locale.languageCode]!['facebook']!;
+  String get youtube => _localizedValues[locale.languageCode]!['youtube']!;
+  String get instagram => _localizedValues[locale.languageCode]!['instagram']!;
+  String get googlePhotos => _localizedValues[locale.languageCode]!['googlePhotos']!;
+  String get whatsapp => _localizedValues[locale.languageCode]!['whatsapp']!;
+  String get officialPage => _localizedValues[locale.languageCode]!['officialPage']!;
+  String get videosAndStreams => _localizedValues[locale.languageCode]!['videosAndStreams']!;
+  String get photosAndReels => _localizedValues[locale.languageCode]!['photosAndReels']!;
+  String get photoGallery => _localizedValues[locale.languageCode]!['photoGallery']!;
+  String get whatsappAdminContact => _localizedValues[locale.languageCode]!['whatsappAdminContact']!;
+  String get officialLinks => _localizedValues[locale.languageCode]!['officialLinks']!;
+  String get socialMedia => _localizedValues[locale.languageCode]!['socialMedia']!;
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

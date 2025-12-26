@@ -13,4 +13,5 @@ class Routes {
   static const String donations = '/donations';
   static const String gallery = '/gallery';
   static const String settings = '/settings';
+  static const String socialMedia = '/social_media';
 }
