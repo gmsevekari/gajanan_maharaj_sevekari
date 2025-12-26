@@ -48,11 +48,11 @@ class _HomeScreenState extends State<HomeScreen> {
       {'title': localizations.aartiTitle, 'icon': Icons.library_music_outlined, 'route': Routes.aarti},
       {'title': localizations.namavaliTitle, 'icon': Icons.format_list_numbered, 'route': Routes.namavali},
       {'title': localizations.calendarTitle, 'icon': Icons.calendar_month_outlined, 'route': Routes.calendar},
-      {'title': localizations.galleryTitle, 'icon': Icons.photo_library_outlined, 'route': Routes.gallery},
+      //{'title': localizations.galleryTitle, 'icon': Icons.photo_library_outlined, 'route': Routes.gallery},
       {'title': localizations.donationsTitle, 'icon': Icons.volunteer_activism_outlined, 'route': Routes.donations},
-      {'title': localizations.sankalpTitle, 'icon': Icons.event_repeat_outlined, 'route': Routes.sankalp},
+      //{'title': localizations.sankalpTitle, 'icon': Icons.event_repeat_outlined, 'route': Routes.sankalp},
       {'title': localizations.aboutMaharajTitle, 'icon': Icons.info_outline, 'route': Routes.aboutMaharaj},
-      {'title': localizations.parayanTitle, 'icon': Icons.track_changes_outlined, 'route': Routes.parayan},
+      //{'title': localizations.parayanTitle, 'icon': Icons.track_changes_outlined, 'route': Routes.parayan},
     ];
 
     return Scaffold(
