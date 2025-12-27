@@ -77,6 +77,7 @@ flutter:
     - resources/images/about/
     - resources/images/social/
     - resources/images/icon/
+    - resources/images/grantha/
     - resources/texts/stotras/
     - resources/texts/bhajans/
     - resources/texts/aartis/daily/

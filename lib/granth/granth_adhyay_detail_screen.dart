@@ -112,13 +112,31 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
                 final text = locale.languageCode == 'mr' ? adhyay['adhyay_mr'] : adhyay['adhyay_en'];
                 return Scaffold(
                   body: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 120), // Added bottom padding
-                    child: Center(
-                      child: Text(
-                        text,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: _fontSize),
-                      ),
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 120), // Adjust top padding
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12.0),
+                          child: Image.asset(
+                            'resources/images/grantha/adhyay_${widget.adhyayNumber}.jpg',
+                            width: double.infinity,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'resources/images/grantha/default.jpg',
+                                width: double.infinity,
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Center(
+                          child: Text(
+                            text,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: _fontSize),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   floatingActionButton: _currentIndex == 0 ? Column(
