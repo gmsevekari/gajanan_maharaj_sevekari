@@ -9,8 +9,9 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class GranthAdhyayDetailScreen extends StatefulWidget {
   final int adhyayNumber;
+  final int initialTabIndex;
 
-  const GranthAdhyayDetailScreen({super.key, required this.adhyayNumber});
+  const GranthAdhyayDetailScreen({super.key, required this.adhyayNumber, this.initialTabIndex = 0});
 
   @override
   State<GranthAdhyayDetailScreen> createState() => _GranthAdhyayDetailScreenState();
@@ -27,9 +28,10 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
   void initState() {
     super.initState();
     _adhyayFuture = _loadAdhyay();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTabIndex);
+    _currentIndex = widget.initialTabIndex;
     _tabController!.addListener(() {
-      if (mounted) {
+      if (mounted && _tabController!.indexIsChanging) {
         setState(() {
           _currentIndex = _tabController!.index;
         });
@@ -64,6 +66,15 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
     });
   }
 
+  void _navigateToAdhyay(int adhyayNumber) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GranthAdhyayDetailScreen(adhyayNumber: adhyayNumber, initialTabIndex: _currentIndex),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -71,17 +82,35 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
 
     return Scaffold(
       appBar: AppBar(
-        title: FutureBuilder<Map<String, dynamic>>(
-          future: _adhyayFuture,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final adhyay = snapshot.data!;
-              final title = locale.languageCode == 'mr' ? adhyay['title_mr'] : adhyay['title_en'];
-              return Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold));
-            } else {
-              return const Text(''); // Placeholder while loading
-            }
-          },
+        automaticallyImplyLeading: false, // We will handle navigation manually
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (widget.adhyayNumber > 1)
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios),
+                onPressed: () => _navigateToAdhyay(widget.adhyayNumber - 1),
+              ),
+            const Spacer(),
+            FutureBuilder<Map<String, dynamic>>(
+              future: _adhyayFuture,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final adhyay = snapshot.data!;
+                  final title = locale.languageCode == 'mr' ? adhyay['title_mr'] : adhyay['title_en'];
+                  return Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold));
+                } else {
+                  return const Text(''); // Placeholder while loading
+                }
+              },
+            ),
+            const Spacer(),
+            if (widget.adhyayNumber < 21)
+              IconButton(
+                icon: const Icon(Icons.arrow_forward_ios),
+                onPressed: () => _navigateToAdhyay(widget.adhyayNumber + 1),
+              ),
+          ],
         ),
         actions: [
           IconButton(
