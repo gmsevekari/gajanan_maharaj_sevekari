@@ -162,8 +162,9 @@ class _AartiDetailScreenState extends State<AartiDetailScreen> with SingleTicker
   Widget _buildSegmentedControl(BuildContext context, AppLocalizations localizations) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Colors.white, 
         borderRadius: BorderRadius.circular(25.0),
+        border: Border.all(color: Colors.grey[300]!, width: 1.5),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -182,35 +183,30 @@ class _AartiDetailScreenState extends State<AartiDetailScreen> with SingleTicker
         onTap: () {
           _tabController?.animateTo(index);
         },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.orange : Colors.transparent,
+            color: isSelected ? Colors.orange : Colors.white,
             borderRadius: BorderRadius.circular(25.0),
-            border: Border.all(
-              color: isSelected ? Colors.orange : Colors.grey[200]!,
-              width: 1.5,
-            ),
           ),
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (index == 0) // Read tab
                 Icon(
-                  Icons.menu_book,
-                  color: isSelected ? Colors.white : Colors.grey[600],
+                  Icons.library_music_outlined,
+                  color: isSelected ? Colors.white : Colors.grey[700],
                   size: 20,
                 ),
-              if (index == 0)
-                const SizedBox(width: 8),
+              if (index == 0) const SizedBox(width: 8),
               if (index == 1) // Listen tab
                 Icon(
                   Icons.play_arrow,
-                  color: isSelected ? Colors.white : Colors.grey[600],
+                  color: isSelected ? Colors.white : Colors.grey[700],
                   size: 20,
                 ),
-              if (index == 1)
-                const SizedBox(width: 8),
+              if (index == 1) const SizedBox(width: 8),
               Text(
                 text,
                 style: TextStyle(

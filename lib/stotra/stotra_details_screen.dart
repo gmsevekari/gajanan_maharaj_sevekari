@@ -77,89 +77,152 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: Material(
-            color: Colors.orange,
-            child: TabBar(
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: _buildSegmentedControl(context, localizations),
+          ),
+          Expanded(
+            child: TabBarView(
               controller: _tabController,
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white70,
-              indicatorColor: Colors.white,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-              tabs: [
-                Tab(text: localizations.read),
-                Tab(text: localizations.listen),
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                _buildReadTab(locale),
+                _buildListenTab(),
               ],
             ),
+          ),
+        ],
+      ),
+      floatingActionButton: _currentIndex == 0
+          ? Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: 'add',
+            mini: true,
+            backgroundColor: Colors.orange.withAlpha(179),
+            foregroundColor: Colors.white,
+            onPressed: () => _changeFontSize(2.0),
+            child: const Icon(Icons.add, size: 20),
+          ),
+          const SizedBox(height: 8),
+          FloatingActionButton(
+            heroTag: 'remove',
+            mini: true,
+            backgroundColor: Colors.orange.withAlpha(179),
+            foregroundColor: Colors.white,
+            onPressed: () => _changeFontSize(-2.0),
+            child: const Icon(Icons.remove, size: 20),
+          ),
+        ],
+      )
+          : null,
+    );
+  }
+
+  Widget _buildSegmentedControl(
+      BuildContext context, AppLocalizations localizations) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white, 
+        borderRadius: BorderRadius.circular(25.0),
+        border: Border.all(color: Colors.grey[300]!, width: 1.5),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildSegment(context, localizations.read, 0),
+          _buildSegment(context, localizations.listen, 1),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSegment(BuildContext context, String text, int index) {
+    bool isSelected = _currentIndex == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          _tabController?.animateTo(index);
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.orange : Colors.white,
+            borderRadius: BorderRadius.circular(25.0),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (index == 0) // Read tab
+                Icon(
+                  Icons.queue_music,
+                  color: isSelected ? Colors.white : Colors.grey[700],
+                  size: 20,
+                ),
+              if (index == 0) const SizedBox(width: 8),
+              if (index == 1) // Listen tab
+                Icon(
+                  Icons.play_arrow,
+                  color: isSelected ? Colors.white : Colors.grey[700],
+                  size: 20,
+                ),
+              if (index == 1) const SizedBox(width: 8),
+              Text(
+                text,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.grey[800],
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ],
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          // Read Tab
-          FutureBuilder<Map<String, dynamic>>(
-            future: _stotraFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (snapshot.hasData) {
-                final stotra = snapshot.data!;
-                final text = locale.languageCode == 'mr' ? stotra['stotra_mr'] : stotra['stotra_en'];
-                return Scaffold(
-                  body: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 120), // Added bottom padding
-                    child: Center(
-                      child: Text(
-                        text,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: _fontSize),
-                      ),
-                    ),
-                  ),
-                  floatingActionButton: _currentIndex == 0 ? Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      FloatingActionButton(
-                        heroTag: 'add',
-                        mini: true,
-                        backgroundColor: Colors.orange.withAlpha(179),
-                        foregroundColor: Colors.white,
-                        onPressed: () => _changeFontSize(2.0),
-                        child: const Icon(Icons.add, size: 20),
-                      ),
-                      const SizedBox(height: 8),
-                      FloatingActionButton(
-                        heroTag: 'remove',
-                        mini: true,
-                        backgroundColor: Colors.orange.withAlpha(179),
-                        foregroundColor: Colors.white,
-                        onPressed: () => _changeFontSize(-2.0),
-                        child: const Icon(Icons.remove, size: 20),
-                      ),
-                    ],
-                  ) : null,
-                );
-              } else {
-                return const Center(child: Text('No data'));
-              }
-            },
-          ),
-          // Listen Tab
-          const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.music_note, size: 100, color: Colors.grey),
-                SizedBox(height: 20),
-                Text('Audio player will be implemented here.', textAlign: TextAlign.center,),
-              ],
+    );
+  }
+
+  Widget _buildReadTab(Locale locale) {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _stotraFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          final stotra = snapshot.data!;
+          final text =
+          locale.languageCode == 'mr' ? stotra['stotra_mr'] : stotra['stotra_en'];
+          return SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
+            child: Center(
+              child: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: _fontSize, height: 1.6),
+              ),
             ),
-          ),
+          );
+        } else {
+          return const Center(child: Text('No data'));
+        }
+      },
+    );
+  }
+
+  Widget _buildListenTab() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.music_note, size: 100, color: Colors.grey),
+          SizedBox(height: 20),
+          Text('Audio player will be implemented here.', textAlign: TextAlign.center,),
         ],
       ),
     );
