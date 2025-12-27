@@ -27,51 +27,60 @@ class NityopasanaScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(8.0),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 1.4,
-          crossAxisSpacing: 8.0,
-          mainAxisSpacing: 8.0,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Wrap(
+            spacing: 8.0, // Horizontal space between cards
+            runSpacing: 8.0, // Vertical space between rows
+            alignment: WrapAlignment.center,
+            children: nityopasanaModules.map((module) {
+              return SizedBox(
+                width: (MediaQuery.of(context).size.width - 24) / 2, // 24 = padding * 2 + spacing
+                child: _buildGridItem(
+                  context,
+                  module['title'],
+                  module['icon'],
+                  module['route'],
+                ),
+              );
+            }).toList(),
+          ),
         ),
-        itemCount: nityopasanaModules.length,
-        itemBuilder: (context, index) {
-          return _buildGridItem(
-            context,
-            nityopasanaModules[index]['title'],
-            nityopasanaModules[index]['icon'],
-            nityopasanaModules[index]['route'],
-          );
-        },
       ),
     );
   }
 
-  Widget _buildGridItem(BuildContext context, String title, IconData icon, String route) {
-    return Card(
-      elevation: 8.0,
-      color: Colors.orange[50],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-      ),
-      child: InkWell(
-        onTap: () => Navigator.pushNamed(context, route),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40.0, color: Colors.orange[400]),
-            const SizedBox(height: 8.0),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.orange[600],
-                fontWeight: FontWeight.bold,
+  Widget _buildGridItem(BuildContext context, String title, dynamic icon, String route) {
+    return AspectRatio(
+      aspectRatio: 1.4,
+      child: Card(
+        elevation: 8.0,
+        color: Colors.orange[50],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
+        ),
+        child: InkWell(
+          onTap: () => Navigator.pushNamed(context, route),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon is IconData)
+                Icon(icon, size: 40.0, color: Colors.orange[400])
+              else if (icon is String)
+                Image.asset(icon, height: 40.0, width: 40.0),
+              const SizedBox(height: 8.0),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.orange[600],
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

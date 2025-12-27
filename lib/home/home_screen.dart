@@ -41,8 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
 
-    final nityopasanaModule = {'title': localizations.nityopasanaTitle, 'icon': 'resources/images/icon/NityaSmaran.png', 'route': Routes.nityopasana};
     final List<Map<String, dynamic>> modules = [
+      {'title': localizations.nityopasanaTitle, 'icon': 'resources/images/icon/NityaSmaran.png', 'route': Routes.nityopasana},
       {'title': localizations.calendarTitle, 'icon': Icons.calendar_month_outlined, 'route': Routes.calendar},
       {'title': localizations.donationsTitle, 'icon': Icons.volunteer_activism_outlined, 'route': Routes.donations},
       {'title': localizations.aboutMaharajTitle, 'icon': Icons.info_outline, 'route': Routes.aboutMaharaj},
@@ -63,72 +63,35 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          _buildUpcomingEventCard(context, localizations),
-          _buildFullWidthCard(context, nityopasanaModule['title']!, nityopasanaModule['icon']!, nityopasanaModule['route']!),
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(8.0),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.4,
-                crossAxisSpacing: 8.0,
-                mainAxisSpacing: 8.0,
-              ),
-              itemCount: modules.length,
-              itemBuilder: (context, index) {
-                return _buildGridItem(
-                  context,
-                  modules[index]['title'],
-                  modules[index]['icon'],
-                  modules[index]['route'],
-                );
-              },
-            ),
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildUpcomingEventCard(context, localizations),
+            _buildGridView(context, modules),
+          ],
+        ),
       ),
     );
   }
-  
-  Widget _buildFullWidthCard(BuildContext context, String title, dynamic icon, String route) {
-    return Card(
-      elevation: 8.0,
-      color: Colors.orange[50],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-      ),
-      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      child: InkWell(
-        onTap: () => Navigator.pushNamed(context, route),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  if (icon is IconData)
-                    Icon(icon, size: 40.0, color: Colors.orange[400])
-                  else if (icon is String)
-                    Image.asset(icon, height: 40.0, width: 40.0),
-                  const SizedBox(width: 16.0),
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.orange[600],
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              Icon(Icons.arrow_forward_ios, color: Colors.orange[400]),
-            ],
-          ),
-        ),
+
+  Widget _buildGridView(BuildContext context, List<Map<String, dynamic>> modules) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Wrap(
+        spacing: 8.0, // Horizontal space between cards
+        runSpacing: 8.0, // Vertical space between rows
+        alignment: WrapAlignment.center,
+        children: modules.map((module) {
+          return SizedBox(
+            width: (MediaQuery.of(context).size.width - 24) / 2, // 24 = padding * 2 + spacing
+            child: _buildGridItem(
+              context,
+              module['title'],
+              module['icon'],
+              module['route'],
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -200,32 +163,35 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildGridItem(BuildContext context, String title, dynamic icon, String route) {
-    return Card(
-      elevation: 8.0,
-      color: Colors.orange[50],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-      ),
-      child: InkWell(
-        onTap: () => Navigator.pushNamed(context, route),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icon is IconData)
-              Icon(icon, size: 40.0, color: Colors.orange[400])
-            else if (icon is String)
-              Image.asset(icon, height: 40.0, width: 40.0),
-            const SizedBox(height: 8.0),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.orange[600],
-                fontWeight: FontWeight.bold,
+    return AspectRatio(
+      aspectRatio: 1.4,
+      child: Card(
+        elevation: 8.0,
+        color: Colors.orange[50],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
+        ),
+        child: InkWell(
+          onTap: () => Navigator.pushNamed(context, route),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon is IconData)
+                Icon(icon, size: 40.0, color: Colors.orange[400])
+              else if (icon is String)
+                Image.asset(icon, height: 40.0, width: 40.0),
+              const SizedBox(height: 8.0),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.orange[600],
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
