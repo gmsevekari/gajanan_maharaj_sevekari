@@ -41,19 +41,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
 
+    final nityopasanaModule = {'title': localizations.nityopasanaTitle, 'icon': 'resources/images/icon/NityaSmaran.png', 'route': Routes.nityopasana};
     final List<Map<String, dynamic>> modules = [
-      {'title': localizations.granthTitle, 'icon': Icons.menu_book_outlined, 'route': Routes.granth},
-      {'title': localizations.stotraTitle, 'icon': Icons.queue_music, 'route': Routes.stotra},
-      {'title': localizations.bhajanTitle, 'icon': Icons.lyrics_outlined, 'route': Routes.bhajan},
-      {'title': localizations.aartiTitle, 'icon': Icons.library_music_outlined, 'route': Routes.aarti},
-      {'title': localizations.namavaliTitle, 'icon': Icons.format_list_numbered, 'route': Routes.namavali},
       {'title': localizations.calendarTitle, 'icon': Icons.calendar_month_outlined, 'route': Routes.calendar},
-      //{'title': localizations.galleryTitle, 'icon': Icons.photo_library_outlined, 'route': Routes.gallery},
       {'title': localizations.donationsTitle, 'icon': Icons.volunteer_activism_outlined, 'route': Routes.donations},
-      //{'title': localizations.sankalpTitle, 'icon': Icons.event_repeat_outlined, 'route': Routes.sankalp},
       {'title': localizations.aboutMaharajTitle, 'icon': Icons.info_outline, 'route': Routes.aboutMaharaj},
       {'title': localizations.socialMediaTitle, 'icon': Icons.connect_without_contact, 'route': Routes.socialMedia},
-      //{'title': localizations.parayanTitle, 'icon': Icons.track_changes_outlined, 'route': Routes.parayan},
     ];
 
     return Scaffold(
@@ -73,12 +66,13 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           _buildUpcomingEventCard(context, localizations),
+          _buildFullWidthCard(context, nityopasanaModule['title']!, nityopasanaModule['icon']!, nityopasanaModule['route']!),
           Expanded(
             child: GridView.builder(
               padding: const EdgeInsets.all(8.0),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 1.2,
+                childAspectRatio: 1.4,
                 crossAxisSpacing: 8.0,
                 mainAxisSpacing: 8.0,
               ),
@@ -94,6 +88,47 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+  
+  Widget _buildFullWidthCard(BuildContext context, String title, dynamic icon, String route) {
+    return Card(
+      elevation: 8.0,
+      color: Colors.orange[50],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: InkWell(
+        onTap: () => Navigator.pushNamed(context, route),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  if (icon is IconData)
+                    Icon(icon, size: 40.0, color: Colors.orange[400])
+                  else if (icon is String)
+                    Image.asset(icon, height: 40.0, width: 40.0),
+                  const SizedBox(width: 16.0),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.orange[600],
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Icon(Icons.arrow_forward_ios, color: Colors.orange[400]),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -164,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildGridItem(BuildContext context, String title, IconData icon, String route) {
+  Widget _buildGridItem(BuildContext context, String title, dynamic icon, String route) {
     return Card(
       elevation: 8.0,
       color: Colors.orange[50],
@@ -177,7 +212,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40.0, color: Colors.orange[400]),
+            if (icon is IconData)
+              Icon(icon, size: 40.0, color: Colors.orange[400])
+            else if (icon is String)
+              Image.asset(icon, height: 40.0, width: 40.0),
             const SizedBox(height: 8.0),
             Text(
               title,

@@ -13,6 +13,7 @@ import 'package:gajanan_maharaj_sevekari/granth/granth_screen.dart';
 import 'package:gajanan_maharaj_sevekari/home/home_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
+import 'package:gajanan_maharaj_sevekari/nityopasana/nityopasana_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_screen.dart';
 import 'package:gajanan_maharaj_sevekari/sankalp/sankalp_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
@@ -84,6 +85,7 @@ class MyApp extends StatelessWidget {
             Routes.gallery: (context) => const GalleryScreen(),
             Routes.settings: (context) => const SettingsScreen(),
             Routes.socialMedia: (context) => const SocialMediaScreen(),
+            Routes.nityopasana: (context) => const NityopasanaScreen(),
           },
         );
       },
