@@ -101,6 +101,10 @@ class AppLocalizations {
       'officialLinks': 'Official Links',
       'socialMedia': 'Social Media',
       'nityopasanaTitle': 'Nityopasana',
+      'share': 'Share',
+      'narrator': 'Narrator',
+      'internetRequired': 'Video playback requires internet',
+      'shareMessage': 'Check out this Adhyay from Gajanan Vijay Granth',
     },
     'mr': {
       'granthTitle': 'गजानन विजय ग्रंथ',
@@ -176,7 +180,7 @@ class AppLocalizations {
       'cardTitleShikvan': 'शिकवण आणि तत्त्वज्ञान',
       'cardContentShikvan': 'त्यांची वागणूक बालकासारखी निरागस आणि काहीशी \'उन्मन\' (with divine madness) असे, आणि ते सदैव परब्रह्माशी एकरूप होऊन जगत.\n\nत्यांच्या तत्त्वज्ञानाचे सार त्यांच्या मुखी सतत असणाऱ्या "गण गण गणात बोते" या मंत्रात सामावलेले आहे. या मंत्राचा अर्थ असा आहे की, प्रत्येक जीवाचा आत्मा हा त्या विश्वव्यापी ब्रह्माचाच एक अंश आहे आणि ईश्वराचा वास चराचरातील कणाकणात आहे.\n\nत्यांच्या शिकवणीचे मुख्य स्तंभ:\n* अन्न हे पूर्णब्रह्म: अन्नाला देवाचे रूप मानून त्याचा आदर करणे.\n* समभाव: त्यांनी श्रीमंत-गरीब, उच्च-नीच किंवा मानव-प्राणी असा कोणताही भेद न करता सर्वांवर समान प्रेम केले.\n* कर्मयोग: फळाची अपेक्षा न ठेवता आपले कर्तव्य करत राहणे, यावर त्यांनी भर दिला.\n* जीवनमूल्ये: भक्ती, सेवा, सदाचार आणि त्याग या मार्गांवर चालण्याचे मार्गदर्शन त्यांनी भक्तांना केले.',
       'cardTitleSamadhi': 'समाधी विवरण',
-      'cardContentSamadhi': 'महाराजांनी शेगावमध्ये ३२ वर्षे वास्तव्य केले. या काळात त्यांनी भक्तांना सन्मार्गावर आणण्यासाठी असंख्य चमत्कार (लीला) केले. त्यानंतर, ८ सप्टेंबर १९१० (ऋषी पंचमी) रोजी त्यांनी \'संजीवन समाधी\' घेतली. संजीवन समाधी ही अशी अवस्था आहे, जिथे संत स्वतःहून आपला देह त्यागतात, पण त्यांचे चैतन्य त्या समाधीत जागृत असते.\n\nत्यांचा पार्थिव देह जरी शेगावच्या समाधी मंदिरात विसावला असला, तरी त्यांचे आध्यात्मिक अस्तित्व हे काळाच्या पलीकडचे आणि शाश्वत आहे. समाधी घेण्यापूर्वी त्यांनी आपल्या भक्तांना आश्वस्त केले होते: "मी गेलो असे मानू नका, भक्तीत अंतर करू नका. तुमच्या रक्षणासाठी मी सदैव तुमच्या पाठीशी असेन."\n\nआज शेगाव हे "विदर्भाचे पंढरपूर" म्हणून ओळखले जाते, जिथे लाखो भाविक या महापुरुषाच्या अस्तित्वाची अनुभूती घेण्यासाठी येतात.',
+      'cardContentSamadhi': 'महाराजांनी शेगावमध्ये ३२ वर्षे वास्तव्य केले. या काळात त्यांनी भक्तांना सन्मार्गावर आणण्यासाठी असंख्य चमत्कार (लीला) केले. त्यानंतर, ८ सप्टेंबर १९१० (ऋषी पंचमी) रोजी त्यांनी \'संजीवन समाधी\' घेतली. संजीवन समाधी ही अशी अवस्था आहे, जिथे संत स्वतःहून आपला देह त्यागतात, पण त्यांचे चैतन्य त्या समाधीत जागृत असते.\n\nत्यांचा पार्थिव देh जरी शेगावच्या समाधी मंदिरात विसावला असला, तरी त्यांचे आध्यात्मिक अस्तित्व हे काळाच्या पलीकडचे आणि शाश्वत आहे. समाधी घेण्यापूर्वी त्यांनी आपल्या भक्तांना आश्वस्त केले होते: "मी गेलो असे मानू नका, भक्तीत अंतर करू नका. तुमच्या रक्षणासाठी मी सदैव तुमच्या पाठीशी असेन."\n\nआज शेगाव हे "विदर्भाचे पंढरपूर" म्हणून ओळखले जाते, जिथे लाखो भाविक या महापुरुषाच्या अस्तित्वाची अनुभूती घेण्यासाठी येतात.',
       'footerQuote': 'भक्तांच्या हाकेला धावून जाणारे दयासागर',
       'socialMediaTitle': 'सोशल मीडिया',
       'officialSocialMediaHandles': 'अधिकृत सोशल मीडिया हँडल्स',
@@ -193,6 +197,10 @@ class AppLocalizations {
       'officialLinks': 'अधिकृत लिंक्स',
       'socialMedia': 'सोशल मीडिया',
       'nityopasanaTitle': 'नित्योपासना',
+      'share': 'शेअर करा',
+      'narrator': 'निवेदक',
+      'internetRequired': 'व्हिडिओ प्लेबॅकसाठी इंटरनेट आवश्यक आहे',
+      'shareMessage': 'गजानन विजय ग्रंथाचा हा अध्याय नक्की ऐका',
     }
   };
 
@@ -288,6 +296,10 @@ class AppLocalizations {
   String get officialLinks => _localizedValues[locale.languageCode]!['officialLinks']!;
   String get socialMedia => _localizedValues[locale.languageCode]!['socialMedia']!;
   String get nityopasanaTitle => _localizedValues[locale.languageCode]!['nityopasanaTitle']!;
+  String get share => _localizedValues[locale.languageCode]!['share']!;
+  String get narrator => _localizedValues[locale.languageCode]!['narrator']!;
+  String get internetRequired => _localizedValues[locale.languageCode]!['internetRequired']!;
+  String get shareMessage => _localizedValues[locale.languageCode]!['shareMessage']!;
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

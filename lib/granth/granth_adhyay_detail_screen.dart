@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class GranthAdhyayDetailScreen extends StatefulWidget {
   final int adhyayNumber;
@@ -19,6 +21,7 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
   double _fontSize = 18.0;
   TabController? _tabController;
   int _currentIndex = 0;
+  YoutubePlayerController? _youtubeController;
 
   @override
   void initState() {
@@ -37,12 +40,21 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
   @override
   void dispose() {
     _tabController?.dispose();
+    _youtubeController?.dispose();
     super.dispose();
   }
 
   Future<Map<String, dynamic>> _loadAdhyay() async {
     final String response = await rootBundle.loadString('resources/texts/grantha/adhyay_${widget.adhyayNumber}.json');
     final data = await json.decode(response);
+    if (data['youtube_video_id'] != null && data['youtube_video_id'].isNotEmpty) {
+      _youtubeController = YoutubePlayerController(
+        initialVideoId: data['youtube_video_id'],
+        flags: const YoutubePlayerFlags(
+          autoPlay: false,
+        ),
+      );
+    }
     return data;
   }
 
@@ -77,109 +89,297 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: Material(
-            color: Colors.orange,
-            child: TabBar(
-              controller: _tabController,
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white70,
-              indicatorColor: Colors.white,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-              tabs: [
-                Tab(text: localizations.read),
-                Tab(text: localizations.listen),
-              ],
-            ),
-          ),
-        ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          // Read Tab
-          FutureBuilder<Map<String, dynamic>>(
-            future: _adhyayFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (snapshot.hasData) {
-                final adhyay = snapshot.data!;
-                final text = locale.languageCode == 'mr' ? adhyay['adhyay_mr'] : adhyay['adhyay_en'];
-                return Scaffold(
-                  body: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 120), // Adjust top padding
-                    child: Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12.0),
-                          child: Image.asset(
-                            'resources/images/grantha/adhyay_${widget.adhyayNumber}.jpg',
-                            width: double.infinity,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                'resources/images/grantha/default.jpg',
-                                width: double.infinity,
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Center(
-                          child: Text(
-                            text,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: _fontSize),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  floatingActionButton: _currentIndex == 0 ? Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      FloatingActionButton(
-                        heroTag: 'add',
-                        mini: true,
-                        backgroundColor: Colors.orange.withAlpha(179),
-                        foregroundColor: Colors.white,
-                        onPressed: () => _changeFontSize(2.0),
-                        child: const Icon(Icons.add, size: 20),
-                      ),
-                      const SizedBox(height: 8),
-                      FloatingActionButton(
-                        heroTag: 'remove',
-                        mini: true,
-                        backgroundColor: Colors.orange.withAlpha(179),
-                        foregroundColor: Colors.white,
-                        onPressed: () => _changeFontSize(-2.0),
-                        child: const Icon(Icons.remove, size: 20),
-                      ),
-                    ],
-                  ) : null,
-                );
-              } else {
-                return const Center(child: Text('No data'));
-              }
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: _buildSegmentedControl(context, localizations),
           ),
-          // Listen Tab
-          const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              physics: const NeverScrollableScrollPhysics(), // Disable swipe gesture
               children: [
-                Icon(Icons.music_note, size: 100, color: Colors.grey),
-                SizedBox(height: 20),
-                Text('Audio player will be implemented here.', textAlign: TextAlign.center,),
+                _buildReadTab(context, locale),
+                _buildListenTab(context, locale),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSegmentedControl(BuildContext context, AppLocalizations localizations) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(25.0),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildSegment(context, localizations.read, 0),
+          _buildSegment(context, localizations.listen, 1),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSegment(BuildContext context, String text, int index) {
+    bool isSelected = _currentIndex == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          _tabController?.animateTo(index);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.orange : Colors.transparent,
+            borderRadius: BorderRadius.circular(25.0),
+            border: Border.all(
+              color: isSelected ? Colors.orange : Colors.grey[200]!,
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (index == 0) // Read tab
+                Icon(
+                  Icons.menu_book,
+                  color: isSelected ? Colors.white : Colors.grey[600],
+                  size: 20,
+                ),
+              if (index == 0)
+                const SizedBox(width: 8),
+              if (index == 1) // Listen tab
+                Icon(
+                  Icons.play_arrow,
+                  color: isSelected ? Colors.white : Colors.grey[600],
+                  size: 20,
+                ),
+              if (index == 1)
+                const SizedBox(width: 8),
+              Text(
+                text,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.grey[800],
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReadTab(BuildContext context, Locale locale) {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _adhyayFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          final adhyay = snapshot.data!;
+          final text = locale.languageCode == 'mr' ? adhyay['adhyay_mr'] : adhyay['adhyay_en'];
+          return Scaffold(
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
+              child: Column(
+                children: [
+                  _buildAdhyayImage(),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: Text(
+                      text,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: _fontSize),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            floatingActionButton: _currentIndex == 0
+                ? Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  heroTag: 'add',
+                  mini: true,
+                  backgroundColor: Colors.orange.withAlpha(179),
+                  foregroundColor: Colors.white,
+                  onPressed: () => _changeFontSize(2.0),
+                  child: const Icon(Icons.add, size: 20),
+                ),
+                const SizedBox(height: 8),
+                FloatingActionButton(
+                  heroTag: 'remove',
+                  mini: true,
+                  backgroundColor: Colors.orange.withAlpha(179),
+                  foregroundColor: Colors.white,
+                  onPressed: () => _changeFontSize(-2.0),
+                  child: const Icon(Icons.remove, size: 20),
+                ),
+              ],
+            )
+                : null,
+          );
+        } else {
+          return const Center(child: Text('No data'));
+        }
+      },
+    );
+  }
+
+  Widget _buildListenTab(BuildContext context, Locale locale) {
+    final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context);
+
+    return FutureBuilder<Map<String, dynamic>>(
+        future: _adhyayFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final adhyay = snapshot.data!;
+            final videoId = adhyay['youtube_video_id'];
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildAdhyayImage(),
+                  const SizedBox(height: 16),
+                  if (_youtubeController != null)
+                    Card(
+                        elevation: 4.0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                        clipBehavior: Clip.antiAlias,
+                        child: YoutubePlayer(controller: _youtubeController!))
+                  else
+                    Card(
+                      elevation: 4.0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                      child: const SizedBox(
+                        height: 200,
+                        child: Center(child: Text('Video unavailable')),
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '${localizations.adhyay} ${widget.adhyayNumber} • ${locale.languageCode == 'mr' ? "सौ. विद्या उनवणे पडवळ" : "Sau. Vidya Padwal"}',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: theme.colorScheme.secondary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildDecorativeDivider(),
+                  const SizedBox(height: 24),
+                  if (videoId != null && videoId.isNotEmpty)
+                    Center(
+                      child: _buildActionButton(context, Icons.share, localizations.share, () {
+                        Share.share(
+                            '${localizations.shareMessage}: https://www.youtube.com/watch?v=$videoId');
+                      }),
+                    ),
+                  const SizedBox(height: 32),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.wifi, color: theme.colorScheme.secondary),
+                        const SizedBox(width: 8),
+                        Text(
+                          localizations.internetRequired,
+                          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.secondary),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            );
+          }
+          return const Center(child: Text('No data'));
+        });
+  }
+
+  Widget _buildAdhyayImage() {
+    return Card(
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Image.asset(
+        'resources/images/grantha/adhyay_${widget.adhyayNumber}.jpg',
+        width: double.infinity,
+        errorBuilder: (context, error, stackTrace) {
+          return Image.asset(
+            'resources/images/grantha/default.jpg',
+            width: double.infinity,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildDecorativeDivider() {
+    return Row(
+      children: [
+        const Expanded(child: Divider(thickness: 1)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Icon(Icons.spa, color: Colors.orange[200]),
+        ),
+        const Expanded(child: Divider(thickness: 1)),
+      ],
+    );
+  }
+
+  Widget _buildActionButton(BuildContext context, IconData icon, String label, VoidCallback onPressed) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: Icon(icon, color: theme.colorScheme.primary),
+            onPressed: onPressed,
+            iconSize: 32.0,
+            padding: const EdgeInsets.all(16.0),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(label, style: TextStyle(color: theme.colorScheme.primary)),
+      ],
     );
   }
 }
