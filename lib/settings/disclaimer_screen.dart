@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
 class DisclaimerScreen extends StatefulWidget {
@@ -38,6 +39,12 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
       appBar: AppBar(
         title: Text(localizations.disclaimer,
             style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+          ),
+        ],
       ),
       body: FutureBuilder<String>(
         future: _loadDisclaimer(context),

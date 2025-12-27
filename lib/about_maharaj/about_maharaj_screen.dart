@@ -29,6 +29,10 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
         title: Text(localizations.aboutMaharajTitle, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+          ),
+          IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),

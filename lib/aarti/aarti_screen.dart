@@ -15,6 +15,10 @@ class AartiScreen extends StatelessWidget {
         title: Text(localizations.aartiTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+          ),
+          IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),

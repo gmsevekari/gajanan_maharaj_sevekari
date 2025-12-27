@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class LanguageSelectionScreen extends StatelessWidget {
   const LanguageSelectionScreen({super.key});
@@ -13,6 +14,12 @@ class LanguageSelectionScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.language, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+          ),
+        ],
       ),
       body: Consumer<LocaleProvider>(
         builder: (context, localeProvider, child) {
