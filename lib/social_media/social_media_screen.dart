@@ -9,6 +9,7 @@ class SocialMediaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
+    final theme = Theme.of(context);
 
     final List<Map<String, String>> socialMediaLinks = [
       {
@@ -50,7 +51,7 @@ class SocialMediaScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.socialMedia, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(localizations.socialMedia, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -67,7 +68,7 @@ class SocialMediaScreen extends StatelessWidget {
               Text(
                 localizations.officialSocialMediaHandles,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.primary),
               ),
               const SizedBox(height: 16),
               ...socialMediaLinks.map((link) => SocialMediaCard(
@@ -81,11 +82,11 @@ class SocialMediaScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.check_circle, color: Colors.grey, size: 16),
+                  Icon(Icons.check_circle, color: theme.colorScheme.secondary, size: 16),
                   const SizedBox(width: 8),
                   Text(
                     localizations.officialLinks,
-                    style: const TextStyle(color: Colors.grey),
+                    style: TextStyle(color: theme.colorScheme.secondary),
                   ),
                 ],
               ),
@@ -124,6 +125,7 @@ class SocialMediaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
       elevation: 8.0,
       color: Colors.orange[50],
@@ -153,14 +155,14 @@ class SocialMediaCard extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: Colors.orange[600],
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       description,
                       style: TextStyle(
-                        color: Colors.orange[600],
+                        color: theme.colorScheme.secondary,
                         fontSize: 14,
                       ),
                     ),
