@@ -194,14 +194,13 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
 
   Widget _buildEventList() {
     final locale = Localizations.localeOf(context).languageCode;
-    final lastDayOfMonth = DateTime(_selectedDay!.year, _selectedDay!.month + 1, 0);
+    final endDate = _selectedDay!.add(const Duration(days: 30));
 
     final upcomingEvents = _events.entries
         .where((entry) {
-          final day = entry.key;
-          return (day.isAfter(_selectedDay!) || isSameDay(day, _selectedDay)) &&
-                 (day.isBefore(lastDayOfMonth) || isSameDay(day, lastDayOfMonth));
-        })
+      final day = entry.key;
+      return !day.isBefore(DateTime(_selectedDay!.year, _selectedDay!.month, _selectedDay!.day)) && day.isBefore(endDate);
+    })
         .expand((entry) => entry.value)
         .toList();
 
@@ -221,7 +220,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
         final title = locale == 'mr' ? event.title_mr : event.title_en;
         final location = (locale == 'mr' ? event.location_mr : event.location_en) ?? '';
         final details = (locale == 'mr' ? event.details_mr : event.details_en) ?? '';
-        
+
         final String startTime;
         final String? endTime;
 
@@ -242,8 +241,8 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
           color: isSelectedDay ? Colors.orange[200] : Colors.orange[50],
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: isSelectedDay 
-                ? BorderSide(color: Colors.orange.shade700, width: 2) 
+            side: isSelectedDay
+                ? BorderSide(color: Colors.orange.shade700, width: 2)
                 : BorderSide(color: Colors.orange.withAlpha(128), width: 1),
           ),
           child: Padding(

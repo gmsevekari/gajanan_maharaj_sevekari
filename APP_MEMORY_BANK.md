@@ -21,22 +21,29 @@ This document summarizes the key architectural patterns, design principles, and 
     -   A key UI component is a **custom segmented control** for "Read" and "Listen" tabs, built with styled `Container` and `GestureDetector` widgets. It does **not** use the default `TabBar` in the `AppBar`.
     -   Tab switching is **tap-only**; swipe gestures are disabled using `physics: const NeverScrollableScrollPhysics()` on the `TabBarView`.
     -   The "Read" tab includes floating action buttons for adjusting font size.
+    -   **Navigation:** All detail screens feature a consistent `AppBar` with a **Home** and **Settings** button in the `actions`. Screens that are part of a sequence (Granth, Aarti, etc.) also include **Previous/Next** arrows for easy navigation. Long titles are handled by allowing the title to wrap to a new line, facilitated by a `PreferredSize` widget on the `AppBar`.
 -   **`GranthAdhyayDetailScreen`:** This is the most feature-rich detail screen.
     -   It displays a chapter-specific image at the top of both the "Read" and "Listen" tabs.
     -   The "Listen" tab embeds a YouTube video using the `youtube_player_flutter` package.
+    -   It preserves the selected tab (Read/Listen) when navigating to the next or previous chapter.
+-   **`EventCalendarScreen`:**
+    -   Fetches events from a Firestore `events` collection.
+    -   The query is sorted by `start_time` to ensure chronological order.
+    -   The event list displays all events from the user-selected date for the **next 30 days**.
 
 ### 3. Technical Stack & Architecture
 
 -   **Framework:** Flutter.
 -   **State Management:** The `provider` package is used for app-wide state, specifically for `ThemeProvider` and `LocaleProvider`.
--   **Navigation:** Named routes are defined in a dedicated `lib/utils/routes.dart` file and registered in `main.dart`.
--   **Backend:** Firebase is used, specifically **Firestore** for fetching upcoming events for the `HomeScreen`.
+-   **Navigation:** Named routes are defined in a dedicated `lib/utils/routes.dart` file and registered in `main.dart`. The `Navigator.pushNamedAndRemoveUntil` method is used for the Home button to clear the navigation stack.
+-   **Backend:** Firebase is used, specifically **Firestore** for fetching upcoming events for the `HomeScreen` and `EventCalendarScreen`.
 -   **Key Dependencies:**
     -   `youtube_player_flutter`: For embedding YouTube videos.
     -   `share_plus`: For native sharing functionality.
     -   `url_launcher`: For opening external links (like social media).
     -   `provider`: For app-wide state management.
     -   `cloud_firestore`: For reading event data.
+    -   `table_calendar`: For the event calendar UI.
 -   **Localization:**
     -   Localization is handled manually in `lib/l10n/app_localizations.dart` using `Map` structures for English (`en`) and Marathi (`mr`).
     -   The project **does not** use `.arb` files.
@@ -45,8 +52,8 @@ This document summarizes the key architectural patterns, design principles, and 
 
 -   **Color Theme:** The primary theme is devotional, using **Orange/Saffron** (`Colors.orange`) and **Gold/Amber**. `AppBar` backgrounds are solid orange with white text. Card backgrounds are a light cream (`Colors.orange[50]`).
 -   **Card Style:** The standard card design consists of a `Card` widget with `elevation`, `RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0))`, and a subtle `BorderSide(color: Colors.orange.withAlpha(128), width: 1)`.
--   **Custom Segmented Control:** A recurring and important custom component is the pill-shaped "Read"/"Listen" selector. The active tab has an orange background and white text/icon, while the inactive tab is transparent/white with dark text/icon.
--   **Icons:** The app uses a mix of standard Material Design icons (`Icons.menu_book`, `Icons.play_arrow`, `Icons.headset`, etc.) and custom image assets stored in `resources/images/`.
+-   **Custom Segmented Control:** A recurring and important custom component is the pill-shaped "Read"/"Listen" selector. The active tab has an orange background and white text/icon, while the inactive tab has a white background to create a seamless look against the parent container.
+-   **Icons:** The app uses a mix of standard Material Design icons (`Icons.menu_book`, `Icons.play_arrow`, `Icons.headset`, etc.) and custom image assets stored in `resources/images/`. Icon usage is kept consistent (e.g., the icon on the `NityopasanaScreen` card matches the icon on the corresponding detail screen's "Read" tab).
 
 ### 5. Data & Content Structure
 
