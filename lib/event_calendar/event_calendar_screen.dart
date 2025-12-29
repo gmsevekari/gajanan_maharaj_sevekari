@@ -70,7 +70,11 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
   }
 
   void _fetchEvents() {
-    FirebaseFirestore.instance.collection('events').snapshots().listen((snapshot) {
+    FirebaseFirestore.instance
+        .collection('events')
+        .orderBy('start_time', descending: false)
+        .snapshots()
+        .listen((snapshot) {
       final Map<DateTime, List<Event>> events = {};
       for (var doc in snapshot.docs) {
         final event = Event.fromFirestore(doc);
