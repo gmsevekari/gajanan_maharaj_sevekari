@@ -6,9 +6,10 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class BhajanDetailScreen extends StatefulWidget {
-  final String bhajanFileName;
+  final List<Map<String, String>> bhajanList;
+  final int currentIndex;
 
-  const BhajanDetailScreen({super.key, required this.bhajanFileName});
+  const BhajanDetailScreen({super.key, required this.bhajanList, required this.currentIndex});
 
   @override
   State<BhajanDetailScreen> createState() => _BhajanDetailScreenState();
@@ -41,7 +42,8 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
   }
 
   Future<Map<String, dynamic>> _loadBhajan() async {
-    final String response = await rootBundle.loadString('resources/texts/bhajans/${widget.bhajanFileName}');
+    final bhajan = widget.bhajanList[widget.currentIndex];
+    final String response = await rootBundle.loadString('resources/texts/bhajans/${bhajan['fileName']}');
     final data = await json.decode(response);
     return data;
   }
@@ -52,6 +54,18 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
     });
   }
 
+  void _navigateToBhajan(int index) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BhajanDetailScreen(
+          bhajanList: widget.bhajanList,
+          currentIndex: index,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -59,17 +73,39 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
 
     return Scaffold(
       appBar: AppBar(
-        title: FutureBuilder<Map<String, dynamic>>(
-          future: _bhajanFuture,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final bhajan = snapshot.data!;
-              final title = locale.languageCode == 'mr' ? bhajan['title_mr'] : bhajan['title_en'];
-              return Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold));
-            } else {
-              return const Text(''); // Placeholder while loading
-            }
-          },
+        automaticallyImplyLeading: false, // We will handle navigation manually
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (widget.currentIndex > 0)
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios),
+                onPressed: () => _navigateToBhajan(widget.currentIndex - 1),
+              )
+            else
+              const SizedBox(width: 48), // Placeholder for alignment
+            Expanded(
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: _bhajanFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final bhajan = snapshot.data!;
+                    final title = locale.languageCode == 'mr' ? bhajan['title_mr'] : bhajan['title_en'];
+                    return Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold), textAlign: TextAlign.center, maxLines: 2,);
+                  } else {
+                    return const Text(''); // Placeholder while loading
+                  }
+                },
+              ),
+            ),
+            if (widget.currentIndex < widget.bhajanList.length - 1)
+              IconButton(
+                icon: const Icon(Icons.arrow_forward_ios),
+                onPressed: () => _navigateToBhajan(widget.currentIndex + 1),
+              )
+            else
+              const SizedBox(width: 48), // Placeholder for alignment
+          ],
         ),
         actions: [
           IconButton(

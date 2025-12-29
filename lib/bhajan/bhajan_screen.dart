@@ -97,7 +97,10 @@ class _BhajanScreenState extends State<BhajanScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BhajanDetailScreen(bhajanFileName: bhajan['fileName']!),
+                          builder: (context) => BhajanDetailScreen(
+                            bhajanList: bhajans,
+                            currentIndex: index,
+                          ),
                         ),
                       );
                     },

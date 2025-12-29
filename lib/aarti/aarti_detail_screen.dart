@@ -6,10 +6,10 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class AartiDetailScreen extends StatefulWidget {
-  final String aartiFileName;
-  final String aartiDirectory;
+  final List<Map<String, String>> aartiList;
+  final int currentIndex;
 
-  const AartiDetailScreen({super.key, required this.aartiFileName, required this.aartiDirectory});
+  const AartiDetailScreen({super.key, required this.aartiList, required this.currentIndex});
 
   @override
   State<AartiDetailScreen> createState() => _AartiDetailScreenState();
@@ -42,7 +42,8 @@ class _AartiDetailScreenState extends State<AartiDetailScreen> with SingleTicker
   }
 
   Future<Map<String, dynamic>> _loadAarti() async {
-    final String response = await rootBundle.loadString('resources/texts/aartis/${widget.aartiDirectory}/${widget.aartiFileName}');
+    final aarti = widget.aartiList[widget.currentIndex];
+    final String response = await rootBundle.loadString('resources/texts/aartis/${aarti['directory']}/${aarti['fileName']}');
     final data = await json.decode(response);
     return data;
   }
@@ -53,6 +54,18 @@ class _AartiDetailScreenState extends State<AartiDetailScreen> with SingleTicker
     });
   }
 
+  void _navigateToAarti(int index) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AartiDetailScreen(
+          aartiList: widget.aartiList,
+          currentIndex: index,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -60,17 +73,39 @@ class _AartiDetailScreenState extends State<AartiDetailScreen> with SingleTicker
 
     return Scaffold(
       appBar: AppBar(
-        title: FutureBuilder<Map<String, dynamic>>(
-          future: _aartiFuture,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final aarti = snapshot.data!;
-              final title = locale.languageCode == 'mr' ? aarti['title_mr'] : aarti['title_en'];
-              return Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold));
-            } else {
-              return const Text(''); // Placeholder while loading
-            }
-          },
+        automaticallyImplyLeading: false, // We will handle navigation manually
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (widget.currentIndex > 0)
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios),
+                onPressed: () => _navigateToAarti(widget.currentIndex - 1),
+              )
+            else
+              const SizedBox(width: 48), // Placeholder for alignment
+            Expanded(
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: _aartiFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final aarti = snapshot.data!;
+                    final title = locale.languageCode == 'mr' ? aarti['title_mr'] : aarti['title_en'];
+                    return Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold), textAlign: TextAlign.center, maxLines: 2);
+                  } else {
+                    return const Text(''); // Placeholder while loading
+                  }
+                },
+              ),
+            ),
+            if (widget.currentIndex < widget.aartiList.length - 1)
+              IconButton(
+                icon: const Icon(Icons.arrow_forward_ios),
+                onPressed: () => _navigateToAarti(widget.currentIndex + 1),
+              )
+            else
+              const SizedBox(width: 48), // Placeholder for alignment
+          ],
         ),
         actions: [
           IconButton(

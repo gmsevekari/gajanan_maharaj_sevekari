@@ -56,6 +56,7 @@ class _AartiListScreenState extends State<AartiListScreen> {
         'title_mr': data['title_mr'],
         'title_en': data['title_en'],
         'fileName': fileName,
+        'directory': directory,
       });
     }
     return aartiList;
@@ -111,13 +112,12 @@ class _AartiListScreenState extends State<AartiListScreen> {
                       style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 18.0),
                     ),
                     onTap: () {
-                      final directory = widget.category == AartiCategory.daily ? 'daily' : 'event';
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => AartiDetailScreen(
-                            aartiFileName: aarti['fileName']!,
-                            aartiDirectory: directory,
+                            aartiList: aartis,
+                            currentIndex: index,
                           ),
                         ),
                       );

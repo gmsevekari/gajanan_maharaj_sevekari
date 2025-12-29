@@ -6,9 +6,10 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class StotraDetailsScreen extends StatefulWidget {
-  final String stotraFileName;
+  final List<Map<String, String>> stotraList;
+  final int currentIndex;
 
-  const StotraDetailsScreen({super.key, required this.stotraFileName});
+  const StotraDetailsScreen({super.key, required this.stotraList, required this.currentIndex});
 
   @override
   State<StotraDetailsScreen> createState() => _StotraDetailsScreenState();
@@ -41,7 +42,8 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
   }
 
   Future<Map<String, dynamic>> _loadStotra() async {
-    final String response = await rootBundle.loadString('resources/texts/stotras/${widget.stotraFileName}');
+    final stotra = widget.stotraList[widget.currentIndex];
+    final String response = await rootBundle.loadString('resources/texts/stotras/${stotra['fileName']}');
     final data = await json.decode(response);
     return data;
   }
@@ -52,6 +54,18 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
     });
   }
 
+  void _navigateToStotra(int index) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StotraDetailsScreen(
+          stotraList: widget.stotraList,
+          currentIndex: index,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -59,17 +73,39 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
 
     return Scaffold(
       appBar: AppBar(
-        title: FutureBuilder<Map<String, dynamic>>(
-          future: _stotraFuture,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final stotra = snapshot.data!;
-              final title = locale.languageCode == 'mr' ? stotra['title_mr'] : stotra['title_en'];
-              return Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold));
-            } else {
-              return const Text(''); // Placeholder while loading
-            }
-          },
+        automaticallyImplyLeading: false, // We will handle navigation manually
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (widget.currentIndex > 0)
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios),
+                onPressed: () => _navigateToStotra(widget.currentIndex - 1),
+              )
+            else
+              const SizedBox(width: 48), // Placeholder for alignment
+            Expanded(
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: _stotraFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final stotra = snapshot.data!;
+                    final title = locale.languageCode == 'mr' ? stotra['title_mr'] : stotra['title_en'];
+                    return Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold), textAlign: TextAlign.center, maxLines: 2,);
+                  } else {
+                    return const Text(''); // Placeholder while loading
+                  }
+                },
+              ),
+            ),
+            if (widget.currentIndex < widget.stotraList.length - 1)
+              IconButton(
+                icon: const Icon(Icons.arrow_forward_ios),
+                onPressed: () => _navigateToStotra(widget.currentIndex + 1),
+              )
+            else
+              const SizedBox(width: 48), // Placeholder for alignment
+          ],
         ),
         actions: [
           IconButton(

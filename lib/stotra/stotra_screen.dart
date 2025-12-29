@@ -102,7 +102,10 @@ class _StotraScreenState extends State<StotraScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => StotraDetailsScreen(stotraFileName: stotra['fileName']!),
+                          builder: (context) => StotraDetailsScreen(
+                            stotraList: stotras,
+                            currentIndex: index,
+                          ),
                         ),
                       );
                     },
