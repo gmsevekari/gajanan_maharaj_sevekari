@@ -111,6 +111,9 @@ class AppLocalizations {
       'sundayPrasadSevaSignupDescription': 'Sign up for the Sunday Prasad Cooking Seva',
       'vastralankarSevaSignup': 'Vastra-Alankar Seva',
       'vastralankarSevaSignupDescription': 'Sign up for the Vastra-Alankar Seva',
+      'list': 'List',
+      'searchEvent': 'Search Event...',
+      'allEventsList': 'All Events List',
     },
     'mr': {
       'granthTitle': 'गजानन विजय ग्रंथ',
@@ -213,6 +216,9 @@ class AppLocalizations {
       'sundayPrasadSevaSignupDescription': 'रविवार प्रसाद सेवेसाठी साइन अप करा',
       'vastralankarSevaSignup': 'वस्त्रालंकार सेवा',
       'vastralankarSevaSignupDescription': 'वस्त्रालंकार सेवेसाठी साइन अप करा',
+      'list': 'यादी',
+      'searchEvent': 'उत्सव शोधा...',
+      'allEventsList': 'सर्व उत्सव यादी',
     }
   };
 
@@ -318,6 +324,9 @@ class AppLocalizations {
   String get sundayPrasadSevaSignupDescription => _localizedValues[locale.languageCode]!['sundayPrasadSevaSignupDescription']!;
   String get vastralankarSevaSignup => _localizedValues[locale.languageCode]!['vastralankarSevaSignup']!;
   String get vastralankarSevaSignupDescription => _localizedValues[locale.languageCode]!['vastralankarSevaSignupDescription']!;
+  String get list => _localizedValues[locale.languageCode]!['list']!;
+  String get searchEvent => _localizedValues[locale.languageCode]!['searchEvent']!;
+  String get allEventsList => _localizedValues[locale.languageCode]!['allEventsList']!;
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

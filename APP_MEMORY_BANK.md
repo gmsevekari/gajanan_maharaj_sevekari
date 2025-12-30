@@ -6,7 +6,6 @@ This document summarizes the key architectural patterns, design principles, and 
 
 ### 1. Core Assistant Directives (Lessons Learned)
 
--   **PRIMARY DIRECTIVE: ALWAYS READ THE FILE FIRST.** I must not rely on memory or previous context. My primary instruction is to always use the `read_file` tool on the relevant file to get its current state **before** suggesting or writing any changes.
 -   **Do Not Overwrite User Changes:** I must be extremely careful not to overwrite user-added content, especially in data lists or localization files. My process must be to add to, not replace, user data.
 -   **Verify API and Class Names:** I must not assume class names or parameters (e.g., `CardTheme` vs. `CardThemeData`, `showFullscreenButton`). If I am unsure, I must verify them through documentation or by analyzing the existing, working code.
 -   **Acknowledge and Correct Failures:** When a fix fails, I must acknowledge the specific failure, explain the root cause, and propose a new, definitive solution rather than repeating the same failed approach.
