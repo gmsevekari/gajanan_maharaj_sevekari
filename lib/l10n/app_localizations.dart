@@ -105,6 +105,12 @@ class AppLocalizations {
       'narrator': 'Narrator',
       'internetRequired': 'Video playback requires internet',
       'shareMessage': 'Check out this Adhyay from Gajanan Vijay Granth',
+      'signupsTitle': 'Signups',
+      'signupsDescription': 'Please use the links below to signup for various sevas.',
+      'sundayPrasadSevaSignup': 'Sunday Prasad Seva',
+      'sundayPrasadSevaSignupDescription': 'Sign up for the Sunday Prasad Cooking Seva',
+      'vastralankarSevaSignup': 'Vastra-Alankar Seva',
+      'vastralankarSevaSignupDescription': 'Sign up for the Vastra-Alankar Seva',
     },
     'mr': {
       'granthTitle': 'गजानन विजय ग्रंथ',
@@ -201,6 +207,12 @@ class AppLocalizations {
       'narrator': 'निवेदक',
       'internetRequired': 'व्हिडिओ प्लेबॅकसाठी इंटरनेट आवश्यक आहे',
       'shareMessage': 'गजानन विजय ग्रंथाचा हा अध्याय नक्की ऐका',
+      'signupsTitle': 'साईन-अप',
+      'signupsDescription': 'विविध सेवांसाठी साइन अप करण्यासाठी कृपया खालील लिंक वापरा.',
+      'sundayPrasadSevaSignup': 'रविवार प्रसाद सेवा',
+      'sundayPrasadSevaSignupDescription': 'रविवार प्रसाद सेवेसाठी साइन अप करा',
+      'vastralankarSevaSignup': 'वस्त्रालंकार सेवा',
+      'vastralankarSevaSignupDescription': 'वस्त्रालंकार सेवेसाठी साइन अप करा',
     }
   };
 
@@ -300,6 +312,12 @@ class AppLocalizations {
   String get narrator => _localizedValues[locale.languageCode]!['narrator']!;
   String get internetRequired => _localizedValues[locale.languageCode]!['internetRequired']!;
   String get shareMessage => _localizedValues[locale.languageCode]!['shareMessage']!;
+  String get signupsTitle => _localizedValues[locale.languageCode]!['signupsTitle']!;
+  String get signupsDescription => _localizedValues[locale.languageCode]!['signupsDescription']!;
+  String get sundayPrasadSevaSignup => _localizedValues[locale.languageCode]!['sundayPrasadSevaSignup']!;
+  String get sundayPrasadSevaSignupDescription => _localizedValues[locale.languageCode]!['sundayPrasadSevaSignupDescription']!;
+  String get vastralankarSevaSignup => _localizedValues[locale.languageCode]!['vastralankarSevaSignup']!;
+  String get vastralankarSevaSignupDescription => _localizedValues[locale.languageCode]!['vastralankarSevaSignupDescription']!;
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

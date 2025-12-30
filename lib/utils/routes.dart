@@ -15,4 +15,5 @@ class Routes {
   static const String settings = '/settings';
   static const String socialMedia = '/social_media';
   static const String nityopasana = '/nityopasana';
+  static const String signups = '/signups';
 }

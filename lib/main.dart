@@ -19,6 +19,7 @@ import 'package:gajanan_maharaj_sevekari/sankalp/sankalp_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/settings_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
+import 'package:gajanan_maharaj_sevekari/signups/signups_screen.dart';
 import 'package:gajanan_maharaj_sevekari/social_media/social_media_screen.dart';
 import 'package:gajanan_maharaj_sevekari/splash/splash_screen.dart';
 import 'package:gajanan_maharaj_sevekari/stotra/stotra_screen.dart';
@@ -86,6 +87,7 @@ class MyApp extends StatelessWidget {
             Routes.settings: (context) => const SettingsScreen(),
             Routes.socialMedia: (context) => const SocialMediaScreen(),
             Routes.nityopasana: (context) => const NityopasanaScreen(),
+            Routes.signups: (context) => const SignupsScreen(),
           },
         );
       },
