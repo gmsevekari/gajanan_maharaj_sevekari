@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class GranthAdhyayDetailScreen extends StatefulWidget {
@@ -73,6 +74,13 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
         builder: (context) => GranthAdhyayDetailScreen(adhyayNumber: adhyayNumber, initialTabIndex: _currentIndex),
       ),
     );
+  }
+
+  Future<void> _launchYoutube(String videoId) async {
+    final Uri url = Uri.parse('https://www.youtube.com/watch?v=$videoId');
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      // Could not launch URL
+    }
   }
 
   @override
@@ -297,7 +305,19 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
                         elevation: 4.0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                         clipBehavior: Clip.antiAlias,
-                        child: YoutubePlayer(controller: _youtubeController!))
+                        child: YoutubePlayer(
+                          controller: _youtubeController!,
+                          bottomActions: [
+                            CurrentPosition(),
+                            ProgressBar(isExpanded: true),
+                            RemainingDuration(),
+                            PlaybackSpeedButton(),
+                            IconButton(
+                                icon: const Icon(Icons.open_in_new, color: Colors.white),
+                                onPressed: () => _launchYoutube(videoId),
+                            ),
+                          ],
+                        ))
                   else
                     Card(
                       elevation: 4.0,
