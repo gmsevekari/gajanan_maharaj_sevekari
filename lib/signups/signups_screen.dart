@@ -23,7 +23,7 @@ class SignupsScreen extends StatelessWidget {
         'platform': localizations.vastralankarSevaSignup,
         'description': localizations.sundayPrasadSevaSignupDescription,
         'icon': 'resources/images/icon/Vastralankar_Seva.png',
-        'url': 'https://tinyurl.com/SeaGMVastralankarSeva',
+        'url': 'https://tinyurl.com/SeaGMVastralankarSeva2026',
         'color': '#742028',
       }
     ];
