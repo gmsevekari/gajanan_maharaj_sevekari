@@ -58,10 +58,15 @@ This document summarizes the key architectural patterns, design principles, and 
 
 ### 5. Design & UI/UX Principles
 
--   **Color Theme:** The primary theme is devotional, using **Orange/Saffron** (`Colors.orange`) and **Gold/Amber**. `AppBar` backgrounds are solid orange with white text. Card backgrounds are a light cream (`Colors.orange[50]`).
--   **Card Style:** The standard card design consists of a `Card` widget with `elevation`, `RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0))`, and a subtle `BorderSide(color: Colors.orange.withAlpha(128), width: 1)`.
--   **Custom Segmented Control:** A recurring and important custom component is the pill-shaped "Read"/"Listen" selector. The active tab has an orange background and white text/icon, while the inactive tab has a white background to create a seamless look against the parent container.
--   **Icons:** The app uses a mix of standard Material Design icons (`Icons.menu_book`, `Icons.play_arrow`, `Icons.headset`, etc.) and custom image assets stored in `resources/images/`. Icon usage is kept consistent (e.g., the icon on the `NityopasanaScreen` card matches the icon on the corresponding detail screen's "Read" tab).
+-   **Color Theme:**
+    -   **Light Mode:** Primary color is `Colors.orange`, with `AppBar`s and other key elements using this color. The main background is a light cream/beige. Card backgrounds are a light orange (`Colors.orange[50]`).
+    -   **Dark Mode:** The `scaffoldBackgroundColor` is `Colors.black`. Cards also have a `Colors.black` background, creating a high-contrast look. The primary orange color is used for accents, borders, and interactive elements.
+-   **Card Styles:**
+    -   **`HomePageCard`:** A special two-part card with a distinct left-side content area and a larger right-side orange area, achieved with a `Row` layout.
+    -   **`AppCard`:** A reusable `Stack`-based card that creates a "thick bottom border" effect. The bottom layer is orange, and the top content layer is offset to reveal the orange base. The content layer is theme-aware (`Colors.orange[50]` in light mode, `Colors.black` in dark mode).
+    -   **Event Cards:** A standard `Card` widget whose `color` and `shape` are dynamically changed to show a highlighted state (`Colors.orange[200]` with a thicker border) when an event is selected in the calendar.
+-   **Text and Icons:**
+    -   Most text and icons on cards use `theme.colorScheme.primary` or `theme.colorScheme.secondary` to ensure they adapt correctly to both light and dark themes.
 
 ### 6. Data & Content Structure
 

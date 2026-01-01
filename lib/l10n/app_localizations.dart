@@ -114,6 +114,7 @@ class AppLocalizations {
       'list': 'List',
       'searchEvent': 'Search Event...',
       'allEventsList': 'All Events List',
+      'namavaliFooter': 'Shri Gajanan-arpanamastu',
     },
     'mr': {
       'granthTitle': 'गजानन विजय ग्रंथ',
@@ -219,6 +220,7 @@ class AppLocalizations {
       'list': 'यादी',
       'searchEvent': 'उत्सव शोधा...',
       'allEventsList': 'सर्व उत्सव यादी',
+      'namavaliFooter': 'श्री गजाननार्पणमस्तु',
     }
   };
 
@@ -327,6 +329,7 @@ class AppLocalizations {
   String get list => _localizedValues[locale.languageCode]!['list']!;
   String get searchEvent => _localizedValues[locale.languageCode]!['searchEvent']!;
   String get allEventsList => _localizedValues[locale.languageCode]!['allEventsList']!;
+  String get namavaliFooter => _localizedValues[locale.languageCode]!['namavaliFooter']!;
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

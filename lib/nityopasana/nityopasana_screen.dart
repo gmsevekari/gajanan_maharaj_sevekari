@@ -56,34 +56,50 @@ class NityopasanaScreen extends StatelessWidget {
   }
 
   Widget _buildGridItem(BuildContext context, String title, dynamic icon, String route) {
+    final theme = Theme.of(context);
     return AspectRatio(
       aspectRatio: 1.4,
-      child: Card(
-        elevation: 8.0,
-        color: Colors.orange[50],
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
+      child: Container(
+        // This Container provides the distinct bottom shadow
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.orange, // Color of the shadow
+              offset: const Offset(0, 4), // Shift shadow downwards
+              blurRadius: 0, // Sharp edge for a "hard" shadow look
+              spreadRadius: 0,
+            ),
+          ],
         ),
-        child: InkWell(
-          onTap: () => Navigator.pushNamed(context, route),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (icon is IconData)
-                Icon(icon, size: 40.0, color: Colors.orange[400])
-              else if (icon is String)
-                Image.asset(icon, height: 40.0, width: 40.0),
-              const SizedBox(height: 8.0),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.orange[600],
-                  fontWeight: FontWeight.bold,
+        child: Card(
+          elevation: 0, // Disable default card elevation
+          margin: EdgeInsets.zero, // Remove default margin
+          color: Colors.orange[50],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
+          ),
+          child: InkWell(
+            onTap: () => Navigator.pushNamed(context, route),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon is IconData)
+                  Icon(icon, size: 40.0, color: Colors.orange[400])
+                else if (icon is String)
+                  Image.asset(icon, height: 40.0, width: 40.0),
+                const SizedBox(height: 8.0),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.orange[600],
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

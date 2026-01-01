@@ -38,10 +38,13 @@ class _NamavaliScreenState extends State<NamavaliScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.namavaliTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(localizations.namavaliTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: Colors.orange,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -63,33 +66,42 @@ class _NamavaliScreenState extends State<NamavaliScreen> {
           } else if (snapshot.hasData) {
             final names = snapshot.data!;
 
-            return ListView.builder(
+            return ListView.separated(
               padding: const EdgeInsets.only(bottom: 120), // Padding for FloatingActionButtons
-              itemCount: names.length,
+              itemCount: names.length + 1, // Add 1 for the footer
+              separatorBuilder: (context, index) => const Divider(height: 1),
               itemBuilder: (context, index) {
+                if (index == names.length) {
+                  // This is the footer
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Image.asset('resources/images/logo/App_Logo.png', height: 50, width: 50),
+                        const SizedBox(height: 8),
+                        Text(
+                          localizations.namavaliFooter,
+                          style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: theme.colorScheme.secondary),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
                 final nameData = names[index];
                 final name = locale.languageCode == 'mr' ? nameData['name_mr'] : nameData['name_en'];
 
-                return Card(
-                  elevation: 4.0,
-                  color: Colors.orange[50],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                    side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.orange[100],
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(color: Colors.orange[800]),
+                    ),
                   ),
-                  margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.orange[300],
-                      child: Text(
-                        '${index + 1}',
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    title: Text(
-                      name,
-                      style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: _fontSize),
-                    ),
+                  title: Text(
+                    name,
+                    style: TextStyle(fontSize: _fontSize),
                   ),
                 );
               },
