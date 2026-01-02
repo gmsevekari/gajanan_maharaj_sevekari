@@ -139,7 +139,8 @@ class _AartiDetailScreenState extends State<AartiDetailScreen> with SingleTicker
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (snapshot.hasData) {
                       final aarti = snapshot.data!;
-                      final text = locale.languageCode == 'mr' ? aarti['aarti_mr'] : aarti['aarti_en'];
+                      final textList = locale.languageCode == 'mr' ? aarti['aarti_mr'] : aarti['aarti_en'];
+                      final text = textList is List ? textList.join('\n') : textList;
                       return Scaffold(
                         body: SingleChildScrollView(
                           padding: const EdgeInsets.fromLTRB(16, 16, 16, 120), // Added bottom padding

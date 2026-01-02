@@ -22,6 +22,10 @@ subprojects {
             freeCompilerArgs.addAll("-Xlint:-options", "-Xlint:deprecation", "-Xlint:unchecked")
         }
     }
+    project.tasks.withType(JavaCompile::class.java).configureEach {
+        sourceCompatibility = JavaVersion.VERSION_17.toString()
+        targetCompatibility = JavaVersion.VERSION_17.toString()
+    }
 }
 
 subprojects {
