@@ -26,7 +26,9 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(localizations.aboutMaharajTitle, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(localizations.aboutMaharajTitle, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: Colors.orange,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -156,25 +158,31 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
   }
 
   Widget _buildExpansionCard(BuildContext context, {required IconData icon, required String title, required String content}) {
+    final theme = Theme.of(context);
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
+      ),
       color: Colors.orange[50],
-      child: ExpansionTile(
-        leading: Icon(icon, color: Colors.orange.shade600),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.orange[800])),
-        iconColor: Colors.orange.shade700,
-        collapsedIconColor: Colors.orange.shade700,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
+      clipBehavior: Clip.antiAlias,
+      child: Theme(
+        data: theme.copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          leading: Icon(icon, color: Colors.orange[600]),
+          title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.orange[800])),
+          iconColor: Colors.orange[400],
+          collapsedIconColor: Colors.orange[400],
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          children: [
+            Text(
               content,
               textAlign: TextAlign.justify,
               style: TextStyle(fontSize: _fontSize, height: 1.5, color: Colors.black87),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

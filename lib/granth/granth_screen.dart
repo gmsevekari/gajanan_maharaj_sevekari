@@ -45,6 +45,7 @@ class GranthScreen extends StatelessWidget {
                 ),
               ),
               title: Text('${localizations.adhyay} $adhyayNumber', style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold)),
+              trailing: Icon(Icons.arrow_forward_ios, color: Colors.orange[400]),
               onTap: () {
                 Navigator.push(
                   context,

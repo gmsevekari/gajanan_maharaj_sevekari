@@ -98,6 +98,7 @@ class _StotraScreenState extends State<StotraScreen> {
                       title!,
                       style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 18.0),
                     ),
+                    trailing: Icon(Icons.arrow_forward_ios, color: Colors.orange[400]),
                     onTap: () {
                       Navigator.push(
                         context,
