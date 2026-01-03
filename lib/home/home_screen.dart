@@ -42,36 +42,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final localizations = AppLocalizations.of(context);
 
     final List<Map<String, dynamic>> modules = [
-      {
-        'title': localizations.nityopasanaTitle,
-        'icon': 'resources/images/icon/Nitya_Smaran.png',
-        'route': Routes.nityopasana,
-      },
-      {
-        'title': localizations.calendarTitle,
-        'icon': Icons.calendar_month_outlined,
-        'route': Routes.calendar,
-      },
-      {
-        'title': localizations.donationsTitle,
-        'icon': Icons.volunteer_activism_outlined,
-        'route': Routes.donations,
-      },
-      {
-        'title': localizations.signupsTitle,
-        'icon': Icons.assignment_ind_outlined,
-        'route': Routes.signups,
-      },
-      {
-        'title': localizations.aboutMaharajTitle,
-        'icon': Icons.info_outline,
-        'route': Routes.aboutMaharaj,
-      },
-      {
-        'title': localizations.socialMediaTitle,
-        'icon': Icons.connect_without_contact,
-        'route': Routes.socialMedia,
-      },
+      {'title': localizations.nityopasanaTitle, 'icon': 'resources/images/icon/Nitya_Smaran.png', 'route': Routes.nityopasana},
+      {'title': localizations.calendarTitle, 'icon': Icons.calendar_month_outlined, 'route': Routes.calendar},
+      {'title': localizations.donationsTitle, 'icon': Icons.volunteer_activism_outlined, 'route': Routes.donations},
+      {'title': localizations.signupsTitle, 'icon': Icons.assignment_ind_outlined, 'route': Routes.signups},
+      {'title': localizations.favoritesTitle, 'icon': Icons.favorite_border, 'route': Routes.favorites},
+      {'title': localizations.aboutMaharajTitle, 'icon': Icons.info_outline, 'route': Routes.aboutMaharaj},
+      {'title': localizations.socialMediaTitle, 'icon': Icons.connect_without_contact, 'route': Routes.socialMedia},
     ];
 
     return Scaffold(

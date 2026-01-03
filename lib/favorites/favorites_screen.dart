@@ -1,0 +1,54 @@
+import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+
+class FavoritesScreen extends StatelessWidget {
+  const FavoritesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(localizations.favoritesTitle, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: Colors.orange,
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Card(
+              elevation: 4.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
+              ),
+              margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+              child: ListTile(
+                title: Text(
+                  localizations.sundayPrarthanaTitle,
+                  style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 18.0),
+                ),
+                trailing: Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary),
+                onTap: () => Navigator.pushNamed(context, Routes.sundayPrarthana),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -7,6 +7,8 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/bhajan/bhajan_screen.dart';
 import 'package:gajanan_maharaj_sevekari/donations/donations_screen.dart';
 import 'package:gajanan_maharaj_sevekari/event_calendar/event_calendar_screen.dart';
+import 'package:gajanan_maharaj_sevekari/favorites/favorites_screen.dart';
+import 'package:gajanan_maharaj_sevekari/favorites/sunday_prarthana_screen.dart';
 import 'package:gajanan_maharaj_sevekari/firebase_options.dart';
 import 'package:gajanan_maharaj_sevekari/gallery/gallery_screen.dart';
 import 'package:gajanan_maharaj_sevekari/granth/granth_screen.dart';
@@ -88,6 +90,8 @@ class MyApp extends StatelessWidget {
             Routes.socialMedia: (context) => const SocialMediaScreen(),
             Routes.nityopasana: (context) => const NityopasanaScreen(),
             Routes.signups: (context) => const SignupsScreen(),
+            Routes.favorites: (context) => const FavoritesScreen(),
+            Routes.sundayPrarthana: (context) => const SundayPrarthanaScreen(),
           },
         );
       },

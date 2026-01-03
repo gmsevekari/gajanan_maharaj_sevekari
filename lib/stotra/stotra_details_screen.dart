@@ -43,7 +43,11 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
 
   Future<Map<String, dynamic>> _loadStotra() async {
     final stotra = widget.stotraList[widget.currentIndex];
-    final String response = await rootBundle.loadString('resources/texts/stotras/${stotra['fileName']}');
+    final directory = stotra['directory'] ?? '';
+    final path = directory.isNotEmpty
+        ? 'resources/texts/stotras/$directory/${stotra['fileName']}'
+        : 'resources/texts/stotras/${stotra['fileName']}';
+    final String response = await rootBundle.loadString(path);
     final data = await json.decode(response);
     return data;
   }

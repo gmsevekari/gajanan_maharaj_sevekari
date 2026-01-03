@@ -115,6 +115,16 @@ class AppLocalizations {
       'searchEvent': 'Search Event...',
       'allEventsList': 'All Events List',
       'namavaliFooter': 'Shri Gajanan-arpanamastu',
+      'favoritesTitle': 'Favorites',
+      'sundayPrarthanaTitle': 'Sunday Prarthana',
+      'guruGeeta': 'Guru Geeta',
+      'dattaMajala': 'Datta Majala Prasanna Hoshi',
+      'karunaTripadi': 'Shri Karuna Tripadi',
+      'gajananBavanni': 'Gajanan Bavanni',
+      'siddhaMangal': 'Shri Siddhamangal Stotra',
+      'ghorKashtodharan': 'Shri Ghorakashtodharan Stotra',
+      'dattaStuti': 'Datta Stuti',
+      'namjap': 'Naamjap',
     },
     'mr': {
       'granthTitle': 'गजानन विजय ग्रंथ',
@@ -221,6 +231,16 @@ class AppLocalizations {
       'searchEvent': 'उत्सव शोधा...',
       'allEventsList': 'सर्व उत्सव यादी',
       'namavaliFooter': 'श्री गजाननार्पणमस्तु',
+      'favoritesTitle': 'माझा संग्रह',
+      'sundayPrarthanaTitle': 'रविवारची प्रार्थना',
+      'guruGeeta': 'गुरु गीता',
+      'dattaMajala': 'दत्ता मजला प्रसन्न होशी',
+      'karunaTripadi': 'श्रीकरुणात्रिपदी',
+      'gajananBavanni': 'गजानन बावन्नी',
+      'siddhaMangal': 'श्रीसिद्धमङ्गलस्तोत्र',
+      'ghorKashtodharan': 'श्री घोरकष्टोद्धारणस्तोत्र',
+      'dattaStuti': 'दत्त स्तुती',
+      'namjap': 'नामजप',
     }
   };
 
@@ -330,6 +350,16 @@ class AppLocalizations {
   String get searchEvent => _localizedValues[locale.languageCode]!['searchEvent']!;
   String get allEventsList => _localizedValues[locale.languageCode]!['allEventsList']!;
   String get namavaliFooter => _localizedValues[locale.languageCode]!['namavaliFooter']!;
+  String get favoritesTitle => _localizedValues[locale.languageCode]!['favoritesTitle']!;
+  String get sundayPrarthanaTitle => _localizedValues[locale.languageCode]!['sundayPrarthanaTitle']!;
+  String get guruGeeta => _localizedValues[locale.languageCode]!['guruGeeta']!;
+  String get dattaMajala => _localizedValues[locale.languageCode]!['dattaMajala']!;
+  String get karunaTripadi => _localizedValues[locale.languageCode]!['karunaTripadi']!;
+  String get gajananBavanni => _localizedValues[locale.languageCode]!['gajananBavanni']!;
+  String get siddhaMangal => _localizedValues[locale.languageCode]!['siddhaMangal']!;
+  String get ghorKashtodharan => _localizedValues[locale.languageCode]!['ghorKashtodharan']!;
+  String get dattaStuti => _localizedValues[locale.languageCode]!['dattaStuti']!;
+  String get namjap => _localizedValues[locale.languageCode]!['namjap']!;
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
