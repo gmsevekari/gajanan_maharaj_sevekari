@@ -13,7 +13,7 @@ class LanguageSelectionScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.language, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(localizations.language),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),

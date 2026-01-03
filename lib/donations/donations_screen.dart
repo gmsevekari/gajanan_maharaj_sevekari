@@ -28,7 +28,7 @@ class DonationsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.donationsTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(localizations.donationsTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),

@@ -12,9 +12,7 @@ class FavoritesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.favoritesTitle, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: Colors.orange,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(localizations.favoritesTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),

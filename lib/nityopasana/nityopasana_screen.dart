@@ -19,7 +19,7 @@ class NityopasanaScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.nityopasanaTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(localizations.nityopasanaTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -55,8 +55,12 @@ class NityopasanaScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGridItem(BuildContext context, String title, dynamic icon, String route) {
-    final theme = Theme.of(context);
+  Widget _buildGridItem(
+    BuildContext context,
+    String title,
+    dynamic icon,
+    String route,
+  ) {
     return AspectRatio(
       aspectRatio: 1.4,
       child: Container(

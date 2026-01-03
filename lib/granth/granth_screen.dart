@@ -12,7 +12,7 @@ class GranthScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.granthTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(localizations.granthTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),

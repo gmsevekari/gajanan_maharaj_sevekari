@@ -70,7 +70,7 @@ class _AartiListScreenState extends State<AartiListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(title),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),

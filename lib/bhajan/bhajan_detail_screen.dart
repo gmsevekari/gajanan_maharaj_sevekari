@@ -91,7 +91,7 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
                   if (snapshot.hasData) {
                     final bhajan = snapshot.data!;
                     final title = locale.languageCode == 'mr' ? bhajan['title_mr'] : bhajan['title_en'];
-                    return Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold), textAlign: TextAlign.center, maxLines: 2,);
+                    return Text(title, textAlign: TextAlign.center, maxLines: 2,);
                   } else {
                     return const Text(''); // Placeholder while loading
                   }

@@ -36,7 +36,7 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.about, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(localizations.about),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),

@@ -12,7 +12,7 @@ class AartiScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.aartiTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(localizations.aartiTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),

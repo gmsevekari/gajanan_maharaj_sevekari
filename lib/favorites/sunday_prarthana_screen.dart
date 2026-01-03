@@ -67,9 +67,7 @@ class _SundayPrarthanaScreenState extends State<SundayPrarthanaScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.sundayPrarthanaTitle, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: Colors.orange,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(localizations.sundayPrarthanaTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),

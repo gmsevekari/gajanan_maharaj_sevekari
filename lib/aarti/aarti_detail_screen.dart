@@ -91,7 +91,7 @@ class _AartiDetailScreenState extends State<AartiDetailScreen> with SingleTicker
                   if (snapshot.hasData) {
                     final aarti = snapshot.data!;
                     final title = locale.languageCode == 'mr' ? aarti['title_mr'] : aarti['title_en'];
-                    return Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold), textAlign: TextAlign.center, maxLines: 2);
+                    return Text(title, textAlign: TextAlign.center, maxLines: 2);
                   } else {
                     return const Text(''); // Placeholder while loading
                   }

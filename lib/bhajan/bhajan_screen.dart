@@ -52,7 +52,7 @@ class _BhajanScreenState extends State<BhajanScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.bhajanTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(localizations.bhajanTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),

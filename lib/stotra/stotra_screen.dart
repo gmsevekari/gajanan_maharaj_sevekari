@@ -57,7 +57,7 @@ class _StotraScreenState extends State<StotraScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.stotraTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(localizations.stotraTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),

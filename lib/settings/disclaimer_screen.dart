@@ -37,8 +37,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.disclaimer,
-            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(localizations.disclaimer),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),

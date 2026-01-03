@@ -106,7 +106,7 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
                 if (snapshot.hasData) {
                   final adhyay = snapshot.data!;
                   final title = locale.languageCode == 'mr' ? adhyay['title_mr'] : adhyay['title_en'];
-                  return Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold));
+                  return Text(title);
                 } else {
                   return const Text(''); // Placeholder while loading
                 }

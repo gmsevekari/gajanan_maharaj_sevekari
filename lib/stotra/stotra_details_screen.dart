@@ -95,7 +95,7 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
                   if (snapshot.hasData) {
                     final stotra = snapshot.data!;
                     final title = locale.languageCode == 'mr' ? stotra['title_mr'] : stotra['title_en'];
-                    return Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold), textAlign: TextAlign.center, maxLines: 2,);
+                    return Text(title, textAlign: TextAlign.center, maxLines: 2,);
                   } else {
                     return const Text(''); // Placeholder while loading
                   }

@@ -57,12 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.all(8.0),
           child: Image.asset('resources/images/logo/App_Logo.png'),
         ),
-        title: Text(
-          localizations.appName,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
+        title: Text(localizations.appName),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
