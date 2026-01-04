@@ -1,6 +1,12 @@
 {
   "title_mr": "शेज आरती",
   "title_en": "Shej Aarti",
-  "aarti_mr": "|| शेज आरती ||",
-  "aarti_en": "|| Shej Aarti ||"
+  "aarti_mr": [
+    "|| शेज आरती ||",
+    "\nआतां स्वामी सुखे निद्रा करा अवधूता, करा अवधूता ।\nचिन्मय सुखधामा जाउनि पहुडा एकांता ॥ धृ. ॥\n\nवैराग्याचा कुंचा घेउनि चौक झाडीला, स्वामी चौक झाडीला ॥\nतयावरी सुप्रेमाचा शिडकावा दिधला ॥ आतां. ॥ १ ॥\n\nपायघड्या घातल्या सुंदर नवविधाभक्ती, स्वामी नवविधाभक्ती ।\nज्ञानाच्या समया उजळूनी लावियल्या ज्योती ॥ आतां ॥ २ ॥\n\nआशातृष्णा कल्पनांचा सांडुनि गलबला, स्वामी सांडुनि गलबला ।\nदया क्षमा शांती दासी उभ्या सेवेला ॥ आतां. ॥ ३॥\n\nदैत्याचें कपाट लाउनी एकत्र केलें, स्वामी एकत्र केलें ।\nदुर्बुद्धीच्या गांठी सोडुनि पडदे सोडीले ॥ आतां. ॥ ४ ॥\n\nभावार्थाचा मंचक ह्रुदयाकाशीं टांगीला, ह्रुदयाकाशी टांगीला ।\nमनाची सुमनें जोडुनी केलें शेजेला ॥ आतां. ॥ ५ ॥\n\nअलक्ष्य उन्मनि नाजूक दूशेला, स्वामी नाजुक दूशेला ।\nनिरंजनी सद्‌गुरू माझा निजी निजेला ॥ आतां. ॥ ६ ॥"
+    ],
+  "aarti_en": [
+    "|| Shej Aarti ||",
+    "Ata swami sukhe nidra kara awadhuta, kara sainatha\n\nChinmaya he sukhdhaama jawoonideva pahuda ekanta\n\nVairagyacha kuncha ghewooni chowk jhadila, baba chowk jhadila\n\nTayawari supremacha shidakawa didhala ata... ||1||\n\nPay ghadya ghatalaya sundar navavidha bhaki, baba, navavidha bhakti\n\nGyanacha samaya lawooni ujalattya jyoti ata... ||2||\n\nBhavarthacha manchak hridhya kashi tangila Babakashi…\n\nManachi sumane karooni kele shejela ata... ||3||\n\nDwaitanche kapat lawooni ekatra kele, baba ekatra…\n\nDurbudhichya gathi sodooni padade sodile ata... ||4||\n\nAsha trushna kalpanecha sandooni galabala, Baba Sandoonigalbala\n\nDaya kshama shanti dasi ubhya sewela ata... ||5||\n\nAlakshya unmani ghewooni baba najuk dushala, Baba najuk dushala\n\nNiranjan sadguru swami nijvile shejela ata... ||6||"
+    ]
 }
