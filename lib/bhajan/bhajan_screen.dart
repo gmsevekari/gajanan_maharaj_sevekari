@@ -49,6 +49,7 @@ class _BhajanScreenState extends State<BhajanScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -81,19 +82,16 @@ class _BhajanScreenState extends State<BhajanScreen> {
                 final title = locale.languageCode == 'mr' ? bhajan['title_mr'] : bhajan['title_en'];
 
                 return Card(
-                  elevation: 4.0,
-                  color: Colors.orange[50],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                    side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-                  ),
+                  elevation: theme.cardTheme.elevation,
+                  color: theme.cardTheme.color,
+                  shape: theme.cardTheme.shape,
                   margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                   child: ListTile(
                     title: Text(
                       title!,
                       style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 18.0),
                     ),
-                    trailing: Icon(Icons.arrow_forward_ios, color: Colors.orange[400]),
+                    trailing: Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
                     onTap: () {
                       Navigator.push(
                         context,

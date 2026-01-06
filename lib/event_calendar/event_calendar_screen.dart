@@ -199,6 +199,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
       ),
       body: TabBarView(
         controller: _tabController,
+        physics: const NeverScrollableScrollPhysics(), // Disable swipe gesture
         children: [
           _buildCalendarView(),
           _buildListView(),
@@ -333,13 +334,13 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 4,
-      color: isSelected ? Colors.orange[200] : Colors.orange[50],
+      elevation: theme.cardTheme.elevation,
+      color: isSelected ? Colors.orange[200] : theme.cardTheme.color,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: isSelected
               ? BorderSide(color: Colors.orange.shade700, width: 2)
-              : BorderSide(color: Colors.orange.withAlpha(128), width: 1),
+              : BorderSide(color: Color(0xFFFF9800), width: 1),
         ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),

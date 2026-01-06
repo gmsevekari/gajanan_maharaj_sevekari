@@ -47,13 +47,12 @@ class ParayanScreen extends StatelessWidget {
   }
 
   Widget _buildParayanTypeCard(BuildContext context, String title, ParayanType parayanType) {
+    final theme = Theme.of(context);
+
     return Card(
-      elevation: 4.0,
-      color: Colors.orange[50],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-      ),
+      elevation: theme.cardTheme.elevation,
+      color: theme.cardTheme.color,
+      shape: theme.cardTheme.shape,
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
       child: InkWell(
         onTap: () {

@@ -61,15 +61,17 @@ This document summarizes the key architectural patterns, design principles, and 
 ### 5. Design & UI/UX Principles
 
 -   **Color Theme:**
-    -   **Light Mode:** Primary color is `Colors.orange`, with `AppBar`s and other key elements using this color. The main background is a light cream/beige. Card backgrounds are a light orange (`Colors.orange[50]`).
-    -   **Dark Mode:** The `scaffoldBackgroundColor` is `const Color(0xFF121212)`. Cards also have a `Colors.black` background, creating a high-contrast look. The primary orange color is used for accents, borders, and interactive elements.
+    -   **Light Mode:** The `scaffoldBackgroundColor` is the default light grey. `AppBar` is orange. `Card` background is `Colors.orange[50]`. `ElevatedButton` background is `Colors.orange[50]`.
+    -   **Dark Mode:** The `scaffoldBackgroundColor` is a specific off-black: `const Color(0xFF121212)`. `AppBar` is orange. `Card` background is a dark brown-black: `const Color(0xFF0A0805)`. `ElevatedButton`s also use this color for their background.
+-   **Centralized Theming (`app_theme.dart`):**
+    -   `AppBarTheme` is centralized for a consistent orange background and white, bold title text (`fontSize: 20`).
+    -   `CardThemeData` is centralized to define `color`, `elevation`, `shadowColor`, and a standard `shape` (a `RoundedRectangleBorder` with a `BorderSide(color: Color(0xFFFF9800), width: 1)`). This is the single source of truth for all standard card styles.
+    -   `ElevatedButtonThemeData` is centralized to define a consistent style for all elevated buttons.
 -   **Card Styles:**
-    -   **Standard Card:** This is the default style for all list-item cards. It is a `Card` widget with `elevation: 4.0`, a theme-aware background color, and a `RoundedRectangleBorder` with `side: BorderSide(color: Colors.orange.withAlpha(128), width: 1)`. It is used in screens like `aarti_list_screen`, `favorites_screen`, and `sunday_prarthana_screen`.
-    -   **3D Effect Card (`HomeScreen`):** The grid cards on the home screen have a special 3D effect created by wrapping the `Card` in a `Container` that has a `BoxShadow` with an orange color and a `(0, 4)` offset. The card itself has its elevation set to `0`.
-    -   **Event Cards (`EventCalendarScreen`):** A standard `Card` whose `color` and `shape` are dynamically changed to show a highlighted state (`Colors.orange[200]` with a thicker border) when an event is selected in the calendar.
-    -   **Namavali List:** This screen uses `ListTile`s with `Divider`s, not cards, for a cleaner, list-based presentation.
+    -   **Standard Card:** Most list items use a standard `Card` widget that respects the centralized `CardThemeData`. This is the default for new screens like `FavoritesScreen`.
+    -   **3D Effect Card (`HomeScreen`):** The grid cards on the home screen have a special 3D effect created by wrapping the `Card` in a `Container` that has a `BoxShadow`. The card's elevation is `0` and its properties (`color`, `shape`) come from `theme.cardTheme`.
 -   **Text and Icons:**
-    -   Most text and icons on cards use `theme.colorScheme.primary` or `theme.colorScheme.secondary` to ensure they adapt correctly to both light and dark themes.
+    -   Most text and icons on cards use `theme.colorScheme.primary` or `theme.colorScheme.secondary` to adapt to light and dark themes.
 
 ### 6. Data & Content Structure
 

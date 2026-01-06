@@ -44,19 +44,11 @@ class _SankalpScreenState extends State<SankalpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final localizations = AppLocalizations.of(context);
     final locale = Provider.of<LocaleProvider>(context).locale.languageCode;
-
-    final buttonStyle = ElevatedButton.styleFrom(
-      backgroundColor: Colors.orange[50],
-      foregroundColor: Colors.orange[600], // Set text color for the button
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-      textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-    );
+    final buttonStyle = theme.elevatedButtonTheme.style;
 
     return Scaffold(
       appBar: AppBar(
@@ -103,7 +95,7 @@ class _SankalpScreenState extends State<SankalpScreen> {
             ),
             const SizedBox(height: 24.0),
             ElevatedButton(
-              style: buttonStyle.copyWith(
+              style: buttonStyle?.copyWith(
                 padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 16.0)),
               ),
               onPressed: _generateSankalp,
@@ -112,12 +104,9 @@ class _SankalpScreenState extends State<SankalpScreen> {
             const SizedBox(height: 24.0),
             if (_sankalpText.isNotEmpty)
               Card(
-                elevation: 4.0,
-                color: Colors.orange[50],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-                ),
+                elevation: theme.cardTheme.elevation,
+                color: theme.cardTheme.color,
+                shape: theme.cardTheme.shape,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(

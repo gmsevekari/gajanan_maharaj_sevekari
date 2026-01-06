@@ -15,17 +15,6 @@ class DonationsScreen extends StatelessWidget {
         ? 'resources/images/qr_code/Zelle_QR_Code_Dark.png'
         : 'resources/images/qr_code/Zelle_QR_Code_Light.png';
 
-    final buttonStyle = ElevatedButton.styleFrom(
-      backgroundColor: Colors.orange[50],
-      foregroundColor: Colors.orange[600], // Lighter text/icon color
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-      textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.donationsTitle),
@@ -57,20 +46,29 @@ class DonationsScreen extends StatelessWidget {
               qrCodeImagePath,
             ),
             const SizedBox(height: 40),
-            ElevatedButton(
-              style: buttonStyle,
-              onPressed: () => _launchZelle(context, localizations),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      localizations.donateViaZelle,
-                      textAlign: TextAlign.center,
-                    ),
+            Card(
+              elevation: theme.cardTheme.elevation,
+              shape: theme.cardTheme.shape,
+              color: theme.cardTheme.color,
+              margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+              child: InkWell(
+                onTap: () => _launchZelle(context, localizations),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          localizations.donateViaZelle,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 16.0),
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+                    ],
                   ),
-                  const Icon(Icons.arrow_forward_ios, size: 16.0),
-                ],
+                ),
               ),
             ),
           ],

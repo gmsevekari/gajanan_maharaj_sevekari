@@ -61,6 +61,8 @@ class NityopasanaScreen extends StatelessWidget {
     dynamic icon,
     String route,
   ) {
+    final theme = Theme.of(context);
+
     return AspectRatio(
       aspectRatio: 1.4,
       child: Container(
@@ -69,7 +71,7 @@ class NityopasanaScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(16.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.orange, // Color of the shadow
+              color: theme.cardTheme.shadowColor!, // Color of the shadow
               offset: const Offset(0, 4), // Shift shadow downwards
               blurRadius: 0, // Sharp edge for a "hard" shadow look
               spreadRadius: 0,
@@ -79,11 +81,8 @@ class NityopasanaScreen extends StatelessWidget {
         child: Card(
           elevation: 0, // Disable default card elevation
           margin: EdgeInsets.zero, // Remove default margin
-          color: Colors.orange[50],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-          ),
+          color: theme.cardTheme.color,
+          shape: theme.cardTheme.shape,
           child: InkWell(
             onTap: () => Navigator.pushNamed(context, route),
             child: Column(

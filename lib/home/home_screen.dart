@@ -107,6 +107,8 @@ class _HomeScreenState extends State<HomeScreen> {
     BuildContext context,
     AppLocalizations localizations,
   ) {
+    final theme = Theme.of(context);
+
     return FutureBuilder<DocumentSnapshot?>(
       future: _upcomingEventFuture,
       builder: (context, snapshot) {
@@ -140,9 +142,9 @@ class _HomeScreenState extends State<HomeScreen> {
             borderRadius: BorderRadius.circular(16.0),
             boxShadow: [
               BoxShadow(
-                color: Colors.orange, // Color of the shadow
-                offset: const Offset(0, 4), // Shift shadow downwards
-                blurRadius: 0, // Sharp edge for a "hard" shadow look
+                color: theme.cardTheme.shadowColor!,
+                offset: const Offset(0, 4),
+                blurRadius: 0,
                 spreadRadius: 0,
               ),
             ],
@@ -160,11 +162,8 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Card(
               elevation: 0,
               margin: EdgeInsets.zero,
-              color: Colors.orange[50],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0),
-                side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-              ),
+              color: theme.cardTheme.color,
+              shape: theme.cardTheme.shape,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -172,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       localizations.upcomingEvent,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.orange[600],
                       ),
@@ -205,6 +204,8 @@ class _HomeScreenState extends State<HomeScreen> {
     dynamic icon,
     String route,
   ) {
+    final theme = Theme.of(context);
+
     return AspectRatio(
       aspectRatio: 1.4,
       child: Container(
@@ -213,21 +214,18 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(16.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.orange, // Color of the shadow
-              offset: const Offset(0, 4), // Shift shadow downwards
-              blurRadius: 0, // Sharp edge for a "hard" shadow look
+              color: theme.cardTheme.shadowColor!,
+              offset: const Offset(0, 4),
+              blurRadius: 0,
               spreadRadius: 0,
             ),
           ],
         ),
         child: Card(
-          elevation: 0, // Disable default card elevation
-          margin: EdgeInsets.zero, // Remove default margin
-          color: Colors.orange[50],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-          ),
+          elevation: 0,
+          margin: EdgeInsets.zero,
+          color: theme.cardTheme.color,
+          shape: theme.cardTheme.shape,
           child: InkWell(
             onTap: () => Navigator.pushNamed(context, route),
             child: Column(

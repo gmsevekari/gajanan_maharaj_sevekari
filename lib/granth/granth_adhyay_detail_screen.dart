@@ -234,7 +234,7 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
               child: Column(
                 children: [
-                  _buildAdhyayImage(),
+                  _buildAdhyayImage(context),
                   const SizedBox(height: 16),
                   Center(
                     child: Text(
@@ -298,7 +298,7 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _buildAdhyayImage(),
+                  _buildAdhyayImage(context),
                   const SizedBox(height: 16),
                   if (_youtubeController != null)
                     Card(
@@ -372,13 +372,12 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
         });
   }
 
-  Widget _buildAdhyayImage() {
+  Widget _buildAdhyayImage(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-      ),
+      elevation: theme.cardTheme.elevation,
+      shape: theme.cardTheme.shape,
       clipBehavior: Clip.antiAlias,
       child: Image.asset(
         'resources/images/grantha/adhyay_${widget.adhyayNumber}.jpg',

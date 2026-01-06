@@ -55,6 +55,7 @@ class ThemeSelectionScreen extends StatelessWidget {
 
   Widget _buildThemeOption(
       BuildContext context, String title, bool isSelected, VoidCallback onTap) {
+    final theme = Theme.of(context);
 
     Color cardColor;
     Color textColor;
@@ -63,16 +64,16 @@ class ThemeSelectionScreen extends StatelessWidget {
       cardColor = Colors.orange[200]!;
       textColor = Colors.orange[800]!;
     } else {
-      cardColor = Colors.orange[50]!;
+      cardColor = theme.cardTheme.color!;
       textColor = Colors.orange[600]!;
     }
 
     return Card(
-      elevation: 4.0,
+      elevation: theme.cardTheme.elevation,
       color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: isSelected ? Colors.orange : Colors.grey.withAlpha(128), width: 1),
+        side: BorderSide(color: isSelected ? Colors.orange : Color(0xFFFF9800), width: 1),
       ),
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: ListTile(

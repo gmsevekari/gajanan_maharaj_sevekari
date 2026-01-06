@@ -161,10 +161,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
     final theme = Theme.of(context);
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-      ),
+      shape: theme.cardTheme.shape,
       color: Colors.orange[50],
       clipBehavior: Clip.antiAlias,
       child: Theme(

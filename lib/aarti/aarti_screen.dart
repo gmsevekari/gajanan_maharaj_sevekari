@@ -37,13 +37,12 @@ class AartiScreen extends StatelessWidget {
   }
 
   Widget _buildCategoryCard(BuildContext context, String title, AartiCategory category) {
+    final theme = Theme.of(context);
+
     return Card(
-      elevation: 4.0,
-      color: Colors.orange[50],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-      ),
+      elevation: theme.cardTheme.elevation,
+      color: theme.cardTheme.color,
+      shape: theme.cardTheme.shape,
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
       child: InkWell(
         onTap: () {
@@ -63,7 +62,7 @@ class AartiScreen extends StatelessWidget {
                 title,
                 style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 18.0),
               ),
-              Icon(Icons.arrow_forward_ios, color: Colors.orange[400]),
+              Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
             ],
           ),
         ),

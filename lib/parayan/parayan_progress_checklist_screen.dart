@@ -57,7 +57,7 @@ class _ParayanProgressChecklistScreenState
           } else if (snapshot.hasError) {
             return const Center(child: Text('Error loading progress'));
           } else if (snapshot.hasData) {
-            return _buildChecklist(localizations);
+            return _buildChecklist(context, localizations);
           } else {
             return const Center(child: Text('No progress found'));
           }
@@ -66,7 +66,7 @@ class _ParayanProgressChecklistScreenState
     );
   }
 
-  Widget _buildChecklist(AppLocalizations localizations) {
+  Widget _buildChecklist(BuildContext context, AppLocalizations localizations) {
     if (widget.parayanType == ParayanType.oneDay) {
       return ListView.builder(
           itemCount: 21,
@@ -74,22 +74,22 @@ class _ParayanProgressChecklistScreenState
     } else {
       return ListView(
         children: [
-          _buildDayCard(1, 1, 9, localizations),
-          _buildDayCard(2, 10, 15, localizations),
-          _buildDayCard(3, 16, 21, localizations),
+          _buildDayCard(context, 1, 1, 9, localizations),
+          _buildDayCard(context, 2, 10, 15, localizations),
+          _buildDayCard(context, 3, 16, 21, localizations),
         ],
       );
     }
   }
 
-  Widget _buildDayCard(int day, int startAdhyay, int endAdhyay, AppLocalizations localizations) {
+  Widget _buildDayCard(BuildContext context, int day, int startAdhyay,
+      int endAdhyay, AppLocalizations localizations) {
+    final theme = Theme.of(context);
+
     return Card(
-      elevation: 4.0,
-      color: Colors.orange[50],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Colors.orange.withAlpha(128), width: 1),
-      ),
+      elevation: theme.cardTheme.elevation,
+      color: theme.cardTheme.color,
+      shape: theme.cardTheme.shape,
       margin: const EdgeInsets.all(8.0),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
