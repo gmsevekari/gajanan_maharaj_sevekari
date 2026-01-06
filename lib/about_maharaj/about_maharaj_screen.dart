@@ -162,7 +162,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: theme.cardTheme.shape,
-      color: Colors.orange[50],
+      color: theme.cardTheme.color,
       clipBehavior: Clip.antiAlias,
       child: Theme(
         data: theme.copyWith(dividerColor: Colors.transparent),
@@ -176,7 +176,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             Text(
               content,
               textAlign: TextAlign.justify,
-              style: TextStyle(fontSize: _fontSize, height: 1.5, color: Colors.black87),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: _fontSize, height: 1.5),
             ),
           ],
         ),
