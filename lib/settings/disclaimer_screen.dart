@@ -1,6 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
@@ -12,28 +13,25 @@ class DisclaimerScreen extends StatefulWidget {
 }
 
 class _DisclaimerScreenState extends State<DisclaimerScreen> {
-  double _fontSize = 16.0;
+  late Future<Map<String, dynamic>> _disclaimerFuture;
 
-  Future<String> _loadDisclaimer(BuildContext context) async {
-    final langCode = Localizations.localeOf(context).languageCode;
-    final path = langCode == 'mr'
-        ? 'resources/texts/disclaimer/disclaimer_mr.md'
-        : 'resources/texts/disclaimer/disclaimer.md';
-    return await rootBundle.loadString(path);
+  @override
+  void initState() {
+    super.initState();
+    _disclaimerFuture = _loadDisclaimer();
+  }
+
+  Future<Map<String, dynamic>> _loadDisclaimer() async {
+    final String response = await rootBundle.loadString('resources/texts/disclaimer/disclaimer.json');
+    final data = await json.decode(response);
+    return data;
   }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final theme = Theme.of(context);
-
-    // Use the theme's default text color for perfect contrast in both light and dark modes.
-    // This matches the pattern from bhajan_detail_screen.dart.
-    final markdownStyleSheet = MarkdownStyleSheet.fromTheme(theme).copyWith(
-      p: theme.textTheme.bodyLarge?.copyWith(fontSize: _fontSize),
-      h3: theme.textTheme.headlineSmall?.copyWith(fontSize: _fontSize + 4, fontWeight: FontWeight.bold),
-      strong: theme.textTheme.bodyMedium?.copyWith(fontSize: _fontSize, fontWeight: FontWeight.bold),
-    );
+    final locale = Localizations.localeOf(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,8 +43,8 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<String>(
-        future: _loadDisclaimer(context),
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _disclaimerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -54,37 +52,39 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          // NO CARD: Display directly on the scaffold background for theme-awareness.
-          return Markdown(
-            data: snapshot.data ?? '',
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100), // Padding for content and FABs
-            styleSheet: markdownStyleSheet,
+          final disclaimerData = snapshot.data ?? {};
+          final isMarathi = locale.languageCode == 'mr';
+          final title = isMarathi ? disclaimerData['title_mr'] : disclaimerData['title_en'];
+          final content = isMarathi ? disclaimerData['content_mr'] : disclaimerData['content_en'];
+
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                shape: theme.cardTheme.shape,
+                color: theme.cardTheme.color,
+                elevation: theme.cardTheme.elevation,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title ?? '',
+                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        content ?? '',
+                        style: theme.textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           );
         },
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            mini: true,
-            onPressed: () {
-              setState(() {
-                if (_fontSize < 30.0) _fontSize += 2;
-              });
-            },
-            child: const Icon(Icons.add),
-          ),
-          const SizedBox(height: 16),
-          FloatingActionButton(
-            mini: true,
-            onPressed: () {
-              setState(() {
-                if (_fontSize > 10.0) _fontSize -= 2;
-              });
-            },
-            child: const Icon(Icons.remove),
-          ),
-        ],
       ),
     );
   }
