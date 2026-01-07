@@ -11,8 +11,14 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 class GranthAdhyayDetailScreen extends StatefulWidget {
   final int adhyayNumber;
   final int initialTabIndex;
+  final bool autoPlay;
 
-  const GranthAdhyayDetailScreen({super.key, required this.adhyayNumber, this.initialTabIndex = 0});
+  const GranthAdhyayDetailScreen({
+    super.key,
+    required this.adhyayNumber,
+    this.initialTabIndex = 0,
+    this.autoPlay = false,
+  });
 
   @override
   State<GranthAdhyayDetailScreen> createState() => _GranthAdhyayDetailScreenState();
@@ -53,8 +59,8 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
     if (data['youtube_video_id'] != null && data['youtube_video_id'].isNotEmpty) {
       _youtubeController = YoutubePlayerController(
         initialVideoId: data['youtube_video_id'],
-        flags: const YoutubePlayerFlags(
-          autoPlay: false,
+        flags: YoutubePlayerFlags(
+          autoPlay: widget.autoPlay,
         ),
       );
     }
@@ -71,7 +77,11 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => GranthAdhyayDetailScreen(adhyayNumber: adhyayNumber, initialTabIndex: _currentIndex),
+        builder: (context) => GranthAdhyayDetailScreen(
+          adhyayNumber: adhyayNumber,
+          initialTabIndex: _currentIndex,
+          autoPlay: false, // Always disable autoplay on navigation
+        ),
       ),
     );
   }

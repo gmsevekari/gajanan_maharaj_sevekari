@@ -43,7 +43,28 @@ class GranthScreen extends StatelessWidget {
                 ),
               ),
               title: Text('${localizations.adhyay} $adhyayNumber', style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold)),
-              trailing: Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.play_circle_outline),
+                    color: theme.colorScheme.primary,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GranthAdhyayDetailScreen(
+                            adhyayNumber: adhyayNumber,
+                            initialTabIndex: 1,
+                            autoPlay: true,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+                ],
+              ),
               onTap: () {
                 Navigator.push(
                   context,
