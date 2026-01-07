@@ -228,7 +228,17 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
           final adhyay = snapshot.data!;
-          final text = locale.languageCode == 'mr' ? adhyay['adhyay_mr'] : adhyay['adhyay_en'];
+
+          final text;
+          final textAlign;
+          if (locale.languageCode == 'mr') {
+            text = adhyay['adhyay_mr'];
+            textAlign = TextAlign.center;
+          } else {
+            text = adhyay['adhyay_en'];
+            textAlign = TextAlign.left;
+          }
+
           return Scaffold(
             body: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
@@ -239,7 +249,7 @@ class _GranthAdhyayDetailScreenState extends State<GranthAdhyayDetailScreen> wit
                   Center(
                     child: Text(
                       text,
-                      textAlign: TextAlign.center,
+                      textAlign: textAlign,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: _fontSize),
                     ),
                   ),
