@@ -4,12 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class StotraDetailsScreen extends StatefulWidget {
   final List<Map<String, String>> stotraList;
   final int currentIndex;
+  final int initialTabIndex;
+  final bool autoPlay;
 
-  const StotraDetailsScreen({super.key, required this.stotraList, required this.currentIndex});
+  const StotraDetailsScreen({
+    super.key,
+    required this.stotraList,
+    required this.currentIndex,
+    this.initialTabIndex = 0,
+    this.autoPlay = false,
+  });
 
   @override
   State<StotraDetailsScreen> createState() => _StotraDetailsScreenState();
@@ -20,14 +31,16 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
   double _fontSize = 18.0;
   TabController? _tabController;
   int _currentIndex = 0;
+  YoutubePlayerController? _youtubeController;
 
   @override
   void initState() {
     super.initState();
     _stotraFuture = _loadStotra();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTabIndex);
+    _currentIndex = widget.initialTabIndex;
     _tabController!.addListener(() {
-      if (mounted) {
+      if (mounted && _tabController!.indexIsChanging) {
         setState(() {
           _currentIndex = _tabController!.index;
         });
@@ -38,6 +51,7 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
   @override
   void dispose() {
     _tabController?.dispose();
+    _youtubeController?.dispose();
     super.dispose();
   }
 
@@ -49,6 +63,14 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
         : 'resources/texts/stotras/${stotra['fileName']}';
     final String response = await rootBundle.loadString(path);
     final data = await json.decode(response);
+    if (data['youtube_video_id'] != null && data['youtube_video_id'].isNotEmpty) {
+      _youtubeController = YoutubePlayerController(
+        initialVideoId: data['youtube_video_id'],
+        flags: YoutubePlayerFlags(
+          autoPlay: widget.autoPlay,
+        ),
+      );
+    }
     return data;
   }
 
@@ -65,9 +87,18 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
         builder: (context) => StotraDetailsScreen(
           stotraList: widget.stotraList,
           currentIndex: index,
+          initialTabIndex: _currentIndex,
+          autoPlay: false, // Always disable autoplay on navigation
         ),
       ),
     );
+  }
+
+  Future<void> _launchYoutube(String videoId) async {
+    final Uri url = Uri.parse('https://www.youtube.com/watch?v=$videoId');
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      // Could not launch URL
+    }
   }
 
   @override
@@ -134,7 +165,7 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 _buildReadTab(locale),
-                _buildListenTab(),
+                _buildListenTab(context, locale, localizations),
               ],
             ),
           ),
@@ -171,7 +202,7 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
       BuildContext context, AppLocalizations localizations) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white, 
+        color: Colors.white,
         borderRadius: BorderRadius.circular(25.0),
         border: Border.all(color: Colors.grey[300]!, width: 1.5),
       ),
@@ -259,16 +290,170 @@ class _StotraDetailsScreenState extends State<StotraDetailsScreen> with SingleTi
     );
   }
 
-  Widget _buildListenTab() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.music_note, size: 100, color: Colors.grey),
-          SizedBox(height: 20),
-          Text('Audio player will be implemented here.', textAlign: TextAlign.center,),
-        ],
+  Widget _buildListenTab(BuildContext context, Locale locale, AppLocalizations localizations) {
+    final theme = Theme.of(context);
+
+    return FutureBuilder<Map<String, dynamic>>(
+        future: _stotraFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final stotraData = snapshot.data!;
+            final videoId = stotraData['youtube_video_id'];
+            final title = locale.languageCode == 'mr' ? stotraData['title_mr'] : stotraData['title_en'];
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildStotraImage(context, stotraData),
+                  const SizedBox(height: 16),
+                  if (_youtubeController != null)
+                    Card(
+                        elevation: 4.0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                        clipBehavior: Clip.antiAlias,
+                        child: YoutubePlayer(
+                          controller: _youtubeController!,
+                          bottomActions: [
+                            CurrentPosition(),
+                            ProgressBar(isExpanded: true),
+                            RemainingDuration(),
+                            PlaybackSpeedButton(),
+                            IconButton(
+                              icon: const Icon(Icons.open_in_new, color: Colors.white),
+                              onPressed: () => _launchYoutube(videoId),
+                            ),
+                          ],
+                        ))
+                  else
+                    Card(
+                      elevation: 4.0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                      child: const SizedBox(
+                        height: 200,
+                        child: Center(child: Text('Video unavailable')),
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+                  Text(
+                    title,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: theme.colorScheme.secondary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildDecorativeDivider(),
+                  const SizedBox(height: 24),
+                  if (videoId != null && videoId.isNotEmpty)
+                    Center(
+                      child: _buildActionButton(context, Icons.share, localizations.share, () {
+                        Share.share(
+                            'Check out this stotra: https://www.youtube.com/watch?v=$videoId');
+                      }),
+                    ),
+                  const SizedBox(height: 32),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.wifi, color: theme.colorScheme.secondary),
+                        const SizedBox(width: 8),
+                        Text(
+                          localizations.internetRequired,
+                          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.secondary),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            );
+          }
+          return const Center(child: Text('No data'));
+        });
+  }
+
+  Widget _buildStotraImage(BuildContext context, Map<String, dynamic> stotraData) {
+    final theme = Theme.of(context);
+    final imageName = stotraData['image'];
+    final stotra = widget.stotraList[widget.currentIndex];
+    final directory = stotra['directory'] ?? '';
+
+    final imagePath = imageName != null && imageName.isNotEmpty
+        ? (directory.isNotEmpty
+        ? 'resources/images/stotras/$directory/$imageName'
+        : 'resources/images/stotras/$imageName')
+        : 'resources/images/stotras/default.jpg';
+
+
+    return Card(
+      elevation: theme.cardTheme.elevation,
+      shape: theme.cardTheme.shape,
+      clipBehavior: Clip.antiAlias,
+      child: Image.asset(
+        imagePath,
+        width: double.infinity,
+        errorBuilder: (context, error, stackTrace) {
+          return Image.asset(
+            'resources/images/stotras/default.jpg', // Consistent default
+            width: double.infinity,
+          );
+        },
       ),
+    );
+  }
+
+  Widget _buildDecorativeDivider() {
+    return Row(
+      children: [
+        const Expanded(child: Divider(thickness: 1)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Icon(Icons.spa, color: Colors.orange[200]),
+        ),
+        const Expanded(child: Divider(thickness: 1)),
+      ],
+    );
+  }
+
+  Widget _buildActionButton(BuildContext context, IconData icon, String label, VoidCallback onPressed) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: Icon(icon, color: theme.colorScheme.primary),
+            onPressed: onPressed,
+            iconSize: 32.0,
+            padding: const EdgeInsets.all(16.0),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(label, style: TextStyle(color: theme.colorScheme.primary)),
+      ],
     );
   }
 }
