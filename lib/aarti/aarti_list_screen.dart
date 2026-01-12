@@ -32,7 +32,7 @@ class _AartiListScreenState extends State<AartiListScreen> {
       'akshay_tritiya_aarti.json',
       'ashadhi_ekadashi_aarti.json',
       'rushi_panchami_aarti.json',
-      'diwali_pahat_aarti.json',
+      'diwali_prabhat_aarti.json',
       'datta_jayanti_aarti.json',
       'ram_navami_aarti.json',
     ]
@@ -107,9 +107,31 @@ class _AartiListScreenState extends State<AartiListScreen> {
                   child: ListTile(
                     title: Text(
                       title!,
-                      style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 18.0),
+                      style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 18.0),
                     ),
-                    trailing: Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.play_circle_outline),
+                          color: theme.colorScheme.primary,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AartiDetailScreen(
+                                  aartiList: aartis,
+                                  currentIndex: index,
+                                  initialTabIndex: 1,
+                                  autoPlay: true,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+                      ],
+                    ),
                     onTap: () {
                       Navigator.push(
                         context,
