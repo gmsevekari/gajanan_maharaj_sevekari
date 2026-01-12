@@ -83,6 +83,7 @@ flutter:
     - resources/images/namavali/
     - resources/images/stotras/sunday_prarthana/
     - resources/images/stotras/
+    - resources/images/bhajans/
     - resources/texts/stotras/sunday_prarthana/
     - resources/texts/stotras/
     - resources/texts/bhajans/
