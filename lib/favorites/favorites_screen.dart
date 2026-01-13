@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/aarti/aarti_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
@@ -40,6 +41,27 @@ class FavoritesScreen extends StatelessWidget {
                 ),
                 trailing: Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
                 onTap: () => Navigator.pushNamed(context, Routes.sundayPrarthana),
+              ),
+            ),
+            Card(
+              elevation: theme.cardTheme.elevation,
+              color: theme.cardTheme.color,
+              shape: theme.cardTheme.shape,
+              margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+              child: ListTile(
+                title: Text(
+                  localizations.aartiTitle,
+                  style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 18.0),
+                ),
+                trailing: Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AartiListScreen(category: AartiCategory.other),
+                    ),
+                  );
+                },
               ),
             ),
           ],

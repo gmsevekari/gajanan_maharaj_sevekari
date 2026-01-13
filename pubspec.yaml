@@ -86,11 +86,13 @@ flutter:
     - resources/images/bhajans/
     - resources/images/aartis/daily/
     - resources/images/aartis/event/
+    - resources/images/aartis/other/
     - resources/texts/stotras/sunday_prarthana/
     - resources/texts/stotras/
     - resources/texts/bhajans/
     - resources/texts/aartis/daily/
     - resources/texts/aartis/event/
+    - resources/texts/aartis/other/
     - resources/texts/grantha/
     - resources/texts/namavali/
     - resources/texts/disclaimer/

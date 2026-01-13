@@ -40,6 +40,19 @@ class AppLocalizations {
       'stotraBavanni': 'Gajanan Maharaj Bavanni',
       'dailyAartis': 'Daily Aartis',
       'eventAartis': 'Event Aartis',
+      'otherAartis': 'Other Aartis',
+      'ganapatiAarti': 'Ganapati Aarti',
+      'deviAarti': 'Devi Aarti',
+      'dattaMaharajAarti': 'Datta Maharaj Aarti',
+      'shankarAarti': 'Shankar Aarti',
+      'vitthalAarti': 'Vitthal Aarti',
+      'khandobaAarti': 'Khandoba Aarti',
+      'saiBabaAarti': 'Sai Baba Aarti',
+      'dnyaneshwarMaharajAarti': 'Dnyaneshwar Maharaj Aarti',
+      'tukaramMaharajAarti': 'Tukaram Maharaj Aarti',
+      'karpurAarti': 'Karpur Aarti',
+      'prarthana': 'Prarthana',
+      'mantrapushpanjali': 'Mantrapushpanjali',
       'kakadAarti': 'Kakad Aarti',
       'madhyanAarti': 'Madhyan Aarti',
       'dhoopAarti': 'Dhoop Aarti',
@@ -158,6 +171,19 @@ class AppLocalizations {
       'stotraBavanni': 'गजानन महाराज बावन्नी',
       'dailyAartis': 'दैनंदिन आरत्या',
       'eventAartis': 'विशेष आरत्या',
+      'otherAartis': 'इतर आरत्या',
+      'ganapatiAarti': 'गणपतीची आरती',
+      'deviAarti': 'देवीची आरती',
+      'dattaMaharajAarti': 'दत्त महाराज आरती',
+      'shankarAarti': 'शंकराची आरती',
+      'vitthalAarti': 'विठ्ठलाची आरती',
+      'khandobaAarti': 'खंडोबाची आरती',
+      'saiBabaAarti': 'साई बाबा आरती',
+      'dnyaneshwarMaharajAarti': 'ज्ञानेश्वर महाराज आरती',
+      'tukaramMaharajAarti': 'तुकाराम महाराज आरती',
+      'karpurAarti': 'कर्पूर आरती',
+      'prarthana': 'प्रार्थना',
+      'mantrapushpanjali': 'मंत्रपुष्पांजली',
       'kakadAarti': 'काकड आरती',
       'madhyanAarti': 'मध्यान आरती',
       'dhoopAarti': 'धूप आरती',
@@ -277,6 +303,19 @@ class AppLocalizations {
   String get stotraBavanni => _localizedValues[locale.languageCode]!['stotraBavanni']!;
   String get dailyAartis => _localizedValues[locale.languageCode]!['dailyAartis']!;
   String get eventAartis => _localizedValues[locale.languageCode]!['eventAartis']!;
+  String get otherAartis => _localizedValues[locale.languageCode]!['otherAartis']!;
+  String get ganapatiAarti => _localizedValues[locale.languageCode]!['ganapatiAarti']!;
+  String get deviAarti => _localizedValues[locale.languageCode]!['deviAarti']!;
+  String get dattaMaharajAarti => _localizedValues[locale.languageCode]!['dattaMaharajAarti']!;
+  String get shankarAarti => _localizedValues[locale.languageCode]!['shankarAarti']!;
+  String get vitthalAarti => _localizedValues[locale.languageCode]!['vitthalAarti']!;
+  String get khandobaAarti => _localizedValues[locale.languageCode]!['khandobaAarti']!;
+  String get saiBabaAarti => _localizedValues[locale.languageCode]!['saiBabaAarti']!;
+  String get dnyaneshwarMaharajAarti => _localizedValues[locale.languageCode]!['dnyaneshwarMaharajAarti']!;
+  String get tukaramMaharajAarti => _localizedValues[locale.languageCode]!['tukaramMaharajAarti']!;
+  String get karpurAarti => _localizedValues[locale.languageCode]!['karpurAarti']!;
+  String get prarthana => _localizedValues[locale.languageCode]!['prarthana']!;
+  String get mantrapushpanjali => _localizedValues[locale.languageCode]!['mantrapushpanjali']!;
   String get kakadAarti => _localizedValues[locale.languageCode]!['kakadAarti']!;
   String get madhyanAarti => _localizedValues[locale.languageCode]!['madhyanAarti']!;
   String get dhoopAarti => _localizedValues[locale.languageCode]!['dhoopAarti']!;

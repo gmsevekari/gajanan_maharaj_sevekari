@@ -6,7 +6,7 @@ import 'package:gajanan_maharaj_sevekari/aarti/aarti_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
-enum AartiCategory { daily, event }
+enum AartiCategory { daily, event, other }
 
 class AartiListScreen extends StatefulWidget {
   final AartiCategory category;
@@ -35,6 +35,20 @@ class _AartiListScreenState extends State<AartiListScreen> {
       'diwali_prabhat_aarti.json',
       'datta_jayanti_aarti.json',
       'ram_navami_aarti.json',
+    ],
+    AartiCategory.other: [
+      'ganapati_aarti.json',
+      'devi_aarti.json',
+      'datta_maharaj_aarti.json',
+      'shankar_aarti.json',
+      'vitthal_aarti.json',
+      'khandoba_aarti.json',
+      'sai_baba_aarti.json',
+      'dnyaneshwar_maharaj_aarti.json',
+      'tukaram_maharaj_aarti.json',
+      'karpur_aarti.json',
+      'prarthana_ghalin_lotangan.json',
+      'mantrapushpanjali.json',
     ]
   };
 
@@ -46,7 +60,9 @@ class _AartiListScreenState extends State<AartiListScreen> {
 
   Future<List<Map<String, String>>> _loadAartiList() async {
     final List<Map<String, String>> aartiList = [];
-    final directory = widget.category == AartiCategory.daily ? 'daily' : 'event';
+    final directory = widget.category == AartiCategory.daily
+        ? 'daily'
+        : (widget.category == AartiCategory.event ? 'event' : 'other');
     final files = _aartiFiles[widget.category]!;
 
     for (var fileName in files) {
@@ -66,7 +82,9 @@ class _AartiListScreenState extends State<AartiListScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
-    final String title = widget.category == AartiCategory.daily ? localizations.dailyAartis : localizations.eventAartis;
+    final String title = widget.category == AartiCategory.daily
+        ? localizations.dailyAartis
+        : (widget.category == AartiCategory.event ? localizations.eventAartis : "Aartis");
     final theme = Theme.of(context);
 
     return Scaffold(
