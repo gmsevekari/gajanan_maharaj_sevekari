@@ -50,7 +50,7 @@ class FavoritesScreen extends StatelessWidget {
               margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
               child: ListTile(
                 title: Text(
-                  localizations.aartiTitle,
+                  localizations.otherAartis,
                   style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 18.0),
                 ),
                 trailing: Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
