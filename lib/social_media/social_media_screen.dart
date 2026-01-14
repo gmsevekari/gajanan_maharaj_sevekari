@@ -40,13 +40,13 @@ class SocialMediaScreen extends StatelessWidget {
         'url': 'https://photos.app.goo.gl/vxwABG9wP8avhdAg8',
         'color': '#DB4437', // Google Red
       },
-      {
+      /*{
         'platform': localizations.whatsapp,
         'description': localizations.whatsappAdminContact,
         'icon': 'resources/images/social/WhatsApp.png',
-        'url': 'https://wa.me/17738228475',
+        'url': 'https://wa.me/',
         'color': '#25D366', // WhatsApp Green
-      },
+      }*/
     ];
 
     return Scaffold(
