@@ -84,7 +84,9 @@ class _AartiListScreenState extends State<AartiListScreen> {
     final locale = Localizations.localeOf(context);
     final String title = widget.category == AartiCategory.daily
         ? localizations.dailyAartis
-        : (widget.category == AartiCategory.event ? localizations.eventAartis : "Aartis");
+        : (widget.category == AartiCategory.event
+            ? localizations.eventAartis
+            : localizations.otherAartis);
     final theme = Theme.of(context);
 
     return Scaffold(
