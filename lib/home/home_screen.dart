@@ -117,15 +117,40 @@ class _HomeScreenState extends State<HomeScreen> {
         }
 
         if (!snapshot.hasData || snapshot.data == null) {
-          return Card(
-            margin: const EdgeInsets.all(8.0),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                localizations.eventOnDate,
-                textAlign: TextAlign.center,
+          return Container(
+              margin: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.cardTheme.shadowColor!,
+                    offset: const Offset(0, 4),
+                    blurRadius: 0,
+                    spreadRadius: 0,
+                  ),
+                ],
               ),
-            ),
+              child: Card(
+                elevation: 0,
+                margin: EdgeInsets.zero,
+                color: theme.cardTheme.color,
+                shape: theme.cardTheme.shape,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        localizations.eventOnDate,
+                        style: TextStyle(
+                          color: Colors.orange[600],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
           );
         }
 
