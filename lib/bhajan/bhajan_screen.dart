@@ -76,6 +76,7 @@ class _BhajanScreenState extends State<BhajanScreen> {
             final bhajans = snapshot.data!;
 
             return ListView.builder(
+              padding: const EdgeInsets.all(8.0),
               itemCount: bhajans.length,
               itemBuilder: (context, index) {
                 final bhajan = bhajans[index];

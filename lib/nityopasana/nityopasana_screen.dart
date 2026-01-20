@@ -89,7 +89,7 @@ class NityopasanaScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (icon is IconData)
-                  Icon(icon, size: 40.0, color: Colors.orange[400])
+                  Icon(icon, size: 40.0, color: theme.iconTheme.color)
                 else if (icon is String)
                   Image.asset(icon, height: 40.0, width: 40.0),
                 const SizedBox(height: 8.0),

@@ -26,6 +26,7 @@ class GranthScreen extends StatelessWidget {
         ],
       ),
       body: ListView.builder(
+        padding: const EdgeInsets.all(8.0),
         itemCount: 21,
         itemBuilder: (context, index) {
           final adhyayNumber = index + 1;

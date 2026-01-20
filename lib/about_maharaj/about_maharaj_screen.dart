@@ -169,8 +169,8 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
         child: ExpansionTile(
           leading: Icon(icon, color: Colors.orange[600]),
           title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.orange[800])),
-          iconColor: Colors.orange[400],
-          collapsedIconColor: Colors.orange[400],
+          iconColor: theme.iconTheme.color,
+          collapsedIconColor: theme.iconTheme.color,
           childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           children: [
             Text(

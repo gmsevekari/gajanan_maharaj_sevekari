@@ -81,6 +81,7 @@ class _StotraScreenState extends State<StotraScreen> {
             final stotras = snapshot.data!;
 
             return ListView.builder(
+              padding: const EdgeInsets.all(8.0),
               itemCount: stotras.length,
               itemBuilder: (context, index) {
                 final stotra = stotras[index];

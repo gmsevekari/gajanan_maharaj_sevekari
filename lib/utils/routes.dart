@@ -18,4 +18,5 @@ class Routes {
   static const String signups = '/signups';
   static const String favorites = '/favorites';
   static const String sundayPrarthana = '/sunday_prarthana';
+  static const String fontSelection = '/font_selection';
 }

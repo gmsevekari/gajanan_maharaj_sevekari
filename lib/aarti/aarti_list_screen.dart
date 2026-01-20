@@ -114,6 +114,7 @@ class _AartiListScreenState extends State<AartiListScreen> {
             final aartis = snapshot.data!;
 
             return ListView.builder(
+              padding: const EdgeInsets.all(8.0),
               itemCount: aartis.length,
               itemBuilder: (context, index) {
                 final aarti = aartis[index];

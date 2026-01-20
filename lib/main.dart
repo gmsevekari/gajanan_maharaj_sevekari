@@ -18,6 +18,7 @@ import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/nityopasana/nityopasana_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_screen.dart';
 import 'package:gajanan_maharaj_sevekari/sankalp/sankalp_screen.dart';
+import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/settings_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
@@ -26,6 +27,7 @@ import 'package:gajanan_maharaj_sevekari/social_media/social_media_screen.dart';
 import 'package:gajanan_maharaj_sevekari/splash/splash_screen.dart';
 import 'package:gajanan_maharaj_sevekari/stotra/stotra_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -37,14 +39,16 @@ void main() async {
 
   final themeProvider = ThemeProvider();
   final localeProvider = LocaleProvider();
+  final fontProvider = FontProvider();
 
-  await Future.wait([themeProvider.loadTheme(), localeProvider.loadLocale()]);
+  await Future.wait([themeProvider.loadTheme(), localeProvider.loadLocale(), fontProvider.loadFonts()]);
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider.value(value: localeProvider),
+        ChangeNotifierProvider.value(value: fontProvider),
       ],
       child: const MyApp(),
     ),
@@ -56,12 +60,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ThemeProvider, LocaleProvider>(
-      builder: (context, themeProvider, localeProvider, child) {
+    return Consumer3<ThemeProvider, LocaleProvider, FontProvider>(
+      builder: (context, themeProvider, localeProvider, fontProvider, child) {
+        final isMarathi = localeProvider.locale.languageCode == 'mr';
+        final fontFamily = isMarathi ? fontProvider.marathiFontFamily : fontProvider.englishFontFamily;
+
+        final lightTextTheme = GoogleFonts.getTextTheme(fontFamily, AppTheme.lightTheme.textTheme);
+        final darkTextTheme = GoogleFonts.getTextTheme(fontFamily, AppTheme.darkTheme.textTheme);
+
         return MaterialApp(
           onGenerateTitle: (context) => AppLocalizations(localeProvider.locale).appName,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
+          theme: AppTheme.lightTheme.copyWith(textTheme: lightTextTheme),
+          darkTheme: AppTheme.darkTheme.copyWith(textTheme: darkTextTheme),
           themeMode: themeProvider.themeMode,
           locale: localeProvider.locale,
           supportedLocales: const [Locale('en', ''), Locale('mr', '')],

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/settings/about_app_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/disclaimer_screen.dart';
+import 'package:gajanan_maharaj_sevekari/settings/font_selection_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/language_selection_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_selection_screen.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -24,37 +25,32 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
       body: ListView(
+        padding: const EdgeInsets.all(8.0),
         children: [
-          _buildSettingsItem(context, localizations.language, Icons.language, () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const LanguageSelectionScreen()));
-          }),
-          _buildSettingsItem(context, localizations.theme, Icons.color_lens, () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const ThemeSelectionScreen()));
-          }),
-          _buildSettingsItem(context, localizations.about, Icons.info, () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutAppScreen()));
-          }),
-          _buildSettingsItem(context, localizations.disclaimer, Icons.gavel, () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const DisclaimerScreen()));
-          }),
+          _buildSettingsCard(context, Icons.language, localizations.language, const LanguageSelectionScreen()),
+          _buildSettingsCard(context, Icons.color_lens, localizations.theme, const ThemeSelectionScreen()),
+          _buildSettingsCard(context, Icons.font_download, localizations.font, const FontSelectionScreen()),
+          _buildSettingsCard(context, Icons.info, localizations.about, const AboutAppScreen()),
+          _buildSettingsCard(context, Icons.article, localizations.disclaimer, const DisclaimerScreen()),
         ],
       ),
     );
   }
 
-  Widget _buildSettingsItem(BuildContext context, String title, IconData icon, VoidCallback onTap) {
+  Widget _buildSettingsCard(BuildContext context, IconData icon, String title, Widget screen) {
     final theme = Theme.of(context);
-
     return Card(
       elevation: theme.cardTheme.elevation,
       color: theme.cardTheme.color,
       shape: theme.cardTheme.shape,
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: ListTile(
-        leading: Icon(icon, color: Colors.orange[400]),
+        leading: Icon(icon, color: theme.iconTheme.color),
         title: Text(title, style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 18)),
         trailing: Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
-        onTap: onTap,
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+        },
       ),
     );
   }

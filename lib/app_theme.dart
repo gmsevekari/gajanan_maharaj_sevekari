@@ -28,6 +28,9 @@ class AppTheme {
         side: BorderSide(color: Color(0xFFFF9800), width: 1),
       ),
     ),
+    iconTheme: IconThemeData(
+        color: Colors.orange[400]
+    ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.orange[50],
@@ -68,6 +71,9 @@ class AppTheme {
         borderRadius: BorderRadius.circular(12.0),
         side: BorderSide(color: Color(0xFFFF9800), width: 1),
       ),
+    ),
+    iconTheme: IconThemeData(
+        color: Colors.orange[400]
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(

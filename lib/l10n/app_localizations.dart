@@ -11,6 +11,7 @@ class AppLocalizations {
 
   static const _localizedValues = <String, Map<String, String>>{
     'en': {
+      'font': 'Font',
       'granthTitle': 'Gajanan Vijay Granth',
       'stotraTitle': 'Stotra Collection',
       'namavaliTitle': '108 Namavali',
@@ -142,6 +143,7 @@ class AppLocalizations {
       'namavaliShareMessage': 'Check out the Gajanan Maharaj 108 Namavali'
     },
     'mr': {
+      'font': 'फॉन्ट',
       'granthTitle': 'गजानन विजय ग्रंथ',
       'stotraTitle': 'स्तोत्र संग्रह',
       'namavaliTitle': 'अष्टोत्तरशतनामावली',
@@ -274,6 +276,7 @@ class AppLocalizations {
     }
   };
 
+  String get font => _localizedValues[locale.languageCode]!['font']!;
   String get granthTitle => _localizedValues[locale.languageCode]!['granthTitle']!;
   String get stotraTitle => _localizedValues[locale.languageCode]!['stotraTitle']!;
   String get namavaliTitle => _localizedValues[locale.languageCode]!['namavaliTitle']!;
