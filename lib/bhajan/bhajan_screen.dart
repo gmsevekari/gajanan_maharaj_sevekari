@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gajanan_maharaj_sevekari/bhajan/bhajan_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class BhajanScreen extends StatefulWidget {
@@ -36,10 +36,13 @@ class _BhajanScreenState extends State<BhajanScreen> {
     for (var fileName in _bhajanFiles) {
       final String response = await rootBundle.loadString('resources/texts/bhajans/$fileName');
       final data = await json.decode(response);
+      final imageName = data['image'] ?? '';
+
       bhajanList.add({
         'title_mr': data['title_mr'],
         'title_en': data['title_en'],
         'fileName': fileName,
+        'imagePath': 'resources/images/bhajans/$imageName',
       });
     }
     return bhajanList;
@@ -102,9 +105,12 @@ class _BhajanScreenState extends State<BhajanScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => BhajanDetailScreen(
-                                  bhajanList: bhajans,
+                                builder: (context) => ContentDetailScreen(
+                                  contentType: ContentType.bhajan,
+                                  contentList: bhajans,
                                   currentIndex: index,
+                                  imagePath: bhajan['imagePath']!,
+                                  assetPath: 'resources/texts/bhajans/${bhajan['fileName']}',
                                   initialTabIndex: 1,
                                   autoPlay: true,
                                 ),
@@ -119,9 +125,12 @@ class _BhajanScreenState extends State<BhajanScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BhajanDetailScreen(
-                            bhajanList: bhajans,
+                          builder: (context) => ContentDetailScreen(
+                            contentType: ContentType.bhajan,
+                            contentList: bhajans,
                             currentIndex: index,
+                            imagePath: bhajan['imagePath']!,
+                            assetPath: 'resources/texts/bhajans/${bhajan['fileName']}',
                           ),
                         ),
                       );

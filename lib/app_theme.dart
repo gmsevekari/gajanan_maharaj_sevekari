@@ -7,11 +7,6 @@ class AppTheme {
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.orange,
       foregroundColor: Colors.white,
-      titleTextStyle: TextStyle(
-        color: Colors.white,
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
     ),
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.orange,
@@ -51,11 +46,6 @@ class AppTheme {
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.orange,
       foregroundColor: Colors.white,
-      titleTextStyle: TextStyle(
-        color: Colors.white,
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
     ),
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.orange,

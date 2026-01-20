@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/stotra/stotra_details_screen.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class StotraScreen extends StatefulWidget {
@@ -41,10 +41,13 @@ class _StotraScreenState extends State<StotraScreen> {
     for (var fileName in _stotraFiles) {
       final String response = await rootBundle.loadString('resources/texts/stotras/$fileName');
       final data = await json.decode(response);
+      final imageName = data['image'] ?? '';
+
       stotraList.add({
         'title_mr': data['title_mr'],
         'title_en': data['title_en'],
         'fileName': fileName,
+        'imagePath': 'resources/images/stotras/$imageName',
       });
     }
     return stotraList;
@@ -107,9 +110,12 @@ class _StotraScreenState extends State<StotraScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => StotraDetailsScreen(
-                                  stotraList: stotras,
+                                builder: (context) => ContentDetailScreen(
+                                  contentType: ContentType.stotra,
+                                  contentList: stotras,
                                   currentIndex: index,
+                                  imagePath: stotra['imagePath']!,
+                                  assetPath: 'resources/texts/stotras/${stotra['fileName']}',
                                   initialTabIndex: 1,
                                   autoPlay: true,
                                 ),
@@ -124,9 +130,12 @@ class _StotraScreenState extends State<StotraScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => StotraDetailsScreen(
-                            stotraList: stotras,
+                          builder: (context) => ContentDetailScreen(
+                            contentType: ContentType.stotra,
+                            contentList: stotras,
                             currentIndex: index,
+                            imagePath: stotra['imagePath']!,
+                            assetPath: 'resources/texts/stotras/${stotra['fileName']}',
                           ),
                         ),
                       );

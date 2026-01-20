@@ -143,7 +143,7 @@ class SocialMediaCard extends StatelessWidget {
           child: Row(
             children: [
               CircleAvatar(
-                backgroundColor: color.withOpacity(0.1),
+                backgroundColor: color.withValues(alpha: 0.1),
                 radius: 24,
                 child: Image.asset(icon, height: 28, width: 28),
               ),

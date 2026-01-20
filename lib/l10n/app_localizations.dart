@@ -140,7 +140,8 @@ class AppLocalizations {
       'dattaStuti': 'Datta Stuti',
       'namjap': 'Naamjap',
       'namavaliListenTitle': '108 Namavali - Ravindra Sathe',
-      'namavaliShareMessage': 'Check out the Gajanan Maharaj 108 Namavali'
+      'namavaliShareMessage': 'Check out the Gajanan Maharaj 108 Namavali',
+      'contentShareMessage': 'Check out this content'
     },
     'mr': {
       'font': 'फॉन्ट',
@@ -272,7 +273,8 @@ class AppLocalizations {
       'dattaStuti': 'दत्त स्तुती',
       'namjap': 'नामजप',
       'namavaliListenTitle': 'अष्टोत्तरशतनामावली - रवींद्र साठे',
-      'namavaliShareMessage': 'गजानन महाराज अष्टोत्तरशतनामावली नक्की ऐका'
+      'namavaliShareMessage': 'गजानन महाराज अष्टोत्तरशतनामावली नक्की ऐका',
+      'contentShareMessage': 'हे नक्की ऐका'
     }
   };
 
@@ -408,6 +410,7 @@ class AppLocalizations {
   String get namjap => _localizedValues[locale.languageCode]!['namjap']!;
   String get namavaliListenTitle => _localizedValues[locale.languageCode]!['namavaliListenTitle']!;
   String get namavaliShareMessage => _localizedValues[locale.languageCode]!['namavaliShareMessage']!;
+  String get contentShareMessage => _localizedValues[locale.languageCode]!['contentShareMessage']!;
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

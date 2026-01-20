@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -197,6 +199,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
     final locale = Localizations.localeOf(context);
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context);
+    final fontProvider = Provider.of<FontProvider>(context);
 
     return FutureBuilder<Map<String, dynamic>>(
       future: _namavaliFuture,
@@ -208,6 +211,9 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
         } else if (snapshot.hasData) {
           final data = snapshot.data!;
           final names = data['names'] as List<dynamic>? ?? [];
+          final textStyle = isMarathi(locale)
+              ? fontProvider.marathiTextStyle.copyWith(fontSize: _fontSize, height: 1.6)
+              : fontProvider.englishTextStyle.copyWith(fontSize: _fontSize, height: 1.6);
 
           return ListView.separated(
             padding: const EdgeInsets.only(bottom: 120), // Padding for FloatingActionButtons
@@ -232,7 +238,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
               }
 
               final nameData = names[index];
-              final name = locale.languageCode == 'mr' ? nameData['name_mr'] : nameData['name_en'];
+              final name = isMarathi(locale) ? nameData['name_mr'] : nameData['name_en'];
 
               return ListTile(
                 leading: CircleAvatar(
@@ -244,7 +250,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
                 ),
                 title: Text(
                   name,
-                  style: TextStyle(fontSize: _fontSize),
+                  style: textStyle,
                 ),
               );
             },
@@ -349,7 +355,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
                               borderRadius: BorderRadius.circular(12.0),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
+                                  color: Colors.grey.withValues(alpha: 0.2),
                                   spreadRadius: 1,
                                   blurRadius: 5,
                                   offset: const Offset(0, 3),
@@ -359,8 +365,12 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
                             child: IconButton(
                               icon: Icon(Icons.share, color: theme.colorScheme.primary),
                               onPressed: () {
-                                Share.share(
-                                    '${localizations.namavaliShareMessage}: https://www.youtube.com/watch?v=$videoId');
+                                SharePlus.instance.share(
+                                    ShareParams(
+                                        text: '${localizations
+                                            .namavaliShareMessage}: https://www.youtube.com/watch?v=$videoId'
+                                    )
+                                );
                               },
                               iconSize: 32.0,
                               padding: const EdgeInsets.all(16.0),
@@ -375,7 +385,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.1),
+                      color: Colors.orange.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: Row(
@@ -397,4 +407,6 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
           return const Center(child: Text('No data'));
         });
   }
+
+  bool isMarathi(Locale locale) => locale.languageCode == 'mr';
 }

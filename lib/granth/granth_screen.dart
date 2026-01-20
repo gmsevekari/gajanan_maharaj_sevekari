@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gajanan_maharaj_sevekari/granth/granth_adhyay_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class GranthScreen extends StatelessWidget {
@@ -10,6 +10,13 @@ class GranthScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final adhyays = List.generate(21, (index) {
+      final adhyayNumber = index + 1;
+      return {
+        'adhyayNumber': '$adhyayNumber',
+        'imagePath': 'resources/images/grantha/adhyay_$adhyayNumber.jpg',
+      };
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -30,6 +37,8 @@ class GranthScreen extends StatelessWidget {
         itemCount: 21,
         itemBuilder: (context, index) {
           final adhyayNumber = index + 1;
+          final adhyay = adhyays[index];
+
           return Card(
             elevation: theme.cardTheme.elevation,
             color: theme.cardTheme.color,
@@ -54,8 +63,12 @@ class GranthScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => GranthAdhyayDetailScreen(
-                            adhyayNumber: adhyayNumber,
+                          builder: (context) => ContentDetailScreen(
+                            contentType: ContentType.granth,
+                            contentList: adhyays,
+                            currentIndex: index,
+                            imagePath: adhyay['imagePath']!,
+                            assetPath: 'resources/texts/grantha/adhyay_${index + 1}.json',
                             initialTabIndex: 1,
                             autoPlay: true,
                           ),
@@ -70,7 +83,13 @@ class GranthScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => GranthAdhyayDetailScreen(adhyayNumber: adhyayNumber),
+                    builder: (context) => ContentDetailScreen(
+                      contentType: ContentType.granth,
+                      contentList: adhyays,
+                      currentIndex: index,
+                      imagePath: adhyay['imagePath']!,
+                      assetPath: 'resources/texts/grantha/adhyay_${index + 1}.json',
+                    ),
                   ),
                 );
               },

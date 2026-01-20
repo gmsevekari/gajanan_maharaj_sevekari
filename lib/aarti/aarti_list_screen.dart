@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gajanan_maharaj_sevekari/aarti/aarti_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 enum AartiCategory { daily, event, other }
@@ -68,11 +68,14 @@ class _AartiListScreenState extends State<AartiListScreen> {
     for (var fileName in files) {
       final String response = await rootBundle.loadString('resources/texts/aartis/$directory/$fileName');
       final data = await json.decode(response);
+      final imageName = data['image'] ?? '';
+
       aartiList.add({
         'title_mr': data['title_mr'],
         'title_en': data['title_en'],
         'fileName': fileName,
         'directory': directory,
+        'imagePath': 'resources/images/aartis/$directory/$imageName',
       });
     }
     return aartiList;
@@ -140,9 +143,12 @@ class _AartiListScreenState extends State<AartiListScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AartiDetailScreen(
-                                  aartiList: aartis,
+                                builder: (context) => ContentDetailScreen(
+                                  contentType: ContentType.aarti,
+                                  contentList: aartis,
                                   currentIndex: index,
+                                  imagePath: aarti['imagePath']!,
+                                  assetPath: 'resources/texts/aartis/${aarti['directory']}/${aarti['fileName']}',
                                   initialTabIndex: 1,
                                   autoPlay: true,
                                 ),
@@ -157,9 +163,12 @@ class _AartiListScreenState extends State<AartiListScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AartiDetailScreen(
-                            aartiList: aartis,
+                          builder: (context) => ContentDetailScreen(
+                            contentType: ContentType.aarti,
+                            contentList: aartis,
                             currentIndex: index,
+                            imagePath: aarti['imagePath']!,
+                            assetPath: 'resources/texts/aartis/${aarti['directory']}/${aarti['fileName']}',
                           ),
                         ),
                       );

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/stotra/stotra_details_screen.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class SundayPrarthanaScreen extends StatefulWidget {
@@ -49,11 +49,16 @@ class _SundayPrarthanaScreenState extends State<SundayPrarthanaScreen> {
 
       final String response = await rootBundle.loadString(path);
       final data = await json.decode(response);
+      final imageName = data['image'] ?? '';
+
       stotraList.add({
         'title_mr': data['title_mr'],
         'title_en': data['title_en'],
         'fileName': fileName,
         'directory': directory, // Pass the correct directory
+        'imagePath': directory.isNotEmpty
+            ? 'resources/images/stotras/$directory/$imageName'
+            : 'resources/images/stotras/$imageName',
       });
     }
     return stotraList;
@@ -90,6 +95,7 @@ class _SundayPrarthanaScreenState extends State<SundayPrarthanaScreen> {
             final stotras = snapshot.data!;
 
             return ListView.builder(
+              padding: const EdgeInsets.all(8.0),
               itemCount: stotras.length,
               itemBuilder: (context, index) {
                 final stotra = stotras[index];
@@ -112,12 +118,21 @@ class _SundayPrarthanaScreenState extends State<SundayPrarthanaScreen> {
                           icon: const Icon(Icons.play_circle_outline),
                           color: theme.colorScheme.primary,
                           onPressed: () {
+                            final directory = stotra['directory']!;
+                            final fileName = stotra['fileName']!;
+                            final assetPath = directory.isNotEmpty
+                                ? 'resources/texts/stotras/$directory/$fileName'
+                                : 'resources/texts/stotras/$fileName';
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => StotraDetailsScreen(
-                                  stotraList: stotras,
+                                builder: (context) => ContentDetailScreen(
+                                  contentType: ContentType.stotra,
+                                  contentList: stotras,
                                   currentIndex: index,
+                                  imagePath: stotra['imagePath']!,
+                                  assetPath: assetPath,
                                   initialTabIndex: 1,
                                   autoPlay: true,
                                 ),
@@ -129,12 +144,21 @@ class _SundayPrarthanaScreenState extends State<SundayPrarthanaScreen> {
                       ],
                     ),
                     onTap: () {
+                      final directory = stotra['directory']!;
+                      final fileName = stotra['fileName']!;
+                      final assetPath = directory.isNotEmpty
+                          ? 'resources/texts/stotras/$directory/$fileName'
+                          : 'resources/texts/stotras/$fileName';
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => StotraDetailsScreen(
-                            stotraList: stotras,
+                          builder: (context) => ContentDetailScreen(
+                            contentType: ContentType.stotra,
+                            contentList: stotras,
                             currentIndex: index,
+                            imagePath: stotra['imagePath']!,
+                            assetPath: assetPath,
                           ),
                         ),
                       );

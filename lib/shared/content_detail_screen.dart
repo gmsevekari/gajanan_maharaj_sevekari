@@ -3,31 +3,41 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-class BhajanDetailScreen extends StatefulWidget {
-  final List<Map<String, String>> bhajanList;
+enum ContentType { granth, aarti, bhajan, stotra }
+
+class ContentDetailScreen extends StatefulWidget {
+  final ContentType contentType;
+  final List<Map<String, String>> contentList;
   final int currentIndex;
+  final String assetPath;
   final int initialTabIndex;
   final bool autoPlay;
+  final String imagePath;
 
-  const BhajanDetailScreen({
+  const ContentDetailScreen({
     super.key,
-    required this.bhajanList,
+    required this.contentType,
+    required this.contentList,
     required this.currentIndex,
+    required this.assetPath,
+    required this.imagePath,
     this.initialTabIndex = 0,
     this.autoPlay = false,
   });
 
   @override
-  State<BhajanDetailScreen> createState() => _BhajanDetailScreenState();
+  State<ContentDetailScreen> createState() => _ContentDetailScreenState();
 }
 
-class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTickerProviderStateMixin {
-  late Future<Map<String, dynamic>> _bhajanFuture;
+class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTickerProviderStateMixin {
+  late Future<Map<String, dynamic>> _contentFuture;
   double _fontSize = 18.0;
   TabController? _tabController;
   int _currentIndex = 0;
@@ -36,11 +46,11 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
   @override
   void initState() {
     super.initState();
-    _bhajanFuture = _loadBhajan();
+    _contentFuture = _loadContent();
     _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTabIndex);
     _currentIndex = widget.initialTabIndex;
     _tabController!.addListener(() {
-      if (mounted) {
+      if (mounted && _tabController!.indexIsChanging) {
         setState(() {
           _currentIndex = _tabController!.index;
         });
@@ -55,9 +65,8 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
     super.dispose();
   }
 
-  Future<Map<String, dynamic>> _loadBhajan() async {
-    final bhajan = widget.bhajanList[widget.currentIndex];
-    final String response = await rootBundle.loadString('resources/texts/bhajans/${bhajan['fileName']}');
+  Future<Map<String, dynamic>> _loadContent() async {
+    final String response = await rootBundle.loadString(widget.assetPath);
     final data = await json.decode(response);
     if (data['youtube_video_id'] != null && data['youtube_video_id'].isNotEmpty) {
       _youtubeController = YoutubePlayerController(
@@ -76,15 +85,40 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
     });
   }
 
-  void _navigateToBhajan(int index) {
+  void _navigateToItem(int index) {
+    final item = widget.contentList[index];
+    final directory = item['directory'] ?? '';
+    final fileName = item['fileName'] ?? '';
+    String newAssetPath;
+
+    switch (widget.contentType) {
+      case ContentType.granth:
+        newAssetPath = 'resources/texts/grantha/adhyay_${index + 1}.json';
+        break;
+      case ContentType.aarti:
+        newAssetPath = 'resources/texts/aartis/$directory/$fileName';
+        break;
+      case ContentType.bhajan:
+        newAssetPath = 'resources/texts/bhajans/$fileName';
+        break;
+      case ContentType.stotra:
+        newAssetPath = directory.isNotEmpty
+            ? 'resources/texts/stotras/$directory/$fileName'
+            : 'resources/texts/stotras/$fileName';
+        break;
+    }
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => BhajanDetailScreen(
-          bhajanList: widget.bhajanList,
+        builder: (context) => ContentDetailScreen(
+          contentType: widget.contentType,
+          contentList: widget.contentList,
           currentIndex: index,
+          assetPath: newAssetPath,
           initialTabIndex: _currentIndex,
-          autoPlay: false, // Always disable autoplay on navigation
+          autoPlay: false,
+          imagePath: widget.contentList[index]['imagePath']!,
         ),
       ),
     );
@@ -111,17 +145,17 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
             if (widget.currentIndex > 0)
               IconButton(
                 icon: const Icon(Icons.arrow_back_ios),
-                onPressed: () => _navigateToBhajan(widget.currentIndex - 1),
+                onPressed: () => _navigateToItem(widget.currentIndex - 1),
               )
             else
               const SizedBox(width: 48), // Placeholder for alignment
             Expanded(
               child: FutureBuilder<Map<String, dynamic>>(
-                future: _bhajanFuture,
+                future: _contentFuture,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    final bhajan = snapshot.data!;
-                    final title = locale.languageCode == 'mr' ? bhajan['title_mr'] : bhajan['title_en'];
+                    final item = snapshot.data!;
+                    final title = locale.languageCode == 'mr' ? item['title_mr'] : item['title_en'];
                     return Text(title, textAlign: TextAlign.center, maxLines: 2,);
                   } else {
                     return const Text(''); // Placeholder while loading
@@ -129,10 +163,10 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
                 },
               ),
             ),
-            if (widget.currentIndex < widget.bhajanList.length - 1)
+            if (widget.currentIndex < widget.contentList.length - 1)
               IconButton(
                 icon: const Icon(Icons.arrow_forward_ios),
-                onPressed: () => _navigateToBhajan(widget.currentIndex + 1),
+                onPressed: () => _navigateToItem(widget.currentIndex + 1),
               )
             else
               const SizedBox(width: 48), // Placeholder for alignment
@@ -158,7 +192,7 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              physics: const NeverScrollableScrollPhysics(), // Disable swipe gesture
+              physics: const NeverScrollableScrollPhysics(),
               children: [
                 _buildReadTab(locale),
                 _buildListenTab(context, locale, localizations),
@@ -174,6 +208,8 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
           FloatingActionButton(
             heroTag: 'add',
             mini: true,
+            backgroundColor: Colors.orange.withAlpha(179),
+            foregroundColor: Colors.white,
             onPressed: () => _changeFontSize(2.0),
             child: const Icon(Icons.add, size: 20),
           ),
@@ -181,6 +217,8 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
           FloatingActionButton(
             heroTag: 'remove',
             mini: true,
+            backgroundColor: Colors.orange.withAlpha(179),
+            foregroundColor: Colors.white,
             onPressed: () => _changeFontSize(-2.0),
             child: const Icon(Icons.remove, size: 20),
           ),
@@ -194,8 +232,9 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
       BuildContext context, AppLocalizations localizations) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Colors.white,
         borderRadius: BorderRadius.circular(25.0),
+        border: Border.all(color: Colors.grey[300]!, width: 1.5),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -214,30 +253,27 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
         onTap: () {
           _tabController?.animateTo(index);
         },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.orange : Colors.transparent,
+            color: isSelected ? Colors.orange : Colors.white,
             borderRadius: BorderRadius.circular(25.0),
-            border: Border.all(
-              color: isSelected ? Colors.orange : Colors.grey[200]!,
-              width: 1.5,
-            ),
           ),
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (index == 0) // Read tab
                 Icon(
-                  Icons.lyrics_outlined,
-                  color: isSelected ? Colors.white : Colors.grey[600],
+                  Icons.queue_music,
+                  color: isSelected ? Colors.white : Colors.grey[700],
                   size: 20,
                 ),
               if (index == 0) const SizedBox(width: 8),
               if (index == 1) // Listen tab
                 Icon(
                   Icons.play_arrow,
-                  color: isSelected ? Colors.white : Colors.grey[600],
+                  color: isSelected ? Colors.white : Colors.grey[700],
                   size: 20,
                 ),
               if (index == 1) const SizedBox(width: 8),
@@ -256,25 +292,40 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
   }
 
   Widget _buildReadTab(Locale locale) {
+    final fontProvider = Provider.of<FontProvider>(context);
+
     return FutureBuilder<Map<String, dynamic>>(
-      future: _bhajanFuture,
+      future: _contentFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
-          final bhajan = snapshot.data!;
-          final text =
-          locale.languageCode == 'mr' ? bhajan['bhajan_mr'] : bhajan['bhajan_en'];
+          final data = snapshot.data!;
+          String text = '';
+
+          switch(widget.contentType) {
+            case ContentType.granth:
+              text = locale.languageCode == 'mr' ? data['adhyay_mr'] : data['adhyay_en'];
+              break;
+            case ContentType.aarti:
+              text = locale.languageCode == 'mr' ? data['aarti_mr'] : data['aarti_en'];
+              break;
+            case ContentType.bhajan:
+              text = locale.languageCode == 'mr' ? data['bhajan_mr'] : data['bhajan_en'];
+              break;
+            case ContentType.stotra:
+              text = locale.languageCode == 'mr' ? data['stotra_mr'] : data['stotra_en'];
+              break;
+          }
+
           return SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
-            child: Center(
-              child: Text(
-                text,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: _fontSize, height: 1.6),
-              ),
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: fontProvider.marathiTextStyle.copyWith(fontSize: _fontSize, height: 1.6),
             ),
           );
         } else {
@@ -288,23 +339,37 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
     final theme = Theme.of(context);
 
     return FutureBuilder<Map<String, dynamic>>(
-        future: _bhajanFuture,
+        future: _contentFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            final bhajanData = snapshot.data!;
-            final videoId = bhajanData['youtube_video_id'];
-            final title = locale.languageCode == 'mr' ? bhajanData['title_mr'] : bhajanData['title_en'];
+            final data = snapshot.data!;
+            final videoId = data['youtube_video_id'];
+            final title = locale.languageCode == 'mr' ? data['title_mr'] : data['title_en'];
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _buildBhajanImage(context, bhajanData),
+                  Card(
+                    elevation: theme.cardTheme.elevation,
+                    shape: theme.cardTheme.shape,
+                    clipBehavior: Clip.antiAlias,
+                    child: Image.asset(
+                      widget.imagePath,
+                      width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          'resources/images/grantha/default.jpg', // A generic default
+                          width: double.infinity,
+                        );
+                      },
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   if (_youtubeController != null)
                     Card(
@@ -346,16 +411,45 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
                   const SizedBox(height: 24),
                   if (videoId != null && videoId.isNotEmpty)
                     Center(
-                      child: _buildActionButton(context, Icons.share, localizations.share, () {
-                        Share.share(
-                            'Check out this bhajan: https://www.youtube.com/watch?v=$videoId');
-                      }),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withValues(alpha: 0.2),
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.share, color: theme.colorScheme.primary),
+                              onPressed: () {
+                                SharePlus.instance.share(
+                                    ShareParams(
+                                        text: '${localizations
+                                            .contentShareMessage}: https://www.youtube.com/watch?v=$videoId'
+                                    )
+                                );
+                              },
+                              iconSize: 32.0,
+                              padding: const EdgeInsets.all(16.0),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(localizations.share, style: TextStyle(color: theme.colorScheme.primary)),
+                        ],
+                      ),
                     ),
                   const SizedBox(height: 32),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.1),
+                      color: Colors.orange.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: Row(
@@ -373,76 +467,22 @@ class _BhajanDetailScreenState extends State<BhajanDetailScreen> with SingleTick
                 ],
               ),
             );
+          } else {
+            return const Center(child: Text('No data available'));
           }
-          return const Center(child: Text('No data'));
         });
-  }
-
-  Widget _buildBhajanImage(BuildContext context, Map<String, dynamic> bhajanData) {
-    final theme = Theme.of(context);
-    final imageName = bhajanData['image'];
-
-    final imagePath = imageName != null && imageName.isNotEmpty
-        ? 'resources/images/bhajans/$imageName'
-        : 'resources/images/bhajans/default.jpg';
-
-
-    return Card(
-      elevation: theme.cardTheme.elevation,
-      shape: theme.cardTheme.shape,
-      clipBehavior: Clip.antiAlias,
-      child: Image.asset(
-        imagePath,
-        width: double.infinity,
-        errorBuilder: (context, error, stackTrace) {
-          return Image.asset(
-            'resources/images/bhajans/default.jpg', // Consistent default
-            width: double.infinity,
-          );
-        },
-      ),
-    );
   }
 
   Widget _buildDecorativeDivider() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Expanded(child: Divider(thickness: 1)),
+        Container(height: 1, width: 50, color: Colors.orange[200]),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Icon(Icons.spa, color: Colors.orange[200]),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Icon(Icons.music_note, color: Colors.orange[400]),
         ),
-        const Expanded(child: Divider(thickness: 1)),
-      ],
-    );
-  }
-
-  Widget _buildActionButton(BuildContext context, IconData icon, String label, VoidCallback onPressed) {
-    final theme = Theme.of(context);
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 1,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: IconButton(
-            icon: Icon(icon, color: theme.colorScheme.primary),
-            onPressed: onPressed,
-            iconSize: 32.0,
-            padding: const EdgeInsets.all(16.0),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(label, style: TextStyle(color: theme.colorScheme.primary)),
+        Container(height: 1, width: 50, color: Colors.orange[200]),
       ],
     );
   }
