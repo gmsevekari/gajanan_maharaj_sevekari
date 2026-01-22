@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -21,6 +22,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFA500), // Saffron/Orange Background from pubspec
       body: Stack(
@@ -50,14 +53,14 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ),
           // Copyright message at the bottom
-          const Positioned(
+          Positioned(
             bottom: 32,
             left: 0,
             right: 0,
             child: Text(
-              '© 2025 Gajanan Maharaj Seattle',
+              localizations.copyrightMessage,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xFF9B3746),
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
