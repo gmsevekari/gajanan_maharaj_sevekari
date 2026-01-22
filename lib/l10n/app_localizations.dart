@@ -29,6 +29,7 @@ class AppLocalizations {
       'theme': 'Theme',
       'about': 'About',
       'disclaimer': 'Disclaimer',
+      'contactUs': 'Contact Us',
       'lightTheme': 'Light Theme',
       'darkTheme': 'Dark Theme',
       'systemTheme': 'System Theme',
@@ -162,6 +163,7 @@ class AppLocalizations {
       'theme': 'थीम',
       'about': 'बद्दल',
       'disclaimer': 'अस्वीकरण',
+      'contactUs': 'संपर्क साधा',
       'lightTheme': 'लाईट थीम',
       'darkTheme': 'डार्क थीम',
       'systemTheme': 'सिस्टम थीम',
@@ -296,6 +298,7 @@ class AppLocalizations {
   String get theme => _localizedValues[locale.languageCode]!['theme']!;
   String get about => _localizedValues[locale.languageCode]!['about']!;
   String get disclaimer => _localizedValues[locale.languageCode]!['disclaimer']!;
+  String get contactUs => _localizedValues[locale.languageCode]!['contactUs']!;
   String get lightTheme => _localizedValues[locale.languageCode]!['lightTheme']!;
   String get darkTheme => _localizedValues[locale.languageCode]!['darkTheme']!;
   String get systemTheme => _localizedValues[locale.languageCode]!['systemTheme']!;
