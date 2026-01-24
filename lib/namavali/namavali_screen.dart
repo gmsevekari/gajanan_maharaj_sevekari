@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class NamavaliScreen extends StatefulWidget {
-  const NamavaliScreen({super.key});
+  final DeityConfig deity;
+
+  const NamavaliScreen({super.key, required this.deity});
 
   @override
   State<NamavaliScreen> createState() => _NamavaliScreenState();
@@ -46,7 +49,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
   }
 
   Future<Map<String, dynamic>> _loadNamavali() async {
-    final String response = await rootBundle.loadString('resources/texts/namavali/namavali_108.json');
+    final String response = await rootBundle.loadString('resources/texts/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali.file}');
     final data = await json.decode(response);
     if (data['youtube_video_id'] != null && data['youtube_video_id'].isNotEmpty) {
       _youtubeController = YoutubePlayerController(
@@ -287,12 +290,14 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
                     shape: theme.cardTheme.shape,
                     clipBehavior: Clip.antiAlias,
                     child: Image.asset(
-                      'resources/images/namavali/108_Namavali.png',
+                      'resources/images/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali.image}',
                       width: double.infinity,
+                      fit: BoxFit.cover, // Ensure the image covers the card area
                       errorBuilder: (context, error, stackTrace) {
                         return Image.asset(
-                          'resources/images/grantha/default.jpg',
+                          'resources/images/gajanan_maharaj/default.jpg',
                           width: double.infinity,
+                          fit: BoxFit.cover, // Also apply fit to the error image
                         );
                       },
                     ),
@@ -355,7 +360,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
                               borderRadius: BorderRadius.circular(12.0),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey.withValues(alpha: 0.2),
+                                  color: Colors.grey.withOpacity(0.2),
                                   spreadRadius: 1,
                                   blurRadius: 5,
                                   offset: const Offset(0, 3),
@@ -365,12 +370,8 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
                             child: IconButton(
                               icon: Icon(Icons.share, color: theme.colorScheme.primary),
                               onPressed: () {
-                                SharePlus.instance.share(
-                                    ShareParams(
-                                        text: '${localizations
-                                            .namavaliShareMessage}: https://www.youtube.com/watch?v=$videoId'
-                                    )
-                                );
+                                Share.share(
+                                    '${localizations.namavaliShareMessage}: https://www.youtube.com/watch?v=$videoId');
                               },
                               iconSize: 32.0,
                               padding: const EdgeInsets.all(16.0),
@@ -385,7 +386,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     decoration: BoxDecoration(
-                      color: Colors.orange.withValues(alpha: 0.1),
+                      color: Colors.orange.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: Row(

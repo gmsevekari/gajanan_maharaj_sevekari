@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  google_fonts: ^7.0.2
+  google_fonts: ^8.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -76,28 +76,32 @@ flutter:
   assets:
     - resources/images/logo/App_Logo.png
     - resources/images/splash/App_Splash.png
-    - resources/images/qr_code/
-    - resources/images/about/
-    - resources/images/social/
-    - resources/images/icon/
-    - resources/images/grantha/
-    - resources/images/namavali/
-    - resources/images/stotras/sunday_prarthana/
-    - resources/images/stotras/
-    - resources/images/bhajans/
-    - resources/images/aartis/daily/
-    - resources/images/aartis/event/
-    - resources/images/aartis/other/
-    - resources/texts/stotras/sunday_prarthana/
-    - resources/texts/stotras/
-    - resources/texts/bhajans/
-    - resources/texts/aartis/daily/
-    - resources/texts/aartis/event/
-    - resources/texts/aartis/other/
-    - resources/texts/grantha/
-    - resources/texts/namavali/
-    - resources/texts/disclaimer/
     - resources/texts/about/
+    - resources/texts/disclaimer/
+    - resources/config/
+    - resources/images/favorites/sunday_prarthana/
+    - resources/texts/favorites/sunday_prarthana/
+    - resources/images/favorites/other_aartis/
+    - resources/texts/favorites/other_aartis/
+    - resources/images/icon/
+    - resources/images/gajanan_maharaj/
+    - resources/texts/gajanan_maharaj/about/
+    - resources/images/gajanan_maharaj/granth/
+    - resources/texts/gajanan_maharaj/granth/
+    - resources/images/gajanan_maharaj/stotras/
+    - resources/texts/gajanan_maharaj/stotras/
+    - resources/images/gajanan_maharaj/bhajans/
+    - resources/texts/gajanan_maharaj/bhajans/
+    - resources/images/gajanan_maharaj/aartis/daily/
+    - resources/texts/gajanan_maharaj/aartis/daily/
+    - resources/texts/gajanan_maharaj/aartis/event/
+    - resources/images/gajanan_maharaj/aartis/event/
+    - resources/images/gajanan_maharaj/namavali/
+    - resources/texts/gajanan_maharaj/namavali/
+    - resources/images/gajanan_maharaj/qr_code/
+    - resources/images/gajanan_maharaj/icon/
+    - resources/images/gajanan_maharaj/social/
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

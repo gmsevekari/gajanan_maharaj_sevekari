@@ -6,11 +6,12 @@ This document summarizes the key architectural patterns, design principles, and 
 
 ### 1. Core Assistant Directives (Lessons Learned)
 
+-   **Explicit Configuration Over Implicit Logic:** My attempts to guess resource paths using logic in the code (e.g., deriving `grantha` from `granth`) were flawed and led to bugs. The final, superior architecture, as guided by the user, makes the configuration the single source of truth. **Explicitly defining resource directory paths in the JSON is always better than implicit logic in the code.**
 -   **Do Not Overwrite User Changes:** I must be extremely careful not to overwrite user-added content, especially in data lists or localization files. My process must be to add to, not replace, user data.
--   **Verify API and Class Names:** I must not assume class names or parameters (e.g., `CardTheme` vs. `CardThemeData`, `showFullscreenButton`). If I am unsure, I must verify them through documentation or by analyzing the existing, working code.
+-   **Verify API and Class Names:** I must not assume class names or parameters. If I am unsure, I must verify them through documentation or by analyzing the existing, working code.
 -   **Acknowledge and Correct Failures:** When a fix fails, I must acknowledge the specific failure, explain the root cause, and propose a new, definitive solution rather than repeating the same failed approach.
--   **Verify API Usage Carefully:** Static vs. instance methods can cause build errors. For example, `Share.share()` is a static method, but other APIs might require an instance. Double-checking the implementation is crucial.
--   **Handle URI Encoding:** When creating `mailto` links, `Uri`'s `queryParameters` map may encode spaces as `+`. For better cross-client compatibility, it's safer to manually build the query string and encode components using `Uri.encodeComponent`.
+-   **Verify API Usage Carefully:** Static vs. instance methods can cause build errors. Double-checking the implementation is crucial.
+-   **Handle URI Encoding:** When creating `mailto` links, `Uri`'s `queryParameters` map may encode spaces as `+`. It's safer to manually build the query string and encode components using `Uri.encodeComponent`.
 
 ---
 
@@ -18,64 +19,45 @@ This document summarizes the key architectural patterns, design principles, and 
 
 -   **App Name:** `gajanan_maharaj_sevekari`
 -   **Purpose:** A devotional app for followers of the saint Gajanan Maharaj.
--   **Target Audience:** Devotees, with a specific focus on being **user-friendly for the elderly**. This implies a need for large, clear fonts and simple, intuitive navigation.
--   **Core Principles:** The app is intended to be lightweight and prioritizes an **offline-first approach** for most of its content (texts, local images).
+-   **Target Audience:** Devotees, with a specific focus on being **user-friendly for the elderly** (implying large fonts and simple navigation).
+-   **Core Principles:** The app is lightweight, prioritizes an **offline-first approach** for most content, and is now almost entirely **configuration-driven**.
 
 ### 3. Key Features & Modules
 
--   **`HomeScreen`:** The main dashboard.
-    -   It features a **`Wrap` layout** to display cards in a two-column grid.
-    -   The `Wrap` widget is used with `alignment: WrapAlignment.center` to ensure that if there's an odd number of cards, the last one is automatically centered.
--   **`NityopasanaScreen`:** A secondary screen created to group daily devotional content (`Granth`, `Stotra`, `Bhajan`, `Aarti`, `Namavali`), decluttering the `HomeScreen`. It uses the same `Wrap` layout as the `HomeScreen` for consistency.
--   **`FavoritesScreen`:** A new screen to house a collection of user-favorite content. It uses the **Standard Card** style.
-    -   **`SundayPrarthanaScreen`:** A sub-screen of `FavoritesScreen` that lists a specific collection of stotras for Sunday prayer. It also uses the **Standard Card** style for each item in its list.
--   **`ContentDetailScreen` (Generic):**
-    -   This screen was refactored to be a single, generic component, replacing older, specific screens like `AartiDetailScreen`, `BhajanDetailScreen`, `StotraDetailScreen`, and `GranthAdhyayDetailScreen`.
-    -   **Reusable by Design:** It accepts a direct `assetPath` in its constructor, removing internal logic and making it a highly reusable component for displaying any JSON-based content.
-    -   **UI:** A key UI component is a **custom segmented control** for "Read" and "Listen" tabs. Tab switching is **tap-only**; swipe gestures are disabled. The "Read" tab includes floating action buttons for adjusting font size.
-    -   **Navigation:** Features a consistent `AppBar` with **Home** and **Settings** buttons. It includes **Previous/Next** arrows for sequence navigation, and preserves the selected tab (Read/Listen) between items.
-    -   **Listen Tab:** Embeds a YouTube video using `youtube_player_flutter`. It includes a "Share" button with a consistent, custom style.
--   **`SettingsScreen`:**
-    -   Provides options for Language, Theme, Font, etc.
-    -   **Contact Us:** Includes a localized "Contact Us" card that launches the user's email client with a pre-filled recipient (`gajananmaharajseattle@gmail.com`) and a correctly formatted subject line.
--   **`EventCalendarScreen`:**
-    -   Fetches events from a Firestore `events` collection, sorted by `start_time`.
-    -   Displays events from the user-selected date for the **next 30 days**.
+-   **`HomeScreen`:** The main dashboard with a two-column `Wrap` layout for centered, 3D-effect cards.
+-   **`NityopasanaScreen`:** A hub for daily devotional content. It is **fully configuration-driven**, dynamically building its grid from the `nityopasana.order` array in the deity's JSON config.
+-   **`FavoritesScreen`:** A screen for user-favorite content, now **fully configuration-driven** by a global `resources/config/favorites.json` file.
+-   **Generic List & Detail Screens (Core Components):**
+    -   **`ContentListScreen`:** A powerful, generic, and reusable screen that has replaced the old, specific screens (`GranthScreen`, `BhajanScreen`, `StotraScreen`, `SundayPrarthanaScreen`). It is driven entirely by the JSON configuration, accepting a parent content object to build its list.
+    -   **`ContentDetailScreen`:** A highly reusable component for displaying any JSON-based content. It features a custom segmented control (Read/Listen), font size controls, and an embedded YouTube player. The banner image now uses `fit: BoxFit.cover` to ensure it fills the card area correctly.
+-   **`SettingsScreen`:** Provides options for Language, Theme, Font, and a "Contact Us" card that launches the user's email client.
+-   **`EventCalendarScreen`:** Fetches and displays events from Firestore for the next 30 days.
 
 ### 4. Technical Stack & Architecture
 
 -   **Framework:** Flutter.
--   **State Management:** The `provider` package is used for app-wide state, managing `ThemeProvider`, `FontProvider`, and `LocaleProvider`.
--   **Navigation:** Named routes are defined in `lib/utils/routes.dart`.
+-   **State Management:** The `provider` package is used for app-wide state, including `ThemeProvider`, `FontProvider`, `LocaleProvider`, and the crucial **`AppConfigProvider`**.
+-   **`AppConfigProvider`:** This provider is responsible for loading the entire app's configuration from multiple JSON files at startup, including the root `app_config.json`, deity-specific configs, and the global `favorites.json`.
+-   **Navigation:** Named routes are defined in `lib/utils/routes.dart`. Dynamic navigation to content screens is now handled within the UI based on the loaded configuration.
 -   **Backend:** Firebase is used, specifically **Firestore** for fetching upcoming events.
--   **Key Dependencies:**
-    -   `youtube_player_flutter`: For embedding YouTube videos.
-    -   `share_plus`: For native sharing. The static `Share.share()` method is used for simplicity, though it is marked as deprecated.
-    -   `url_launcher`: For opening external links (social media, email).
-    -   `provider`: For app-wide state management.
-    -   `cloud_firestore`: For reading event data.
-    -   `table_calendar`: For the event calendar UI.
--   **Localization:**
-    -   Localization is handled manually in `lib/l10n/app_localizations.dart` using `Map` structures for English (`en`) and Marathi (`mr`).
-    -   New keys like `contactUs` are added directly to this file. The project **does not** use `.arb` files.
+-   **Key Dependencies:** `youtube_player_flutter`, `share_plus`, `url_launcher`, `provider`, `cloud_firestore`, `table_calendar`.
+-   **Localization:** Handled manually in `lib/l10n/app_localizations.dart`.
 
 ### 5. Design & UI/UX Principles
 
--   **Color Theme:**
-    -   **Light Mode:** `AppBar` is orange. `Card` background is `Colors.orange[50]`.
-    -   **Dark Mode:** `AppBar` is orange. `Card` background is a dark brown-black: `const Color(0xFF0A0805)`.
--   **Centralized Theming (`app_theme.dart`):**
-    -   **`AppBarTheme`:** Centralized to define `backgroundColor` and `foregroundColor`. The `titleTextStyle` is intentionally omitted to allow the `AppBar` to inherit the globally selected font from the main theme's `textTheme`.
-    -   **`CardThemeData`:** The single source of truth for all standard card styles, defining `color`, `elevation`, `shadowColor`, and a standard `shape` with an orange border.
-    -   **`ElevatedButtonThemeData`:** Centralized to define a consistent style for all elevated buttons.
--   **Card Styles:**
-    -   **Standard Card:** Most list items use a standard `Card` widget that respects the centralized `CardThemeData`.
-    -   **3D Effect Card (`HomeScreen`):** Home screen cards have a special 3D effect created by wrapping the `Card` in a `Container` with a `BoxShadow`.
--   **UI Consistency:**
-    -   Similar UI elements, such as the "Share" button in `ContentDetailScreen` and `NamavaliScreen`, are styled identically using a custom widget structure for a polished user experience.
+-   **Centralized Theming (`app_theme.dart`):** Defines a consistent look and feel for `AppBar`, `Card`, and `ElevatedButton` across the app.
+-   **Card Styles:** Utilizes a standard card style from `CardThemeData` and a special 3D effect card on the `HomeScreen`.
+-   **UI Consistency:** Standardized elements like the "Share" button and navigation controls are used across different screens.
 
 ### 6. Data & Content Structure
 
--   **Text Content:** Most devotional text is stored in local **JSON files** in the `resources/texts/` directory. These files contain keys for English and Marathi versions (e.g., `title_en`, `aarti_mr`).
--   **Video Content:** YouTube video IDs are stored in the same JSON files alongside the text using the key `"youtube_video_id"`.
--   **Image Assets:** All images are stored locally in the `resources/images/` directory and must be declared in `pubspec.yaml` to be accessible.
+-   **Configuration-Driven Model:** The app's content structure is defined almost entirely in JSON, promoting flexibility and maintainability.
+    -   **`app_config.json`:** The root file, pointing to all other configuration files.
+    -   **Deity Configs (e.g., `gajanan_maharaj.json`):** Defines the content, order, and resource paths for a specific deity.
+    -   **`favorites.json`:** A global file defining the structure and content of the `FavoritesScreen`.
+-   **Explicit Pathing (The DRY Principle):** To avoid ambiguity and bugs, resource paths are defined explicitly. Parent content objects (e.g., `granth`, `stotras`) specify a default `textResourceDirectory` and `imageResourceDirectory`. This reduces repetition while maintaining clarity.
+-   **Per-Item Overrides:** The `ContentItem` model allows for an optional, per-item override of the `textResourceDirectory` and `imageResourceDirectory`, providing maximum flexibility for special cases (e.g., loading `gajanan_maharaj_bavanni.json` from its original deity folder within the favorites list).
+-   **Content Files:** Text content and YouTube video IDs are stored in local JSON files within the `resources/texts/` directory.
+-   **Image Assets:** All images are stored locally in the `resources/images/` directory and must be declared in `pubspec.yaml`.
+
+```

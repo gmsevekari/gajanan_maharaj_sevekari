@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:gajanan_maharaj_sevekari/aarti/aarti_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class AartiScreen extends StatelessWidget {
-  const AartiScreen({super.key});
+  final DeityConfig deity;
+  const AartiScreen({super.key, required this.deity});
 
   @override
   Widget build(BuildContext context) {
@@ -24,48 +26,56 @@ class AartiScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
+      body: ListView.builder(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            _buildCategoryCard(context, localizations.dailyAartis, AartiCategory.daily),
-            _buildCategoryCard(context, localizations.eventAartis, AartiCategory.event),
-          ],
-        ),
+        itemCount: deity.nityopasana.aartis.categories.length,
+        itemBuilder: (context, index) {
+          final category = deity.nityopasana.aartis.categories[index];
+          final title = _getCategoryTitle(localizations, category.titleKey);
+          return _buildCategoryCard(context, title, category, deity);
+        },
       ),
     );
   }
 
-  Widget _buildCategoryCard(BuildContext context, String title, AartiCategory category) {
-    final theme = Theme.of(context);
+  String _getCategoryTitle(AppLocalizations localizations, String key) {
+    switch (key) {
+      case 'dailyAartis':
+        return localizations.dailyAartis;
+      case 'eventAartis':
+        return localizations.eventAartis;
+      default:
+        return '';
+    }
+  }
 
+  Widget _buildCategoryCard(
+      BuildContext context, String title, AartiCategoryConfig category, DeityConfig deity) {
+    final theme = Theme.of(context);
     return Card(
       elevation: theme.cardTheme.elevation,
       color: theme.cardTheme.color,
       shape: theme.cardTheme.shape,
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-      child: InkWell(
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: ListTile(
+        title: Text(
+          title,
+          style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 18.0),
+        ),
+        trailing: Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AartiListScreen(category: category),
+              builder: (context) => ContentListScreen(
+                deity: deity,
+                title: title,
+                contentTypeId: category.id,
+                content: category, // Pass the entire category object
+              ),
             ),
           );
         },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 18.0),
-              ),
-              Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
-            ],
-          ),
-        ),
       ),
     );
   }

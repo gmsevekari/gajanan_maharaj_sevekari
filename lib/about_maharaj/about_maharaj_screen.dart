@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class AboutMaharajScreen extends StatefulWidget {
-  const AboutMaharajScreen({super.key});
+  final DeityConfig deity;
+
+  const AboutMaharajScreen({super.key, required this.deity});
 
   @override
   State<AboutMaharajScreen> createState() => _AboutMaharajScreenState();
@@ -11,6 +14,14 @@ class AboutMaharajScreen extends StatefulWidget {
 
 class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
   double _fontSize = 18.0;
+  late Future<AboutDeity> _aboutDeityFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    final path = 'resources/texts/${widget.deity.id}/about/${widget.deity.aboutFile}';
+    _aboutDeityFuture = AboutDeity.fromFile(path);
+  }
 
   void _changeFontSize(double delta) {
     setState(() {
@@ -22,6 +33,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -40,44 +52,40 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
-        child: Column(
-          children: [
-            _buildTopSection(context, localizations),
-            const SizedBox(height: 24),
-            _buildExpansionCard(
-              context,
-              icon: Icons.book,
-              title: localizations.cardTitleJeevanParichay,
-              content: localizations.cardContentJeevanParichay,
-            ),
-            _buildExpansionCard(
-              context,
-              icon: Icons.history,
-              title: localizations.cardTitlePragatItihas,
-              content: localizations.cardContentPragatItihas,
-            ),
-            _buildExpansionCard(
-              context,
-              icon: Icons.lightbulb,
-              title: localizations.cardTitleShikvan,
-              content: localizations.cardContentShikvan,
-            ),
-            _buildExpansionCard(
-              context,
-              icon: Icons.temple_hindu,
-              title: localizations.cardTitleSamadhi,
-              content: localizations.cardContentSamadhi,
-            ),
-            const SizedBox(height: 32),
-            Text(
-              localizations.footerQuote,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: theme.colorScheme.secondary),
-            ),
-          ],
-        ),
+      body: FutureBuilder<AboutDeity>(
+        future: _aboutDeityFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final about = snapshot.data!;
+            return SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
+              child: Column(
+                children: [
+                  _buildTopSection(context, about, widget.deity.imagePath, locale),
+                  const SizedBox(height: 24),
+                  ...about.sections.map((section) => _buildExpansionCard(
+                        context,
+                        icon: _getIconForSection(section.titleEn),
+                        title: locale == 'mr' ? section.titleMr : section.titleEn,
+                        content: locale == 'mr' ? section.contentMr : section.contentEn,
+                      )),
+                  const SizedBox(height: 32),
+                  Text(
+                    locale == 'mr' ? about.footerQuoteMr : about.footerQuoteEn,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: theme.colorScheme.secondary),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return const Center(child: Text('No data'));
+          }
+        },
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -104,7 +112,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
     );
   }
 
-  Widget _buildTopSection(BuildContext context, AppLocalizations localizations) {
+  Widget _buildTopSection(BuildContext context, AboutDeity about, String imagePath, String locale) {
     final theme = Theme.of(context);
 
     return Column(
@@ -114,14 +122,19 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             shape: BoxShape.circle,
             border: Border.all(color: Colors.orange.shade300, width: 3),
           ),
-          child: const CircleAvatar(
-            radius: 70,
-            backgroundImage: AssetImage('resources/images/about/App_About.png'),
+          child: ClipOval(
+            child: Image.asset(
+              imagePath,
+              fit: BoxFit.cover,
+              width: 140,
+              height: 140,
+              alignment: Alignment.topCenter,
+            ),
           ),
         ),
         const SizedBox(height: 16),
         Text(
-          localizations.aboutMaharajScreenTitle,
+          locale == 'mr' ? about.titleMr : about.titleEn,
           style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
         ),
         const SizedBox(height: 8),
@@ -131,14 +144,14 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             Icon(Icons.location_on, color: theme.colorScheme.secondary, size: 20),
             const SizedBox(width: 4),
             Text(
-              localizations.aboutMaharajLocation,
+              locale == 'mr' ? about.locationMr : about.locationEn,
               style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.secondary),
             ),
           ],
         ),
         const SizedBox(height: 4),
         Text(
-          localizations.aboutMaharajPragatDin,
+          locale == 'mr' ? about.pragatDinMr : about.pragatDinEn,
           style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.secondary),
         ),
         const SizedBox(height: 24),
@@ -149,12 +162,27 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             borderRadius: BorderRadius.circular(30),
           ),
           child: Text(
-            localizations.aboutMaharajChant,
+            locale == 'mr' ? about.chantMr : about.chantEn,
             style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
           ),
         ),
       ],
     );
+  }
+
+  IconData _getIconForSection(String titleEn) {
+    switch (titleEn) {
+      case 'Introduction to Life':
+        return Icons.book;
+      case 'History of Appearance':
+        return Icons.history;
+      case 'Teachings and Philosophy':
+        return Icons.lightbulb;
+      case 'Samadhi Details':
+        return Icons.temple_hindu;
+      default:
+        return Icons.info;
+    }
   }
 
   Widget _buildExpansionCard(BuildContext context, {required IconData icon, required String title, required String content}) {

@@ -1,32 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SignupsScreen extends StatelessWidget {
-  const SignupsScreen({super.key});
+  final DeityConfig deity;
+  const SignupsScreen({super.key, required this.deity});
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final theme = Theme.of(context);
-
-    final List<Map<String, String>> signupLinks = [
-      {
-        'platform': localizations.sundayPrasadSevaSignup,
-        'description': localizations.sundayPrasadSevaSignupDescription,
-        'icon': 'resources/images/icon/Prasad_Seva.png',
-        'url': 'https://tinyurl.com/SeaGMSundayPrasadSeva',
-        'color': '#e8bd4f',
-      },
-      {
-        'platform': localizations.vastralankarSevaSignup,
-        'description': localizations.vastralankarSevaSignupDescription,
-        'icon': 'resources/images/icon/Vastralankar_Seva.png',
-        'url': 'https://tinyurl.com/SeaGMVastralankarSeva2026',
-        'color': '#742028',
-      }
-    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -56,21 +41,43 @@ class SignupsScreen extends StatelessWidget {
                 style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.primary),
               ),
               const SizedBox(height: 16),
-              if (signupLinks.isEmpty)
+              if (deity.signupLinks.isEmpty)
                 Center(child: Text('No signup links available yet.'))
               else
-                ...signupLinks.map((link) => SignupCard(
-                  platform: link['platform']!,
-                  description: link['description']!,
-                  icon: link['icon']!,
-                  url: link['url']!,
-                  color: Color(int.parse(link['color']!.substring(1, 7), radix: 16) + 0xFF000000),
+                ...deity.signupLinks.map((link) => SignupCard(
+                  platform: _getPlatformName(localizations, link.platformKey),
+                  description: _getDescriptionName(localizations, link.descriptionKey),
+                  icon: 'resources/images/${deity.id}/icon/${link.icon}',
+                  url: link.url,
+                  color: Color(int.parse(link.color.substring(1, 7), radix: 16) + 0xFF000000),
                 )),
             ],
           ),
         ),
       ),
     );
+  }
+
+  String _getPlatformName(AppLocalizations localizations, String key) {
+    switch (key) {
+      case 'sundayPrasadSevaSignup':
+        return localizations.sundayPrasadSevaSignup;
+      case 'vastralankarSevaSignup':
+        return localizations.vastralankarSevaSignup;
+      default:
+        return '';
+    }
+  }
+
+  String _getDescriptionName(AppLocalizations localizations, String key) {
+    switch (key) {
+      case 'sundayPrasadSevaSignupDescription':
+        return localizations.sundayPrasadSevaSignupDescription;
+      case 'vastralankarSevaSignupDescription':
+        return localizations.vastralankarSevaSignupDescription;
+      default:
+        return '';
+    }
   }
 }
 

@@ -1,0 +1,9 @@
+{
+  "deities": [
+    {
+      "id": "gajanan_maharaj",
+      "configFile": "resources/config/gajanan_maharaj.json"
+    }
+  ],
+  "favorites_config": "resources/config/favorites.json"
+}

@@ -1,0 +1,160 @@
+{
+  "id": "gajanan_maharaj",
+  "name_en": "Gajanan Maharaj",
+  "name_mr": "गजानन महाराज",
+  "imagePath": "resources/images/gajanan_maharaj/Gajanan_Maharaj.png",
+  "about_file": "about.json",
+  "nityopasana": {
+    "order": ["granth", "stotras", "bhajans", "aartis", "namavali"],
+    "granth": {
+      "title_key": "granthTitle",
+      "icon": "menu_book_outlined",
+      "textResourceDirectory": "resources/texts/gajanan_maharaj/granth",
+      "imageResourceDirectory": "resources/images/gajanan_maharaj/granth",
+      "files": [
+        {"file": "adhyay_1.json", "image": "adhyay_1.png"},
+        {"file": "adhyay_2.json", "image": "adhyay_2.png"},
+        {"file": "adhyay_3.json", "image": "adhyay_3.png"},
+        {"file": "adhyay_4.json", "image": "adhyay_4.png"},
+        {"file": "adhyay_5.json", "image": "adhyay_5.png"},
+        {"file": "adhyay_6.json", "image": "adhyay_6.png"},
+        {"file": "adhyay_7.json", "image": "adhyay_7.png"},
+        {"file": "adhyay_8.json", "image": "adhyay_8.png"},
+        {"file": "adhyay_9.json", "image": "adhyay_9.png"},
+        {"file": "adhyay_10.json", "image": "adhyay_10.png"},
+        {"file": "adhyay_11.json", "image": "adhyay_11.png"},
+        {"file": "adhyay_12.json", "image": "adhyay_12.png"},
+        {"file": "adhyay_13.json", "image": "adhyay_13.png"},
+        {"file": "adhyay_14.json", "image": "adhyay_14.png"},
+        {"file": "adhyay_15.json", "image": "adhyay_15.png"},
+        {"file": "adhyay_16.json", "image": "adhyay_16.png"},
+        {"file": "adhyay_17.json", "image": "adhyay_17.png"},
+        {"file": "adhyay_18.json", "image": "adhyay_18.png"},
+        {"file": "adhyay_19.json", "image": "adhyay_19.png"},
+        {"file": "adhyay_20.json", "image": "adhyay_20.png"},
+        {"file": "adhyay_21.json", "image": "adhyay_21.png"}
+      ]
+    },
+    "bhajans": {
+      "title_key": "bhajanTitle",
+      "icon": "lyrics_outlined",
+      "textResourceDirectory": "resources/texts/gajanan_maharaj/bhajans",
+      "imageResourceDirectory": "resources/images/gajanan_maharaj/bhajans",
+      "files": [
+        {"file": "gajananachya_charani_julavu.json", "image": "gajananachya_charani_julavu.png"},
+        {"file": "murti_ahe_shegaonla.json", "image": "murti_ahe_shegaonla.png"},
+        {"file": "gajananachya_bhajanat_nahato.json", "image": "gajananachya_bhajanat_nahato.png"},
+        {"file": "gajanan_maharaj_ovya.json", "image": "gajanan_maharaj_ovya.png"},
+        {"file": "sansari_sukhi_kasa_vhayacha.json", "image": "sansari_sukhi_kasa_vhayacha.png"},
+        {"file": "shegavicha_zenda_fadfadato_unch_ambara.json", "image": "shegavicha_zenda_fadfadato_unch_ambara.png"}
+      ]
+    },
+    "stotras": {
+      "title_key": "stotraTitle",
+      "icon": "queue_music",
+      "textResourceDirectory": "resources/texts/gajanan_maharaj/stotras",
+      "imageResourceDirectory": "resources/images/gajanan_maharaj/stotras",
+      "files": [
+        {"file": "gajanan_maharaj_avahan.json", "image": "gajanan_maharaj_avahan.png"},
+        {"file": "gajanan_maharaj_ashtak.json", "image": "gajanan_maharaj_ashtak.png"},
+        {"file": "gajanan_maharaj_bavanni.json", "image": "gajanan_maharaj_bavanni.png"},
+        {"file": "gajananache_modak.json", "image": "gajananache_modak.png"},
+        {"file": "gajanan_maharaj_21_namaskar.json", "image": "gajanan_maharaj_21_namaskar.png"},
+        {"file": "gajanan_maharaj_sumananjali.json", "image": "gajanan_maharaj_sumananjali.png"},
+        {"file": "gajanan_maharaj_stotra_yogi_rana.json", "image": "gajanan_maharaj_stotra_yogi_rana.png"},
+        {"file": "gajanan_maharaj_stotra_kasturicha_mrug.json", "image": "gajanan_maharaj_stotra_kasturicha_mrug.png"},
+        {"file": "gajanan_maharaj_stotra_dasganu_maharaj_krut.json", "image": "gajanan_maharaj_stotra_dasganu_maharaj_krut.png"},
+        {"file": "gajanan_maharaj_chalisa.json", "image": "gajanan_maharaj_chalisa.png"},
+        {"file": "gajanan_maharaj_prachiti.json", "image": "gajanan_maharaj_prachiti.png"}
+      ]
+    },
+    "aartis": {
+      "title_key": "aartiTitle",
+      "icon": "library_music_outlined",
+      "categories": [
+        {
+          "id": "daily",
+          "title_key": "dailyAartis",
+          "textResourceDirectory": "resources/texts/gajanan_maharaj/aartis/daily",
+          "imageResourceDirectory": "resources/images/gajanan_maharaj/aartis/daily",
+          "files": [
+            {"file": "kakad_aarti.json", "image": "kakad_aarti.png"},
+            {"file": "madhyan_aarti.json", "image": "madhyan_aarti.png"},
+            {"file": "dhoop_aarti.json", "image": "dhoop_aarti.png"},
+            {"file": "shej_aarti.json", "image": "shej_aarti.png"}
+          ]
+        },
+        {
+          "id": "event",
+          "title_key": "eventAartis",
+          "textResourceDirectory": "resources/texts/gajanan_maharaj/aartis/event",
+          "imageResourceDirectory": "resources/images/gajanan_maharaj/aartis/event",
+          "files": [
+            {"file": "prakat_din_aarti.json", "image": "prakat_din_aarti.png"},
+            {"file": "akshay_tritiya_aarti.json", "image": "akshay_tritiya_aarti.png"},
+            {"file": "ashadhi_ekadashi_aarti.json", "image": "ashadhi_ekadashi_aarti.png"},
+            {"file": "rushi_panchami_aarti.json", "image": "rushi_panchami_aarti.png"},
+            {"file": "diwali_prabhat_aarti.json", "image": "diwali_prabhat_aarti.png"},
+            {"file": "ram_navami_aarti.json", "image": "ram_navami_aarti.png"},
+            {"file": "datta_jayanti_aarti.json", "image": "datta_jayanti_aarti.png"}
+          ]
+        }
+      ]
+    },
+    "namavali": {
+      "title_key": "namavaliTitle",
+      "icon": "format_list_numbered",
+      "file": "namavali_108.json",
+      "image": "108_Namavali.png",
+      "textResourceDirectory": "resources/texts/gajanan_maharaj/namavali",
+      "imageResourceDirectory": "resources/images/gajanan_maharaj/namavali"
+    }
+  },
+  "donation_info": {
+    "qr_code_light": "resources/images/gajanan_maharaj/qr_code/Zelle_QR_Code_Light.png",
+    "qr_code_dark": "resources/images/gajanan_maharaj/qr_code/Zelle_QR_Code_Dark.png",
+    "zelle_url": "https://tinyurl.com/Sea-GM-Zelle-Pay"
+  },
+  "social_media_links": [
+      {
+        "platform": "facebook",
+        "icon": "Facebook.png",
+        "url": "https://www.facebook.com/profile.php?id=100069020920320",
+        "color": "#3b5998"
+      },
+      {
+        "platform": "youtube",
+        "icon": "YouTube.png",
+        "url": "https://www.youtube.com/@GajananMaharajSeattle",
+        "color": "#FF0000"
+      },
+      {
+        "platform": "instagram",
+        "icon": "Instagram.png",
+        "url": "https://www.instagram.com/gajanan_maharaj_parivar_wa",
+        "color": "#E1306C"
+      },
+      {
+        "platform": "google_photos",
+        "icon": "Google_Photos.png",
+        "url": "https://photos.app.goo.gl/vxwABG9wP8avhdAg8",
+        "color": "#DB4437"
+      }
+  ],
+  "signup_links": [
+    {
+      "platform_key": "sundayPrasadSevaSignup",
+      "description_key": "sundayPrasadSevaSignupDescription",
+      "icon": "Prasad_Seva.png",
+      "url": "https://tinyurl.com/SeaGMSundayPrasadSeva",
+      "color": "#e8bd4f"
+    },
+    {
+      "platform_key": "vastralankarSevaSignup",
+      "description_key": "vastralankarSevaSignupDescription",
+      "icon": "Vastralankar_Seva.png",
+      "url": "https://tinyurl.com/SeaGMVastralankarSeva2026",
+      "color": "#742028"
+    }
+  ]
+}

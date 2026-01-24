@@ -1,53 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SocialMediaScreen extends StatelessWidget {
-  const SocialMediaScreen({super.key});
+  final DeityConfig deity;
+  const SocialMediaScreen({super.key, required this.deity});
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final theme = Theme.of(context);
-
-    final List<Map<String, String>> socialMediaLinks = [
-      {
-        'platform': localizations.facebook,
-        'description': localizations.officialPage,
-        'icon': 'resources/images/social/Facebook.png',
-        'url': 'https://www.facebook.com/profile.php?id=100069020920320',
-        'color': '#3b5998', // Facebook Blue
-      },
-      {
-        'platform': localizations.youtube,
-        'description': localizations.videosAndStreams,
-        'icon': 'resources/images/social/YouTube.png',
-        'url': 'https://www.youtube.com/@GajananMaharajSeattle',
-        'color': '#FF0000', // YouTube Red
-      },
-      {
-        'platform': localizations.instagram,
-        'description': localizations.photosAndReels,
-        'icon': 'resources/images/social/Instagram.png',
-        'url': 'https://www.instagram.com/gajanan_maharaj_parivar_wa',
-        'color': '#E1306C', // Instagram Pink
-      },
-      {
-        'platform': localizations.googlePhotos,
-        'description': localizations.photoGallery,
-        'icon': 'resources/images/social/Google_Photos.png',
-        'url': 'https://photos.app.goo.gl/vxwABG9wP8avhdAg8',
-        'color': '#DB4437', // Google Red
-      },
-      /*{
-        'platform': localizations.whatsapp,
-        'description': localizations.whatsappAdminContact,
-        'icon': 'resources/images/social/WhatsApp.png',
-        'url': 'https://wa.me/',
-        'color': '#25D366', // WhatsApp Green
-      }*/
-    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -75,12 +39,12 @@ class SocialMediaScreen extends StatelessWidget {
                 style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.primary),
               ),
               const SizedBox(height: 16),
-              ...socialMediaLinks.map((link) => SocialMediaCard(
-                platform: link['platform']!,
-                description: link['description']!,
-                icon: link['icon']!,
-                url: link['url']!,
-                color: Color(int.parse(link['color']!.substring(1, 7), radix: 16) + 0xFF000000),
+              ...deity.socialMediaLinks.map((link) => SocialMediaCard(
+                platform: _getPlatformName(localizations, link.platform),
+                description: _getPlatformDescription(localizations, link.platform),
+                icon: 'resources/images/${deity.id}/social/${link.icon}',
+                url: link.url,
+                color: Color(int.parse(link.color.substring(1, 7), radix: 16) + 0xFF000000),
               )),
               const SizedBox(height: 24),
               Row(
@@ -99,6 +63,36 @@ class SocialMediaScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getPlatformName(AppLocalizations localizations, String platform) {
+    switch (platform) {
+      case 'facebook':
+        return localizations.facebook;
+      case 'youtube':
+        return localizations.youtube;
+      case 'instagram':
+        return localizations.instagram;
+      case 'google_photos':
+        return localizations.googlePhotos;
+      default:
+        return '';
+    }
+  }
+
+  String _getPlatformDescription(AppLocalizations localizations, String platform) {
+    switch (platform) {
+      case 'facebook':
+        return localizations.officialPage;
+      case 'youtube':
+        return localizations.videosAndStreams;
+      case 'instagram':
+        return localizations.photosAndReels;
+      case 'google_photos':
+        return localizations.photoGallery;
+      default:
+        return '';
+    }
   }
 }
 

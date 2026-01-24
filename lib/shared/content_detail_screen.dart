@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
@@ -10,9 +11,10 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-enum ContentType { granth, aarti, bhajan, stotra }
+enum ContentType { granth, aarti, bhajan, stotra, namavali }
 
 class ContentDetailScreen extends StatefulWidget {
+  final DeityConfig deity;
   final ContentType contentType;
   final List<Map<String, String>> contentList;
   final int currentIndex;
@@ -23,6 +25,7 @@ class ContentDetailScreen extends StatefulWidget {
 
   const ContentDetailScreen({
     super.key,
+    required this.deity,
     required this.contentType,
     required this.contentList,
     required this.currentIndex,
@@ -87,31 +90,13 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
 
   void _navigateToItem(int index) {
     final item = widget.contentList[index];
-    final directory = item['directory'] ?? '';
-    final fileName = item['fileName'] ?? '';
-    String newAssetPath;
-
-    switch (widget.contentType) {
-      case ContentType.granth:
-        newAssetPath = 'resources/texts/grantha/adhyay_${index + 1}.json';
-        break;
-      case ContentType.aarti:
-        newAssetPath = 'resources/texts/aartis/$directory/$fileName';
-        break;
-      case ContentType.bhajan:
-        newAssetPath = 'resources/texts/bhajans/$fileName';
-        break;
-      case ContentType.stotra:
-        newAssetPath = directory.isNotEmpty
-            ? 'resources/texts/stotras/$directory/$fileName'
-            : 'resources/texts/stotras/$fileName';
-        break;
-    }
+    final newAssetPath = item['assetPath']!;
 
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => ContentDetailScreen(
+          deity: widget.deity,
           contentType: widget.contentType,
           contentList: widget.contentList,
           currentIndex: index,
@@ -155,7 +140,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final item = snapshot.data!;
-                    final title = locale.languageCode == 'mr' ? item['title_mr'] : item['title_en'];
+                    final title = item['title_${locale.languageCode}'] ?? item['title_en'] ?? '';
                     return Text(title, textAlign: TextAlign.center, maxLines: 2,);
                   } else {
                     return const Text(''); // Placeholder while loading
@@ -303,22 +288,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
           final data = snapshot.data!;
-          String text = '';
-
-          switch(widget.contentType) {
-            case ContentType.granth:
-              text = locale.languageCode == 'mr' ? data['adhyay_mr'] : data['adhyay_en'];
-              break;
-            case ContentType.aarti:
-              text = locale.languageCode == 'mr' ? data['aarti_mr'] : data['aarti_en'];
-              break;
-            case ContentType.bhajan:
-              text = locale.languageCode == 'mr' ? data['bhajan_mr'] : data['bhajan_en'];
-              break;
-            case ContentType.stotra:
-              text = locale.languageCode == 'mr' ? data['stotra_mr'] : data['stotra_en'];
-              break;
-          }
+          final langCode = locale.languageCode;
+          final text = data['content_$langCode'] ?? data['content_en'] ?? '';
 
           return SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
@@ -348,7 +319,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
           } else if (snapshot.hasData) {
             final data = snapshot.data!;
             final videoId = data['youtube_video_id'];
-            final title = locale.languageCode == 'mr' ? data['title_mr'] : data['title_en'];
+            final title = data['title_${locale.languageCode}'] ?? data['title_en'] ?? '';
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
@@ -361,10 +332,12 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
                     clipBehavior: Clip.antiAlias,
                     child: Image.asset(
                       widget.imagePath,
+                      fit: BoxFit.cover, // Ensures the image covers the card area
                       width: double.infinity,
                       errorBuilder: (context, error, stackTrace) {
                         return Image.asset(
-                          'resources/images/grantha/default.jpg', // A generic default
+                          'resources/images/gajanan_maharaj/default.jpg', // A generic default
+                          fit: BoxFit.cover, // Also apply fit to the error image
                           width: double.infinity,
                         );
                       },
@@ -419,7 +392,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
                               borderRadius: BorderRadius.circular(12.0),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey.withValues(alpha: 0.2),
+                                  color: Colors.grey.withOpacity(0.2),
                                   spreadRadius: 1,
                                   blurRadius: 5,
                                   offset: const Offset(0, 3),
@@ -429,12 +402,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
                             child: IconButton(
                               icon: Icon(Icons.share, color: theme.colorScheme.primary),
                               onPressed: () {
-                                SharePlus.instance.share(
-                                    ShareParams(
-                                        text: '${localizations
-                                            .contentShareMessage}: https://www.youtube.com/watch?v=$videoId'
-                                    )
-                                );
+                                Share.share(
+                                    'Check out this content: https://www.youtube.com/watch?v=$videoId');
                               },
                               iconSize: 32.0,
                               padding: const EdgeInsets.all(16.0),
@@ -449,7 +418,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     decoration: BoxDecoration(
-                      color: Colors.orange.withValues(alpha: 0.1),
+                      color: Colors.orange.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: Row(

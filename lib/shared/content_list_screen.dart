@@ -1,0 +1,174 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
+
+class ContentListScreen extends StatefulWidget {
+  final DeityConfig deity;
+  final String title;
+  final String contentTypeId;
+  final ContentContainer content;
+
+  const ContentListScreen({
+    super.key,
+    required this.deity,
+    required this.title,
+    required this.contentTypeId,
+    required this.content,
+  });
+
+  @override
+  State<ContentListScreen> createState() => _ContentListScreenState();
+}
+
+class _ContentListScreenState extends State<ContentListScreen> {
+  late Future<List<Map<String, String>>> _contentListFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _contentListFuture = _loadContentList();
+  }
+
+  Future<List<Map<String, String>>> _loadContentList() async {
+    final List<Map<String, String>> contentList = [];
+    final parentTextDir = widget.content.textResourceDirectory;
+    final parentImageDir = widget.content.imageResourceDirectory;
+
+    for (var i = 0; i < widget.content.files.length; i++) {
+      final item = widget.content.files[i];
+
+      // Use the item's specific directory if provided, otherwise fall back to the parent's.
+      final textPath = '${item.textResourceDirectory ?? parentTextDir}/${item.file}';
+      final imagePath = '${item.imageResourceDirectory ?? parentImageDir}/${item.image}';
+
+      final String response = await rootBundle.loadString(textPath);
+      final data = await json.decode(response);
+
+      contentList.add({
+        'title_mr': data['title_mr'] ?? 'अध्याय ${i + 1}',
+        'title_en': data['title_en'] ?? 'Adhyay ${i + 1}',
+        'fileName': item.file,
+        'imagePath': imagePath,
+        'assetPath': textPath,
+        'youtube_video_id': data['youtube_video_id'] ?? '',
+      });
+    }
+    return contentList;
+  }
+
+  ContentType _getContentType(String id) {
+    switch (id) {
+      case 'granth':
+        return ContentType.granth;
+      case 'stotras':
+      case 'sunday_prarathana':
+        return ContentType.stotra;
+      case 'bhajans':
+        return ContentType.bhajan;
+      case 'daily':
+      case 'event':
+      case 'other':
+        return ContentType.aarti;
+      default:
+        return ContentType.granth;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: FutureBuilder<List<Map<String, String>>>(
+        future: _contentListFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final items = snapshot.data!;
+            return ListView.builder(
+              padding: const EdgeInsets.all(8.0),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final item = items[index];
+                final itemTitle = locale.languageCode == 'mr' ? item['title_mr'] : item['title_en'];
+
+                return Card(
+                  elevation: theme.cardTheme.elevation,
+                  color: theme.cardTheme.color,
+                  shape: theme.cardTheme.shape,
+                  margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: ListTile(
+                    leading: widget.contentTypeId == 'granth'
+                        ? CircleAvatar(
+                            backgroundColor: Colors.orange[300],
+                            child: Text('${index + 1}', style: const TextStyle(color: Colors.white)),
+                          )
+                        : null,
+                    title: Text(
+                      itemTitle!,
+                      style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 18.0),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (item['youtube_video_id']!.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.play_circle_outline),
+                            color: theme.colorScheme.primary,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ContentDetailScreen(
+                                    deity: widget.deity,
+                                    contentType: _getContentType(widget.contentTypeId),
+                                    contentList: items,
+                                    currentIndex: index,
+                                    imagePath: item['imagePath']!,
+                                    assetPath: item['assetPath']!,
+                                    initialTabIndex: 1,
+                                    autoPlay: true,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ContentDetailScreen(
+                            deity: widget.deity,
+                            contentType: _getContentType(widget.contentTypeId),
+                            contentList: items,
+                            currentIndex: index,
+                            imagePath: item['imagePath']!,
+                            assetPath: item['assetPath']!,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            );
+          } else {
+            return const Center(child: Text('No items found'));
+          }
+        },
+      ),
+    );
+  }
+}

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DonationsScreen extends StatelessWidget {
-  const DonationsScreen({super.key});
+  final DeityConfig deity;
+  const DonationsScreen({super.key, required this.deity});
 
   @override
   Widget build(BuildContext context) {
@@ -12,8 +14,8 @@ class DonationsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final qrCodeImagePath = isDarkMode
-        ? 'resources/images/qr_code/Zelle_QR_Code_Dark.png'
-        : 'resources/images/qr_code/Zelle_QR_Code_Light.png';
+        ? deity.donationInfo.qrCodeDark
+        : deity.donationInfo.qrCodeLight;
 
     return Scaffold(
       appBar: AppBar(
@@ -52,7 +54,7 @@ class DonationsScreen extends StatelessWidget {
               color: theme.cardTheme.color,
               margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
               child: InkWell(
-                onTap: () => _launchZelle(context, localizations),
+                onTap: () => _launchZelle(context, localizations, deity.donationInfo.zelleUrl),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -77,8 +79,7 @@ class DonationsScreen extends StatelessWidget {
     );
   }
 
-  void _launchZelle(BuildContext context, AppLocalizations localizations) async {
-    const zelleUrl = 'https://tinyurl.com/Sea-GM-Zelle-Pay';
+  void _launchZelle(BuildContext context, AppLocalizations localizations, String zelleUrl) async {
     if (await canLaunchUrl(Uri.parse(zelleUrl))) {
       await launchUrl(Uri.parse(zelleUrl));
     } else {

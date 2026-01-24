@@ -2,8 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/event_calendar/event_calendar_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import '../deity/deity_dashboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -40,16 +45,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
+    final appConfigProvider = Provider.of<AppConfigProvider>(context);
 
-    final List<Map<String, dynamic>> modules = [
-      {'title': localizations.nityopasanaTitle, 'icon': 'resources/images/icon/Nitya_Smaran.png', 'route': Routes.nityopasana},
-      {'title': localizations.calendarTitle, 'icon': Icons.calendar_month_outlined, 'route': Routes.calendar},
-      {'title': localizations.donationsTitle, 'icon': Icons.volunteer_activism_outlined, 'route': Routes.donations},
-      {'title': localizations.signupsTitle, 'icon': Icons.assignment_ind_outlined, 'route': Routes.signups},
-      {'title': localizations.favoritesTitle, 'icon': Icons.favorite_border, 'route': Routes.favorites},
-      {'title': localizations.aboutMaharajTitle, 'icon': Icons.info_outline, 'route': Routes.aboutMaharaj},
-      {'title': localizations.socialMediaTitle, 'icon': Icons.connect_without_contact, 'route': Routes.socialMedia},
-    ];
+    final List<Widget> cards = [];
+
+    if (appConfigProvider.appConfig != null) {
+      for (var deity in appConfigProvider.appConfig!.deities) {
+        cards.add(_buildDeityGridItem(context, deity));
+      }
+    }
+
+    cards.add(_buildIconGridItem(context, localizations.calendarTitle, Icons.calendar_month_outlined, () => Navigator.pushNamed(context, Routes.calendar)));
+    cards.add(_buildIconGridItem(context, localizations.favoritesTitle, Icons.favorite_border, () => Navigator.pushNamed(context, Routes.favorites)));
 
     return Scaffold(
       appBar: AppBar(
@@ -69,36 +76,17 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             _buildUpcomingEventCard(context, localizations),
-            _buildGridView(context, modules),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                alignment: WrapAlignment.center,
+                children: cards,
+              ),
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildGridView(
-    BuildContext context,
-    List<Map<String, dynamic>> modules,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Wrap(
-        spacing: 8.0, // Horizontal space between cards
-        runSpacing: 8.0, // Vertical space between rows
-        alignment: WrapAlignment.center,
-        children: modules.map((module) {
-          return SizedBox(
-            width:
-                (MediaQuery.of(context).size.width - 24) /
-                2, // 24 = padding * 2 + spacing
-            child: _buildGridItem(
-              context,
-              module['title'],
-              module['icon'],
-              module['route'],
-            ),
-          );
-        }).toList(),
       ),
     );
   }
@@ -150,8 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-              )
-          );
+              ));
         }
 
         final eventData = snapshot.data!.data() as Map<String, dynamic>;
@@ -179,8 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      EventCalendarScreen(initialDate: eventDate),
+                  builder: (context) => EventCalendarScreen(initialDate: eventDate),
                 ),
               );
             },
@@ -222,54 +208,121 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
+  
+  Widget _buildDeityGridItem(BuildContext context, DeityConfig deity) {
+    final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
+    final name = locale == 'mr' ? deity.nameMr : deity.nameEn;
 
-  Widget _buildGridItem(
-    BuildContext context,
-    String title,
-    dynamic icon,
-    String route,
-  ) {
+    return SizedBox(
+      width: (MediaQuery.of(context).size.width - 24) / 2,
+      child: AspectRatio(
+        aspectRatio: 1.0, // Make cards square
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: theme.cardTheme.shadowColor!,
+                offset: const Offset(0, 4),
+                blurRadius: 0,
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            elevation: 0,
+            margin: EdgeInsets.zero,
+            shape: theme.cardTheme.shape,
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DeityDashboardScreen(deity: deity)),
+                );
+              },
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset(
+                        deity.imagePath,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) => Icon(Icons.error, color: Colors.red.shade300, size: 60),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    color: theme.cardTheme.color,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                    child: Center(
+                      child: Text(
+                        name,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.orange[600],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIconGridItem(BuildContext context, String title, IconData icon, VoidCallback onTap) {
     final theme = Theme.of(context);
 
-    return AspectRatio(
-      aspectRatio: 1.4,
-      child: Container(
-        // This Container provides the distinct bottom shadow
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.0),
-          boxShadow: [
-            BoxShadow(
-              color: theme.cardTheme.shadowColor!,
-              offset: const Offset(0, 4),
-              blurRadius: 0,
-              spreadRadius: 0,
-            ),
-          ],
-        ),
-        child: Card(
-          elevation: 0,
-          margin: EdgeInsets.zero,
-          color: theme.cardTheme.color,
-          shape: theme.cardTheme.shape,
-          child: InkWell(
-            onTap: () => Navigator.pushNamed(context, route),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (icon is IconData)
-                  Icon(icon, size: 40.0, color: theme.iconTheme.color)
-                else if (icon is String)
-                  Image.asset(icon, height: 40.0, width: 40.0),
-                const SizedBox(height: 8.0),
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.orange[600],
-                    fontWeight: FontWeight.bold,
+    return SizedBox(
+      width: (MediaQuery.of(context).size.width - 24) / 2,
+      child: AspectRatio(
+        aspectRatio: 1.0, // Make cards square
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: theme.cardTheme.shadowColor!,
+                offset: const Offset(0, 4),
+                blurRadius: 0,
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          child: Card(
+            elevation: 0,
+            margin: EdgeInsets.zero,
+            color: theme.cardTheme.color,
+            shape: theme.cardTheme.shape,
+            child: InkWell(
+              onTap: onTap,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: 80.0, color: theme.iconTheme.color),
+                  const SizedBox(height: 8),
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.orange[600],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
