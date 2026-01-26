@@ -35,54 +35,44 @@ class FavoritesScreen extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: ListView(
           children: favoritesConfig.order.map((key) {
-            if (key == 'sunday_prarthana') {
-              final content = favoritesConfig.sundayPrarthana;
-              final title = _getTitle(localizations, content.titleKey);
-              return _buildFavoriteCard(
-                context,
-                theme,
-                title,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ContentListScreen(
-                        deity: defaultDeity,
-                        title: title,
-                        contentTypeId: 'sunday_prarthana',
-                        content: content,
-                      ),
+            final content = _getContent(favoritesConfig, key);
+            if (content == null) return const SizedBox.shrink();
+
+            final title = _getTitle(localizations, content.titleKey);
+
+            return _buildFavoriteCard(
+              context,
+              theme,
+              title,
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ContentListScreen(
+                      deity: defaultDeity,
+                      title: title,
+                      contentTypeId: key, // Use the key from the order array
+                      content: content,
                     ),
-                  );
-                },
-              );
-            } else if (key == 'other_aartis') {
-              final content = favoritesConfig.otherAartis;
-              final title = _getTitle(localizations, content.titleKey);
-              return _buildFavoriteCard(
-                context,
-                theme,
-                title,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ContentListScreen(
-                        deity: defaultDeity,
-                        title: title,
-                        contentTypeId: 'other',
-                        content: content,
-                      ),
-                    ),
-                  );
-                },
-              );
-            }
-            return const SizedBox.shrink();
+                  ),
+                );
+              },
+            );
           }).toList(),
         ),
       ),
     );
+  }
+
+  ContentContainer? _getContent(FavoritesConfig config, String key) {
+    switch (key) {
+      case 'sunday_prarthana':
+        return config.sundayPrarthana;
+      case 'other_aartis':
+        return config.otherAartis;
+      default:
+        return null;
+    }
   }
 
   String _getTitle(AppLocalizations localizations, String key) {

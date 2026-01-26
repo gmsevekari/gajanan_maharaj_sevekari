@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 abstract class ContentContainer {
+  String get titleKey;
   String get textResourceDirectory;
   String get imageResourceDirectory;
   List<ContentItem> get files;
@@ -197,6 +198,7 @@ class NityopasanaConfig {
 }
 
 class NityopasanaContent implements ContentContainer {
+  @override
   final String titleKey;
   final String icon;
   @override
@@ -260,6 +262,7 @@ class AartiContent {
 
 class AartiCategoryConfig implements ContentContainer {
   final String id;
+  @override
   final String titleKey;
   @override
   final String textResourceDirectory;
