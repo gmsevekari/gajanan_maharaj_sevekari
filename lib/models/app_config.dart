@@ -28,14 +28,16 @@ class FavoritesConfig {
   final List<String> order;
   final NityopasanaContent sundayPrarthana;
   final NityopasanaContent otherAartis;
+  final NityopasanaContent otherStotras;
 
-  FavoritesConfig({required this.order, required this.sundayPrarthana, required this.otherAartis});
+  FavoritesConfig({required this.order, required this.sundayPrarthana, required this.otherAartis, required this.otherStotras});
 
   factory FavoritesConfig.fromJson(Map<String, dynamic> json) {
     return FavoritesConfig(
       order: List<String>.from(json['order'] ?? []),
       sundayPrarthana: NityopasanaContent.fromJson(json['sunday_prarthana'] ?? {}),
       otherAartis: NityopasanaContent.fromJson(json['other_aartis'] ?? {}),
+      otherStotras: NityopasanaContent.fromJson(json['other_stotras'] ?? {}),
     );
   }
 

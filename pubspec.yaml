@@ -83,6 +83,8 @@ flutter:
     - resources/texts/favorites/sunday_prarthana/
     - resources/images/favorites/other_aartis/
     - resources/texts/favorites/other_aartis/
+    - resources/images/favorites/other_stotras/
+    - resources/texts/favorites/other_stotras/
     - resources/images/icon/
     - resources/images/gajanan_maharaj/
     - resources/texts/gajanan_maharaj/about/
@@ -101,7 +103,14 @@ flutter:
     - resources/images/gajanan_maharaj/qr_code/
     - resources/images/gajanan_maharaj/icon/
     - resources/images/gajanan_maharaj/social/
-
+    - resources/images/datta_maharaj/
+    - resources/texts/datta_maharaj/about/
+    - resources/texts/datta_maharaj/stotras/
+    - resources/images/datta_maharaj/stotras/
+    - resources/texts/datta_maharaj/bhajans/
+    - resources/images/datta_maharaj/bhajans/
+    - resources/texts/datta_maharaj/aartis/daily/
+    - resources/images/datta_maharaj/aartis/daily/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

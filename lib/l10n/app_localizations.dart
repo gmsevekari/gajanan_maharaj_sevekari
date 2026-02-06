@@ -44,6 +44,7 @@ class AppLocalizations {
       'dailyAartis': 'Daily Aartis',
       'eventAartis': 'Event Aartis',
       'otherAartis': 'Other Aartis',
+      'otherStotras': 'Other Stotras',
       'ganapatiAarti': 'Ganapati Aarti',
       'deviAarti': 'Devi Aarti',
       'dattaMaharajAarti': 'Datta Maharaj Aarti',
@@ -179,6 +180,7 @@ class AppLocalizations {
       'dailyAartis': 'दैनंदिन आरत्या',
       'eventAartis': 'विशेष आरत्या',
       'otherAartis': 'इतर आरत्या',
+      'otherStotras': 'इतर स्तोत्रं',
       'ganapatiAarti': 'गणपतीची आरती',
       'deviAarti': 'देवीची आरती',
       'dattaMaharajAarti': 'दत्त महाराज आरती',
@@ -315,6 +317,7 @@ class AppLocalizations {
   String get dailyAartis => _localizedValues[locale.languageCode]!['dailyAartis']!;
   String get eventAartis => _localizedValues[locale.languageCode]!['eventAartis']!;
   String get otherAartis => _localizedValues[locale.languageCode]!['otherAartis']!;
+  String get otherStotras => _localizedValues[locale.languageCode]!['otherStotras']!;
   String get ganapatiAarti => _localizedValues[locale.languageCode]!['ganapatiAarti']!;
   String get deviAarti => _localizedValues[locale.languageCode]!['deviAarti']!;
   String get dattaMaharajAarti => _localizedValues[locale.languageCode]!['dattaMaharajAarti']!;

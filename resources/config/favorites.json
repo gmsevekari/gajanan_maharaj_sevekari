@@ -1,5 +1,5 @@
 {
-  "order": ["sunday_prarthana", "other_aartis"],
+  "order": ["sunday_prarthana", "other_aartis", "other_stotras"],
   "sunday_prarthana": {
     "title_key": "sundayPrarthanaTitle",
     "icon": "",
@@ -34,6 +34,16 @@
       {"file": "karpur_aarti.json", "image": "karpur_aarti.png"},
       {"file": "prarthana_ghalin_lotangan.json", "image": "prarthana_ghalin_lotangan.png"},
       {"file": "mantrapushpanjali.json", "image": "mantrapushpanjali.png"}
+    ]
+  },
+  "other_stotras": {
+    "title_key": "otherStotras",
+    "icon": "",
+    "textResourceDirectory": "resources/texts/favorites/other_stotras",
+    "imageResourceDirectory": "resources/images/favorites/other_stotras",
+    "files": [
+      {"file": "ganapati_atharvashirsha.json", "image": "ganapati_atharvashirsha.png"},
+      {"file": "gajanan_maharaj_vitthal_rakhumai_gayatri.json", "image": "gajanan_maharaj_vitthal_rakhumai_gayatri.png"}
     ]
   }
 }

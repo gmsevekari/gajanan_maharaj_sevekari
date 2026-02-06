@@ -17,6 +17,12 @@ class FavoritesScreen extends StatelessWidget {
     final favoritesConfig = appConfig.favorites;
     final defaultDeity = appConfig.deities.first;
 
+    final favoritesMap = {
+      'sunday_prarthana': favoritesConfig.sundayPrarthana,
+      'other_aartis': favoritesConfig.otherAartis,
+      'other_stotras': favoritesConfig.otherStotras,
+    };
+
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.favoritesTitle),
@@ -35,7 +41,7 @@ class FavoritesScreen extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: ListView(
           children: favoritesConfig.order.map((key) {
-            final content = _getContent(favoritesConfig, key);
+            final content = favoritesMap[key];
             if (content == null) return const SizedBox.shrink();
 
             final title = _getTitle(localizations, content.titleKey);
@@ -51,7 +57,7 @@ class FavoritesScreen extends StatelessWidget {
                     builder: (context) => ContentListScreen(
                       deity: defaultDeity,
                       title: title,
-                      contentTypeId: key, // Use the key from the order array
+                      contentTypeId: key,
                       content: content,
                     ),
                   ),
@@ -64,23 +70,14 @@ class FavoritesScreen extends StatelessWidget {
     );
   }
 
-  ContentContainer? _getContent(FavoritesConfig config, String key) {
-    switch (key) {
-      case 'sunday_prarthana':
-        return config.sundayPrarthana;
-      case 'other_aartis':
-        return config.otherAartis;
-      default:
-        return null;
-    }
-  }
-
   String _getTitle(AppLocalizations localizations, String key) {
     switch (key) {
       case 'sundayPrarthanaTitle':
         return localizations.sundayPrarthanaTitle;
       case 'otherAartis':
         return localizations.otherAartis;
+      case 'otherStotras':
+        return localizations.otherStotras;
       default:
         return '';
     }

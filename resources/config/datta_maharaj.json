@@ -1,0 +1,49 @@
+{
+  "id": "datta_maharaj",
+  "name_en": "Datta Maharaj",
+  "name_mr": "दत्त महाराज",
+  "imagePath": "resources/images/datta_maharaj/Datta_Maharaj.png",
+  "about_file": "about.json",
+  "nityopasana": {
+    "order": ["stotras", "bhajans", "aartis"],
+    "bhajans": {
+      "title_key": "bhajanTitle",
+      "icon": "lyrics_outlined",
+      "textResourceDirectory": "resources/texts/datta_maharaj/bhajans",
+      "imageResourceDirectory": "resources/images/datta_maharaj/bhajans",
+      "files": [
+        {"file": "datta_rup_zale.json", "image": "datta_rup_zale.png"}
+      ]
+    },
+    "stotras": {
+      "title_key": "stotraTitle",
+      "icon": "queue_music",
+      "textResourceDirectory": "resources/texts/datta_maharaj/stotras",
+      "imageResourceDirectory": "resources/images/datta_maharaj/stotras",
+      "files": [
+        {"file": "guru_geeta.json", "image": "guru_geeta.png"},
+        {"file": "datta_majala.json", "image": "datta_majala.png"},
+        {"file": "karuna_tripadi.json", "image": "karuna_tripadi.png"},
+        {"file": "siddha_mangal.json", "image": "siddha_mangal.png"},
+        {"file": "ghor_kashtodharan.json", "image": "ghor_kashtodharan.png"},
+        {"file": "datta_stuti.json", "image": "datta_stuti.png"}
+      ]
+    },
+    "aartis": {
+      "title_key": "aartiTitle",
+      "icon": "library_music_outlined",
+      "categories": [
+        {
+          "id": "daily",
+          "title_key": "dailyAartis",
+          "textResourceDirectory": "resources/texts/datta_maharaj/aartis/daily",
+          "imageResourceDirectory": "resources/images/datta_maharaj/aartis/daily",
+          "files": [
+            {"file": "trigunatmak_traymurti.json", "image": "trigunatmak_traymurti.png"},
+            {"file": "shri_guru_dattaraj_murti.json", "image": "shri_guru_dattaraj_murti.png"}
+          ]
+        }
+      ]
+    }
+  }
+}
