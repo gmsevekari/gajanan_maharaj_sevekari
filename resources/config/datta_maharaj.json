@@ -32,17 +32,11 @@
     "aartis": {
       "title_key": "aartiTitle",
       "icon": "library_music_outlined",
-      "categories": [
-        {
-          "id": "daily",
-          "title_key": "dailyAartis",
-          "textResourceDirectory": "resources/texts/datta_maharaj/aartis/daily",
-          "imageResourceDirectory": "resources/images/datta_maharaj/aartis/daily",
-          "files": [
-            {"file": "trigunatmak_traymurti.json", "image": "trigunatmak_traymurti.png"},
-            {"file": "shri_guru_dattaraj_murti.json", "image": "shri_guru_dattaraj_murti.png"}
-          ]
-        }
+      "textResourceDirectory": "resources/texts/datta_maharaj/aartis",
+      "imageResourceDirectory": "resources/images/datta_maharaj/aartis",
+      "files": [
+        {"file": "trigunatmak_traymurti.json", "image": "trigunatmak_traymurti.png"},
+        {"file": "shri_guru_dattaraj_murti.json", "image": "shri_guru_dattaraj_murti.png"}
       ]
     }
   }

@@ -49,7 +49,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
   }
 
   Future<Map<String, dynamic>> _loadNamavali() async {
-    final String response = await rootBundle.loadString('resources/texts/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali.file}');
+    final String response = await rootBundle.loadString('resources/texts/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali!.file}');
     final data = await json.decode(response);
     if (data['youtube_video_id'] != null && data['youtube_video_id'].isNotEmpty) {
       _youtubeController = YoutubePlayerController(
@@ -290,7 +290,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
                     shape: theme.cardTheme.shape,
                     clipBehavior: Clip.antiAlias,
                     child: Image.asset(
-                      'resources/images/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali.image}',
+                      'resources/images/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali!.image}',
                       width: double.infinity,
                       fit: BoxFit.cover, // Ensure the image covers the card area
                       errorBuilder: (context, error, stackTrace) {

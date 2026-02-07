@@ -16,7 +16,7 @@ class DeityDashboardScreen extends StatelessWidget {
 
     final List<Widget> featureCards = [];
 
-    if (deity.nityopasana.granth.files.isNotEmpty || deity.nityopasana.bhajans.files.isNotEmpty || deity.nityopasana.stotras.files.isNotEmpty) {
+    if (deity.nityopasana.order.isNotEmpty) {
       featureCards.add(_buildGridItem(context, localizations.nityopasanaTitle, 'resources/images/icon/Nitya_Smaran.png', Routes.nityopasana, arguments: deity));
     }
     if (deity.donationInfo.qrCodeLight.isNotEmpty) {

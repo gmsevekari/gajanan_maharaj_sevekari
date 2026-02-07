@@ -172,29 +172,39 @@ class AboutSection {
 
 class NityopasanaConfig {
   final List<String> order;
-  final NityopasanaContent granth;
-  final NityopasanaContent bhajans;
-  final NityopasanaContent stotras;
-  final AartiContent aartis;
-  final NamavaliContent namavali;
+  final NityopasanaContent? granth;
+  final NityopasanaContent? bhajans;
+  final NityopasanaContent? stotras;
+  final dynamic aartis; // Can be AartiContent or NityopasanaContent
+  final NamavaliContent? namavali;
 
   NityopasanaConfig({
     required this.order,
-    required this.granth,
-    required this.bhajans,
-    required this.stotras,
-    required this.aartis,
-    required this.namavali,
+    this.granth,
+    this.bhajans,
+    this.stotras,
+    this.aartis,
+    this.namavali,
   });
 
   factory NityopasanaConfig.fromJson(Map<String, dynamic> json) {
+    final aartisJson = json['aartis'];
+    dynamic aartisContent;
+    if (aartisJson != null) {
+      if (aartisJson.containsKey('categories')) {
+        aartisContent = AartiContent.fromJson(aartisJson);
+      } else {
+        aartisContent = NityopasanaContent.fromJson(aartisJson);
+      }
+    }
+
     return NityopasanaConfig(
       order: List<String>.from(json['order'] ?? []),
-      granth: NityopasanaContent.fromJson(json['granth'] ?? {}),
-      bhajans: NityopasanaContent.fromJson(json['bhajans'] ?? {}),
-      stotras: NityopasanaContent.fromJson(json['stotras'] ?? {}),
-      aartis: AartiContent.fromJson(json['aartis'] ?? {}),
-      namavali: NamavaliContent.fromJson(json['namavali'] ?? {}),
+      granth: json['granth'] != null ? NityopasanaContent.fromJson(json['granth']) : null,
+      bhajans: json['bhajans'] != null ? NityopasanaContent.fromJson(json['bhajans']) : null,
+      stotras: json['stotras'] != null ? NityopasanaContent.fromJson(json['stotras']) : null,
+      aartis: aartisContent,
+      namavali: json['namavali'] != null ? NamavaliContent.fromJson(json['namavali']) : null,
     );
   }
 }

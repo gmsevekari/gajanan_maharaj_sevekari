@@ -36,7 +36,9 @@ class NityopasanaScreen extends StatelessWidget {
             runSpacing: 8.0,
             alignment: WrapAlignment.center,
             children: deity.nityopasana.order.map((id) {
-              final content = _getContent(deity, id);
+              final content = _getContent(deity.nityopasana, id);
+              if (content == null) return const SizedBox.shrink();
+
               return SizedBox(
                 width: (MediaQuery.of(context).size.width - 24) / 2,
                 child: _buildGridItem(
@@ -53,20 +55,20 @@ class NityopasanaScreen extends StatelessWidget {
     );
   }
 
-  dynamic _getContent(DeityConfig deity, String id) {
+  dynamic _getContent(NityopasanaConfig nityopasana, String id) {
     switch (id) {
-      case 'granth': return deity.nityopasana.granth;
-      case 'stotras': return deity.nityopasana.stotras;
-      case 'bhajans': return deity.nityopasana.bhajans;
-      case 'aartis': return deity.nityopasana.aartis;
-      case 'namavali': return deity.nityopasana.namavali;
-      default: throw Exception('Unknown content id: $id');
+      case 'granth': return nityopasana.granth;
+      case 'stotras': return nityopasana.stotras;
+      case 'bhajans': return nityopasana.bhajans;
+      case 'aartis': return nityopasana.aartis;
+      case 'namavali': return nityopasana.namavali;
+      default: return null;
     }
   }
 
   void _navigateToContent(BuildContext context, String id, DeityConfig deity, String title, dynamic content) {
     Widget screen;
-    if (id == 'aartis') {
+    if (id == 'aartis' && content is AartiContent) {
       screen = AartiScreen(deity: deity);
     } else if (id == 'namavali') {
       screen = NamavaliScreen(deity: deity);
@@ -75,7 +77,7 @@ class NityopasanaScreen extends StatelessWidget {
         deity: deity,
         title: title,
         contentTypeId: id,
-        content: content as NityopasanaContent,
+        content: content as ContentContainer,
       );
     }
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));

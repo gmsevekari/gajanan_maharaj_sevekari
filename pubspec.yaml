@@ -109,8 +109,8 @@ flutter:
     - resources/images/datta_maharaj/stotras/
     - resources/texts/datta_maharaj/bhajans/
     - resources/images/datta_maharaj/bhajans/
-    - resources/texts/datta_maharaj/aartis/daily/
-    - resources/images/datta_maharaj/aartis/daily/
+    - resources/texts/datta_maharaj/aartis/
+    - resources/images/datta_maharaj/aartis/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
