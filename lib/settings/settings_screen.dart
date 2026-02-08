@@ -71,7 +71,7 @@ class SettingsScreen extends StatelessWidget {
         onTap: () async {
           final Uri emailLaunchUri = Uri(
             scheme: 'mailto',
-            path: 'gajananmaharajseattle@gmail.com',
+            path: 'gajananmaharajsevekari@gmail.com',
             query: 'subject=${Uri.encodeComponent('Gajanan Maharaj Sevekari App Feedback')}',
           );
           await launchUrl(emailLaunchUri);

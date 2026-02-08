@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
@@ -28,9 +29,9 @@ class AartiScreen extends StatelessWidget {
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(8.0),
-        itemCount: deity.nityopasana.aartis.categories.length,
+        itemCount: (deity.nityopasana.aartis as AartiContent).categories.length,
         itemBuilder: (context, index) {
-          final category = deity.nityopasana.aartis.categories[index];
+          final category = (deity.nityopasana.aartis as AartiContent).categories[index];
           final title = _getCategoryTitle(localizations, category.titleKey);
           return _buildCategoryCard(context, title, category, deity);
         },
@@ -70,7 +71,7 @@ class AartiScreen extends StatelessWidget {
               builder: (context) => ContentListScreen(
                 deity: deity,
                 title: title,
-                contentTypeId: category.id,
+                contentType: ContentTypeExtension.fromString(category.contentType),
                 content: category, // Pass the entire category object
               ),
             ),

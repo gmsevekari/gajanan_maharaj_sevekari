@@ -9,6 +9,7 @@
     "bhajans": {
       "title_key": "bhajanTitle",
       "icon": "lyrics_outlined",
+      "contentType": "bhajan",
       "textResourceDirectory": "resources/texts/datta_maharaj/bhajans",
       "imageResourceDirectory": "resources/images/datta_maharaj/bhajans",
       "files": [
@@ -18,6 +19,7 @@
     "stotras": {
       "title_key": "stotraTitle",
       "icon": "queue_music",
+      "contentType": "stotra",
       "textResourceDirectory": "resources/texts/datta_maharaj/stotras",
       "imageResourceDirectory": "resources/images/datta_maharaj/stotras",
       "files": [
@@ -32,6 +34,7 @@
     "aartis": {
       "title_key": "aartiTitle",
       "icon": "library_music_outlined",
+      "contentType": "aarti",
       "textResourceDirectory": "resources/texts/datta_maharaj/aartis",
       "imageResourceDirectory": "resources/images/datta_maharaj/aartis",
       "files": [

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
@@ -57,7 +58,7 @@ class FavoritesScreen extends StatelessWidget {
                     builder: (context) => ContentListScreen(
                       deity: defaultDeity,
                       title: title,
-                      contentTypeId: key,
+                      contentType: ContentTypeExtension.fromString(content.contentType),
                       content: content,
                     ),
                   ),

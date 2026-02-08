@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 abstract class ContentContainer {
   String get titleKey;
+  String get contentType;
   String get textResourceDirectory;
   String get imageResourceDirectory;
   List<ContentItem> get files;
@@ -212,6 +213,8 @@ class NityopasanaConfig {
 class NityopasanaContent implements ContentContainer {
   @override
   final String titleKey;
+  @override
+  final String contentType;
   final String icon;
   @override
   final String textResourceDirectory;
@@ -220,13 +223,14 @@ class NityopasanaContent implements ContentContainer {
   @override
   final List<ContentItem> files;
 
-  NityopasanaContent({required this.titleKey, required this.icon, required this.textResourceDirectory, required this.imageResourceDirectory, required this.files});
+  NityopasanaContent({required this.titleKey, required this.contentType, required this.icon, required this.textResourceDirectory, required this.imageResourceDirectory, required this.files});
 
   factory NityopasanaContent.fromJson(Map<String, dynamic> json) {
     var fileList = json['files'] as List? ?? [];
     List<ContentItem> contentItems = fileList.map((i) => ContentItem.fromJson(i)).toList();
     return NityopasanaContent(
       titleKey: json['title_key'] ?? '',
+      contentType: json['contentType'] ?? '',
       icon: json['icon'] ?? '',
       textResourceDirectory: json['textResourceDirectory'] ?? '',
       imageResourceDirectory: json['imageResourceDirectory'] ?? '',
@@ -256,9 +260,10 @@ class ContentItem {
 class AartiContent {
   final String titleKey;
   final String icon;
+  final String contentType;
   final List<AartiCategoryConfig> categories;
 
-  AartiContent({required this.titleKey, required this.icon, required this.categories});
+  AartiContent({required this.titleKey, required this.icon, required this.contentType, required this.categories});
 
   factory AartiContent.fromJson(Map<String, dynamic> json) {
     var categoryList = json['categories'] as List? ?? [];
@@ -267,6 +272,7 @@ class AartiContent {
     return AartiContent(
       titleKey: json['title_key'] ?? '',
       icon: json['icon'] ?? '',
+      contentType: json['contentType'] ?? '',
       categories: categoryConfigList,
     );
   }
@@ -277,13 +283,15 @@ class AartiCategoryConfig implements ContentContainer {
   @override
   final String titleKey;
   @override
+  final String contentType;
+  @override
   final String textResourceDirectory;
   @override
   final String imageResourceDirectory;
   @override
   final List<ContentItem> files;
 
-  AartiCategoryConfig({required this.id, required this.titleKey, required this.textResourceDirectory, required this.imageResourceDirectory, required this.files});
+  AartiCategoryConfig({required this.id, required this.titleKey, required this.contentType, required this.textResourceDirectory, required this.imageResourceDirectory, required this.files});
 
   factory AartiCategoryConfig.fromJson(Map<String, dynamic> json) {
     var fileList = json['files'] as List? ?? [];
@@ -291,6 +299,7 @@ class AartiCategoryConfig implements ContentContainer {
     return AartiCategoryConfig(
       id: json['id'] ?? '',
       titleKey: json['title_key'] ?? '',
+      contentType: json['contentType'] ?? '',
       textResourceDirectory: json['textResourceDirectory'] ?? '',
       imageResourceDirectory: json['imageResourceDirectory'] ?? '',
       files: contentItems,
@@ -301,17 +310,19 @@ class AartiCategoryConfig implements ContentContainer {
 class NamavaliContent {
   final String titleKey;
   final String icon;
+  final String contentType;
   final String file;
   final String image;
   final String textResourceDirectory;
   final String imageResourceDirectory;
 
-  NamavaliContent({required this.titleKey, required this.icon, required this.file, required this.image, required this.textResourceDirectory, required this.imageResourceDirectory});
+  NamavaliContent({required this.titleKey, required this.icon, required this.contentType, required this.file, required this.image, required this.textResourceDirectory, required this.imageResourceDirectory});
 
   factory NamavaliContent.fromJson(Map<String, dynamic> json) {
     return NamavaliContent(
       titleKey: json['title_key'] ?? '',
       icon: json['icon'] ?? '',
+      contentType: json['contentType'] ?? '',
       file: json['file'] ?? '',
       image: json['image'] ?? '',
       textResourceDirectory: json['textResourceDirectory'] ?? '',

@@ -3,6 +3,7 @@
   "sunday_prarthana": {
     "title_key": "sundayPrarthanaTitle",
     "icon": "",
+    "contentType": "stotra",
     "textResourceDirectory": "resources/texts/favorites/sunday_prarthana",
     "imageResourceDirectory": "resources/images/favorites/sunday_prarthana",
     "files": [
@@ -19,6 +20,7 @@
   "other_aartis": {
     "title_key": "otherAartis",
     "icon": "",
+    "contentType": "aarti",
     "textResourceDirectory": "resources/texts/favorites/other_aartis",
     "imageResourceDirectory": "resources/images/favorites/other_aartis",
     "files": [
@@ -39,6 +41,7 @@
   "other_stotras": {
     "title_key": "otherStotras",
     "icon": "",
+    "contentType": "stotra",
     "textResourceDirectory": "resources/texts/favorites/other_stotras",
     "imageResourceDirectory": "resources/images/favorites/other_stotras",
     "files": [

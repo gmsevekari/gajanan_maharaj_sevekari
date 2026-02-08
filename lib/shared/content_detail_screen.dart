@@ -13,6 +13,25 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 enum ContentType { granth, aarti, bhajan, stotra, namavali }
 
+extension ContentTypeExtension on ContentType {
+  static ContentType fromString(String contentType) {
+    switch (contentType) {
+      case 'granth':
+        return ContentType.granth;
+      case 'stotra':
+        return ContentType.stotra;
+      case 'bhajan':
+        return ContentType.bhajan;
+      case 'aarti':
+        return ContentType.aarti;
+      case 'namavali':
+        return ContentType.namavali;
+      default:
+        return ContentType.granth;
+    }
+  }
+}
+
 class ContentDetailScreen extends StatefulWidget {
   final DeityConfig deity;
   final ContentType contentType;
@@ -71,9 +90,10 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
   Future<Map<String, dynamic>> _loadContent() async {
     final String response = await rootBundle.loadString(widget.assetPath);
     final data = await json.decode(response);
-    if (data['youtube_video_id'] != null && data['youtube_video_id'].isNotEmpty) {
+    final videoId = data['youtube_video_id'];
+    if (videoId != null && videoId.isNotEmpty) {
       _youtubeController = YoutubePlayerController(
-        initialVideoId: data['youtube_video_id'],
+        initialVideoId: videoId,
         flags: YoutubePlayerFlags(
           autoPlay: widget.autoPlay,
         ),
@@ -140,7 +160,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final item = snapshot.data!;
-                    final title = item['title_${locale.languageCode}'] ?? item['title_en'] ?? '';
+                    final title = item['title_${locale.languageCode}'] ?? item['title_en']!;
                     return Text(title, textAlign: TextAlign.center, maxLines: 2,);
                   } else {
                     return const Text(''); // Placeholder while loading
@@ -289,7 +309,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
         } else if (snapshot.hasData) {
           final data = snapshot.data!;
           final langCode = locale.languageCode;
-          final text = data['content_$langCode'] ?? data['content_en'] ?? '';
+          final text = data['content_$langCode'] ?? data['content_en']!;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
@@ -319,7 +339,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
           } else if (snapshot.hasData) {
             final data = snapshot.data!;
             final videoId = data['youtube_video_id'];
-            final title = data['title_${locale.languageCode}'] ?? data['title_en'] ?? '';
+            final title = data['title_${locale.languageCode}'] ?? data['title_en']!;
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),

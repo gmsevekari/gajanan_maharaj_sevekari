@@ -9,6 +9,7 @@
     "granth": {
       "title_key": "granthTitle",
       "icon": "menu_book_outlined",
+      "contentType": "granth",
       "textResourceDirectory": "resources/texts/gajanan_maharaj/granth",
       "imageResourceDirectory": "resources/images/gajanan_maharaj/granth",
       "files": [
@@ -38,6 +39,7 @@
     "bhajans": {
       "title_key": "bhajanTitle",
       "icon": "lyrics_outlined",
+      "contentType": "bhajan",
       "textResourceDirectory": "resources/texts/gajanan_maharaj/bhajans",
       "imageResourceDirectory": "resources/images/gajanan_maharaj/bhajans",
       "files": [
@@ -52,6 +54,7 @@
     "stotras": {
       "title_key": "stotraTitle",
       "icon": "queue_music",
+      "contentType": "stotra",
       "textResourceDirectory": "resources/texts/gajanan_maharaj/stotras",
       "imageResourceDirectory": "resources/images/gajanan_maharaj/stotras",
       "files": [
@@ -71,10 +74,12 @@
     "aartis": {
       "title_key": "aartiTitle",
       "icon": "library_music_outlined",
+      "contentType": "aarti",
       "categories": [
         {
           "id": "daily",
           "title_key": "dailyAartis",
+          "contentType": "aarti",
           "textResourceDirectory": "resources/texts/gajanan_maharaj/aartis/daily",
           "imageResourceDirectory": "resources/images/gajanan_maharaj/aartis/daily",
           "files": [
@@ -87,6 +92,7 @@
         {
           "id": "event",
           "title_key": "eventAartis",
+          "contentType": "aarti",
           "textResourceDirectory": "resources/texts/gajanan_maharaj/aartis/event",
           "imageResourceDirectory": "resources/images/gajanan_maharaj/aartis/event",
           "files": [
@@ -104,6 +110,7 @@
     "namavali": {
       "title_key": "namavaliTitle",
       "icon": "format_list_numbered",
+      "contentType": "namavali",
       "file": "namavali_108.json",
       "image": "108_Namavali.png",
       "textResourceDirectory": "resources/texts/gajanan_maharaj/namavali",

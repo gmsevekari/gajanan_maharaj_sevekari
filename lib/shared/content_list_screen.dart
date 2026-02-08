@@ -7,14 +7,14 @@ import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 class ContentListScreen extends StatefulWidget {
   final DeityConfig deity;
   final String title;
-  final String contentTypeId;
+  final ContentType contentType;
   final ContentContainer content;
 
   const ContentListScreen({
     super.key,
     required this.deity,
     required this.title,
-    required this.contentTypeId,
+    required this.contentType,
     required this.content,
   });
 
@@ -47,33 +47,15 @@ class _ContentListScreenState extends State<ContentListScreen> {
       final data = await json.decode(response);
 
       contentList.add({
-        'title_mr': data['title_mr'] ?? 'अध्याय ${i + 1}',
-        'title_en': data['title_en'] ?? 'Adhyay ${i + 1}',
+        'title_mr': data['title_mr']!,
+        'title_en': data['title_en']!,
         'fileName': item.file,
         'imagePath': imagePath,
         'assetPath': textPath,
-        'youtube_video_id': data['youtube_video_id'] ?? '',
+        'youtube_video_id': data['youtube_video_id']!,
       });
     }
     return contentList;
-  }
-
-  ContentType _getContentType(String id) {
-    switch (id) {
-      case 'granth':
-        return ContentType.granth;
-      case 'stotras':
-      case 'sunday_prarathana':
-        return ContentType.stotra;
-      case 'bhajans':
-        return ContentType.bhajan;
-      case 'daily':
-      case 'event':
-      case 'other':
-        return ContentType.aarti;
-      default:
-        return ContentType.granth;
-    }
   }
 
   @override
@@ -107,7 +89,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
                   shape: theme.cardTheme.shape,
                   margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                   child: ListTile(
-                    leading: widget.contentTypeId == 'granth'
+                    leading: widget.contentType == ContentType.granth
                         ? CircleAvatar(
                             backgroundColor: Colors.orange[300],
                             child: Text('${index + 1}', style: const TextStyle(color: Colors.white)),
@@ -130,7 +112,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
                                 MaterialPageRoute(
                                   builder: (context) => ContentDetailScreen(
                                     deity: widget.deity,
-                                    contentType: _getContentType(widget.contentTypeId),
+                                    contentType: widget.contentType,
                                     contentList: items,
                                     currentIndex: index,
                                     imagePath: item['imagePath']!,
@@ -151,7 +133,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
                         MaterialPageRoute(
                           builder: (context) => ContentDetailScreen(
                             deity: widget.deity,
-                            contentType: _getContentType(widget.contentTypeId),
+                            contentType: widget.contentType,
                             contentList: items,
                             currentIndex: index,
                             imagePath: item['imagePath']!,

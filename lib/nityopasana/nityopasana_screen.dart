@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/aarti/aarti_screen.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
@@ -45,7 +46,7 @@ class NityopasanaScreen extends StatelessWidget {
                   context,
                   _getTitle(localizations, (content as dynamic).titleKey),
                   _getIcon((content as dynamic).icon),
-                  () => _navigateToContent(context, id, deity, _getTitle(localizations, (content as dynamic).titleKey), content),
+                  () => _navigateToContent(context, deity, _getTitle(localizations, (content as dynamic).titleKey), content),
                 ),
               );
             }).toList(),
@@ -66,17 +67,17 @@ class NityopasanaScreen extends StatelessWidget {
     }
   }
 
-  void _navigateToContent(BuildContext context, String id, DeityConfig deity, String title, dynamic content) {
+  void _navigateToContent(BuildContext context, DeityConfig deity, String title, dynamic content) {
     Widget screen;
-    if (id == 'aartis' && content is AartiContent) {
+    if (content is AartiContent) {
       screen = AartiScreen(deity: deity);
-    } else if (id == 'namavali') {
+    } else if (content is NamavaliContent) {
       screen = NamavaliScreen(deity: deity);
     } else {
       screen = ContentListScreen(
         deity: deity,
         title: title,
-        contentTypeId: id,
+        contentType: ContentTypeExtension.fromString((content as ContentContainer).contentType),
         content: content as ContentContainer,
       );
     }
