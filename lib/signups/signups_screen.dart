@@ -41,10 +41,10 @@ class SignupsScreen extends StatelessWidget {
                 style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.primary),
               ),
               const SizedBox(height: 16),
-              if (deity.signupLinks.isEmpty)
+              if (deity.signupInfo!.links.isEmpty)
                 Center(child: Text('No signup links available yet.'))
               else
-                ...deity.signupLinks.map((link) => SignupCard(
+                ...deity.signupInfo!.links.map((link) => SignupCard(
                   platform: _getPlatformName(localizations, link.platformKey),
                   description: _getDescriptionName(localizations, link.descriptionKey),
                   icon: 'resources/images/${deity.id}/icon/${link.icon}',

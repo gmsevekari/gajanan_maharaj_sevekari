@@ -1,0 +1,24 @@
+{
+  "id": "sai_baba",
+  "name_en": "Sai Baba",
+  "name_mr": "साई बाबा",
+  "imagePath": "resources/images/sai_baba/Sai_Baba.png",
+  "about_file": "about.json",
+  "about_title_key": "aboutBabaTitle",
+  "nityopasana": {
+    "order": ["aartis"],
+    "aartis": {
+      "title_key": "aartiTitle",
+      "icon": "library_music_outlined",
+      "contentType": "aarti",
+      "textResourceDirectory": "resources/texts/sai_baba/aartis",
+      "imageResourceDirectory": "resources/images/sai_baba/aartis",
+      "files": [
+        {"file": "kakad_aarti.json", "image": "kakad_aarti.png"},
+        {"file": "madhyan_aarti.json", "image": "madhyan_aarti.png"},
+        {"file": "dhoop_aarti.json", "image": "dhoop_aarti.png"},
+        {"file": "shej_aarti.json", "image": "shej_aarti.png"}
+      ]
+    }
+  }
+}

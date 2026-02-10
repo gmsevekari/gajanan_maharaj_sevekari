@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 abstract class ContentContainer {
   String get titleKey;
   String get contentType;
+  List<String> get regions;
   String get textResourceDirectory;
   String get imageResourceDirectory;
   List<ContentItem> get files;
@@ -56,10 +57,11 @@ class DeityConfig {
   final String imagePath;
   final String configFile;
   final String aboutFile;
+  final String aboutTitleKey;
   final NityopasanaConfig nityopasana;
-  final DonationInfo donationInfo;
+  final DonationInfo? donationInfo;
+  final SignupInfo? signupInfo;
   final List<SocialMediaLink> socialMediaLinks;
-  final List<SignupLink> signupLinks;
 
   DeityConfig({
     required this.id,
@@ -68,18 +70,16 @@ class DeityConfig {
     required this.imagePath,
     required this.configFile,
     required this.aboutFile,
+    required this.aboutTitleKey,
     required this.nityopasana,
-    required this.donationInfo,
+    this.donationInfo,
+    this.signupInfo,
     required this.socialMediaLinks,
-    required this.signupLinks,
   });
 
   factory DeityConfig.fromJson(Map<String, dynamic> json) {
     var socialMediaList = json['social_media_links'] as List? ?? [];
     List<SocialMediaLink> socialMediaLinksList = socialMediaList.map((i) => SocialMediaLink.fromJson(i)).toList();
-
-    var signupList = json['signup_links'] as List? ?? [];
-    List<SignupLink> signupLinksList = signupList.map((i) => SignupLink.fromJson(i)).toList();
 
     return DeityConfig(
       id: json['id'] ?? '',
@@ -88,10 +88,11 @@ class DeityConfig {
       imagePath: json['imagePath'] ?? '',
       configFile: json['configFile'] ?? '',
       aboutFile: json['about_file'] ?? '',
+      aboutTitleKey: json['about_title_key'] ?? '',
       nityopasana: NityopasanaConfig.fromJson(json['nityopasana'] ?? {}),
-      donationInfo: DonationInfo.fromJson(json['donation_info'] ?? {}),
+      donationInfo: json['donation_info'] != null ? DonationInfo.fromJson(json['donation_info']) : null,
+      signupInfo: json['signup_links'] != null ? SignupInfo.fromJson(json['signup_links']) : null,
       socialMediaLinks: socialMediaLinksList,
-      signupLinks: signupLinksList,
     );
   }
 }
@@ -215,6 +216,8 @@ class NityopasanaContent implements ContentContainer {
   final String titleKey;
   @override
   final String contentType;
+  @override
+  final List<String> regions;
   final String icon;
   @override
   final String textResourceDirectory;
@@ -223,7 +226,7 @@ class NityopasanaContent implements ContentContainer {
   @override
   final List<ContentItem> files;
 
-  NityopasanaContent({required this.titleKey, required this.contentType, required this.icon, required this.textResourceDirectory, required this.imageResourceDirectory, required this.files});
+  NityopasanaContent({required this.titleKey, required this.contentType, required this.regions, required this.icon, required this.textResourceDirectory, required this.imageResourceDirectory, required this.files});
 
   factory NityopasanaContent.fromJson(Map<String, dynamic> json) {
     var fileList = json['files'] as List? ?? [];
@@ -231,6 +234,7 @@ class NityopasanaContent implements ContentContainer {
     return NityopasanaContent(
       titleKey: json['title_key'] ?? '',
       contentType: json['contentType'] ?? '',
+      regions: List<String>.from(json['regions'] ?? []),
       icon: json['icon'] ?? '',
       textResourceDirectory: json['textResourceDirectory'] ?? '',
       imageResourceDirectory: json['imageResourceDirectory'] ?? '',
@@ -285,13 +289,15 @@ class AartiCategoryConfig implements ContentContainer {
   @override
   final String contentType;
   @override
+  final List<String> regions;
+  @override
   final String textResourceDirectory;
   @override
   final String imageResourceDirectory;
   @override
   final List<ContentItem> files;
 
-  AartiCategoryConfig({required this.id, required this.titleKey, required this.contentType, required this.textResourceDirectory, required this.imageResourceDirectory, required this.files});
+  AartiCategoryConfig({required this.id, required this.titleKey, required this.contentType, required this.regions, required this.textResourceDirectory, required this.imageResourceDirectory, required this.files});
 
   factory AartiCategoryConfig.fromJson(Map<String, dynamic> json) {
     var fileList = json['files'] as List? ?? [];
@@ -300,6 +306,7 @@ class AartiCategoryConfig implements ContentContainer {
       id: json['id'] ?? '',
       titleKey: json['title_key'] ?? '',
       contentType: json['contentType'] ?? '',
+      regions: List<String>.from(json['regions'] ?? []),
       textResourceDirectory: json['textResourceDirectory'] ?? '',
       imageResourceDirectory: json['imageResourceDirectory'] ?? '',
       files: contentItems,
@@ -335,11 +342,13 @@ class DonationInfo {
   final String qrCodeLight;
   final String qrCodeDark;
   final String zelleUrl;
+  final List<String> regions;
 
   DonationInfo({
     required this.qrCodeLight,
     required this.qrCodeDark,
     required this.zelleUrl,
+    required this.regions,
   });
 
   factory DonationInfo.fromJson(Map<String, dynamic> json) {
@@ -347,6 +356,23 @@ class DonationInfo {
       qrCodeLight: json['qr_code_light'] ?? '',
       qrCodeDark: json['qr_code_dark'] ?? '',
       zelleUrl: json['zelle_url'] ?? '',
+      regions: List<String>.from(json['regions'] ?? []),
+    );
+  }
+}
+
+class SignupInfo {
+  final List<String> regions;
+  final List<SignupLink> links;
+
+  SignupInfo({required this.regions, required this.links});
+
+  factory SignupInfo.fromJson(Map<String, dynamic> json) {
+    var linkList = json['links'] as List? ?? [];
+    List<SignupLink> signupLinks = linkList.map((i) => SignupLink.fromJson(i)).toList();
+    return SignupInfo(
+      regions: List<String>.from(json['regions'] ?? []),
+      links: signupLinks,
     );
   }
 }

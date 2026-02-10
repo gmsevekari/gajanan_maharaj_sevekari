@@ -12,6 +12,8 @@ class DeityDashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).languageCode;
+    final String? deviceCountryCode = View.of(context).platformDispatcher.locale.countryCode;
+
     final deityName = locale == 'mr' ? deity.nameMr : deity.nameEn;
 
     final List<Widget> featureCards = [];
@@ -19,15 +21,21 @@ class DeityDashboardScreen extends StatelessWidget {
     if (deity.nityopasana.order.isNotEmpty) {
       featureCards.add(_buildGridItem(context, localizations.nityopasanaTitle, 'resources/images/icon/Nitya_Smaran.png', Routes.nityopasana, arguments: deity));
     }
-    if (deity.donationInfo.qrCodeLight.isNotEmpty) {
+
+    // Only show Donations card if the donation info exists and the region matches
+    if (deity.donationInfo != null && (deity.donationInfo!.regions.isEmpty || deity.donationInfo!.regions.contains(deviceCountryCode))) {
       featureCards.add(_buildGridItem(context, localizations.donationsTitle, Icons.volunteer_activism_outlined, Routes.donations, arguments: deity));
     }
-    if (deity.signupLinks.isNotEmpty) {
+
+    // Only show Signups card if the signup info exists and the region matches
+    if (deity.signupInfo != null && (deity.signupInfo!.regions.isEmpty || deity.signupInfo!.regions.contains(deviceCountryCode))) {
       featureCards.add(_buildGridItem(context, localizations.signupsTitle, Icons.assignment_ind_outlined, Routes.signups, arguments: deity));
     }
+
     if (deity.aboutFile.isNotEmpty) {
-      featureCards.add(_buildGridItem(context, localizations.aboutMaharajTitle, Icons.info_outline, Routes.aboutMaharaj, arguments: deity));
+      featureCards.add(_buildGridItem(context, _getAboutTitle(localizations, deity.aboutTitleKey), Icons.info_outline, Routes.aboutMaharaj, arguments: deity));
     }
+
     if (deity.socialMediaLinks.isNotEmpty) {
       featureCards.add(_buildGridItem(context, localizations.socialMediaTitle, Icons.connect_without_contact, Routes.socialMedia, arguments: deity));
     }
@@ -58,6 +66,17 @@ class DeityDashboardScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getAboutTitle(AppLocalizations localizations, String key) {
+    switch (key) {
+      case 'aboutMaharajTitle':
+        return localizations.aboutMaharajTitle;
+      case 'aboutBabaTitle':
+        return localizations.aboutBabaTitle;
+      default:
+        return localizations.aboutMaharajTitle; // Default fallback
+    }
   }
 
   Widget _buildGridItem(BuildContext context, String title, dynamic icon, String route, {Object? arguments}) {

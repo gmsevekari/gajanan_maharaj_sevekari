@@ -4,6 +4,7 @@
   "name_mr": "दत्त महाराज",
   "imagePath": "resources/images/datta_maharaj/Datta_Maharaj.png",
   "about_file": "about.json",
+  "about_title_key": "aboutMaharajTitle",
   "nityopasana": {
     "order": ["stotras", "bhajans", "aartis"],
     "bhajans": {

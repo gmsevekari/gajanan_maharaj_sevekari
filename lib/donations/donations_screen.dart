@@ -14,8 +14,8 @@ class DonationsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final qrCodeImagePath = isDarkMode
-        ? deity.donationInfo.qrCodeDark
-        : deity.donationInfo.qrCodeLight;
+        ? deity.donationInfo!.qrCodeDark
+        : deity.donationInfo!.qrCodeLight;
 
     return Scaffold(
       appBar: AppBar(
@@ -54,7 +54,7 @@ class DonationsScreen extends StatelessWidget {
               color: theme.cardTheme.color,
               margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
               child: InkWell(
-                onTap: () => _launchZelle(context, localizations, deity.donationInfo.zelleUrl),
+                onTap: () => _launchZelle(context, localizations, deity.donationInfo!.zelleUrl),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(

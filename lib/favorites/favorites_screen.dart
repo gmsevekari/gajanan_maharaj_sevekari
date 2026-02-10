@@ -17,6 +17,7 @@ class FavoritesScreen extends StatelessWidget {
     final appConfig = Provider.of<AppConfigProvider>(context).appConfig!;
     final favoritesConfig = appConfig.favorites;
     final defaultDeity = appConfig.deities.first;
+    final String? deviceCountryCode = View.of(context).platformDispatcher.locale.countryCode;
 
     final favoritesMap = {
       'sunday_prarthana': favoritesConfig.sundayPrarthana,
@@ -44,6 +45,11 @@ class FavoritesScreen extends StatelessWidget {
           children: favoritesConfig.order.map((key) {
             final content = favoritesMap[key];
             if (content == null) return const SizedBox.shrink();
+
+            // Region check
+            if (content.regions.isNotEmpty && !content.regions.contains(deviceCountryCode)) {
+              return const SizedBox.shrink(); // Do not build the card if region doesn't match
+            }
 
             final title = _getTitle(localizations, content.titleKey);
 

@@ -4,6 +4,7 @@
   "name_mr": "गजानन महाराज",
   "imagePath": "resources/images/gajanan_maharaj/Gajanan_Maharaj.png",
   "about_file": "about.json",
+  "about_title_key": "aboutMaharajTitle",
   "nityopasana": {
     "order": ["granth", "stotras", "bhajans", "aartis", "namavali"],
     "granth": {
@@ -120,7 +121,8 @@
   "donation_info": {
     "qr_code_light": "resources/images/gajanan_maharaj/qr_code/Zelle_QR_Code_Light.png",
     "qr_code_dark": "resources/images/gajanan_maharaj/qr_code/Zelle_QR_Code_Dark.png",
-    "zelle_url": "https://tinyurl.com/Sea-GM-Zelle-Pay"
+    "zelle_url": "https://tinyurl.com/Sea-GM-Zelle-Pay",
+    "regions": ["US"]
   },
   "social_media_links": [
       {
@@ -148,20 +150,23 @@
         "color": "#DB4437"
       }
   ],
-  "signup_links": [
-    {
-      "platform_key": "sundayPrasadSevaSignup",
-      "description_key": "sundayPrasadSevaSignupDescription",
-      "icon": "Prasad_Seva.png",
-      "url": "https://tinyurl.com/SeaGMSundayPrasadSeva",
-      "color": "#e8bd4f"
-    },
-    {
-      "platform_key": "vastralankarSevaSignup",
-      "description_key": "vastralankarSevaSignupDescription",
-      "icon": "Vastralankar_Seva.png",
-      "url": "https://tinyurl.com/SeaGMVastralankarSeva2026",
-      "color": "#742028"
-    }
-  ]
+  "signup_links": {
+    "regions": ["US"],
+    "links": [
+      {
+        "platform_key": "sundayPrasadSevaSignup",
+        "description_key": "sundayPrasadSevaSignupDescription",
+        "icon": "Prasad_Seva.png",
+        "url": "https://tinyurl.com/SeaGMSundayPrasadSeva",
+        "color": "#e8bd4f"
+      },
+      {
+        "platform_key": "vastralankarSevaSignup",
+        "description_key": "vastralankarSevaSignupDescription",
+        "icon": "Vastralankar_Seva.png",
+        "url": "https://tinyurl.com/SeaGMVastralankarSeva2026",
+        "color": "#742028"
+      }
+    ]
+  }
 }

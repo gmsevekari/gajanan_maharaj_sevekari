@@ -20,6 +20,7 @@ class AppLocalizations {
       'sankalpTitle': 'Weekly Abhishek and Pooja Sankalp',
       'parayanTitle': 'Parayan Organization',
       'aboutMaharajTitle': 'About Maharaj',
+      'aboutBabaTitle': 'About Baba',
       'calendarTitle': 'Event Calendar',
       'donationsTitle': 'Donations',
       'galleryTitle': 'Gallery',
@@ -132,7 +133,7 @@ class AppLocalizations {
       'searchEvent': 'Search Event...',
       'allEventsList': 'All Events List',
       'namavaliFooter': 'Shri Gajanan-arpanamastu',
-      'favoritesTitle': 'Favorites',
+      'favoritesTitle': 'Other',
       'sundayPrarthanaTitle': 'Sunday Prarthana',
       'guruGeeta': 'Guru Geeta',
       'dattaMajala': 'Datta Majala Prasanna Hoshi',
@@ -156,6 +157,7 @@ class AppLocalizations {
       'sankalpTitle': 'साप्ताहिक अभिषेक आणि पूजा संकल्प',
       'parayanTitle': 'पारायण आयोजन',
       'aboutMaharajTitle': 'महाराजांविषयी',
+      'aboutBabaTitle': 'बाबांविषयी',
       'calendarTitle': 'कार्यक्रम दिनदर्शिका',
       'donationsTitle': 'देणगी',
       'galleryTitle': 'गॅलरी',
@@ -268,7 +270,7 @@ class AppLocalizations {
       'searchEvent': 'उत्सव शोधा...',
       'allEventsList': 'सर्व उत्सव यादी',
       'namavaliFooter': 'श्री गजाननार्पणमस्तु',
-      'favoritesTitle': 'फेव्हरेट',
+      'favoritesTitle': 'इतर',
       'sundayPrarthanaTitle': 'रविवारची प्रार्थना',
       'guruGeeta': 'गुरु गीता',
       'dattaMajala': 'दत्ता मजला प्रसन्न होशी',
@@ -293,6 +295,7 @@ class AppLocalizations {
   String get sankalpTitle => _localizedValues[locale.languageCode]!['sankalpTitle']!;
   String get parayanTitle => _localizedValues[locale.languageCode]!['parayanTitle']!;
   String get aboutMaharajTitle => _localizedValues[locale.languageCode]!['aboutMaharajTitle']!;
+  String get aboutBabaTitle => _localizedValues[locale.languageCode]!['aboutBabaTitle']!;
   String get calendarTitle => _localizedValues[locale.languageCode]!['calendarTitle']!;
   String get donationsTitle => _localizedValues[locale.languageCode]!['donationsTitle']!;
   String get galleryTitle => _localizedValues[locale.languageCode]!['galleryTitle']!;
