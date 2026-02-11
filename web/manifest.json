@@ -1,6 +1,6 @@
 {
-    "name": "gajanan_maharaj_sevekari_app_demo",
-    "short_name": "gajanan_maharaj_sevekari_app_demo",
+    "name": "gajanan_maharaj_sevekari",
+    "short_name": "gajanan_maharaj_sevekari",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

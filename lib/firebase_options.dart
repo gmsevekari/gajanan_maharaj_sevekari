@@ -70,7 +70,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '33491188906',
     projectId: 'app-event-calendar',
     storageBucket: 'app-event-calendar.firebasestorage.app',
-    iosBundleId: 'com.example.gajananMaharajSevekariAppDemo',
+    iosBundleId: 'com.gajanan.maharaj.sevekari',
   );
 
 }
