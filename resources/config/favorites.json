@@ -4,7 +4,7 @@
     "title_key": "sundayPrarthanaTitle",
     "icon": "",
     "contentType": "stotra",
-    "regions": ["IN"],
+    "regions": ["US"],
     "textResourceDirectory": "resources/texts/favorites/sunday_prarthana",
     "imageResourceDirectory": "resources/images/favorites/sunday_prarthana",
     "files": [
