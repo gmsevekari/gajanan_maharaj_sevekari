@@ -26,7 +26,7 @@ android {
     }
 
     // Read the keystore properties
-    val keyPropertiesFile = rootProject.file("../key.properties")
+    val keyPropertiesFile = rootProject.file("key.properties")
     val keyProperties = Properties()
     if (keyPropertiesFile.exists()) {
         keyProperties.load(FileInputStream(keyPropertiesFile))
