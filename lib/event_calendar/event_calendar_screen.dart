@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -136,15 +137,6 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
     }
   }
 
-  String _toMarathiNumerals(String input) {
-    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    const marathi = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
-    for (int i = 0; i < english.length; i++) {
-      input = input.replaceAll(english[i], marathi[i]);
-    }
-    return input;
-  }
-
   String _formatMarathiTime(DateTime time) {
     final hour = time.hour;
     String period;
@@ -158,7 +150,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
       period = "रात्री"; // Night
     }
     final formattedTime = DateFormat('hh:mm').format(time);
-    final marathiTime = _toMarathiNumerals(formattedTime);
+    final marathiTime = toMarathiNumerals(formattedTime);
     return '$period $marathiTime';
   }
 

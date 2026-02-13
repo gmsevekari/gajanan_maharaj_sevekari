@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 
 class AppLocalizations {
   final Locale locale;
@@ -31,7 +32,6 @@ class AppLocalizations {
       'about': 'About',
       'disclaimer': 'Disclaimer',
       'contactUs': 'Contact Us',
-      'copyrightMessage': '© 2025 Gajanan Maharaj Seattle',
       'lightTheme': 'Light Theme',
       'darkTheme': 'Dark Theme',
       'systemTheme': 'System Theme',
@@ -168,7 +168,6 @@ class AppLocalizations {
       'about': 'बद्दल',
       'disclaimer': 'अस्वीकरण',
       'contactUs': 'संपर्क साधा',
-      'copyrightMessage': '© २०२५ गजानन महाराज सिएटल',
       'lightTheme': 'लाईट थीम',
       'darkTheme': 'डार्क थीम',
       'systemTheme': 'सिस्टम थीम',
@@ -306,7 +305,13 @@ class AppLocalizations {
   String get about => _localizedValues[locale.languageCode]!['about']!;
   String get disclaimer => _localizedValues[locale.languageCode]!['disclaimer']!;
   String get contactUs => _localizedValues[locale.languageCode]!['contactUs']!;
-  String get copyrightMessage => _localizedValues[locale.languageCode]!['copyrightMessage']!;
+  String get copyrightMessage {
+    final year = DateTime.now().year;
+    if (locale.languageCode == 'mr') {
+      return '© ${toMarathiNumerals(year.toString())} गजानन महाराज सिएटल';
+    }
+    return '© $year Gajanan Maharaj Seattle';
+  }
   String get lightTheme => _localizedValues[locale.languageCode]!['lightTheme']!;
   String get darkTheme => _localizedValues[locale.languageCode]!['darkTheme']!;
   String get systemTheme => _localizedValues[locale.languageCode]!['systemTheme']!;
