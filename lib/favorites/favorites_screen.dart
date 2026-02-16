@@ -12,7 +12,7 @@ class FavoritesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final appConfig = Provider.of<AppConfigProvider>(context).appConfig!;
     final favoritesConfig = appConfig.favorites;

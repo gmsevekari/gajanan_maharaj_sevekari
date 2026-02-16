@@ -29,7 +29,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final locale = Localizations.localeOf(context);
 

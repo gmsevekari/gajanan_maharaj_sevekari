@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -22,7 +23,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFA500), // Saffron/Orange Background from pubspec
@@ -58,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
             left: 0,
             right: 0,
             child: Text(
-              localizations.copyrightMessage,
+              locale.languageCode == 'mr' ? localizations.copyrightMessage(toMarathiNumerals(DateTime.now().year.toString())) : localizations.copyrightMessage(DateTime.now().year.toString()),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Color(0xFF9B3746),

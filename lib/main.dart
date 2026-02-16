@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/about_maharaj/about_maharaj_screen.dart';
 import 'package:gajanan_maharaj_sevekari/aarti/aarti_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
@@ -10,7 +10,6 @@ import 'package:gajanan_maharaj_sevekari/favorites/favorites_screen.dart';
 import 'package:gajanan_maharaj_sevekari/firebase_options.dart';
 import 'package:gajanan_maharaj_sevekari/gallery/gallery_screen.dart';
 import 'package:gajanan_maharaj_sevekari/home/home_screen.dart';
-import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/nityopasana/nityopasana_screen.dart';
@@ -74,18 +73,13 @@ class MyApp extends StatelessWidget {
         final darkTextTheme = GoogleFonts.getTextTheme(fontFamily, AppTheme.darkTheme.textTheme);
 
         return MaterialApp(
-          onGenerateTitle: (context) => AppLocalizations(localeProvider.locale).appName,
+          onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
           theme: AppTheme.lightTheme.copyWith(textTheme: lightTextTheme),
           darkTheme: AppTheme.darkTheme.copyWith(textTheme: darkTextTheme),
           themeMode: themeProvider.themeMode,
           locale: localeProvider.locale,
-          supportedLocales: const [Locale('en', ''), Locale('mr', '')],
-          localizationsDelegates: const [
-            AppLocalizationsDelegate(),
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           initialRoute: Routes.splash,
           routes: {
             Routes.splash: (context) => const SplashScreen(),

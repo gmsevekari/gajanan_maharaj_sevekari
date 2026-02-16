@@ -11,7 +11,7 @@ class FontSelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final fontProvider = Provider.of<FontProvider>(context);
     final localeProvider = Provider.of<LocaleProvider>(context);
     final isMarathi = localeProvider.locale.languageCode == 'mr';

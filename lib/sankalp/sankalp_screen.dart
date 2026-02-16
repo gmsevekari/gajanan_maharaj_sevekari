@@ -18,11 +18,11 @@ class _SankalpScreenState extends State<SankalpScreen> {
   String _sankalpText = '';
 
   void _generateSankalp() {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final locale = Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
     final formattedDate = DateFormat.yMMMMd(locale).format(_selectedDate);
     setState(() {
-      _sankalpText = localizations.getSankalpGenerated(_locationController.text, formattedDate);
+      _sankalpText = localizations.sankalpGenerated(formattedDate, _locationController.text);
     });
   }
 
@@ -46,7 +46,7 @@ class _SankalpScreenState extends State<SankalpScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final locale = Provider.of<LocaleProvider>(context).locale.languageCode;
     final buttonStyle = theme.elevatedButtonTheme.style;
 

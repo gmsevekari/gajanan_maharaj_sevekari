@@ -138,7 +138,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context);
 
     return Scaffold(

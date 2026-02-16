@@ -10,7 +10,7 @@ class DeityDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
     final String? deviceCountryCode = View.of(context).platformDispatcher.locale.countryCode;
 

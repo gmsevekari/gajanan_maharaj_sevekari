@@ -77,7 +77,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -201,7 +201,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
   Widget _buildReadTab(BuildContext context) {
     final locale = Localizations.localeOf(context);
     final theme = Theme.of(context);
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final fontProvider = Provider.of<FontProvider>(context);
 
     return FutureBuilder<Map<String, dynamic>>(
@@ -267,7 +267,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
 
   Widget _buildListenTab(BuildContext context) {
     final theme = Theme.of(context);
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
     return FutureBuilder<Map<String, dynamic>>(
         future: _namavaliFuture,

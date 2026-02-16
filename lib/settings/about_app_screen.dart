@@ -29,7 +29,7 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context);
     final theme = Theme.of(context);
 

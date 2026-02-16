@@ -156,7 +156,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -259,7 +259,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
           child: TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: AppLocalizations.of(context).searchEvent,
+              hintText: AppLocalizations.of(context)!.searchEvent,
               prefixIcon: const Icon(Icons.search),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12.0),
@@ -288,7 +288,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
 
     if (eventsToShow.isEmpty) {
       return Center(
-        child: Text(AppLocalizations.of(context).eventOnDate),
+        child: Text(AppLocalizations.of(context)!.eventOnDate),
       );
     }
 
