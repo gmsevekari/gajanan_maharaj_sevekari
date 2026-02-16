@@ -1,1 +1,45 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"app-event-calendar","appId":"1:33491188906:android:cdea10b7acfc04b7c6e4d3","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"app-event-calendar","appId":"1:33491188906:ios:319db3d82ad043dfc6e4d3","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"app-event-calendar","configurations":{"android":"1:33491188906:android:cdea10b7acfc04b7c6e4d3","ios":"1:33491188906:ios:319db3d82ad043dfc6e4d3","web":"1:33491188906:web:7aa4a94b03374815c6e4d3"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "app-event-calendar",
+          "appId": "1:33491188906:android:cdea10b7acfc04b7c6e4d3",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "app-event-calendar",
+          "appId": "1:33491188906:ios:319db3d82ad043dfc6e4d3",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "app-event-calendar",
+          "configurations": {
+            "android": "1:33491188906:android:cdea10b7acfc04b7c6e4d3",
+            "ios": "1:33491188906:ios:319db3d82ad043dfc6e4d3",
+            "web": "1:33491188906:web:7aa4a94b03374815c6e4d3"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
