@@ -5,11 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
+import 'package:gajanan_maharaj_sevekari/shared/cross_platform_youtube_player.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 enum ContentType { granth, aarti, bhajan, stotra, namavali }
 
@@ -63,7 +63,6 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
   double _fontSize = 18.0;
   TabController? _tabController;
   int _currentIndex = 0;
-  YoutubePlayerController? _youtubeController;
 
   @override
   void initState() {
@@ -83,22 +82,12 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
   @override
   void dispose() {
     _tabController?.dispose();
-    _youtubeController?.dispose();
     super.dispose();
   }
 
   Future<Map<String, dynamic>> _loadContent() async {
     final String response = await rootBundle.loadString(widget.assetPath);
     final data = await json.decode(response);
-    final videoId = data['youtube_video_id'];
-    if (videoId != null && videoId.isNotEmpty) {
-      _youtubeController = YoutubePlayerController(
-        initialVideoId: videoId,
-        flags: YoutubePlayerFlags(
-          autoPlay: widget.autoPlay,
-        ),
-      );
-    }
     return data;
   }
 
@@ -364,23 +353,15 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
                     ),
                   ),
                   const SizedBox(height: 16),
-                  if (_youtubeController != null)
+                  if (videoId != null && videoId.isNotEmpty)
                     Card(
                         elevation: 4.0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                         clipBehavior: Clip.antiAlias,
-                        child: YoutubePlayer(
-                          controller: _youtubeController!,
-                          bottomActions: [
-                            CurrentPosition(),
-                            ProgressBar(isExpanded: true),
-                            RemainingDuration(),
-                            PlaybackSpeedButton(),
-                            IconButton(
-                              icon: const Icon(Icons.open_in_new, color: Colors.white),
-                              onPressed: () => _launchYoutube(videoId),
-                            ),
-                          ],
+                        child: CrossPlatformYoutubePlayer(
+                          videoId: videoId,
+                          autoPlay: widget.autoPlay,
+                          onLaunchYoutube: () => _launchYoutube(videoId),
                         ))
                   else
                     Card(

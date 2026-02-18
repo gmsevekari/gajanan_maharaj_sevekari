@@ -5,11 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
+import 'package:gajanan_maharaj_sevekari/shared/cross_platform_youtube_player.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class NamavaliScreen extends StatefulWidget {
   final DeityConfig deity;
@@ -25,7 +25,6 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
   double _fontSize = 18.0;
   TabController? _tabController;
   int _currentIndex = 0;
-  YoutubePlayerController? _youtubeController;
 
   @override
   void initState() {
@@ -44,21 +43,12 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
   @override
   void dispose() {
     _tabController?.dispose();
-    _youtubeController?.dispose();
     super.dispose();
   }
 
   Future<Map<String, dynamic>> _loadNamavali() async {
     final String response = await rootBundle.loadString('resources/texts/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali!.file}');
     final data = await json.decode(response);
-    if (data['youtube_video_id'] != null && data['youtube_video_id'].isNotEmpty) {
-      _youtubeController = YoutubePlayerController(
-        initialVideoId: data['youtube_video_id'],
-        flags: const YoutubePlayerFlags(
-          autoPlay: false,
-        ),
-      );
-    }
     return data;
   }
 
@@ -303,23 +293,14 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
                     ),
                   ),
                   const SizedBox(height: 16),
-                  if (_youtubeController != null)
+                  if (videoId != null && videoId.isNotEmpty)
                     Card(
                         elevation: 4.0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                         clipBehavior: Clip.antiAlias,
-                        child: YoutubePlayer(
-                          controller: _youtubeController!,
-                          bottomActions: [
-                            CurrentPosition(),
-                            ProgressBar(isExpanded: true),
-                            RemainingDuration(),
-                            PlaybackSpeedButton(),
-                            IconButton(
-                                icon: const Icon(Icons.open_in_new, color: Colors.white),
-                                onPressed: () => _launchYoutube(videoId),
-                            ),
-                          ],
+                        child: CrossPlatformYoutubePlayer(
+                          videoId: videoId,
+                          onLaunchYoutube: () => _launchYoutube(videoId),
                         ))
                   else
                     Card(
