@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class ContentListScreen extends StatefulWidget {
   final DeityConfig deity;
@@ -66,6 +67,16 @@ class _ContentListScreenState extends State<ContentListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          ),
+        ],
       ),
       body: FutureBuilder<List<Map<String, String>>>(
         future: _contentListFuture,
