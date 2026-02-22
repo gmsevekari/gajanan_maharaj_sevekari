@@ -150,5 +150,8 @@
         "type": "String"
       }
     }
-  }
+  },
+  "downloadAppTitle": "Download the App",
+  "downloadAppSubtitle": "Get our official app for offline use",
+  "downloadAppButton": "Get"
 }

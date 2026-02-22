@@ -150,5 +150,8 @@
         "type": "String"
       }
     }
-  }
+  },
+  "downloadAppTitle": "ॲप डाउनलोड करा",
+  "downloadAppSubtitle": "इंटरनेटशिवाय वापरण्यासाठी आमचे अधिकृत ॲप डाउनलोड करा",
+  "downloadAppButton": "मिळवा"
 }

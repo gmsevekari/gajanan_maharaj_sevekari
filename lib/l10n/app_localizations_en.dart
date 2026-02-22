@@ -429,4 +429,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String copyrightMessage(String year) {
     return '© $year Gajanan Maharaj Seattle';
   }
+
+  @override
+  String get downloadAppTitle => 'Download the App';
+
+  @override
+  String get downloadAppSubtitle => 'Get our official app for offline use';
+
+  @override
+  String get downloadAppButton => 'Get';
 }

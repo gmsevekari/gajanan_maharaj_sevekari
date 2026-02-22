@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/event_calendar/event_calendar_screen.dart';
@@ -7,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../deity/deity_dashboard_screen.dart';
 
@@ -42,6 +44,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _launchAppStore() async {
+    const appleId = '6759313202';
+    const androidPackageName = 'com.gajanan.maharaj.sevekari';
+
+    final url = Theme.of(context).platform == TargetPlatform.iOS
+        ? 'https://apps.apple.com/app/id$appleId'
+        : 'https://play.google.com/store/apps/details?id=$androidPackageName';
+
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -72,20 +87,86 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildUpcomingEventCard(context, localizations),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Wrap(
-                spacing: 8.0,
-                runSpacing: 8.0,
-                alignment: WrapAlignment.center,
-                children: cards,
-              ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildUpcomingEventCard(context, localizations),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Wrap(
+                    spacing: 8.0,
+                    runSpacing: 8.0,
+                    alignment: WrapAlignment.center,
+                    children: cards,
+                  ),
+                ),
+                const SizedBox(height: 100), // Space for the download banner
+              ],
             ),
-          ],
+          ),
+          if (kIsWeb)
+            Positioned(
+              bottom: 16,
+              left: 16,
+              right: 16,
+              child: _buildDownloadBanner(context, localizations),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDownloadBanner(BuildContext context, AppLocalizations localizations) {
+    final theme = Theme.of(context);
+
+    return Card(
+      elevation: 8.0,
+      color: Colors.orange,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      child: InkWell(
+        onTap: _launchAppStore,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          child: Row(
+            children: [
+              Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                padding: const EdgeInsets.all(8.0),
+                child: const Icon(Icons.phone_android, color: Colors.orange, size: 24.0),
+              ),
+              const SizedBox(width: 16.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      localizations.downloadAppTitle,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                    Text(
+                      localizations.downloadAppSubtitle,
+                      style: const TextStyle(color: Colors.white, fontSize: 12.0),
+                    ),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                onPressed: _launchAppStore,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: const StadiumBorder(),
+                ),
+                child: Text(localizations.downloadAppButton, style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
         ),
       ),
     );

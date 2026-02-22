@@ -428,4 +428,14 @@ class AppLocalizationsMr extends AppLocalizations {
   String copyrightMessage(String year) {
     return '© $year गजानन महाराज सिएटल';
   }
+
+  @override
+  String get downloadAppTitle => 'ॲप डाउनलोड करा';
+
+  @override
+  String get downloadAppSubtitle =>
+      'इंटरनेटशिवाय वापरण्यासाठी आमचे अधिकृत ॲप डाउनलोड करा';
+
+  @override
+  String get downloadAppButton => 'मिळवा';
 }

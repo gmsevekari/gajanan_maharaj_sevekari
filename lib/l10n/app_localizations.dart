@@ -907,6 +907,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'© {year} Gajanan Maharaj Seattle'**
   String copyrightMessage(String year);
+
+  /// No description provided for @downloadAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Download the App'**
+  String get downloadAppTitle;
+
+  /// No description provided for @downloadAppSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get our official app for offline use'**
+  String get downloadAppSubtitle;
+
+  /// No description provided for @downloadAppButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Get'**
+  String get downloadAppButton;
 }
 
 class _AppLocalizationsDelegate
