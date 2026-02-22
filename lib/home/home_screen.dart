@@ -87,33 +87,22 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildUpcomingEventCard(context, localizations),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Wrap(
-                    spacing: 8.0,
-                    runSpacing: 8.0,
-                    alignment: WrapAlignment.center,
-                    children: cards,
-                  ),
-                ),
-                const SizedBox(height: 100), // Space for the download banner
-              ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildUpcomingEventCard(context, localizations),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                alignment: WrapAlignment.center,
+                children: cards,
+              ),
             ),
-          ),
-          if (kIsWeb)
-            Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
-              child: _buildDownloadBanner(context, localizations),
-            ),
-        ],
+            if (kIsWeb) _buildDownloadBanner(context, localizations),
+          ],
+        ),
       ),
     );
   }
@@ -121,51 +110,66 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildDownloadBanner(BuildContext context, AppLocalizations localizations) {
     final theme = Theme.of(context);
 
-    return Card(
-      elevation: 8.0,
-      color: Colors.orange,
-      shape: RoundedRectangleBorder(
+    return Container(
+      margin: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
+        boxShadow: [
+          BoxShadow(
+            color: theme.cardTheme.shadowColor!,
+            offset: const Offset(0, 4),
+            blurRadius: 0,
+            spreadRadius: 0,
+          ),
+        ],
       ),
-      child: InkWell(
-        onTap: _launchAppStore,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-          child: Row(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
+      child: Card(
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        color: Colors.orange,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        child: InkWell(
+          onTap: _launchAppStore,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: Row(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(8.0),
+                  child: const Icon(Icons.phone_android, color: Colors.orange, size: 24.0),
                 ),
-                padding: const EdgeInsets.all(8.0),
-                child: const Icon(Icons.phone_android, color: Colors.orange, size: 24.0),
-              ),
-              const SizedBox(width: 16.0),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      localizations.downloadAppTitle,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0),
-                    ),
-                    Text(
-                      localizations.downloadAppSubtitle,
-                      style: const TextStyle(color: Colors.white, fontSize: 12.0),
-                    ),
-                  ],
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        localizations.downloadAppTitle,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0),
+                      ),
+                      Text(
+                        localizations.downloadAppSubtitle,
+                        style: const TextStyle(color: Colors.white, fontSize: 12.0),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: _launchAppStore,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  shape: const StadiumBorder(),
+                ElevatedButton(
+                  onPressed: _launchAppStore,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shape: const StadiumBorder(),
+                  ),
+                  child: Text(localizations.downloadAppButton, style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
                 ),
-                child: Text(localizations.downloadAppButton, style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
