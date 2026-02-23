@@ -88,7 +88,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
           } else if (snapshot.hasData) {
             final items = snapshot.data!;
             return ListView.builder(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 80.0),
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
