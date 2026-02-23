@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Card(
         elevation: 0,
         margin: EdgeInsets.zero,
-        color: Colors.orange,
+        color: theme.cardTheme.color,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
@@ -137,12 +137,12 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               children: [
                 Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
                     shape: BoxShape.circle,
                   ),
                   padding: const EdgeInsets.all(8.0),
-                  child: const Icon(Icons.phone_android, color: Colors.orange, size: 24.0),
+                  child: Icon(Icons.phone_android, color: theme.colorScheme.onPrimary, size: 24.0),
                 ),
                 const SizedBox(width: 16.0),
                 Expanded(
@@ -151,11 +151,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         localizations.downloadAppTitle,
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0),
+                        style: TextStyle(
+                            color: Colors.orange[600],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16
+                        )
                       ),
                       Text(
                         localizations.downloadAppSubtitle,
-                        style: const TextStyle(color: Colors.white, fontSize: 12.0),
+                        style: TextStyle(
+                            color: Colors.orange[600],
+                            fontSize: 12
+                        )
                       ),
                     ],
                   ),
@@ -163,10 +170,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ElevatedButton(
                   onPressed: _launchAppStore,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: theme.colorScheme.primary,
                     shape: const StadiumBorder(),
                   ),
-                  child: Text(localizations.downloadAppButton, style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                  child: Text(localizations.downloadAppButton, style: TextStyle(color: theme.colorScheme.onPrimary, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
