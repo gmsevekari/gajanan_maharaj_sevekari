@@ -129,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
         color: theme.cardTheme.color,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
+          side: BorderSide(color: Color(0xFFFF9800), width: 1),
         ),
         child: InkWell(
           onTap: _launchAppStore,
