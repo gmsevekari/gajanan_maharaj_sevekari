@@ -7,9 +7,12 @@ This document summarizes the key architectural patterns, design principles, and 
 ### 1. Core Assistant Directives (Lessons Learned)
 
 -   **Configuration is King:** The app's architecture must always prioritize being configuration-driven. Any logic that can be moved from hardcoded Dart into a JSON file should be. This includes feature flags, content types, and UI titles.
--   **Verify File Paths and Formats:** I must not assume file locations or formats. I incorrectly assumed the project used `.arb` files and the Groovy-based `build.gradle`, leading to significant errors. I must verify the exact file structure (`app_localizations.dart`, `build.gradle.kts`) before acting.
 -   **`.arb` File Precision is Crucial:** When using `.arb` files for localization, I must be extremely careful. Missing placeholder definitions (e.g., `@sankalpGenerated`) or mismatched placeholder types (e.g., `int` vs. `String`) will cause the `flutter gen-l10n` code generation to fail. I must also remember that this command needs to be run (`flutter pub get` or `flutter gen-l10n`) after any `.arb` file changes.
 -   **Cross-Platform Packages Require Conditional Logic:** A package that works on mobile might not work on web (e.g., `youtube_player_flutter`). The solution was to use a platform-specific package for web (`youtube_player_iframe`) and wrap both in a `CrossPlatformYoutubePlayer` widget that uses `kIsWeb` to determine which player to render.
+-   **Use `flutter run -d chrome` for Web Testing:** When implementing web-specific features (like the 'Download App' banner), I must use `flutter run -d chrome` and the browser's developer tools to simulate mobile devices and test platform-specific logic locally before deployment.
+-   **PWA Icons are Separate:** The `flutter_launcher_icons` package does not handle the progressive web app (PWA) icons. These must be manually created (including maskable versions) and placed in the `web/icons/` directory, and the `manifest.json` must be configured to reference them.
+-   **Fixing Stale CocoaPods Config:** A common Xcode error, "CocoaPods did not set the base configuration," can be resolved by replacing the optional `#include?` with a direct `#include` for the `Pods-Runner.xcconfig` file in both `Debug.xcconfig` and `Release.xcconfig`.
+-   **Clean Flutter SDK for Upgrades:** The `flutter upgrade` command can fail if the Flutter SDK directory itself has local changes. This can be resolved by navigating to the SDK directory and running `git stash` to clean the repository before attempting the upgrade again.
 -   **Check All Targets:** When making project-level changes (like Bundle ID), I must remember to check all targets, including `Runner` and `RunnerTests` in Xcode.
 -   **Holistic Firebase Configuration:** Updating Firebase requires changing the bundle ID in three places for iOS: the Xcode project (`Runner` and `RunnerTests`), the `GoogleService-Info.plist`, and the `firebase_options.dart` file.
 -   **The `Podfile` Sledgehammer:** For stubborn iOS dependency errors related to deployment targets, the most robust solution is a `post_install` script that forcefully sets the `IPHONEOS_DEPLOYMENT_TARGET` for both each individual pod `target` and the overall `pods_project`.
@@ -27,6 +30,7 @@ This document summarizes the key architectural patterns, design principles, and 
 
 -   **Multi-Deity Architecture:** The app is built to support multiple deities, each with their own configuration file defining their specific content and features.
 -   **Region-Specific Features:** The visibility of certain dashboard cards (e.g., "Donations," "Signups") and favorite items is controlled by a `regions` array in the JSON configuration. An empty array means the feature is global; otherwise, it only appears if the user's device region matches a code in the list.
+-   **Download App Banner:** A theme-aware banner is displayed at the bottom of the home screen, but only when the app is running on the web. It detects the user's platform (iOS/Android) and redirects them to the appropriate app store to encourage native app installation.
 -   **Dynamic "About" Screen:** The title of the "About" screen is now configurable per-deity via an `about_title_key` in the deity's JSON file (e.g., "About Maharaj" vs. "About Baba").
 -   **Generic List & Detail Screens:**
     -   `ContentListScreen`: A single, powerful, reusable screen that displays lists of content (stotras, bhajans, aartis, etc.). It is driven entirely by configuration.
@@ -57,6 +61,7 @@ This document summarizes the key architectural patterns, design principles, and 
 -   **Web Deployment**:
     -   The `web/index.html` file has been updated to use the modern `_flutter.loader.load()` initialization script, resolving deprecation warnings.
     -   A `sitemap.xml` is maintained in the `web/` directory for SEO, with URLs generated from the app's content structure.
+    -   The `web/manifest.json` file is configured with the app's name, description, theme colors, and icons to ensure a correct PWA installation experience.
 -   **Android Signing:**
     -   A private `upload-keystore.jks` is used for signing.
     -   Passwords are read from a `key.properties` file, which is ignored by git.
