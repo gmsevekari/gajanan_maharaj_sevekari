@@ -438,4 +438,14 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get downloadAppButton => 'मिळवा';
+
+  @override
+  String get notificationPreferences => 'नोटिफिकेशन प्राधान्ये';
+
+  @override
+  String get weeklyPoojaReminder => 'साप्ताहिक पूजा आठवण';
+
+  @override
+  String get notificationsDisabledMessage =>
+      ' नोटिफिकेशन्स प्राप्त करण्यासाठी, कृपया तुमच्या डिव्हाइस सेटिंग्जमध्ये त्या सक्षम करा.';
 }

@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/settings/about_app_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/disclaimer_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_selection_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/language_selection_screen.dart';
+import 'package:gajanan_maharaj_sevekari/settings/notification_settings_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_selection_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -31,6 +32,7 @@ class SettingsScreen extends StatelessWidget {
           _buildSettingsCard(context, Icons.language, localizations.language, const LanguageSelectionScreen()),
           _buildSettingsCard(context, Icons.color_lens, localizations.theme, const ThemeSelectionScreen()),
           _buildSettingsCard(context, Icons.font_download, localizations.font, const FontSelectionScreen()),
+          _buildSettingsCard(context, Icons.notifications, localizations.notificationPreferences, const NotificationSettingsScreen()),
           _buildSettingsCard(context, Icons.info, localizations.about, const AboutAppScreen()),
           _buildSettingsCard(context, Icons.article, localizations.disclaimer, const DisclaimerScreen()),
           _buildContactUsCard(context, localizations),

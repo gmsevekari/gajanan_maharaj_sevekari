@@ -925,6 +925,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Get'**
   String get downloadAppButton;
+
+  /// No description provided for @notificationPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Preferences'**
+  String get notificationPreferences;
+
+  /// No description provided for @weeklyPoojaReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Pooja Reminders'**
+  String get weeklyPoojaReminder;
+
+  /// No description provided for @notificationsDisabledMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'To receive notifications, please enable them in your device settings.'**
+  String get notificationsDisabledMessage;
 }
 
 class _AppLocalizationsDelegate

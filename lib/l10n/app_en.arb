@@ -153,5 +153,8 @@
   },
   "downloadAppTitle": "Download the App",
   "downloadAppSubtitle": "Get our official app for offline use",
-  "downloadAppButton": "Get"
+  "downloadAppButton": "Get",
+  "notificationPreferences": "Notification Preferences",
+  "weeklyPoojaReminder": "Weekly Pooja Reminders",
+  "notificationsDisabledMessage": "To receive notifications, please enable them in your device settings."
 }

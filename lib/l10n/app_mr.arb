@@ -153,5 +153,8 @@
   },
   "downloadAppTitle": "ॲप डाउनलोड करा",
   "downloadAppSubtitle": "इंटरनेटशिवाय वापरण्यासाठी आमचे अधिकृत ॲप डाउनलोड करा",
-  "downloadAppButton": "मिळवा"
+  "downloadAppButton": "मिळवा",
+  "notificationPreferences": "नोटिफिकेशन प्राधान्ये",
+  "weeklyPoojaReminder": "साप्ताहिक पूजा आठवण",
+  "notificationsDisabledMessage": " नोटिफिकेशन्स प्राप्त करण्यासाठी, कृपया तुमच्या डिव्हाइस सेटिंग्जमध्ये त्या सक्षम करा."
 }

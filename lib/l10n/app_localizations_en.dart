@@ -438,4 +438,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get downloadAppButton => 'Get';
+
+  @override
+  String get notificationPreferences => 'Notification Preferences';
+
+  @override
+  String get weeklyPoojaReminder => 'Weekly Pooja Reminders';
+
+  @override
+  String get notificationsDisabledMessage =>
+      'To receive notifications, please enable them in your device settings.';
 }
