@@ -1,0 +1,41 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Deploy a new version to the Google Play Store"
+  lane :deploy do |options|
+    # 1. Access the build number passed from the terminal
+    # We use this primarily for logging/messaging in Android
+    target_build = options[:build_number]
+
+    UI.message("🚀 Fastlane is preparing to upload version code: #{target_build}")
+
+    # 2. Upload to Google Play
+    # Fastlane will grab the .aab file that the Flutter command just created
+    upload_to_play_store(
+      track: 'alpha', # Closed Testing track
+      package_name: 'com.gajanan.maharaj.sevekari',
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      # Optional: This ensures the build is 'completed' and not just a draft
+      release_status: 'completed'
+    )
+
+    UI.success("🎉 Successfully uploaded build #{target_build} to the Alpha track!")
+  end
+end

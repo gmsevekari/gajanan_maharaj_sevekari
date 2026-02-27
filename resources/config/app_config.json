@@ -7,6 +7,10 @@
     {
       "id": "datta_maharaj",
       "configFile": "resources/config/datta_maharaj.json"
+    },
+    {
+      "id": "sai_baba",
+      "configFile": "resources/config/sai_baba.json"
     }
   ],
   "favorites_config": "resources/config/favorites.json"

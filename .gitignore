@@ -50,3 +50,5 @@ app.*.map.json
 # Keystore file
 /android/app/upload-keystore.jks
 /android/key.properties
+
+/android/play_store_key.json
