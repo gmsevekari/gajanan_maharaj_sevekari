@@ -133,6 +133,10 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false, // We will handle navigation manually
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
