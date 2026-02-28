@@ -26,9 +26,16 @@ platform :ios do
 
     increment_build_number(build_number: target_build, xcodeproj: "Runner.xcodeproj")
 
+    get_provisioning_profile(app_identifier: "com.gajanan.maharaj.sevekari")
+
     build_app(
         scheme: "Runner",
         export_method: "app-store",
+        export_options: {
+          provisioningProfiles: {
+            "com.gajanan.maharaj.sevekari" => ENV["SIGH_NAME"] || "com.gajanan.maharaj.sevekari AppStore"
+          }
+        },
         configuration: "Release",
         clean: true,
         xcargs: "FLUTTER_BUILD_DIR=build/ios"
@@ -53,7 +60,9 @@ platform :ios do
       api_key: api_key,
       submit_for_review: true,
       force: true,
-      automatic_release: true
+      automatic_release: true,
+      run_precheck_before_submit: false,
+      precheck_include_in_app_purchases: false
     )
     UI.success("🎉 Pushed to App Store!")
   end

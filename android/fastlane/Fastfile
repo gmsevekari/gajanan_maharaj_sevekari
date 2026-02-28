@@ -16,18 +16,18 @@
 default_platform(:android)
 
 platform :android do
-  desc "Deploy a new version to the Google Play Store"
+  desc "Deploy a new version to the Google Play Store Production Track"
   lane :deploy do |options|
     # 1. Access the build number passed from the terminal
     # We use this primarily for logging/messaging in Android
     target_build = options[:build_number]
 
-    UI.message("🚀 Fastlane is preparing to upload version code: #{target_build}")
+    UI.message("🚀 Fastlane is preparing to upload version code: #{target_build} to Production")
 
     # 2. Upload to Google Play
     # Fastlane will grab the .aab file that the Flutter command just created
     upload_to_play_store(
-      track: 'alpha', # Closed Testing track
+      track: 'production', # Production track
       package_name: 'com.gajanan.maharaj.sevekari',
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       skip_upload_metadata: false,
@@ -36,6 +36,6 @@ platform :android do
       release_status: 'completed'
     )
 
-    UI.success("🎉 Successfully uploaded build #{target_build} to the Alpha track!")
+    UI.success("🎉 Successfully uploaded build #{target_build} to the Production track!")
   end
 end

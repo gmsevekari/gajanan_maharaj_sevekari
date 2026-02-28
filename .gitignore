@@ -55,3 +55,13 @@ app.*.map.json
 /android/key.properties
 
 /android/play_store_key.json
+
+# Ruby and Fastlane
+android/.bundle/
+android/vendor/
+ios/.bundle/
+ios/vendor/
+ios/*.mobileprovision
+ios/fastlane/Preview.html
+/ios/fastlane/report.xml
+/android/fastlane/report.xml
