@@ -188,13 +188,30 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
             child: _buildSegmentedControl(context, localizations),
           ),
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                _buildReadTab(locale),
-                _buildListenTab(context, locale, localizations),
-              ],
+            child: GestureDetector(
+              onHorizontalDragEnd: (details) {
+                // Adjust sensitivity as needed
+                int sensitivity = 8;
+                if (details.primaryVelocity! > sensitivity) {
+                  // Swipe Right (Go to previous item)
+                  if (widget.currentIndex > 0) {
+                    _navigateToItem(widget.currentIndex - 1);
+                  }
+                } else if (details.primaryVelocity! < -sensitivity) {
+                  // Swipe Left (Go to next item)
+                  if (widget.currentIndex < widget.contentList.length - 1) {
+                    _navigateToItem(widget.currentIndex + 1);
+                  }
+                }
+              },
+              child: TabBarView(
+                controller: _tabController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  _buildReadTab(locale),
+                  _buildListenTab(context, locale, localizations),
+                ],
+              ),
             ),
           ),
         ],
