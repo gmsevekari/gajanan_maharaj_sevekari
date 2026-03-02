@@ -57,11 +57,16 @@ class DeityDashboardScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Wrap(
-            spacing: 8.0,
-            runSpacing: 8.0,
-            alignment: WrapAlignment.center,
-            children: featureCards,
+          child: Column(
+            children: [
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                alignment: WrapAlignment.center,
+                children: featureCards,
+              ),
+              const SizedBox(height: 100), // Extra space to prevent bottom cards from cutting off on zoomed displays
+            ],
           ),
         ),
       ),

@@ -32,24 +32,29 @@ class NityopasanaScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Wrap(
-            spacing: 8.0,
-            runSpacing: 8.0,
-            alignment: WrapAlignment.center,
-            children: deity.nityopasana.order.map((id) {
-              final content = _getContent(deity.nityopasana, id);
-              if (content == null) return const SizedBox.shrink();
+          child: Column(
+            children: [
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                alignment: WrapAlignment.center,
+                children: deity.nityopasana.order.map((id) {
+                  final content = _getContent(deity.nityopasana, id);
+                  if (content == null) return const SizedBox.shrink();
 
-              return SizedBox(
-                width: (MediaQuery.of(context).size.width - 24) / 2,
-                child: _buildGridItem(
-                  context,
-                  _getTitle(localizations, (content as dynamic).titleKey),
-                  _getIcon((content as dynamic).icon),
-                  () => _navigateToContent(context, deity, _getTitle(localizations, (content as dynamic).titleKey), content),
-                ),
-              );
-            }).toList(),
+                  return SizedBox(
+                    width: (MediaQuery.of(context).size.width - 24) / 2,
+                    child: _buildGridItem(
+                      context,
+                      _getTitle(localizations, (content as dynamic).titleKey),
+                      _getIcon((content as dynamic).icon),
+                      () => _navigateToContent(context, deity, _getTitle(localizations, (content as dynamic).titleKey), content),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 100), // Extra space to prevent bottom cards from cutting off on zoomed displays
+            ],
           ),
         ),
       ),

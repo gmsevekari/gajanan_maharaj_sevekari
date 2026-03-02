@@ -101,6 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             if (kIsWeb) _buildDownloadBanner(context, localizations),
+            const SizedBox(height: 100), // Extra space to prevent bottom cards from cutting off on zoomed displays
           ],
         ),
       ),
