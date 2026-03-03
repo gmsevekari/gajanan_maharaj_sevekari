@@ -5,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app_settings/app_settings.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -15,15 +16,29 @@ class NotificationSettingsScreen extends StatefulWidget {
 }
 
 class _NotificationSettingsScreenState
-    extends State<NotificationSettingsScreen> {
+    extends State<NotificationSettingsScreen> with WidgetsBindingObserver {
   bool _weeklyPoojaReminder = true;
   NotificationStatus _notificationStatus = NotificationStatus.unknown;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadSettings();
     _checkNotificationStatus();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkNotificationStatus();
+    }
   }
 
   Future<void> _loadSettings() async {
@@ -51,12 +66,20 @@ class _NotificationSettingsScreenState
 
     if (subscribed) {
       if (!kIsWeb) {
-        await messaging.subscribeToTopic(topic);
+        try {
+          await messaging.subscribeToTopic(topic);
+        } catch (e) {
+          debugPrint('Failed to subscribe to topic ($topic): $e');
+        }
       }
       await prefs.setBool(NotificationConstants.weeklyPoojaReminderPrefKey, true);
     } else {
       if (!kIsWeb) {
-        await messaging.unsubscribeFromTopic(topic);
+        try {
+          await messaging.unsubscribeFromTopic(topic);
+        } catch (e) {
+          debugPrint('Failed to unsubscribe from topic ($topic): $e');
+        }
       }
       await prefs.setBool(NotificationConstants.weeklyPoojaReminderPrefKey, false);
     }
@@ -118,16 +141,35 @@ class _NotificationSettingsScreenState
               margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: Row(
+                child: Column(
                   children: [
-                    Icon(Icons.info, color: theme.colorScheme.primary),
-                    const SizedBox(width: 12.0),
-                    Expanded(
-                      child: Text(
-                        localizations.notificationsDisabledMessage,
-                        style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
-                      ),
+                    Row(
+                      children: [
+                        Icon(Icons.info, color: theme.colorScheme.primary),
+                        const SizedBox(width: 12.0),
+                        Expanded(
+                          child: Text(
+                            localizations.notificationsDisabledMessage,
+                            style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
                     ),
+                    if (!kIsWeb) ...[
+                      const SizedBox(height: 12.0),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          AppSettings.openAppSettings(type: AppSettingsType.notification);
+                        },
+                        icon: const Icon(Icons.settings),
+                        label: Text(localizations.openSettings),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.appBarTheme.backgroundColor ?? theme.primaryColor,
+                          foregroundColor: Colors.white,
+                          shape: const StadiumBorder(),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

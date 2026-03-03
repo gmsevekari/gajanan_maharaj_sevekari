@@ -448,4 +448,20 @@ class AppLocalizationsMr extends AppLocalizations {
   @override
   String get notificationsDisabledMessage =>
       ' नोटिफिकेशन्स प्राप्त करण्यासाठी, कृपया तुमच्या डिव्हाइस सेटिंग्जमध्ये त्या सक्षम करा.';
+
+  @override
+  String get notificationDialogTitle => 'अद्ययावत रहा!';
+
+  @override
+  String get notificationDialogBody =>
+      'साप्ताहिक पूजेची आठवण आणि मंदिरातील महत्त्वाच्या सूचना मिळवण्यासाठी नोटिफिकेशन्स सक्षम करा.';
+
+  @override
+  String get notificationDialogAllow => 'परवानगी द्या';
+
+  @override
+  String get notificationDialogDeny => 'आता नको';
+
+  @override
+  String get openSettings => 'सेटिंग्ज उघडा';
 }

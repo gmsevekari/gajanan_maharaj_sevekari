@@ -49,6 +49,7 @@ dependencies:
   youtube_player_iframe: ^5.1.2
   share_plus: ^12.0.1
   firebase_messaging: ^16.1.1
+  app_settings: ^7.0.0
 
 dev_dependencies:
   flutter_test:

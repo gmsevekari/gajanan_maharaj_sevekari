@@ -943,6 +943,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'To receive notifications, please enable them in your device settings.'**
   String get notificationsDisabledMessage;
+
+  /// No description provided for @notificationDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay Updated!'**
+  String get notificationDialogTitle;
+
+  /// No description provided for @notificationDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications to receive daily Darshan, weekly Pooja reminders, and important temple announcements.'**
+  String get notificationDialogBody;
+
+  /// No description provided for @notificationDialogAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Notifications'**
+  String get notificationDialogAllow;
+
+  /// No description provided for @notificationDialogDeny.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Now'**
+  String get notificationDialogDeny;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get openSettings;
 }
 
 class _AppLocalizationsDelegate

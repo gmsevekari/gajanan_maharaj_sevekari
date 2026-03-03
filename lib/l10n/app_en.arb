@@ -156,5 +156,10 @@
   "downloadAppButton": "Get",
   "notificationPreferences": "Notification Preferences",
   "weeklyPoojaReminder": "Weekly Pooja Reminders",
-  "notificationsDisabledMessage": "To receive notifications, please enable them in your device settings."
+  "notificationsDisabledMessage": "To receive notifications, please enable them in your device settings.",
+  "notificationDialogTitle": "Stay Updated!",
+  "notificationDialogBody": "Allow notifications to receive daily Darshan, weekly Pooja reminders, and important temple announcements.",
+  "notificationDialogAllow": "Allow Notifications",
+  "notificationDialogDeny": "Not Now",
+  "openSettings": "Open Settings"
 }

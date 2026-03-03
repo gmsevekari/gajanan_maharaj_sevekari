@@ -156,5 +156,10 @@
   "downloadAppButton": "मिळवा",
   "notificationPreferences": "नोटिफिकेशन प्राधान्ये",
   "weeklyPoojaReminder": "साप्ताहिक पूजा आठवण",
-  "notificationsDisabledMessage": " नोटिफिकेशन्स प्राप्त करण्यासाठी, कृपया तुमच्या डिव्हाइस सेटिंग्जमध्ये त्या सक्षम करा."
+  "notificationsDisabledMessage": " नोटिफिकेशन्स प्राप्त करण्यासाठी, कृपया तुमच्या डिव्हाइस सेटिंग्जमध्ये त्या सक्षम करा.",
+  "notificationDialogTitle": "अद्ययावत रहा!",
+  "notificationDialogBody": "साप्ताहिक पूजेची आठवण आणि मंदिरातील महत्त्वाच्या सूचना मिळवण्यासाठी नोटिफिकेशन्स सक्षम करा.",
+  "notificationDialogAllow": "परवानगी द्या",
+  "notificationDialogDeny": "आता नको",
+  "openSettings": "सेटिंग्ज उघडा"
 }

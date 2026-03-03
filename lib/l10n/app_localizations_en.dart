@@ -448,4 +448,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notificationsDisabledMessage =>
       'To receive notifications, please enable them in your device settings.';
+
+  @override
+  String get notificationDialogTitle => 'Stay Updated!';
+
+  @override
+  String get notificationDialogBody =>
+      'Allow notifications to receive daily Darshan, weekly Pooja reminders, and important temple announcements.';
+
+  @override
+  String get notificationDialogAllow => 'Allow Notifications';
+
+  @override
+  String get notificationDialogDeny => 'Not Now';
+
+  @override
+  String get openSettings => 'Open Settings';
 }

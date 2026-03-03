@@ -22,10 +22,18 @@ subprojects {
             freeCompilerArgs.addAll("-Xlint:-options", "-Xlint:deprecation", "-Xlint:unchecked")
         }
     }
-
     project.tasks.withType(JavaCompile::class.java).configureEach {
         sourceCompatibility = JavaVersion.VERSION_17.toString()
         targetCompatibility = JavaVersion.VERSION_17.toString()
+    }
+
+    afterEvaluate {
+        val androidExt = project.extensions.findByName("android")
+        if (androidExt != null) {
+            val compileOptions = androidExt.javaClass.getMethod("getCompileOptions").invoke(androidExt)
+            compileOptions.javaClass.getMethod("setSourceCompatibility", JavaVersion::class.java).invoke(compileOptions, JavaVersion.VERSION_17)
+            compileOptions.javaClass.getMethod("setTargetCompatibility", JavaVersion::class.java).invoke(compileOptions, JavaVersion.VERSION_17)
+        }
     }
 }
 
