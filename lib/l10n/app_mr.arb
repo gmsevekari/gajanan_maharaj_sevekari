@@ -126,9 +126,9 @@
   "sundayPrasadSevaSignupDescription": "रविवार प्रसाद सेवेसाठी साइन अप करा",
   "vastralankarSevaSignup": "वस्त्रालंकार सेवा",
   "vastralankarSevaSignupDescription": "वस्त्रालंकार सेवेसाठी साइन अप करा",
-  "list": "यादी",
+  "allEvents": "सर्व उत्सव",
   "searchEvent": "उत्सव शोधा...",
-  "allEventsList": "सर्व उत्सव यादी",
+  "allEventsList": "सर्व उत्सव",
   "namavaliFooter": "श्री गजाननार्पणमस्तु",
   "favoritesTitle": "इतर",
   "sundayPrarthanaTitle": "रविवारची प्रार्थना",
@@ -161,5 +161,6 @@
   "notificationDialogBody": "साप्ताहिक पूजेची आठवण आणि मंदिरातील महत्त्वाच्या सूचना मिळवण्यासाठी नोटिफिकेशन्स सक्षम करा.",
   "notificationDialogAllow": "परवानगी द्या",
   "notificationDialogDeny": "आता नको",
-  "openSettings": "सेटिंग्ज उघडा"
+  "openSettings": "सेटिंग्ज उघडा",
+  "specialEvents": "विशेष उत्सव"
 }

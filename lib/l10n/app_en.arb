@@ -126,9 +126,9 @@
   "sundayPrasadSevaSignupDescription": "Sign up for the Sunday Prasad Cooking Seva",
   "vastralankarSevaSignup": "Vastra-Alankar Seva",
   "vastralankarSevaSignupDescription": "Sign up for the Vastra-Alankar Seva",
-  "list": "List",
+  "allEvents": "All Events",
   "searchEvent": "Search Event...",
-  "allEventsList": "All Events List",
+  "allEventsList": "All Events",
   "namavaliFooter": "Shri Gajanan-arpanamastu",
   "favoritesTitle": "Other",
   "sundayPrarthanaTitle": "Sunday Prarthana",
@@ -161,5 +161,6 @@
   "notificationDialogBody": "Allow notifications to receive daily Darshan, weekly Pooja reminders, and important temple announcements.",
   "notificationDialogAllow": "Allow Notifications",
   "notificationDialogDeny": "Not Now",
-  "openSettings": "Open Settings"
+  "openSettings": "Open Settings",
+  "specialEvents": "Special Events"
 }

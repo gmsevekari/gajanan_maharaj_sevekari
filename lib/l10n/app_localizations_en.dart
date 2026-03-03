@@ -374,13 +374,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sign up for the Vastra-Alankar Seva';
 
   @override
-  String get list => 'List';
+  String get allEvents => 'All Events';
 
   @override
   String get searchEvent => 'Search Event...';
 
   @override
-  String get allEventsList => 'All Events List';
+  String get allEventsList => 'All Events';
 
   @override
   String get namavaliFooter => 'Shri Gajanan-arpanamastu';
@@ -464,4 +464,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openSettings => 'Open Settings';
+
+  @override
+  String get specialEvents => 'Special Events';
 }

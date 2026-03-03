@@ -7,6 +7,12 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+enum EventType {
+  weeklyPooja,
+  specialEvent,
+  other,
+}
+
 // Event Model
 class Event {
   final String title_mr;
@@ -18,6 +24,7 @@ class Event {
   final String? details_mr;
   final String? details_en;
   final String? address;
+  final EventType event_type;
 
   Event({
     required this.title_mr,
@@ -29,6 +36,7 @@ class Event {
     this.details_mr,
     this.details_en,
     this.address,
+    this.event_type = EventType.other,
   });
 
   factory Event.fromFirestore(DocumentSnapshot doc) {
@@ -43,7 +51,25 @@ class Event {
       details_mr: data['details_mr'] as String?,
       details_en: data['details_en'] as String?,
       address: data['address'] as String?,
+      event_type: _parseEventType(data['event_type'] as String?),
     );
+  }
+
+  static EventType _parseEventType(String? typeStr) {
+    if (typeStr == null) return EventType.other;
+    switch (typeStr.toLowerCase()) {
+      case 'weekly pooja':
+      case 'weekly_pooja':
+      case 'weeklypooja':
+        return EventType.weeklyPooja;
+      case 'special event':
+      case 'special_event':
+      case 'specialevent':
+      case 'special event':
+        return EventType.specialEvent;
+      default:
+        return EventType.other;
+    }
   }
 }
 
@@ -64,12 +90,13 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
   Map<DateTime, List<Event>> _events = {};
   List<Event> _allEvents = [];
   List<Event> _filteredEvents = [];
+  List<Event> _specialEvents = [];
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _focusedDay = widget.initialDate ?? DateTime.now();
     _selectedDay = widget.initialDate ?? DateTime.now();
     _fetchEvents();
@@ -96,10 +123,14 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
       final today = DateTime(now.year, now.month, now.day);
       final Map<DateTime, List<Event>> events = {};
       final List<Event> allEvents = [];
+      final List<Event> specialEvents = [];
       for (var doc in snapshot.docs) {
         final event = Event.fromFirestore(doc);
         if (event.start_time.toDate().isBefore(today)) continue;
         allEvents.add(event);
+        if (event.event_type == EventType.specialEvent) {
+          specialEvents.add(event);
+        }
         final date = event.start_time.toDate();
         final day = DateTime.utc(date.year, date.month, date.day);
         if (events[day] == null) {
@@ -111,6 +142,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
         _events = events;
         _allEvents = allEvents;
         _filteredEvents = allEvents;
+        _specialEvents = specialEvents;
       });
     });
   }
@@ -163,7 +195,9 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
         title: Text(
             _tabController?.index == 0
                 ? localizations.calendarTitle
-                : localizations.allEventsList,
+                : _tabController?.index == 1
+                    ? localizations.specialEvents
+                    : localizations.allEventsList,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)
         ),
         backgroundColor: Colors.orange,
@@ -185,21 +219,23 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
           indicatorColor: Colors.white,
           tabs: [
             Tab(text: localizations.calendarTitle),
-            Tab(text: localizations.list),
+            Tab(text: localizations.specialEvents),
+            Tab(text: localizations.allEvents),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        physics: const NeverScrollableScrollPhysics(), // Disable swipe gesture
+        // Swiping is now enabled by default.
         children: [
           _buildCalendarView(),
+          _buildSpecialEventsView(),
           _buildListView(),
         ],
       ),
       floatingActionButton: _tabController?.index == 0
           ? FloatingActionButton(
-        onPressed: () => _tabController?.animateTo(1),
+        onPressed: () => _tabController?.animateTo(2),
         child: const Icon(Icons.list),
       )
           : null,
@@ -214,6 +250,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
           lastDay: DateTime.utc(2030, 12, 31),
           focusedDay: _focusedDay,
           calendarFormat: _calendarFormat,
+          availableGestures: AvailableGestures.none,
           selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
           onDaySelected: (selectedDay, focusedDay) {
             setState(() {
@@ -276,6 +313,21 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSpecialEventsView() {
+    if (_specialEvents.isEmpty) {
+      return Center(
+        child: Text(AppLocalizations.of(context)!.eventOnDate),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: _specialEvents.length,
+      itemBuilder: (context, index) {
+        return _buildEventCard(_specialEvents[index], isSelected: false);
+      },
     );
   }
 

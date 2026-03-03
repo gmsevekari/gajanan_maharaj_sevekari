@@ -373,13 +373,13 @@ class AppLocalizationsMr extends AppLocalizations {
       'वस्त्रालंकार सेवेसाठी साइन अप करा';
 
   @override
-  String get list => 'यादी';
+  String get allEvents => 'सर्व उत्सव';
 
   @override
   String get searchEvent => 'उत्सव शोधा...';
 
   @override
-  String get allEventsList => 'सर्व उत्सव यादी';
+  String get allEventsList => 'सर्व उत्सव';
 
   @override
   String get namavaliFooter => 'श्री गजाननार्पणमस्तु';
@@ -464,4 +464,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get openSettings => 'सेटिंग्ज उघडा';
+
+  @override
+  String get specialEvents => 'विशेष उत्सव';
 }

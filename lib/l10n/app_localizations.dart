@@ -800,11 +800,11 @@ abstract class AppLocalizations {
   /// **'Sign up for the Vastra-Alankar Seva'**
   String get vastralankarSevaSignupDescription;
 
-  /// No description provided for @list.
+  /// No description provided for @allEvents.
   ///
   /// In en, this message translates to:
-  /// **'List'**
-  String get list;
+  /// **'All Events'**
+  String get allEvents;
 
   /// No description provided for @searchEvent.
   ///
@@ -815,7 +815,7 @@ abstract class AppLocalizations {
   /// No description provided for @allEventsList.
   ///
   /// In en, this message translates to:
-  /// **'All Events List'**
+  /// **'All Events'**
   String get allEventsList;
 
   /// No description provided for @namavaliFooter.
@@ -973,6 +973,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open Settings'**
   String get openSettings;
+
+  /// No description provided for @specialEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Events'**
+  String get specialEvents;
 }
 
 class _AppLocalizationsDelegate
