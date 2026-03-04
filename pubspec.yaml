@@ -158,6 +158,3 @@ flutter_native_splash:
   color: "#FFA500"
   android_12:
     color: "#FFA500"
-
-dependency_overrides:
-  objective_c: 9.1.0

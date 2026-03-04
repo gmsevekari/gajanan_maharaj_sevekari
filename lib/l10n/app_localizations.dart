@@ -563,7 +563,7 @@ abstract class AppLocalizations {
   /// No description provided for @upcomingEvent.
   ///
   /// In en, this message translates to:
-  /// **'Upcoming Event'**
+  /// **'Upcoming Events'**
   String get upcomingEvent;
 
   /// No description provided for @prakatDinUtsav.
@@ -571,6 +571,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Prakat Din Utsav'**
   String get prakatDinUtsav;
+
+  /// No description provided for @weeklyPooja.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Pooja'**
+  String get weeklyPooja;
 
   /// No description provided for @aboutMaharajScreenTitle.
   ///

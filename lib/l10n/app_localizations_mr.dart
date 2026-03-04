@@ -251,6 +251,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get prakatDinUtsav => 'प्रकट दिन उत्सव';
 
   @override
+  String get weeklyPooja => 'साप्ताहिक पूजा';
+
+  @override
   String get aboutMaharajScreenTitle => 'श्री संत गजानन महाराज';
 
   @override

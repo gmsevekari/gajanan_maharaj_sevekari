@@ -245,10 +245,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Comprehensive information and history about Gajanan Maharaj will be displayed here. The content is presented in large, legible Marathi text, designed for easy reading by elderly users.';
 
   @override
-  String get upcomingEvent => 'Upcoming Event';
+  String get upcomingEvent => 'Upcoming Events';
 
   @override
   String get prakatDinUtsav => 'Prakat Din Utsav';
+
+  @override
+  String get weeklyPooja => 'Weekly Pooja';
 
   @override
   String get aboutMaharajScreenTitle => 'Shri Sant Gajanan Maharaj';

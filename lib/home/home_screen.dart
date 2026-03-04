@@ -9,6 +9,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 
 import '../deity/deity_dashboard_screen.dart';
 
@@ -20,28 +21,46 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Future<DocumentSnapshot?>? _upcomingEventFuture;
+  Future<Map<String, DocumentSnapshot?>>? _upcomingEventsFuture;
 
   @override
   void initState() {
     super.initState();
-    _upcomingEventFuture = _fetchUpcomingEvent();
+    _upcomingEventsFuture = _fetchUpcomingEvents();
   }
 
-  Future<DocumentSnapshot?> _fetchUpcomingEvent() async {
+  Future<Map<String, DocumentSnapshot?>> _fetchUpcomingEvents() async {
     final now = Timestamp.now();
     final snapshot = await FirebaseFirestore.instance
         .collection('events')
         .where('start_time', isGreaterThanOrEqualTo: now)
         .orderBy('start_time')
-        .limit(1)
+        .limit(20)
         .get();
 
-    if (snapshot.docs.isNotEmpty) {
-      return snapshot.docs.first;
-    } else {
-      return null;
+    DocumentSnapshot? weeklyPooja;
+    DocumentSnapshot? specialEvent;
+
+    for (var doc in snapshot.docs) {
+      final eventData = doc.data();
+      final eventType = eventData['event_type'] as String?;
+
+      if (weeklyPooja == null && (eventType == 'weekly_pooja' || eventType == 'weekly pooja' || eventType == 'weeklyPooja')) {
+        weeklyPooja = doc;
+      }
+      if (specialEvent == null && (eventType == 'special_event' || eventType == 'special event' || eventType == 'specialEvent')) {
+        specialEvent = doc;
+      }
+
+      if (weeklyPooja != null && specialEvent != null) {
+        break;
+      }
     }
+
+    return {
+      'weeklyPooja': weeklyPooja,
+      'specialEvent': specialEvent,
+    };
   }
 
   void _launchAppStore() async {
@@ -191,14 +210,14 @@ class _HomeScreenState extends State<HomeScreen> {
   ) {
     final theme = Theme.of(context);
 
-    return FutureBuilder<DocumentSnapshot?>(
-      future: _upcomingEventFuture,
+    return FutureBuilder<Map<String, DocumentSnapshot?>>(
+      future: _upcomingEventsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Card(child: Center(child: CircularProgressIndicator()));
         }
 
-        if (!snapshot.hasData || snapshot.data == null) {
+        if (!snapshot.hasData || (snapshot.data!['weeklyPooja'] == null && snapshot.data!['specialEvent'] == null)) {
           return Container(
               margin: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
@@ -235,12 +254,103 @@ class _HomeScreenState extends State<HomeScreen> {
               ));
         }
 
-        final eventData = snapshot.data!.data() as Map<String, dynamic>;
-        final event = Event.fromFirestore(snapshot.data!);
-        final locale = Localizations.localeOf(context).languageCode;
-        final eventTitle = locale == 'mr' ? event.title_mr : event.title_en;
-        final eventDate = (eventData['start_time'] as Timestamp).toDate();
-        final eventDateString = DateFormat.yMMMMEEEEd(locale).format(eventDate);
+        final weeklyPoojaDoc = snapshot.data!['weeklyPooja'];
+        final specialEventDoc = snapshot.data!['specialEvent'];
+
+        Widget buildEventRow(DocumentSnapshot doc, IconData icon, Color iconColor, String eventTypeLabel) {
+          final eventData = doc.data() as Map<String, dynamic>;
+          final event = Event.fromFirestore(doc);
+          final locale = Localizations.localeOf(context).languageCode;
+          final eventTitle = locale == 'mr' ? event.title_mr : event.title_en;
+          final eventDate = (eventData['start_time'] as Timestamp).toDate();
+          final eventDateString = DateFormat.yMMMMEEEEd(locale).format(eventDate);
+
+          return InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EventCalendarScreen(initialDate: eventDate),
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: iconColor.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(icon, color: iconColor),
+                  ),
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                          decoration: BoxDecoration(
+                            color: iconColor,
+                            borderRadius: BorderRadius.circular(6.0),
+                          ),
+                          child: Text(
+                            eventTypeLabel,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 2.0),
+                        Text(
+                          eventTitle,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange[600],
+                          ),
+                        ),
+                        const SizedBox(height: 4.0),
+                        Text(
+                          eventDateString,
+                          style: TextStyle(color: Colors.orange[600]),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        List<Widget> children = [
+          Text(
+            localizations.upcomingEvent,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.orange[600],
+            ),
+          ),
+          const SizedBox(height: 12.0),
+        ];
+
+        if (weeklyPoojaDoc != null) {
+          children.add(buildEventRow(weeklyPoojaDoc, Icons.event_repeat, Colors.orange, localizations.weeklyPooja.toUpperCase()));
+        }
+
+        if (weeklyPoojaDoc != null && specialEventDoc != null) {
+          children.add(Divider(color: Colors.orange.withValues(alpha: 0.2), height: 16.0));
+        }
+
+        if (specialEventDoc != null) {
+          children.add(buildEventRow(specialEventDoc, Icons.celebration, Colors.orange, localizations.specialEvents.toUpperCase()));
+        }
 
         return Container(
           margin: const EdgeInsets.all(8.0),
@@ -255,46 +365,16 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          child: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EventCalendarScreen(initialDate: eventDate),
-                ),
-              );
-            },
-            child: Card(
-              elevation: 0,
-              margin: EdgeInsets.zero,
-              color: theme.cardTheme.color,
-              shape: theme.cardTheme.shape,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      localizations.upcomingEvent,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange[600],
-                      ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      eventTitle,
-                      style: TextStyle(
-                        color: Colors.orange[600],
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      eventDateString,
-                      style: TextStyle(color: Colors.orange[600]),
-                    ),
-                  ],
-                ),
+          child: Card(
+            elevation: 0,
+            margin: EdgeInsets.zero,
+            color: theme.cardTheme.color,
+            shape: theme.cardTheme.shape,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: children,
               ),
             ),
           ),
