@@ -1,0 +1,1 @@
+Updated home page to display both weekly pooja and special events.
