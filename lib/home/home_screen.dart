@@ -275,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: Row(
                 children: [
                   Container(
@@ -291,22 +291,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                          decoration: BoxDecoration(
-                            color: iconColor,
-                            borderRadius: BorderRadius.circular(6.0),
-                          ),
-                          child: Text(
-                            eventTypeLabel,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 2.0),
                         Text(
                           eventTitle,
                           style: theme.textTheme.titleMedium?.copyWith(
@@ -314,12 +298,28 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.orange[600],
                           ),
                         ),
-                        const SizedBox(height: 4.0),
+                        const SizedBox(height: 2.0),
                         Text(
                           eventDateString,
-                          style: TextStyle(color: Colors.orange[600]),
+                          style: TextStyle(color: Colors.orange[600], fontSize: 13.0),
                         ),
                       ],
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    decoration: BoxDecoration(
+                      color: iconColor,
+                      borderRadius: BorderRadius.circular(6.0),
+                    ),
+                    child: Text(
+                      eventTypeLabel,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
                 ],
@@ -332,24 +332,25 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             localizations.upcomingEvent,
             textAlign: TextAlign.center,
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: Colors.orange[600],
             ),
           ),
-          const SizedBox(height: 12.0),
+          const SizedBox(height: 4.0),
+          Divider(color: Colors.orange.withValues(alpha: 0.2), height: 8.0),
         ];
 
         if (weeklyPoojaDoc != null) {
-          children.add(buildEventRow(weeklyPoojaDoc, Icons.event_repeat, Colors.orange, localizations.weeklyPooja.toUpperCase()));
+          children.add(buildEventRow(weeklyPoojaDoc, Icons.event_repeat, Colors.orange, localizations.weeklyPooja));
         }
 
         if (weeklyPoojaDoc != null && specialEventDoc != null) {
-          children.add(Divider(color: Colors.orange.withValues(alpha: 0.2), height: 16.0));
+          children.add(Divider(color: Colors.orange.withValues(alpha: 0.2), height: 8.0));
         }
 
         if (specialEventDoc != null) {
-          children.add(buildEventRow(specialEventDoc, Icons.celebration, Colors.orange, localizations.specialEvents.toUpperCase()));
+          children.add(buildEventRow(specialEventDoc, Icons.celebration, Colors.orange, localizations.specialEvents));
         }
 
         return Container(
@@ -371,7 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: theme.cardTheme.color,
             shape: theme.cardTheme.shape,
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: children,
