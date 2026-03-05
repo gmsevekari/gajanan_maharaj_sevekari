@@ -1,0 +1,26 @@
+{
+  "id": "shriram",
+  "name_en": "Shriram",
+  "name_mr": "श्रीराम",
+  "imagePath": "resources/images/shriram/Shriram.png",
+  "about_file": "about.json",
+  "about_title_key": "aboutShriramTitle",
+  "nityopasana": {
+    "order": [
+      "aartis"
+    ],
+    "aartis": {
+      "title_key": "aartiTitle",
+      "icon": "library_music_outlined",
+      "contentType": "aarti",
+      "textResourceDirectory": "resources/texts/shriram/aartis",
+      "imageResourceDirectory": "resources/images/shriram/aartis",
+      "files": [
+        {
+          "file": "aik_ba_ramraya.json",
+          "image": "aik_ba_ramraya.png"
+        }
+      ]
+    }
+  }
+}

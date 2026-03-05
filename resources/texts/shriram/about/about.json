@@ -1,0 +1,38 @@
+{
+  "title_en": "Shriram",
+  "title_mr": "श्रीराम",
+  "location_en": "Ayodhya, Uttar Pradesh",
+  "location_mr": "अयोध्या, उत्तर प्रदेश",
+  "pragat_din_en": "Chaitra Shukla Navami (Ram Navami)",
+  "pragat_din_mr": "चैत्र शुद्ध नवमी (रामनवमी)",
+  "chant_en": "Shri Ram Jai Ram Jai Jai Ram",
+  "chant_mr": "।। श्री राम जय राम जय जय राम ।।",
+  "sections": [
+    {
+      "title_en": "Birth and Avatar",
+      "title_mr": "जन्म आणि अवतार",
+      "content_en": "Lord Shriram is the seventh avatar of Lord Vishnu, born in the Treta Yuga in Ayodhya to King Dasharatha and Queen Kausalya. His life is a perfect illustration of unwavering adherence to dharma (righteousness) despite severe trials and tribulations.",
+      "content_mr": "प्रभू श्रीराम हे भगवान विष्णूचे सातवे अवतार आहेत. त्यांचा जन्म त्रेतायुगात अयोध्येत राजा दशरथ आणि राणी कौसल्या यांच्या पोटी झाला. कठीण प्रसंगातही धर्म आणि नीतीमत्तेचे पालन करण्याचे त्यांचे जीवन हे एक परिपूर्ण उदाहरण आहे."
+    },
+    {
+      "title_en": "Maryada Purushottam",
+      "title_mr": "मर्यादा पुरुषोत्तम",
+      "content_en": "Revered as 'Maryada Purushottam' (the supreme being of perfect conduct), Lord Rama exemplifies the highest human virtues. He is worshipped as an ideal son, an ideal brother, an ideal husband, and an ideal king whose reign is famously celebrated as 'Ram Rajya' (the epitome of perfect governance).",
+      "content_mr": "श्रीराम 'मर्यादा पुरुषोत्तम' (सर्वोच्च आदर्श पुरुष) म्हणून पूजले जातात. ते आदर्श पुत्र, आदर्श भाऊ आणि आदर्श राजा मानले जातात. त्यांच्या उदात्त आणि प्रजेच्या कल्याणासाठी चालवलेल्या राजवटीला 'रामराज्य' (परिपूर्ण शासनाचे प्रतीक) म्हणून ओळखले जाते."
+    },
+    {
+      "title_en": "The Ramayana and Triumph",
+      "title_mr": "रामायण आणि विजय",
+      "content_en": "His epic journey is detailed in the Ramayana. To honor his father's word, he accepted a 14-year exile along with his wife Sita and brother Lakshmana. To rescue Sita from abduction, he defeated the demon king Ravana of Lanka, symbolising the ultimate triumph of truth over ego and good over evil.",
+      "content_mr": "त्यांची जीवनकथा 'रामायण' या महाकाव्यात वर्णन केलेली आहे. वडिलांच्या आज्ञेचे पालन करण्यासाठी त्यांनी पत्नी सीता आणि भाऊ लक्ष्मण यांच्यासोबत १४ वर्षांचा वनवास भोगला. सीतेच्या सुटकेसाठी त्यांनी लंकेचा अधिपती रावणाचा वध केला, जे वाईटावर चांगल्याच्या विजयाचे प्रतीक आहे."
+    },
+    {
+      "title_en": "Dussehra and Diwali",
+      "title_mr": "दसरा आणि दिवाळी",
+      "content_en": "Lord Rama's victory over Ravana is celebrated every year as Dussehra (Vijayadashami). Upon his successful return to Ayodhya after 14 years of exile, the citizens welcomed him by lighting rows of earthen lamps. This joyous occasion is celebrated universally as Diwali (Deepavali), the festival of lights, representing the victory of light over darkness.",
+      "content_mr": "प्रभू रामांचा रावणावरील विजय दरवर्षी दसरा (विजयादशमी) म्हणून साजरा केला जातो. १४ वर्षांचा वनवास संपवून जेव्हा ते अयोध्येला परतले, तेव्हा प्रजेने दिवे लावून त्यांचे स्वागत केले. हा आनंदाचा प्रसंग सर्वत्र 'दिवाळी' (दीपावली) म्हणजेच प्रकाशाचा सण म्हणून साजरा केला जातो, जो अंधारावर प्रकाशाचा विजय दर्शवतो."
+    }
+  ],
+  "footer_quote_en": "Jai Shri Ram",
+  "footer_quote_mr": "जय श्रीराम"
+}

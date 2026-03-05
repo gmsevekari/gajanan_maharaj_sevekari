@@ -28,6 +28,8 @@ platform :ios do
 
     get_provisioning_profile(app_identifier: "com.gajanan.maharaj.sevekari")
 
+    # Native Assets workaround: Run `flutter build ios --release --no-codesign` 
+    # MANUALLY before triggering fastlane, as Fastlane's Ruby bundle interferes with flutter pub getting.
     build_app(
         scheme: "Runner",
         export_method: "app-store",
@@ -37,8 +39,7 @@ platform :ios do
           }
         },
         configuration: "Release",
-        clean: true,
-        xcargs: "FLUTTER_BUILD_DIR=build/ios"
+        clean: false
     )
 
     api_key # Return the key to the calling lane

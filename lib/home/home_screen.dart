@@ -9,7 +9,6 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 
 import '../deity/deity_dashboard_screen.dart';
 
