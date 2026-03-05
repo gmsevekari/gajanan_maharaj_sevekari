@@ -1,3 +1,4 @@
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/settings/about_app_screen.dart';
@@ -26,16 +27,41 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(8.0),
+      body: Column(
         children: [
-          _buildSettingsCard(context, Icons.language, localizations.language, const LanguageSelectionScreen()),
-          _buildSettingsCard(context, Icons.color_lens, localizations.theme, const ThemeSelectionScreen()),
-          _buildSettingsCard(context, Icons.font_download, localizations.font, const FontSelectionScreen()),
-          _buildSettingsCard(context, Icons.notifications, localizations.notificationPreferences, const NotificationSettingsScreen()),
-          _buildSettingsCard(context, Icons.info, localizations.about, const AboutAppScreen()),
-          _buildSettingsCard(context, Icons.article, localizations.disclaimer, const DisclaimerScreen()),
-          _buildContactUsCard(context, localizations),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(8.0),
+              children: [
+                _buildSettingsCard(context, Icons.language, localizations.language, const LanguageSelectionScreen()),
+                _buildSettingsCard(context, Icons.color_lens, localizations.theme, const ThemeSelectionScreen()),
+                _buildSettingsCard(context, Icons.font_download, localizations.font, const FontSelectionScreen()),
+                _buildSettingsCard(context, Icons.notifications, localizations.notificationPreferences, const NotificationSettingsScreen()),
+                _buildSettingsCard(context, Icons.info, localizations.about, const AboutAppScreen()),
+                _buildSettingsCard(context, Icons.article, localizations.disclaimer, const DisclaimerScreen()),
+                _buildContactUsCard(context, localizations),
+              ],
+            ),
+          ),
+          FutureBuilder<PackageInfo>(
+            future: PackageInfo.fromPlatform(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final version = snapshot.data!.version;
+                final buildNumber = snapshot.data!.buildNumber;
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8.0, bottom: 24.0),
+                  child: Center(
+                    child: Text(
+                      'Version $version ($buildNumber)',
+                      style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 14, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
         ],
       ),
     );
