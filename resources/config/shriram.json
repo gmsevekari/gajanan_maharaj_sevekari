@@ -7,7 +7,8 @@
   "about_title_key": "aboutShriramTitle",
   "nityopasana": {
     "order": [
-      "aartis"
+      "aartis",
+      "stotras"
     ],
     "aartis": {
       "title_key": "aartiTitle",
@@ -19,6 +20,19 @@
         {
           "file": "aik_ba_ramraya.json",
           "image": "aik_ba_ramraya.png"
+        }
+      ]
+    },
+    "stotras": {
+      "title_key": "stotraTitle",
+      "icon": "queue_music",
+      "contentType": "stotra",
+      "textResourceDirectory": "resources/texts/shriram/stotras",
+      "imageResourceDirectory": "resources/images/shriram/stotras",
+      "files": [
+        {
+          "file": "shriramraksha_stotra.json",
+          "image": "shriramraksha_stotra.png"
         }
       ]
     }

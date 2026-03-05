@@ -130,6 +130,8 @@ flutter:
     - resources/texts/shriram/about/
     - resources/images/shriram/aartis/
     - resources/texts/shriram/aartis/
+    - resources/images/shriram/stotras/
+    - resources/texts/shriram/stotras/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
