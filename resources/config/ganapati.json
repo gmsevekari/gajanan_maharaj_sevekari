@@ -1,0 +1,52 @@
+{
+  "id": "ganapati",
+  "name_en": "Ganapati",
+  "name_mr": "गणपती",
+  "imagePath": "resources/images/ganapati/Ganapati.png",
+  "about_file": "about.json",
+  "about_title_key": "aboutGanapatiTitle",
+  "nityopasana": {
+    "order": [
+      "aartis",
+      "stotras"
+    ],
+    "aartis": {
+      "title_key": "aartiTitle",
+      "icon": "library_music_outlined",
+      "contentType": "aarti",
+      "textResourceDirectory": "resources/texts/ganapati/aartis",
+      "imageResourceDirectory": "resources/images/ganapati/aartis",
+      "files": [
+        {
+          "file": "sukhakarta_dukhaharta.json",
+          "image": "sukhakarta_dukhaharta.png"
+        },
+        {
+          "file": "shendur_lal_chadhayo.json",
+          "image": "shendur_lal_chadhayo.png"
+        }
+      ]
+    },
+    "stotras": {
+      "title_key": "stotraTitle",
+      "icon": "queue_music",
+      "contentType": "stotra",
+      "textResourceDirectory": "resources/texts/ganapati/stotras",
+      "imageResourceDirectory": "resources/images/ganapati/stotras",
+      "files": [
+        {
+          "file": "atharvashirsha.json",
+          "image": "atharvashirsha.png"
+        },
+        {
+          "file": "sashtang_naman_he_maze.json",
+          "image": "sashtang_naman_he_maze.png"
+        },
+        {
+          "file": "pranamya_shirasa_devam.json",
+          "image": "pranamya_shirasa_devam.png"
+        }
+      ]
+    }
+  }
+}

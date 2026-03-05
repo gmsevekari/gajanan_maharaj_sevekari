@@ -1,21 +1,53 @@
 {
-  "order": ["sunday_prarthana", "other_aartis", "other_stotras"],
+  "order": [
+    "sunday_prarthana",
+    "other_aartis",
+    "other_stotras"
+  ],
   "sunday_prarthana": {
     "title_key": "sundayPrarthanaTitle",
     "icon": "",
     "contentType": "stotra",
-    "regions": ["US"],
+    "regions": [
+      "US"
+    ],
     "textResourceDirectory": "resources/texts/favorites/sunday_prarthana",
     "imageResourceDirectory": "resources/images/favorites/sunday_prarthana",
     "files": [
-      {"file": "guru_geeta.json", "image": "guru_geeta.png"},
-      {"file": "datta_majala.json", "image": "datta_majala.png"},
-      {"file": "karuna_tripadi.json", "image": "karuna_tripadi.png"},
-      {"file": "gajanan_maharaj_bavanni.json", "image": "gajanan_maharaj_bavanni.png", "textResourceDirectory": "resources/texts/gajanan_maharaj/stotras", "imageResourceDirectory": "resources/images/gajanan_maharaj/stotras"},
-      {"file": "siddha_mangal.json", "image": "siddha_mangal.png"},
-      {"file": "ghor_kashtodharan.json", "image": "ghor_kashtodharan.png"},
-      {"file": "datta_stuti.json", "image": "datta_stuti.png"},
-      {"file": "namjap.json", "image": "namjap.png"}
+      {
+        "file": "guru_geeta.json",
+        "image": "guru_geeta.png"
+      },
+      {
+        "file": "datta_majala.json",
+        "image": "datta_majala.png"
+      },
+      {
+        "file": "karuna_tripadi.json",
+        "image": "karuna_tripadi.png"
+      },
+      {
+        "file": "gajanan_maharaj_bavanni.json",
+        "image": "gajanan_maharaj_bavanni.png",
+        "textResourceDirectory": "resources/texts/gajanan_maharaj/stotras",
+        "imageResourceDirectory": "resources/images/gajanan_maharaj/stotras"
+      },
+      {
+        "file": "siddha_mangal.json",
+        "image": "siddha_mangal.png"
+      },
+      {
+        "file": "ghor_kashtodharan.json",
+        "image": "ghor_kashtodharan.png"
+      },
+      {
+        "file": "datta_stuti.json",
+        "image": "datta_stuti.png"
+      },
+      {
+        "file": "namjap.json",
+        "image": "namjap.png"
+      }
     ]
   },
   "other_aartis": {
@@ -25,18 +57,50 @@
     "textResourceDirectory": "resources/texts/favorites/other_aartis",
     "imageResourceDirectory": "resources/images/favorites/other_aartis",
     "files": [
-      {"file": "ganapati_aarti.json", "image": "ganapati_aarti.png"},
-      {"file": "devi_aarti.json", "image": "devi_aarti.png"},
-      {"file": "datta_maharaj_aarti.json", "image": "datta_maharaj_aarti.png"},
-      {"file": "shankar_aarti.json", "image": "shankar_aarti.png"},
-      {"file": "vitthal_aarti.json", "image": "vitthal_aarti.png"},
-      {"file": "khandoba_aarti.json", "image": "khandoba_aarti.png"},
-      {"file": "sai_baba_aarti.json", "image": "sai_baba_aarti.png"},
-      {"file": "dnyaneshwar_maharaj_aarti.json", "image": "dnyaneshwar_maharaj_aarti.png"},
-      {"file": "tukaram_maharaj_aarti.json", "image": "tukaram_maharaj_aarti.png"},
-      {"file": "karpur_aarti.json", "image": "karpur_aarti.png"},
-      {"file": "prarthana_ghalin_lotangan.json", "image": "prarthana_ghalin_lotangan.png"},
-      {"file": "mantrapushpanjali.json", "image": "mantrapushpanjali.png"}
+      {
+        "file": "devi_aarti.json",
+        "image": "devi_aarti.png"
+      },
+      {
+        "file": "datta_maharaj_aarti.json",
+        "image": "datta_maharaj_aarti.png"
+      },
+      {
+        "file": "shankar_aarti.json",
+        "image": "shankar_aarti.png"
+      },
+      {
+        "file": "vitthal_aarti.json",
+        "image": "vitthal_aarti.png"
+      },
+      {
+        "file": "khandoba_aarti.json",
+        "image": "khandoba_aarti.png"
+      },
+      {
+        "file": "sai_baba_aarti.json",
+        "image": "sai_baba_aarti.png"
+      },
+      {
+        "file": "dnyaneshwar_maharaj_aarti.json",
+        "image": "dnyaneshwar_maharaj_aarti.png"
+      },
+      {
+        "file": "tukaram_maharaj_aarti.json",
+        "image": "tukaram_maharaj_aarti.png"
+      },
+      {
+        "file": "karpur_aarti.json",
+        "image": "karpur_aarti.png"
+      },
+      {
+        "file": "prarthana_ghalin_lotangan.json",
+        "image": "prarthana_ghalin_lotangan.png"
+      },
+      {
+        "file": "mantrapushpanjali.json",
+        "image": "mantrapushpanjali.png"
+      }
     ]
   },
   "other_stotras": {
@@ -46,8 +110,10 @@
     "textResourceDirectory": "resources/texts/favorites/other_stotras",
     "imageResourceDirectory": "resources/images/favorites/other_stotras",
     "files": [
-      {"file": "ganapati_atharvashirsha.json", "image": "ganapati_atharvashirsha.png"},
-      {"file": "gajanan_maharaj_vitthal_rakhumai_gayatri.json", "image": "gajanan_maharaj_vitthal_rakhumai_gayatri.png"}
+      {
+        "file": "gajanan_maharaj_vitthal_rakhumai_gayatri.json",
+        "image": "gajanan_maharaj_vitthal_rakhumai_gayatri.png"
+      }
     ]
   }
 }

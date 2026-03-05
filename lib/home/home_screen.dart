@@ -390,7 +390,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final name = locale == 'mr' ? deity.nameMr : deity.nameEn;
 
     return SizedBox(
-      width: (MediaQuery.of(context).size.width - 24) / 2,
+      width: (MediaQuery.of(context).size.width - 32) / 3,
       child: AspectRatio(
         aspectRatio: 1.0, // Make cards square
         child: Container(
@@ -425,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Image.asset(
                         deity.imagePath,
                         fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) => Icon(Icons.error, color: Colors.red.shade300, size: 60),
+                        errorBuilder: (context, error, stackTrace) => Icon(Icons.error, color: Colors.red.shade300, size: 40),
                       ),
                     ),
                   ),
@@ -442,7 +442,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                           color: Colors.orange[600],
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 13,
                         ),
                       ),
                     ),
@@ -460,7 +460,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
 
     return SizedBox(
-      width: (MediaQuery.of(context).size.width - 24) / 2,
+      width: (MediaQuery.of(context).size.width - 32) / 3,
       child: AspectRatio(
         aspectRatio: 1.0, // Make cards square
         child: Container(
@@ -485,15 +485,20 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon, size: 80.0, color: theme.iconTheme.color),
+                  Icon(icon, size: 48.0, color: theme.iconTheme.color),
                   const SizedBox(height: 8),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.orange[600],
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.orange[600],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13
+                      ),
                     ),
                   ),
                 ],

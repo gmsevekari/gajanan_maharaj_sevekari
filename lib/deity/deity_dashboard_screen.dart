@@ -79,6 +79,8 @@ class DeityDashboardScreen extends StatelessWidget {
         return localizations.aboutMaharajTitle;
       case 'aboutBabaTitle':
         return localizations.aboutBabaTitle;
+      case 'aboutGanapatiTitle':
+        return localizations.aboutGanapatiTitle;
       default:
         return localizations.aboutMaharajTitle; // Default fallback
     }

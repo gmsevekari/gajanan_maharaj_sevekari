@@ -1,0 +1,32 @@
+{
+  "title_en": "Shri Ganapati",
+  "title_mr": "श्री गणपती",
+  "location_en": "Ashtavinayak Temples, Maharashtra",
+  "location_mr": "अष्टविनायक मंदिरे, महाराष्ट्र",
+  "pragat_din_en": "Ganesh Chaturthi",
+  "pragat_din_mr": "गणेश चतुर्थी",
+  "chant_en": "|| Om Gam Ganapataye Namaha ||",
+  "chant_mr": "|| ॐ गं गणपतये नमः ||",
+  "sections": [
+    {
+      "title_en": "Introduction to Bappa",
+      "title_mr": "बाप्पाचा परिचय",
+      "content_en": "Lord Ganesha, also known as Ganapati or Vinayaka, is one of the most widely worshiped deities in the Hindu pantheon. As the son of Lord Shiva and Goddess Parvati, He is revered as the remover of obstacles (Vighnaharta), the patron of arts and sciences, and the deva of intellect and wisdom.",
+      "content_mr": "गणपती बाप्पा, ज्यांना गणेश किंवा विनायक म्हणूनही ओळखले जाते, ते हिंदू धर्मातील सर्वाधिक पुजल्या जाणाऱ्या देवतांपैकी एक आहेत. भगवान शिव आणि माता पार्वती यांचे पुत्र म्हणून त्यांना विघ्नहर्ता, कला आणि विज्ञानाचे आश्रयदाते, तसेच बुद्धी आणि ज्ञानाची देवता म्हणून पूजले जाते."
+    },
+    {
+      "title_en": "Significance of Worship",
+      "title_mr": "पूजेचे महत्त्व",
+      "content_en": "As the god of beginnings, Ganesha is honored at the start of rites and ceremonies. It is a deeply ingrained tradition to invoke His name before beginning any new venture, business, or religious ritual to ensure its success without hindrance.",
+      "content_mr": "कार्यारंभाची देवता म्हणून कोणत्याही धार्मिक विधी किंवा शुभ कार्याची सुरुवात श्री गणेशाच्या पूजेने केली जाते. कोणतेही नवीन कार्य, व्यवसाय किंवा अनुष्ठान सुरू करण्यापूर्वी त्यांचे नाव घेऊन ते निर्विघ्नपणे पार पडेल याची प्रार्थना करण्याची प्राचीन हिंदू परंपरा आहे."
+    },
+    {
+      "title_en": "Symbolism and Form",
+      "title_mr": "प्रतीकात्मक अर्थ",
+      "content_en": "Every physical aspect of Lord Ganesha is highly symbolic. His large elephant head represents supreme intelligence and the ability to think big. The large ears symbolize the necessity of listening more to assimilate ideas, while the Modak in His hand signifies the sweet rewards of spiritual seeking.",
+      "content_mr": "भगवान गणेशाचे प्रत्येक रूप प्रतीकात्मक आहे. त्यांचे हत्तीचे मोठे मस्तक सर्वोच्च बुद्धिमत्ता दर्शवते. मोठे कान जास्त ऐकण्याची क्षमता दर्शवतात, तर त्यांच्या हातातील मोदक हे अध्यात्मिक साधनेचे गोड फळ दर्शवते. त्यांचे लहान डोळे एकाग्रतेचे प्रतीक आहेत."
+    }
+  ],
+  "footer_quote_en": "Vakratunda Mahakaya Suryakoti Samaprabha | Nirvighnam Kuru Me Deva Sarvakaryeshu Sarvada ||",
+  "footer_quote_mr": "वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ । निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥"
+}

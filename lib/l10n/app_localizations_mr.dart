@@ -36,6 +36,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get aboutMaharajTitle => 'महाराजांविषयी';
 
   @override
+  String get aboutGanapatiTitle => 'गणपती बाप्पाविषयी';
+
+  @override
   String get aboutBabaTitle => 'बाबांविषयी';
 
   @override

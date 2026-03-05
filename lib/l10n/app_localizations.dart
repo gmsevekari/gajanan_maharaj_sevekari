@@ -152,6 +152,12 @@ abstract class AppLocalizations {
   /// **'About Maharaj'**
   String get aboutMaharajTitle;
 
+  /// No description provided for @aboutGanapatiTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About Ganapati'**
+  String get aboutGanapatiTitle;
+
   /// No description provided for @aboutBabaTitle.
   ///
   /// In en, this message translates to:

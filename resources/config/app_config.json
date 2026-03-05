@@ -11,6 +11,10 @@
     {
       "id": "sai_baba",
       "configFile": "resources/config/sai_baba.json"
+    },
+    {
+      "id": "ganapati",
+      "configFile": "resources/config/ganapati.json"
     }
   ],
   "favorites_config": "resources/config/favorites.json"
