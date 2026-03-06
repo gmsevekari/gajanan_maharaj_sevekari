@@ -1,7 +1,7 @@
 {
   "id": "ganapati",
-  "name_en": "Ganapati",
-  "name_mr": "गणपती",
+  "name_en": "Shri Ganapati",
+  "name_mr": "श्री गणपती",
   "imagePath": "resources/images/ganapati/Ganapati.png",
   "about_file": "about.json",
   "about_title_key": "aboutGanapatiTitle",

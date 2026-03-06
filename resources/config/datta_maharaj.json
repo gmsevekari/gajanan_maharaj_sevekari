@@ -1,12 +1,16 @@
 {
   "id": "datta_maharaj",
-  "name_en": "Datta Maharaj",
-  "name_mr": "दत्त महाराज",
+  "name_en": "Shri Datta Maharaj",
+  "name_mr": "श्री दत्त महाराज",
   "imagePath": "resources/images/datta_maharaj/Datta_Maharaj.png",
   "about_file": "about.json",
   "about_title_key": "aboutMaharajTitle",
   "nityopasana": {
-    "order": ["stotras", "bhajans", "aartis"],
+    "order": [
+      "stotras",
+      "bhajans",
+      "aartis"
+    ],
     "bhajans": {
       "title_key": "bhajanTitle",
       "icon": "lyrics_outlined",
@@ -14,7 +18,10 @@
       "textResourceDirectory": "resources/texts/datta_maharaj/bhajans",
       "imageResourceDirectory": "resources/images/datta_maharaj/bhajans",
       "files": [
-        {"file": "datta_rup_zale.json", "image": "datta_rup_zale.png"}
+        {
+          "file": "datta_rup_zale.json",
+          "image": "datta_rup_zale.png"
+        }
       ]
     },
     "stotras": {
@@ -24,12 +31,30 @@
       "textResourceDirectory": "resources/texts/datta_maharaj/stotras",
       "imageResourceDirectory": "resources/images/datta_maharaj/stotras",
       "files": [
-        {"file": "guru_geeta.json", "image": "guru_geeta.png"},
-        {"file": "datta_majala.json", "image": "datta_majala.png"},
-        {"file": "karuna_tripadi.json", "image": "karuna_tripadi.png"},
-        {"file": "siddha_mangal.json", "image": "siddha_mangal.png"},
-        {"file": "ghor_kashtodharan.json", "image": "ghor_kashtodharan.png"},
-        {"file": "datta_stuti.json", "image": "datta_stuti.png"}
+        {
+          "file": "guru_geeta.json",
+          "image": "guru_geeta.png"
+        },
+        {
+          "file": "datta_majala.json",
+          "image": "datta_majala.png"
+        },
+        {
+          "file": "karuna_tripadi.json",
+          "image": "karuna_tripadi.png"
+        },
+        {
+          "file": "siddha_mangal.json",
+          "image": "siddha_mangal.png"
+        },
+        {
+          "file": "ghor_kashtodharan.json",
+          "image": "ghor_kashtodharan.png"
+        },
+        {
+          "file": "datta_stuti.json",
+          "image": "datta_stuti.png"
+        }
       ]
     },
     "aartis": {
@@ -39,8 +64,14 @@
       "textResourceDirectory": "resources/texts/datta_maharaj/aartis",
       "imageResourceDirectory": "resources/images/datta_maharaj/aartis",
       "files": [
-        {"file": "trigunatmak_traymurti.json", "image": "trigunatmak_traymurti.png"},
-        {"file": "shri_guru_dattaraj_murti.json", "image": "shri_guru_dattaraj_murti.png"}
+        {
+          "file": "trigunatmak_traymurti.json",
+          "image": "trigunatmak_traymurti.png"
+        },
+        {
+          "file": "shri_guru_dattaraj_murti.json",
+          "image": "shri_guru_dattaraj_murti.png"
+        }
       ]
     }
   }
