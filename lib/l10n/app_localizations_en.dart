@@ -476,4 +476,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get specialEvents => 'Special Events';
+
+  @override
+  String get gajananChant => 'Gan Gan Ganat Bote';
 }

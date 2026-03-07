@@ -44,10 +44,16 @@ class _HomeScreenState extends State<HomeScreen> {
       final eventData = doc.data();
       final eventType = eventData['event_type'] as String?;
 
-      if (weeklyPooja == null && (eventType == 'weekly_pooja' || eventType == 'weekly pooja' || eventType == 'weeklyPooja')) {
+      if (weeklyPooja == null &&
+          (eventType == 'weekly_pooja' ||
+              eventType == 'weekly pooja' ||
+              eventType == 'weeklyPooja')) {
         weeklyPooja = doc;
       }
-      if (specialEvent == null && (eventType == 'special_event' || eventType == 'special event' || eventType == 'specialEvent')) {
+      if (specialEvent == null &&
+          (eventType == 'special_event' ||
+              eventType == 'special event' ||
+              eventType == 'specialEvent')) {
         specialEvent = doc;
       }
 
@@ -56,10 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    return {
-      'weeklyPooja': weeklyPooja,
-      'specialEvent': specialEvent,
-    };
+    return {'weeklyPooja': weeklyPooja, 'specialEvent': specialEvent};
   }
 
   void _launchAppStore() async {
@@ -88,8 +91,22 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    cards.add(_buildIconGridItem(context, localizations.calendarTitle, Icons.calendar_month_outlined, () => Navigator.pushNamed(context, Routes.calendar)));
-    cards.add(_buildIconGridItem(context, localizations.favoritesTitle, Icons.favorite_border, () => Navigator.pushNamed(context, Routes.favorites)));
+    cards.add(
+      _buildIconGridItem(
+        context,
+        localizations.calendarTitle,
+        Icons.calendar_month_outlined,
+        () => Navigator.pushNamed(context, Routes.calendar),
+      ),
+    );
+    cards.add(
+      _buildIconGridItem(
+        context,
+        localizations.favoritesTitle,
+        Icons.favorite_border,
+        () => Navigator.pushNamed(context, Routes.favorites),
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -105,28 +122,63 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildUpcomingEventCard(context, localizations),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Wrap(
-                spacing: 8.0,
-                runSpacing: 8.0,
-                alignment: WrapAlignment.center,
-                children: cards,
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildUpcomingEventCard(context, localizations),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Wrap(
+                      spacing: 8.0,
+                      runSpacing: 8.0,
+                      alignment: WrapAlignment.center,
+                      children: cards,
+                    ),
+                  ),
+                  if (kIsWeb) _buildDownloadBanner(context, localizations),
+                  const SizedBox(
+                    height: 100,
+                  ), // Extra space to prevent bottom cards from cutting off on zoomed displays
+                ],
               ),
             ),
-            if (kIsWeb) _buildDownloadBanner(context, localizations),
-            const SizedBox(height: 100), // Extra space to prevent bottom cards from cutting off on zoomed displays
-          ],
-        ),
+          ),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.spa, color: Colors.orange[300], size: 20),
+                  const SizedBox(width: 12),
+                  Text(
+                    localizations.gajananChant,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[600],
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Icon(Icons.spa, color: Colors.orange[300], size: 20),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildDownloadBanner(BuildContext context, AppLocalizations localizations) {
+  Widget _buildDownloadBanner(
+    BuildContext context,
+    AppLocalizations localizations,
+  ) {
     final theme = Theme.of(context);
 
     return Container(
@@ -153,7 +205,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: InkWell(
           onTap: _launchAppStore,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 12.0,
+            ),
             child: Row(
               children: [
                 Container(
@@ -162,7 +217,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     shape: BoxShape.circle,
                   ),
                   padding: const EdgeInsets.all(8.0),
-                  child: Icon(Icons.phone_android, color: theme.colorScheme.onPrimary, size: 24.0),
+                  child: Icon(
+                    Icons.phone_android,
+                    color: theme.colorScheme.onPrimary,
+                    size: 24.0,
+                  ),
                 ),
                 const SizedBox(width: 16.0),
                 Expanded(
@@ -172,17 +231,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(
                         localizations.downloadAppTitle,
                         style: TextStyle(
-                            color: Colors.orange[600],
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16
-                        )
+                          color: Colors.orange[600],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                       Text(
                         localizations.downloadAppSubtitle,
                         style: TextStyle(
-                            color: Colors.orange[600],
-                            fontSize: 12
-                        )
+                          color: Colors.orange[600],
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -193,7 +252,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     backgroundColor: theme.colorScheme.primary,
                     shape: const StadiumBorder(),
                   ),
-                  child: Text(localizations.downloadAppButton, style: TextStyle(color: theme.colorScheme.onPrimary, fontWeight: FontWeight.bold)),
+                  child: Text(
+                    localizations.downloadAppButton,
+                    style: TextStyle(
+                      color: theme.colorScheme.onPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -216,60 +281,71 @@ class _HomeScreenState extends State<HomeScreen> {
           return const Card(child: Center(child: CircularProgressIndicator()));
         }
 
-        if (!snapshot.hasData || (snapshot.data!['weeklyPooja'] == null && snapshot.data!['specialEvent'] == null)) {
+        if (!snapshot.hasData ||
+            (snapshot.data!['weeklyPooja'] == null &&
+                snapshot.data!['specialEvent'] == null)) {
           return Container(
-              margin: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.cardTheme.shadowColor!,
-                    offset: const Offset(0, 4),
-                    blurRadius: 0,
-                    spreadRadius: 0,
-                  ),
-                ],
-              ),
-              child: Card(
-                elevation: 0,
-                margin: EdgeInsets.zero,
-                color: theme.cardTheme.color,
-                shape: theme.cardTheme.shape,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        localizations.eventOnDate,
-                        style: TextStyle(
-                          color: Colors.orange[600],
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+            margin: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16.0),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.cardTheme.shadowColor!,
+                  offset: const Offset(0, 4),
+                  blurRadius: 0,
+                  spreadRadius: 0,
                 ),
-              ));
+              ],
+            ),
+            child: Card(
+              elevation: 0,
+              margin: EdgeInsets.zero,
+              color: theme.cardTheme.color,
+              shape: theme.cardTheme.shape,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      localizations.eventOnDate,
+                      style: TextStyle(
+                        color: Colors.orange[600],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
         }
 
         final weeklyPoojaDoc = snapshot.data!['weeklyPooja'];
         final specialEventDoc = snapshot.data!['specialEvent'];
 
-        Widget buildEventRow(DocumentSnapshot doc, IconData icon, Color iconColor, String eventTypeLabel) {
+        Widget buildEventRow(
+          DocumentSnapshot doc,
+          IconData icon,
+          Color iconColor,
+          String eventTypeLabel,
+        ) {
           final eventData = doc.data() as Map<String, dynamic>;
           final event = Event.fromFirestore(doc);
           final locale = Localizations.localeOf(context).languageCode;
           final eventTitle = locale == 'mr' ? event.title_mr : event.title_en;
           final eventDate = (eventData['start_time'] as Timestamp).toDate();
-          final eventDateString = DateFormat.yMMMMEEEEd(locale).format(eventDate);
+          final eventDateString = DateFormat.yMMMMEEEEd(
+            locale,
+          ).format(eventDate);
 
           return InkWell(
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EventCalendarScreen(initialDate: eventDate),
+                  builder: (context) =>
+                      EventCalendarScreen(initialDate: eventDate),
                 ),
               );
             },
@@ -300,14 +376,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 2.0),
                         Text(
                           eventDateString,
-                          style: TextStyle(color: Colors.orange[600], fontSize: 13.0),
+                          style: TextStyle(
+                            color: Colors.orange[600],
+                            fontSize: 13.0,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(width: 8.0),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 4.0,
+                    ),
                     decoration: BoxDecoration(
                       color: iconColor,
                       borderRadius: BorderRadius.circular(6.0),
@@ -341,15 +423,31 @@ class _HomeScreenState extends State<HomeScreen> {
         ];
 
         if (weeklyPoojaDoc != null) {
-          children.add(buildEventRow(weeklyPoojaDoc, Icons.event_repeat, Colors.orange, localizations.weeklyPooja));
+          children.add(
+            buildEventRow(
+              weeklyPoojaDoc,
+              Icons.event_repeat,
+              Colors.orange,
+              localizations.weeklyPooja,
+            ),
+          );
         }
 
         if (weeklyPoojaDoc != null && specialEventDoc != null) {
-          children.add(Divider(color: Colors.orange.withValues(alpha: 0.2), height: 8.0));
+          children.add(
+            Divider(color: Colors.orange.withValues(alpha: 0.2), height: 8.0),
+          );
         }
 
         if (specialEventDoc != null) {
-          children.add(buildEventRow(specialEventDoc, Icons.celebration, Colors.orange, localizations.specialEvents));
+          children.add(
+            buildEventRow(
+              specialEventDoc,
+              Icons.celebration,
+              Colors.orange,
+              localizations.specialEvents,
+            ),
+          );
         }
 
         return Container(
@@ -371,7 +469,10 @@ class _HomeScreenState extends State<HomeScreen> {
             color: theme.cardTheme.color,
             shape: theme.cardTheme.shape,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 8.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: children,
@@ -382,7 +483,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
-  
+
   Widget _buildDeityGridItem(BuildContext context, DeityConfig deity) {
     final theme = Theme.of(context);
     final locale = Localizations.localeOf(context).languageCode;
@@ -413,7 +514,9 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => DeityDashboardScreen(deity: deity)),
+                  MaterialPageRoute(
+                    builder: (context) => DeityDashboardScreen(deity: deity),
+                  ),
                 );
               },
               child: Column(
@@ -424,14 +527,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Image.asset(
                         deity.imagePath,
                         fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) => Icon(Icons.error, color: Colors.red.shade300, size: 40),
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.error,
+                          color: Colors.red.shade300,
+                          size: 40,
+                        ),
                       ),
                     ),
                   ),
                   Container(
                     color: theme.cardTheme.color,
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 4,
+                    ),
                     child: Center(
                       child: Text(
                         name,
@@ -455,7 +565,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildIconGridItem(BuildContext context, String title, IconData icon, VoidCallback onTap) {
+  Widget _buildIconGridItem(
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
     final theme = Theme.of(context);
 
     return SizedBox(
@@ -496,7 +611,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(
                         color: Colors.orange[600],
                         fontWeight: FontWeight.bold,
-                        fontSize: 13
+                        fontSize: 13,
                       ),
                     ),
                   ),

@@ -997,6 +997,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Special Events'**
   String get specialEvents;
+
+  /// No description provided for @gajananChant.
+  ///
+  /// In en, this message translates to:
+  /// **'Gan Gan Ganat Bote'**
+  String get gajananChant;
 }
 
 class _AppLocalizationsDelegate

@@ -476,4 +476,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get specialEvents => 'विशेष उत्सव';
+
+  @override
+  String get gajananChant => 'गण गण गणात बोते';
 }
