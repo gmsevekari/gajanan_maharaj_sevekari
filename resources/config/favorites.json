@@ -117,6 +117,14 @@
       {
         "file": "shree_vishnu_sahastranam.json",
         "image": "shree_vishnu_sahastranam.png"
+      },
+      {
+        "file": "purush_sukta.json",
+        "image": "purush_sukta.png"
+      },
+      {
+        "file": "shri_sukta.json",
+        "image": "shri_sukta.png"
       }
     ]
   }
