@@ -19,6 +19,10 @@
     {
       "id": "shriram",
       "configFile": "resources/config/shriram.json"
+    },
+    {
+      "id": "hanuman",
+      "configFile": "resources/config/hanuman.json"
     }
   ],
   "favorites_config": "resources/config/favorites.json"

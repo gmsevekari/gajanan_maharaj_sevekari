@@ -1,0 +1,38 @@
+{
+  "title_en": "Shri Hanuman",
+  "title_mr": "श्री हनुमान",
+  "location_en": "Anjaneri / Kishkindha",
+  "location_mr": "अंजनेरी / किष्किंधा",
+  "pragat_din_en": "Chaitra Purnima (Hanuman Jayanti)",
+  "pragat_din_mr": "चैत्र पौर्णिमा (हनुमान जयंती)",
+  "chant_en": "Om Shri Hanumate Namah",
+  "chant_mr": "ॐ श्री हनुमते नमः",
+  "sections": [
+    {
+      "title_en": "Birth and Childhood",
+      "title_mr": "जन्म आणि बालपण",
+      "content_en": "Shri Hanuman was born to Kesari and Anjani, with the blessings of Vayu (the Wind God). As a child, he possessed boundless energy and once even leaped to swallow the sun, mistaking it for a ripe fruit.",
+      "content_mr": "श्री हनुमानाचा जन्म अंजनी आणि केसरी यांच्या पोटी वायुदेवाच्या आशीर्वादाने झाला. बालपणी त्यांच्यात अफाट ऊर्जा होती आणि एकदा त्यांनी सूर्याला पिकलेले फळ समजून गिळण्यासाठी झेप घेतली होती."
+    },
+    {
+      "title_en": "Devotion to Lord Rama",
+      "title_mr": "प्रभू श्रीरामांवरील भक्ती",
+      "content_en": "Hanuman's devotion to Lord Rama is unparalleled. He played a crucial role in the Ramayana, crossing the ocean to find Devi Sita in Lanka and helping Rama defeat Ravana. He is the ultimate symbol of selfless service and devotion (Bhakti).",
+      "content_mr": "हनुमानाची प्रभू श्रीरामांवरील भक्ती अतुलनीय आहे. त्यांनी रामायणात महत्त्वपूर्ण भूमिका बजावली, समुद्रावर उड्डाण करून लंकेत सीतामातेचा शोध घेतला आणि रावणाचा पराभव करण्यात श्रीरामांना मदत केली. ते निस्वार्थ सेवा आणि भक्तीचे सर्वोच्च प्रतीक आहेत."
+    },
+    {
+      "title_en": "Power and Capabilities",
+      "title_mr": "शक्ती आणि सामर्थ्य",
+      "content_en": "Blessed with immortality (Chiranjeevi) and immense strength, Hanuman can assume any form at will. He is worshipped for strength, courage, and protection from negative energies. He carried the entire Dronagiri mountain to bring the Sanjeevani herb for Lakshmana.",
+      "content_mr": "चिरंजीवी (अमर) आणि अफाट सामर्थ्याने आशीर्वादित असलेले हनुमान इच्छेनुसार कोणतेही रूप धारण करू शकतात. शक्ती, धैर्य आणि नकारात्मक ऊर्जेपासून संरक्षणासाठी त्यांची पूजा केली जाते. लक्ष्मणासाठी संजीवनी बुटी आणण्यासाठी त्यांनी संपूर्ण द्रोणागिरी पर्वत उचलून आणला होता."
+    },
+    {
+      "title_en": "Significance of Worship",
+      "title_mr": "उपासनेचे महत्त्व",
+      "content_en": "Worshipping Hanuman grants wisdom, physical strength, and freedom from fear. The recitation of Hanuman Chalisa or Maruti Stotra is believed to bring peace, prosperity, and removal of obstacles.",
+      "content_mr": "हनुमानाची उपासना केल्याने बुद्धी, शारीरिक शक्ती आणि संकटातून मुक्ती मिळते. हनुमान चालीसा किंवा मारुती स्तोत्राचे पठण केल्याने शांती, समृद्धी आणि निर्भयता प्राप्त होते अशी श्रद्धा आहे."
+    }
+  ],
+  "footer_quote_en": "Wherever the glories of Lord Rama are sung, there is Hanuman, with hands folded in reverence and eyes filled with tears of devotion.",
+  "footer_quote_mr": "यत्र यत्र रघुनाथकीर्तनं तत्र तत्र कृतमस्तकांजलिम् ।\nवाष्पवारिपरिपूर्णलोचनं मारुतिं नमत राक्षसान्तकम् ॥"
+}

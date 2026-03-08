@@ -132,6 +132,12 @@ flutter:
     - resources/texts/shriram/aartis/
     - resources/images/shriram/stotras/
     - resources/texts/shriram/stotras/
+    - resources/images/hanuman/
+    - resources/texts/hanuman/about/
+    - resources/images/hanuman/aartis/
+    - resources/texts/hanuman/aartis/
+    - resources/images/hanuman/stotras/
+    - resources/texts/hanuman/stotras/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
