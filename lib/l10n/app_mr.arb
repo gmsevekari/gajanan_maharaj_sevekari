@@ -168,5 +168,8 @@
   "notificationDialogDeny": "आता नको",
   "openSettings": "सेटिंग्ज उघडा",
   "specialEvents": "विशेष उत्सव",
-  "gajananChant": "गण गण गणात बोते"
+  "gajananChant": "गण गण गणात बोते",
+  "search": "शोधा",
+  "searchHint": "स्तोत्रे, भजने शोधा...",
+  "noResultsFound": "काहीही आढळले नाही"
 }

@@ -1015,6 +1015,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gan Gan Ganat Bote'**
   String get gajananChant;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search stotras, bhajans...'**
+  String get searchHint;
+
+  /// No description provided for @noResultsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noResultsFound;
 }
 
 class _AppLocalizationsDelegate

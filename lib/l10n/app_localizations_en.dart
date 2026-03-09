@@ -485,4 +485,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gajananChant => 'Gan Gan Ganat Bote';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get searchHint => 'Search stotras, bhajans...';
+
+  @override
+  String get noResultsFound => 'No results found';
 }
