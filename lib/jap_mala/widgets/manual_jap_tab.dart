@@ -10,7 +10,8 @@ class ManualJapTab extends StatefulWidget {
   State<ManualJapTab> createState() => _ManualJapTabState();
 }
 
-class _ManualJapTabState extends State<ManualJapTab> with SingleTickerProviderStateMixin {
+class _ManualJapTabState extends State<ManualJapTab>
+    with SingleTickerProviderStateMixin {
   int _currentCount = 0;
   int _completedMalas = 0;
   final int _countsPerMala = 108;
@@ -22,17 +23,18 @@ class _ManualJapTabState extends State<ManualJapTab> with SingleTickerProviderSt
   void initState() {
     super.initState();
     _controller = AnimationController(
-       vsync: this,
-       duration: const Duration(milliseconds: 150),
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
     );
-    
-    _animation = Tween<double>(begin: 0, end: _beadHeight).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-     // Re-center when animation finishes
+
+    _animation = Tween<double>(
+      begin: 0,
+      end: _beadHeight,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    // Re-center when animation finishes
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-         _controller.reset();
+        _controller.reset();
       }
     });
   }
@@ -45,7 +47,7 @@ class _ManualJapTabState extends State<ManualJapTab> with SingleTickerProviderSt
 
   void _onBeadPulled() {
     if (_controller.isAnimating) return;
-    
+
     HapticFeedback.lightImpact();
     setState(() {
       _currentCount++;
@@ -81,7 +83,7 @@ class _ManualJapTabState extends State<ManualJapTab> with SingleTickerProviderSt
     String numStr = pad ? number.toString().padLeft(2, '0') : number.toString();
     final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
     if (!isMarathi) return numStr;
-    
+
     const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     const marathi = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
     for (int i = 0; i < english.length; i++) {
@@ -94,67 +96,117 @@ class _ManualJapTabState extends State<ManualJapTab> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    
+
     return Container(
       color: theme.scaffoldBackgroundColor, // Use theme background
       child: Column(
         children: [
           // Progress Indicators (Cards)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      border: Border.all(color: Colors.orange, width: 1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                           localizations.mala, 
-                           style: const TextStyle(color: Colors.orange, fontSize: 18, fontWeight: FontWeight.bold)
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                           _formatNumber(context, _completedMalas), 
-                           style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 36, fontWeight: FontWeight.bold)
-                        ),
-                      ],
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 24.0,
+            ),
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.cardTheme.color ?? theme.cardColor,
+                        border: Border.all(color: Colors.orange, width: 2),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            localizations.mala,
+                            style: const TextStyle(
+                              color: Colors.orange,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              _formatNumber(context, _completedMalas),
+                              style: const TextStyle(
+                                color: Colors.orange,
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      border: Border.all(color: Colors.orange, width: 1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                           localizations.jap, 
-                           style: const TextStyle(color: Colors.orange, fontSize: 18, fontWeight: FontWeight.bold)
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                           '${_formatNumber(context, _currentCount)} / ${_formatNumber(context, _countsPerMala, pad: false)}', 
-                           style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 28, fontWeight: FontWeight.bold)
-                        ),
-                      ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.cardTheme.color ?? theme.cardColor,
+                        border: Border.all(color: Colors.orange, width: 2),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            localizations.jap,
+                            style: const TextStyle(
+                              color: Colors.orange,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              '${_formatNumber(context, _currentCount)} / ${_formatNumber(context, _countsPerMala, pad: false)}',
+                              style: const TextStyle(
+                                color: Colors.orange,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          
+
           Expanded(
             child: ClipRect(
               child: Center(
@@ -164,97 +216,100 @@ class _ManualJapTabState extends State<ManualJapTab> with SingleTickerProviderSt
                   width: double.infinity,
                   child: Stack(
                     alignment: Alignment.center,
-                     children: [
-                        // Golden mandala watermark (Concentric Flowers)
-                        Positioned.fill(
-                           child: CustomPaint(
-                             painter: ConcentricFlowerPainter(
-                                color: Colors.orange.withValues(alpha: 0.1),
-                             ),
-                           ),
+                    children: [
+                      // Custom Image Watermark
+                      Positioned.fill(
+                        child: Opacity(
+                          opacity: 0.30,
+                          child: IgnorePointer(
+                            child: Image.asset(
+                              'resources/images/naamjap/Om.png',
+                              fit: BoxFit.contain,
+                              alignment: Alignment.center,
+                            ),
+                          ),
                         ),
-                        // Golden mandala watermark (Concentric Flowers)
-                        Positioned.fill(
-                           child: CustomPaint(
-                             painter: ConcentricFlowerPainter(
-                                color: Colors.orange.withValues(alpha: 0.1),
-                             ),
-                           ),
-                        ),
-                        // Animated Beads Area
-                        SizedBox(
-                           height: _beadHeight * 5,
-                           width: 100,
-                           child: AnimatedBuilder(
-                             animation: _animation,
-                             builder: (context, child) {
-                                return Stack(
-                                  alignment: Alignment.center,
-                                  children: List.generate(6, (index) {
-                                    final topOffset = (index - 1) * _beadHeight - _animation.value;
-                                    
-                                     final centerPoint = (_beadHeight * 5) / 2;
-                                     final distanceFromCenter = (topOffset + _beadHeight / 2 - centerPoint).abs();
-                                     final maxDistance = (_beadHeight * 5) / 2;
-                                     final opacity = (1 - (distanceFromCenter / maxDistance)).clamp(0.0, 1.0);
+                      ),
+                      // Animated Beads Area
+                      SizedBox(
+                        height: _beadHeight * 5,
+                        width: 100,
+                        child: AnimatedBuilder(
+                          animation: _animation,
+                          builder: (context, child) {
+                            return Stack(
+                              alignment: Alignment.center,
+                              children: List.generate(6, (index) {
+                                final topOffset =
+                                    (index - 1) * _beadHeight -
+                                    _animation.value;
 
-                                    return Positioned(
-                                       top: topOffset,
-                                       child: Opacity(
-                                         opacity: opacity as double,
-                                         child: Column(
-                                           mainAxisSize: MainAxisSize.min,
-                                           children: [
-                                             // The thread segment connecting to the bead above
-                                             SizedBox(
-                                                width: 6,
-                                                height: 18,
-                                                child: CustomPaint(
-                                                   painter: MalaThreadPainter(
-                                                      primaryColor: Colors.orange.shade800,
-                                                      secondaryColor: Colors.orange.shade400,
-                                                   ),
-                                                ),
-                                             ),
-                                             // The bead
-                                             Image.asset(
-                                               'resources/images/naamjap/Rudraksha.png',
-                                               height: 64, // Reduced slightly to leave perfect room for threads while maintaining a `100` overall height
-                                               width: 64,
-                                               fit: BoxFit.contain,
-                                               errorBuilder: (context, error, stackTrace) {
+                                final centerPoint = (_beadHeight * 5) / 2;
+                                final distanceFromCenter =
+                                    (topOffset + _beadHeight / 2 - centerPoint)
+                                        .abs();
+                                final maxDistance = (_beadHeight * 5) / 2;
+                                final opacity =
+                                    (1 - (distanceFromCenter / maxDistance))
+                                        .clamp(0.0, 1.0);
+
+                                return Positioned(
+                                  top: topOffset,
+                                  child: Opacity(
+                                    opacity: opacity as double,
+                                    child: SizedBox(
+                                      width: 64,
+                                      height: 95,
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          // Thread runs full height through centre
+                                          Positioned(
+                                            top: 0,
+                                            bottom: 0,
+                                            left: 29,
+                                            right: 29,
+                                            child: CustomPaint(
+                                              painter: MalaThreadPainter(
+                                                primaryColor:
+                                                    Colors.orange.shade800,
+                                                secondaryColor:
+                                                    Colors.orange.shade400,
+                                              ),
+                                            ),
+                                          ),
+                                          // Bead overlaid — thread shows through
+                                          // transparent PNG edges, hiding the gap
+                                          Image.asset(
+                                            'resources/images/naamjap/Rudraksha.png',
+                                            height: 72,
+                                            width: 72,
+                                            fit: BoxFit.contain,
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
                                                   return Container(
-                                                    width: 40,
-                                                    height: 40,
-                                                    decoration: const BoxDecoration(
-                                                       color: Colors.brown,
-                                                       shape: BoxShape.circle,
-                                                    ),
+                                                    width: 48,
+                                                    height: 48,
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                          color: Colors.brown,
+                                                          shape:
+                                                              BoxShape.circle,
+                                                        ),
                                                   );
-                                               },
-                                             ),
-                                             // The thread segment connecting to the bead below
-                                             SizedBox(
-                                                width: 6,
-                                                height: 18,
-                                                child: CustomPaint(
-                                                   painter: MalaThreadPainter(
-                                                      primaryColor: Colors.orange.shade800,
-                                                      secondaryColor: Colors.orange.shade400,
-                                                   ),
-                                                ),
-                                             ),
-                                           ],
-                                         ),
-                                       ),
-                                    );
-                                  }),
+                                                },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 );
-                             },
-                           ),
+                              }),
+                            );
+                          },
                         ),
-
-                     ],
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -272,20 +327,20 @@ class _ManualJapTabState extends State<ManualJapTab> with SingleTickerProviderSt
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 48,
+                      vertical: 16,
+                    ),
                     shape: const StadiumBorder(),
                   ),
                   child: const Text(
                     '+',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Secondary Buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -294,85 +349,42 @@ class _ManualJapTabState extends State<ManualJapTab> with SingleTickerProviderSt
                     const SizedBox(width: 60),
                     _buildSecondaryButton(Icons.refresh, _resetCount, theme),
                   ],
-                )
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSecondaryButton(IconData icon, VoidCallback onTap, ThemeData theme) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.orange, width: 1.5),
+  Widget _buildSecondaryButton(
+    IconData icon,
+    VoidCallback onTap,
+    ThemeData theme,
+  ) {
+    return ElevatedButton(
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        fixedSize: const Size(56, 56),
+        shape: const CircleBorder(
+          side: BorderSide(color: Colors.orange, width: 2),
         ),
-        child: Icon(icon, color: Colors.orange, size: 28),
+        backgroundColor: theme.cardTheme.color ?? theme.cardColor,
+        foregroundColor: Colors.orange,
+        padding: EdgeInsets.zero,
+        elevation: 4, // Matches the '+' button style
       ),
+      child: Icon(icon, color: Colors.orange, size: 28),
     );
   }
-}
-
-class ConcentricFlowerPainter extends CustomPainter {
-  final Color color;
-  ConcentricFlowerPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final maxRadius = math.min(size.width, size.height) / 2 * 0.9;
-    
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-
-    // Draw concentric rings of petals
-    const numLayers = 4;
-    for (int layer = 1; layer <= numLayers; layer++) {
-      final layerRadius = maxRadius * (layer / numLayers);
-      final numPetals = 8 * layer;
-      
-      for (int i = 0; i < numPetals; i++) {
-        final angle = (i * 2 * math.pi) / numPetals;
-        final dx = center.dx + layerRadius * math.cos(angle);
-        final dy = center.dy + layerRadius * math.sin(angle);
-        
-        final petalPaint = Paint()
-          ..color = color.withValues(alpha: color.a * (1.0 - (layer * 0.15)))
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.5;
-          
-        canvas.drawCircle(Offset(dx, dy), layerRadius * 0.3, petalPaint);
-      }
-      
-      // Draw connecting circle
-      canvas.drawCircle(center, layerRadius, paint);
-    }
-    
-    // Center point
-    canvas.drawCircle(center, 10, Paint()..color = color..style = PaintingStyle.fill);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class MalaThreadPainter extends CustomPainter {
   final Color primaryColor;
   final Color secondaryColor;
 
-  MalaThreadPainter({
-    required this.primaryColor,
-    required this.secondaryColor,
-  });
+  MalaThreadPainter({required this.primaryColor, required this.secondaryColor});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -401,7 +413,7 @@ class MalaThreadPainter extends CustomPainter {
       );
     }
     canvas.restore();
-    
+
     // Add a slight dark border to give it depth
     final borderPaint = Paint()
       ..color = Colors.black.withValues(alpha: 0.3)

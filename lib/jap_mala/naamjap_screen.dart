@@ -44,11 +44,9 @@ class NaamjapScreen extends StatelessWidget {
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(64.0),
             child: ColoredBox(
-              color: Colors
-                  .white, // Match the body background below if needed, or keeping it orange above
+              color: theme.scaffoldBackgroundColor,
               child: Container(
-                color: theme
-                    .scaffoldBackgroundColor, // Ensure the background matches the body so the pill box sits cleanly
+                color: theme.scaffoldBackgroundColor,
                 padding: const EdgeInsets.symmetric(
                   vertical: 8.0,
                   horizontal: 16.0,
@@ -61,7 +59,7 @@ class NaamjapScreen extends StatelessWidget {
                   ),
                   child: TabBar(
                     labelColor: Colors.white,
-                    unselectedLabelColor: theme.colorScheme.onSurface,
+                    unselectedLabelColor: Colors.grey[600],
                     labelStyle: const TextStyle(fontWeight: FontWeight.bold),
                     unselectedLabelStyle: const TextStyle(
                       fontWeight: FontWeight.normal,
