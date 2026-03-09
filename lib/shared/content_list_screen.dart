@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
+import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class ContentListScreen extends StatefulWidget {
@@ -41,8 +43,10 @@ class _ContentListScreenState extends State<ContentListScreen> {
       final item = widget.content.files[i];
 
       // Use the item's specific directory if provided, otherwise fall back to the parent's.
-      final textPath = '${item.textResourceDirectory ?? parentTextDir}/${item.file}';
-      final imagePath = '${item.imageResourceDirectory ?? parentImageDir}/${item.image}';
+      final textPath =
+          '${item.textResourceDirectory ?? parentTextDir}/${item.file}';
+      final imagePath =
+          '${item.imageResourceDirectory ?? parentImageDir}/${item.image}';
 
       final String response = await rootBundle.loadString(textPath);
       final data = await json.decode(response);
@@ -62,6 +66,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
   @override
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context);
+    final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -69,8 +74,23 @@ class _ContentListScreenState extends State<ContentListScreen> {
         title: Text(widget.title),
         actions: [
           IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: GlobalSearchDelegate(
+                  hintText: localizations.searchHint,
+                ),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -92,23 +112,35 @@ class _ContentListScreenState extends State<ContentListScreen> {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
-                final itemTitle = locale.languageCode == 'mr' ? item['title_mr'] : item['title_en'];
+                final itemTitle = locale.languageCode == 'mr'
+                    ? item['title_mr']
+                    : item['title_en'];
 
                 return Card(
                   elevation: theme.cardTheme.elevation,
                   color: theme.cardTheme.color,
                   shape: theme.cardTheme.shape,
-                  margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: ListTile(
                     leading: widget.contentType == ContentType.granth
                         ? CircleAvatar(
                             backgroundColor: Colors.orange[300],
-                            child: Text('${index + 1}', style: const TextStyle(color: Colors.white)),
+                            child: Text(
+                              '${index + 1}',
+                              style: const TextStyle(color: Colors.white),
+                            ),
                           )
                         : null,
                     title: Text(
                       itemTitle!,
-                      style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 18.0),
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
+                      ),
                     ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -135,7 +167,11 @@ class _ContentListScreenState extends State<ContentListScreen> {
                               );
                             },
                           ),
-                        Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: theme.colorScheme.primary,
+                          size: 16.0,
+                        ),
                       ],
                     ),
                     onTap: () {

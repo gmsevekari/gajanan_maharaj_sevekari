@@ -5,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/aarti/aarti_screen.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
+import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class NityopasanaScreen extends StatelessWidget {
@@ -20,8 +21,23 @@ class NityopasanaScreen extends StatelessWidget {
         title: Text(localizations.nityopasanaTitle),
         actions: [
           IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: GlobalSearchDelegate(
+                  hintText: localizations.searchHint,
+                ),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -48,12 +64,19 @@ class NityopasanaScreen extends StatelessWidget {
                       context,
                       _getTitle(localizations, (content as dynamic).titleKey),
                       _getIcon((content as dynamic).icon),
-                      () => _navigateToContent(context, deity, _getTitle(localizations, (content as dynamic).titleKey), content),
+                      () => _navigateToContent(
+                        context,
+                        deity,
+                        _getTitle(localizations, (content as dynamic).titleKey),
+                        content,
+                      ),
                     ),
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 100), // Extra space to prevent bottom cards from cutting off on zoomed displays
+              const SizedBox(
+                height: 100,
+              ), // Extra space to prevent bottom cards from cutting off on zoomed displays
             ],
           ),
         ),
@@ -63,16 +86,27 @@ class NityopasanaScreen extends StatelessWidget {
 
   dynamic _getContent(NityopasanaConfig nityopasana, String id) {
     switch (id) {
-      case 'granth': return nityopasana.granth;
-      case 'stotras': return nityopasana.stotras;
-      case 'bhajans': return nityopasana.bhajans;
-      case 'aartis': return nityopasana.aartis;
-      case 'namavali': return nityopasana.namavali;
-      default: return null;
+      case 'granth':
+        return nityopasana.granth;
+      case 'stotras':
+        return nityopasana.stotras;
+      case 'bhajans':
+        return nityopasana.bhajans;
+      case 'aartis':
+        return nityopasana.aartis;
+      case 'namavali':
+        return nityopasana.namavali;
+      default:
+        return null;
     }
   }
 
-  void _navigateToContent(BuildContext context, DeityConfig deity, String title, dynamic content) {
+  void _navigateToContent(
+    BuildContext context,
+    DeityConfig deity,
+    String title,
+    dynamic content,
+  ) {
     Widget screen;
     if (content is AartiContent) {
       screen = AartiScreen(deity: deity);
@@ -82,7 +116,9 @@ class NityopasanaScreen extends StatelessWidget {
       screen = ContentListScreen(
         deity: deity,
         title: title,
-        contentType: ContentTypeExtension.fromString((content as ContentContainer).contentType),
+        contentType: ContentTypeExtension.fromString(
+          (content as ContentContainer).contentType,
+        ),
         content: content as ContentContainer,
       );
     }
@@ -91,12 +127,18 @@ class NityopasanaScreen extends StatelessWidget {
 
   String _getTitle(AppLocalizations localizations, String key) {
     switch (key) {
-      case 'granthTitle': return localizations.granthTitle;
-      case 'stotraTitle': return localizations.stotraTitle;
-      case 'bhajanTitle': return localizations.bhajanTitle;
-      case 'aartiTitle': return localizations.aartiTitle;
-      case 'namavaliTitle': return localizations.namavaliTitle;
-      default: return '';
+      case 'granthTitle':
+        return localizations.granthTitle;
+      case 'stotraTitle':
+        return localizations.stotraTitle;
+      case 'bhajanTitle':
+        return localizations.bhajanTitle;
+      case 'aartiTitle':
+        return localizations.aartiTitle;
+      case 'namavaliTitle':
+        return localizations.namavaliTitle;
+      default:
+        return '';
     }
   }
 
@@ -143,12 +185,19 @@ class NityopasanaScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, size: 40.0, color: Theme.of(context).iconTheme.color),
+                Icon(
+                  icon,
+                  size: 40.0,
+                  color: Theme.of(context).iconTheme.color,
+                ),
                 const SizedBox(height: 8.0),
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.orange[600],
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
