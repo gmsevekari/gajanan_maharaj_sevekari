@@ -10,8 +10,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
-
 import '../deity/deity_dashboard_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -118,17 +116,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         title: Text(localizations.appName),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              showSearch(
-                context: context,
-                delegate: GlobalSearchDelegate(
-                  hintText: localizations.searchHint,
-                ),
-              );
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),

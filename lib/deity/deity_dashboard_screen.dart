@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
-import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
 
 class DeityDashboardScreen extends StatelessWidget {
   final DeityConfig deity;
@@ -49,17 +48,6 @@ class DeityDashboardScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(deityName),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              showSearch(
-                context: context,
-                delegate: GlobalSearchDelegate(
-                  hintText: localizations.searchHint,
-                ),
-              );
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
