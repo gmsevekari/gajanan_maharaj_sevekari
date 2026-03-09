@@ -401,7 +401,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get namavaliFooter => 'Shri Gajanan-arpanamastu';
 
   @override
-  String get favoritesTitle => 'Other';
+  String get otherTitle => 'Other';
 
   @override
   String get sundayPrarthanaTitle => 'Sunday Prarthana';

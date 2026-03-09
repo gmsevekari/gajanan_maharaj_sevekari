@@ -400,7 +400,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get namavaliFooter => 'श्री गजाननार्पणमस्तु';
 
   @override
-  String get favoritesTitle => 'इतर';
+  String get otherTitle => 'इतर';
 
   @override
   String get sundayPrarthanaTitle => 'रविवारची प्रार्थना';

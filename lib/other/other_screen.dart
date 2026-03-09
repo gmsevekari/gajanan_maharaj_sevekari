@@ -7,31 +7,37 @@ import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 
-class FavoritesScreen extends StatelessWidget {
-  const FavoritesScreen({super.key});
+class OtherScreen extends StatelessWidget {
+  const OtherScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final appConfig = Provider.of<AppConfigProvider>(context).appConfig!;
-    final favoritesConfig = appConfig.favorites;
+    final otherConfig = appConfig.other;
     final defaultDeity = appConfig.deities.first;
-    final String? deviceCountryCode = View.of(context).platformDispatcher.locale.countryCode;
+    final String? deviceCountryCode = View.of(
+      context,
+    ).platformDispatcher.locale.countryCode;
 
-    final favoritesMap = {
-      'sunday_prarthana': favoritesConfig.sundayPrarthana,
-      'other_aartis': favoritesConfig.otherAartis,
-      'other_stotras': favoritesConfig.otherStotras,
+    final otherMap = {
+      'sunday_prarthana': otherConfig.sundayPrarthana,
+      'other_aartis': otherConfig.otherAartis,
+      'other_stotras': otherConfig.otherStotras,
     };
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.favoritesTitle),
+        title: Text(localizations.otherTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -42,35 +48,33 @@ class FavoritesScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView(
-          children: favoritesConfig.order.map((key) {
-            final content = favoritesMap[key];
+          children: otherConfig.order.map((key) {
+            final content = otherMap[key];
             if (content == null) return const SizedBox.shrink();
 
             // Region check
-            if (content.regions.isNotEmpty && !content.regions.contains(deviceCountryCode)) {
+            if (content.regions.isNotEmpty &&
+                !content.regions.contains(deviceCountryCode)) {
               return const SizedBox.shrink(); // Do not build the card if region doesn't match
             }
 
             final title = _getTitle(localizations, content.titleKey);
 
-            return _buildFavoriteCard(
-              context,
-              theme,
-              title,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ContentListScreen(
-                      deity: defaultDeity,
-                      title: title,
-                      contentType: ContentTypeExtension.fromString(content.contentType),
-                      content: content,
+            return _buildOtherCard(context, theme, title, () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ContentListScreen(
+                    deity: defaultDeity,
+                    title: title,
+                    contentType: ContentTypeExtension.fromString(
+                      content.contentType,
                     ),
+                    content: content,
                   ),
-                );
-              },
-            );
+                ),
+              );
+            });
           }).toList(),
         ),
       ),
@@ -90,7 +94,12 @@ class FavoritesScreen extends StatelessWidget {
     }
   }
 
-  Widget _buildFavoriteCard(BuildContext context, ThemeData theme, String title, VoidCallback onTap) {
+  Widget _buildOtherCard(
+    BuildContext context,
+    ThemeData theme,
+    String title,
+    VoidCallback onTap,
+  ) {
     return Card(
       elevation: theme.cardTheme.elevation,
       color: theme.cardTheme.color,
@@ -99,9 +108,17 @@ class FavoritesScreen extends StatelessWidget {
       child: ListTile(
         title: Text(
           title,
-          style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 18.0),
+          style: TextStyle(
+            color: theme.colorScheme.primary,
+            fontWeight: FontWeight.bold,
+            fontSize: 18.0,
+          ),
         ),
-        trailing: Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: theme.colorScheme.primary,
+          size: 16.0,
+        ),
         onTap: onTap,
       ),
     );

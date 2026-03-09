@@ -854,11 +854,11 @@ abstract class AppLocalizations {
   /// **'Shri Gajanan-arpanamastu'**
   String get namavaliFooter;
 
-  /// No description provided for @favoritesTitle.
+  /// No description provided for @otherTitle.
   ///
   /// In en, this message translates to:
   /// **'Other'**
-  String get favoritesTitle;
+  String get otherTitle;
 
   /// No description provided for @sundayPrarthanaTitle.
   ///

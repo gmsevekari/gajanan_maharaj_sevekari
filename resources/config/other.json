@@ -11,8 +11,8 @@
     "regions": [
       "US"
     ],
-    "textResourceDirectory": "resources/texts/favorites/sunday_prarthana",
-    "imageResourceDirectory": "resources/images/favorites/sunday_prarthana",
+    "textResourceDirectory": "resources/texts/other/sunday_prarthana",
+    "imageResourceDirectory": "resources/images/other/sunday_prarthana",
     "files": [
       {
         "file": "guru_geeta.json",
@@ -54,8 +54,8 @@
     "title_key": "otherAartis",
     "icon": "",
     "contentType": "aarti",
-    "textResourceDirectory": "resources/texts/favorites/other_aartis",
-    "imageResourceDirectory": "resources/images/favorites/other_aartis",
+    "textResourceDirectory": "resources/texts/other/other_aartis",
+    "imageResourceDirectory": "resources/images/other/other_aartis",
     "files": [
       {
         "file": "devi_aarti.json",
@@ -107,8 +107,8 @@
     "title_key": "otherStotras",
     "icon": "",
     "contentType": "stotra",
-    "textResourceDirectory": "resources/texts/favorites/other_stotras",
-    "imageResourceDirectory": "resources/images/favorites/other_stotras",
+    "textResourceDirectory": "resources/texts/other/other_stotras",
+    "imageResourceDirectory": "resources/images/other/other_stotras",
     "files": [
       {
         "file": "gajanan_maharaj_vitthal_rakhumai_gayatri.json",

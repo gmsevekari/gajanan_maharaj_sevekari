@@ -86,12 +86,12 @@ flutter:
     - resources/texts/about/
     - resources/texts/disclaimer/
     - resources/config/
-    - resources/images/favorites/sunday_prarthana/
-    - resources/texts/favorites/sunday_prarthana/
-    - resources/images/favorites/other_aartis/
-    - resources/texts/favorites/other_aartis/
-    - resources/images/favorites/other_stotras/
-    - resources/texts/favorites/other_stotras/
+    - resources/images/other/sunday_prarthana/
+    - resources/texts/other/sunday_prarthana/
+    - resources/images/other/other_aartis/
+    - resources/texts/other/other_aartis/
+    - resources/images/other/other_stotras/
+    - resources/texts/other/other_stotras/
     - resources/images/icon/
     - resources/images/gajanan_maharaj/
     - resources/texts/gajanan_maharaj/about/

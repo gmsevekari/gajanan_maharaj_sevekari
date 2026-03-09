@@ -96,9 +96,9 @@ class _HomeScreenState extends State<HomeScreen> {
     cards.add(
       _buildIconGridItem(
         context: context,
-        title: localizations.calendarTitle,
-        icon: Icons.calendar_month_outlined,
-        onTap: () => Navigator.pushNamed(context, Routes.calendar),
+        title: localizations.otherTitle, // "Other" card
+        icon: Icons.temple_hindu,
+        onTap: () => Navigator.pushNamed(context, Routes.other),
       ),
     );
     cards.add(
@@ -113,9 +113,9 @@ class _HomeScreenState extends State<HomeScreen> {
     cards.add(
       _buildIconGridItem(
         context: context,
-        title: localizations.favoritesTitle,
-        icon: Icons.favorite_border,
-        onTap: () => Navigator.pushNamed(context, Routes.favorites),
+        title: localizations.calendarTitle,
+        icon: Icons.calendar_month_outlined,
+        onTap: () => Navigator.pushNamed(context, Routes.calendar),
       ),
     );
 
@@ -629,8 +629,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       imagePath,
                       height: size,
                       width: size,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Icon(Icons.error_outline, size: size, color: theme.iconTheme.color),
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        Icons.error_outline,
+                        size: size,
+                        color: theme.iconTheme.color,
+                      ),
                     )
                   else if (icon != null)
                     Icon(icon, size: size, color: theme.iconTheme.color),

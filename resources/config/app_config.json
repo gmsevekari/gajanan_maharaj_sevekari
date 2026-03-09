@@ -25,5 +25,5 @@
       "configFile": "resources/config/hanuman.json"
     }
   ],
-  "favorites_config": "resources/config/favorites.json"
+  "other_config": "resources/config/other.json"
 }

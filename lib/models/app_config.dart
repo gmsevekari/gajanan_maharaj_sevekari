@@ -12,41 +12,81 @@ abstract class ContentContainer {
 
 class AppConfig {
   final List<DeityConfig> deities;
-  final FavoritesConfig favorites;
+  final OtherConfig other;
 
-  AppConfig({required this.deities, required this.favorites});
+  AppConfig({required this.deities, required this.other});
 
   factory AppConfig.fromJson(Map<String, dynamic> json) {
-    var list = json['deities'] as List? ?? [];
-    List<DeityConfig> deitiesList = list.map((i) => DeityConfig.fromJson(i)).toList();
     return AppConfig(
-      deities: deitiesList,
-      favorites: FavoritesConfig.fromJson(json['favorites'] ?? {}),
+      deities:
+          (json['deities'] as List?)
+              ?.map((d) => DeityConfig.fromJson(d))
+              .toList() ??
+          [],
+      other: json.containsKey('other')
+          ? OtherConfig.fromJson(json['other'])
+          : OtherConfig(
+              order: [],
+              sundayPrarthana: NityopasanaContent(
+                titleKey: '',
+                contentType: '',
+                regions: [],
+                icon: '',
+                textResourceDirectory: '',
+                imageResourceDirectory: '',
+                files: [],
+              ),
+              otherAartis: NityopasanaContent(
+                titleKey: '',
+                contentType: '',
+                regions: [],
+                icon: '',
+                textResourceDirectory: '',
+                imageResourceDirectory: '',
+                files: [],
+              ),
+              otherStotras: NityopasanaContent(
+                titleKey: '',
+                contentType: '',
+                regions: [],
+                icon: '',
+                textResourceDirectory: '',
+                imageResourceDirectory: '',
+                files: [],
+              ),
+            ),
     );
   }
 }
 
-class FavoritesConfig {
+class OtherConfig {
   final List<String> order;
   final NityopasanaContent sundayPrarthana;
   final NityopasanaContent otherAartis;
   final NityopasanaContent otherStotras;
 
-  FavoritesConfig({required this.order, required this.sundayPrarthana, required this.otherAartis, required this.otherStotras});
+  OtherConfig({
+    required this.order,
+    required this.sundayPrarthana,
+    required this.otherAartis,
+    required this.otherStotras,
+  });
 
-  factory FavoritesConfig.fromJson(Map<String, dynamic> json) {
-    return FavoritesConfig(
+  factory OtherConfig.fromJson(Map<String, dynamic> json) {
+    return OtherConfig(
       order: List<String>.from(json['order'] ?? []),
-      sundayPrarthana: NityopasanaContent.fromJson(json['sunday_prarthana'] ?? {}),
+      sundayPrarthana: NityopasanaContent.fromJson(
+        json['sunday_prarthana'] ?? {},
+      ),
       otherAartis: NityopasanaContent.fromJson(json['other_aartis'] ?? {}),
       otherStotras: NityopasanaContent.fromJson(json['other_stotras'] ?? {}),
     );
   }
 
-  static Future<FavoritesConfig> fromFile(String path) async {
+  static Future<OtherConfig> fromFile(String path) async {
     final String response = await rootBundle.loadString(path);
     final data = await json.decode(response);
-    return FavoritesConfig.fromJson(data);
+    return OtherConfig.fromJson(data);
   }
 }
 
@@ -81,7 +121,9 @@ class DeityConfig {
 
   factory DeityConfig.fromJson(Map<String, dynamic> json) {
     var socialMediaList = json['social_media_links'] as List? ?? [];
-    List<SocialMediaLink> socialMediaLinksList = socialMediaList.map((i) => SocialMediaLink.fromJson(i)).toList();
+    List<SocialMediaLink> socialMediaLinksList = socialMediaList
+        .map((i) => SocialMediaLink.fromJson(i))
+        .toList();
 
     return DeityConfig(
       id: json['id'] ?? '',
@@ -92,9 +134,15 @@ class DeityConfig {
       aboutFile: json['about_file'] ?? '',
       aboutTitleKey: json['about_title_key'] ?? '',
       nityopasana: NityopasanaConfig.fromJson(json['nityopasana'] ?? {}),
-      donationInfo: json['donation_info'] != null ? DonationInfo.fromJson(json['donation_info']) : null,
-      signupInfo: json['signup_links'] != null ? SignupInfo.fromJson(json['signup_links']) : null,
-      songs: json['songs'] != null ? NityopasanaContent.fromJson(json['songs']) : null,
+      donationInfo: json['donation_info'] != null
+          ? DonationInfo.fromJson(json['donation_info'])
+          : null,
+      signupInfo: json['signup_links'] != null
+          ? SignupInfo.fromJson(json['signup_links'])
+          : null,
+      songs: json['songs'] != null
+          ? NityopasanaContent.fromJson(json['songs'])
+          : null,
       socialMediaLinks: socialMediaLinksList,
     );
   }
@@ -129,7 +177,9 @@ class AboutDeity {
 
   factory AboutDeity.fromJson(Map<String, dynamic> json) {
     var list = json['sections'] as List? ?? [];
-    List<AboutSection> sectionsList = list.map((i) => AboutSection.fromJson(i)).toList();
+    List<AboutSection> sectionsList = list
+        .map((i) => AboutSection.fromJson(i))
+        .toList();
     return AboutDeity(
       titleEn: json['title_en'] ?? '',
       titleMr: json['title_mr'] ?? '',
@@ -205,11 +255,19 @@ class NityopasanaConfig {
 
     return NityopasanaConfig(
       order: List<String>.from(json['order'] ?? []),
-      granth: json['granth'] != null ? NityopasanaContent.fromJson(json['granth']) : null,
-      bhajans: json['bhajans'] != null ? NityopasanaContent.fromJson(json['bhajans']) : null,
-      stotras: json['stotras'] != null ? NityopasanaContent.fromJson(json['stotras']) : null,
+      granth: json['granth'] != null
+          ? NityopasanaContent.fromJson(json['granth'])
+          : null,
+      bhajans: json['bhajans'] != null
+          ? NityopasanaContent.fromJson(json['bhajans'])
+          : null,
+      stotras: json['stotras'] != null
+          ? NityopasanaContent.fromJson(json['stotras'])
+          : null,
       aartis: aartisContent,
-      namavali: json['namavali'] != null ? NamavaliContent.fromJson(json['namavali']) : null,
+      namavali: json['namavali'] != null
+          ? NamavaliContent.fromJson(json['namavali'])
+          : null,
     );
   }
 }
@@ -229,11 +287,21 @@ class NityopasanaContent implements ContentContainer {
   @override
   final List<ContentItem> files;
 
-  NityopasanaContent({required this.titleKey, required this.contentType, required this.regions, required this.icon, required this.textResourceDirectory, required this.imageResourceDirectory, required this.files});
+  NityopasanaContent({
+    required this.titleKey,
+    required this.contentType,
+    required this.regions,
+    required this.icon,
+    required this.textResourceDirectory,
+    required this.imageResourceDirectory,
+    required this.files,
+  });
 
   factory NityopasanaContent.fromJson(Map<String, dynamic> json) {
     var fileList = json['files'] as List? ?? [];
-    List<ContentItem> contentItems = fileList.map((i) => ContentItem.fromJson(i)).toList();
+    List<ContentItem> contentItems = fileList
+        .map((i) => ContentItem.fromJson(i))
+        .toList();
     return NityopasanaContent(
       titleKey: json['title_key'] ?? '',
       contentType: json['contentType'] ?? '',
@@ -252,7 +320,12 @@ class ContentItem {
   final String? textResourceDirectory;
   final String? imageResourceDirectory;
 
-  ContentItem({required this.file, required this.image, this.textResourceDirectory, this.imageResourceDirectory});
+  ContentItem({
+    required this.file,
+    required this.image,
+    this.textResourceDirectory,
+    this.imageResourceDirectory,
+  });
 
   factory ContentItem.fromJson(Map<String, dynamic> json) {
     return ContentItem(
@@ -270,12 +343,18 @@ class AartiContent {
   final String contentType;
   final List<AartiCategoryConfig> categories;
 
-  AartiContent({required this.titleKey, required this.icon, required this.contentType, required this.categories});
+  AartiContent({
+    required this.titleKey,
+    required this.icon,
+    required this.contentType,
+    required this.categories,
+  });
 
   factory AartiContent.fromJson(Map<String, dynamic> json) {
     var categoryList = json['categories'] as List? ?? [];
-    List<AartiCategoryConfig> categoryConfigList =
-        categoryList.map((i) => AartiCategoryConfig.fromJson(i)).toList();
+    List<AartiCategoryConfig> categoryConfigList = categoryList
+        .map((i) => AartiCategoryConfig.fromJson(i))
+        .toList();
     return AartiContent(
       titleKey: json['title_key'] ?? '',
       icon: json['icon'] ?? '',
@@ -300,11 +379,21 @@ class AartiCategoryConfig implements ContentContainer {
   @override
   final List<ContentItem> files;
 
-  AartiCategoryConfig({required this.id, required this.titleKey, required this.contentType, required this.regions, required this.textResourceDirectory, required this.imageResourceDirectory, required this.files});
+  AartiCategoryConfig({
+    required this.id,
+    required this.titleKey,
+    required this.contentType,
+    required this.regions,
+    required this.textResourceDirectory,
+    required this.imageResourceDirectory,
+    required this.files,
+  });
 
   factory AartiCategoryConfig.fromJson(Map<String, dynamic> json) {
     var fileList = json['files'] as List? ?? [];
-    List<ContentItem> contentItems = fileList.map((i) => ContentItem.fromJson(i)).toList();
+    List<ContentItem> contentItems = fileList
+        .map((i) => ContentItem.fromJson(i))
+        .toList();
     return AartiCategoryConfig(
       id: json['id'] ?? '',
       titleKey: json['title_key'] ?? '',
@@ -326,7 +415,15 @@ class NamavaliContent {
   final String textResourceDirectory;
   final String imageResourceDirectory;
 
-  NamavaliContent({required this.titleKey, required this.icon, required this.contentType, required this.file, required this.image, required this.textResourceDirectory, required this.imageResourceDirectory});
+  NamavaliContent({
+    required this.titleKey,
+    required this.icon,
+    required this.contentType,
+    required this.file,
+    required this.image,
+    required this.textResourceDirectory,
+    required this.imageResourceDirectory,
+  });
 
   factory NamavaliContent.fromJson(Map<String, dynamic> json) {
     return NamavaliContent(
@@ -372,7 +469,9 @@ class SignupInfo {
 
   factory SignupInfo.fromJson(Map<String, dynamic> json) {
     var linkList = json['links'] as List? ?? [];
-    List<SignupLink> signupLinks = linkList.map((i) => SignupLink.fromJson(i)).toList();
+    List<SignupLink> signupLinks = linkList
+        .map((i) => SignupLink.fromJson(i))
+        .toList();
     return SignupInfo(
       regions: List<String>.from(json['regions'] ?? []),
       links: signupLinks,
@@ -386,7 +485,12 @@ class SocialMediaLink {
   final String url;
   final String color;
 
-  SocialMediaLink({required this.platform, required this.icon, required this.url, required this.color});
+  SocialMediaLink({
+    required this.platform,
+    required this.icon,
+    required this.url,
+    required this.color,
+  });
 
   factory SocialMediaLink.fromJson(Map<String, dynamic> json) {
     return SocialMediaLink(

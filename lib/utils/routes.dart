@@ -16,7 +16,7 @@ class Routes {
   static const String socialMedia = '/social_media';
   static const String nityopasana = '/nityopasana';
   static const String signups = '/signups';
-  static const String favorites = '/favorites';
+  static const String other = '/other';
   static const String sundayPrarthana = '/sunday_prarthana';
   static const String fontSelection = '/font_selection';
   static const String songs = '/songs';
