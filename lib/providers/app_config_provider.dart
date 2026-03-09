@@ -173,23 +173,22 @@ class AppConfigProvider extends ChangeNotifier {
       final defaultDeity = _appConfig!.deities.first;
       final otherConfig = _appConfig!.other;
 
-      await searchInContainer(
-        defaultDeity,
-        otherConfig.sundayPrarthana,
-        ContentTypeExtension.fromString(
-          otherConfig.sundayPrarthana.contentType,
-        ),
-      );
-      await searchInContainer(
-        defaultDeity,
-        otherConfig.otherAartis,
-        ContentTypeExtension.fromString(otherConfig.otherAartis.contentType),
-      );
-      await searchInContainer(
-        defaultDeity,
-        otherConfig.otherStotras,
-        ContentTypeExtension.fromString(otherConfig.otherStotras.contentType),
-      );
+      final otherMap = {
+        'sunday_prarthana': otherConfig.sundayPrarthana,
+        'other_aartis': otherConfig.otherAartis,
+        'other_stotras': otherConfig.otherStotras,
+      };
+
+      for (var key in otherConfig.order) {
+        final content = otherMap[key];
+        if (content != null) {
+          await searchInContainer(
+            defaultDeity,
+            content,
+            ContentTypeExtension.fromString(content.contentType),
+          );
+        }
+      }
     }
 
     return results;
