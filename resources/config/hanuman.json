@@ -44,5 +44,16 @@
         }
       ]
     }
+  },
+  "songs": {
+    "contentType": "song",
+    "textResourceDirectory": "resources/texts/hanuman/songs",
+    "imageResourceDirectory": "resources/images/hanuman/songs",
+    "files": [
+      {
+        "file": "prabhu_ramchandra_ke_doota.json",
+        "image": "prabhu_ramchandra_ke_doota.png"
+      }
+    ]
   }
 }

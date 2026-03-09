@@ -33,6 +33,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get parayanTitle => 'पारायण आयोजन';
 
   @override
+  String get songTitle => 'गाणी';
+
+  @override
   String get aboutMaharajTitle => 'महाराजांविषयी';
 
   @override

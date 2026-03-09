@@ -33,6 +33,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get parayanTitle => 'Parayan Organization';
 
   @override
+  String get songTitle => 'Songs';
+
+  @override
   String get aboutMaharajTitle => 'About Maharaj';
 
   @override

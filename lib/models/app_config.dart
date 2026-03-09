@@ -61,6 +61,7 @@ class DeityConfig {
   final NityopasanaConfig nityopasana;
   final DonationInfo? donationInfo;
   final SignupInfo? signupInfo;
+  final NityopasanaContent? songs;
   final List<SocialMediaLink> socialMediaLinks;
 
   DeityConfig({
@@ -74,6 +75,7 @@ class DeityConfig {
     required this.nityopasana,
     this.donationInfo,
     this.signupInfo,
+    this.songs,
     required this.socialMediaLinks,
   });
 
@@ -92,6 +94,7 @@ class DeityConfig {
       nityopasana: NityopasanaConfig.fromJson(json['nityopasana'] ?? {}),
       donationInfo: json['donation_info'] != null ? DonationInfo.fromJson(json['donation_info']) : null,
       signupInfo: json['signup_links'] != null ? SignupInfo.fromJson(json['signup_links']) : null,
+      songs: json['songs'] != null ? NityopasanaContent.fromJson(json['songs']) : null,
       socialMediaLinks: socialMediaLinksList,
     );
   }

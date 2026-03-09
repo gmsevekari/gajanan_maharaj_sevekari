@@ -14,6 +14,8 @@ import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/nityopasana/nityopasana_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_screen.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/sankalp/sankalp_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
@@ -110,6 +112,15 @@ class MyApp extends StatelessWidget {
                 return MaterialPageRoute(builder: (context) => SocialMediaScreen(deity: deity!));
               case Routes.namavali:
                 return MaterialPageRoute(builder: (context) => NamavaliScreen(deity: deity!));
+              case Routes.songs:
+                return MaterialPageRoute(
+                  builder: (context) => ContentListScreen(
+                    deity: deity!,
+                    title: AppLocalizations.of(context)!.songTitle,
+                    contentType: ContentType.song,
+                    content: deity.songs!,
+                  ),
+                );
               default:
                 return null;
             }

@@ -32,12 +32,16 @@ class DeityDashboardScreen extends StatelessWidget {
       featureCards.add(_buildGridItem(context, localizations.signupsTitle, Icons.assignment_ind_outlined, Routes.signups, arguments: deity));
     }
 
-    if (deity.aboutFile.isNotEmpty) {
-      featureCards.add(_buildGridItem(context, _getAboutTitle(localizations, deity.aboutTitleKey), Icons.info_outline, Routes.aboutMaharaj, arguments: deity));
+    if (deity.songs != null) {
+      featureCards.add(_buildGridItem(context, localizations.songTitle, Icons.library_music, Routes.songs, arguments: deity));
     }
 
     if (deity.socialMediaLinks.isNotEmpty) {
       featureCards.add(_buildGridItem(context, localizations.socialMediaTitle, Icons.connect_without_contact, Routes.socialMedia, arguments: deity));
+    }
+
+    if (deity.aboutFile.isNotEmpty) {
+      featureCards.add(_buildGridItem(context, _getAboutTitle(localizations, deity.aboutTitleKey), Icons.info_outline, Routes.aboutMaharaj, arguments: deity));
     }
 
     return Scaffold(

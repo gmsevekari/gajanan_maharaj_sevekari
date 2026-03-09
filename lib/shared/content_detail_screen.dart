@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-enum ContentType { granth, aarti, bhajan, stotra, namavali }
+enum ContentType { granth, aarti, bhajan, stotra, namavali, song }
 
 extension ContentTypeExtension on ContentType {
   static ContentType fromString(String contentType) {
@@ -26,6 +26,8 @@ extension ContentTypeExtension on ContentType {
         return ContentType.aarti;
       case 'namavali':
         return ContentType.namavali;
+      case 'song':
+        return ContentType.song;
       default:
         return ContentType.granth;
     }

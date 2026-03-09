@@ -146,6 +146,12 @@ abstract class AppLocalizations {
   /// **'Parayan Organization'**
   String get parayanTitle;
 
+  /// No description provided for @songTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Songs'**
+  String get songTitle;
+
   /// No description provided for @aboutMaharajTitle.
   ///
   /// In en, this message translates to:
