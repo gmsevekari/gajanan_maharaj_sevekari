@@ -571,4 +571,13 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get enterCustomTarget => 'लक्ष्य माळा नंबर टाका (उदा. ११)';
+
+  @override
+  String get search => 'शोधा';
+
+  @override
+  String get searchHint => 'स्तोत्रे, भजने शोधा...';
+
+  @override
+  String get noResultsFound => 'काहीही आढळले नाही';
 }

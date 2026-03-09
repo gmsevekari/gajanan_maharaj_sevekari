@@ -571,4 +571,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterCustomTarget => 'Enter Target (e.g. 11)';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get searchHint => 'Search stotras, bhajans...';
+
+  @override
+  String get noResultsFound => 'No results found';
 }

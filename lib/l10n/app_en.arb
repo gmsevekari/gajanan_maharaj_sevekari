@@ -203,5 +203,8 @@
   "tap": "Tap",
   "tapToEdit": "Tap to Edit",
   "jap": "Jap",
-  "enterCustomTarget": "Enter Target (e.g. 11)"
+  "enterCustomTarget": "Enter Target (e.g. 11)",
+  "search": "Search",
+  "searchHint": "Search stotras, bhajans...",
+  "noResultsFound": "No results found"
 }
