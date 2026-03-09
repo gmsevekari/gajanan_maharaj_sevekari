@@ -485,4 +485,90 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get gajananChant => 'गण गण गणात बोते';
+
+  @override
+  String get chantOmGajananay => 'ॐ श्री गजाननाय नमः';
+
+  @override
+  String get chantShriGajananJaiGajanan => 'श्री गजानन जय गजानन';
+
+  @override
+  String get naamjapTitle => 'नामजप';
+
+  @override
+  String get malaCountingTab => 'माळा मोजणी';
+
+  @override
+  String get timeBasedTab => 'वेळ आधारित';
+
+  @override
+  String get manualJapTab => 'मॅन्युअल';
+
+  @override
+  String get targetMalaCount => 'लक्ष्य (माळा)';
+
+  @override
+  String get setTarget => 'लक्ष्य निश्चित करा';
+
+  @override
+  String get start => 'सुरू';
+
+  @override
+  String get reset => 'रीसेट करा';
+
+  @override
+  String get count => 'मोजणी';
+
+  @override
+  String totalMalasCompleted(int count) {
+    return 'एकूण पूर्ण झालेल्या माळा: $count';
+  }
+
+  @override
+  String get hours => 'तास';
+
+  @override
+  String get minutes => 'मिनिटे';
+
+  @override
+  String get duration => 'कालावधी';
+
+  @override
+  String get timeRemaining => 'उर्वरित वेळ';
+
+  @override
+  String get cancel => 'रद्द करा';
+
+  @override
+  String get ok => 'ठीक आहे';
+
+  @override
+  String get other => 'इतर';
+
+  @override
+  String get selectMalaCount => 'माळ संख्या निवडा';
+
+  @override
+  String get mala => 'माळ';
+
+  @override
+  String get malas => 'माळा';
+
+  @override
+  String get startPlay => 'सुरू करा';
+
+  @override
+  String get audioJapWillStart => 'ऑडिओ जप चालू होईल';
+
+  @override
+  String get tap => 'टॅप करा';
+
+  @override
+  String get tapToEdit => 'बदलण्यासाठी टॅप करा';
+
+  @override
+  String get jap => 'जप';
+
+  @override
+  String get enterCustomTarget => 'लक्ष्य माळा नंबर टाका (उदा. ११)';
 }

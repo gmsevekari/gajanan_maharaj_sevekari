@@ -25,6 +25,7 @@ import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signups_screen.dart';
 import 'package:gajanan_maharaj_sevekari/social_media/social_media_screen.dart';
 import 'package:gajanan_maharaj_sevekari/splash/splash_screen.dart';
+import 'package:gajanan_maharaj_sevekari/jap_mala/naamjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -91,6 +92,7 @@ class MyApp extends StatelessWidget {
             Routes.settings: (context) => const SettingsScreen(),
             Routes.parayan: (context) => const ParayanScreen(),
             Routes.sankalp: (context) => const SankalpScreen(),
+            Routes.naamjap: (context) => const NaamjapScreen(),
           },
           onGenerateRoute: (settings) {
             final DeityConfig? deity = settings.arguments as DeityConfig?;

@@ -20,4 +20,5 @@ class Routes {
   static const String sundayPrarthana = '/sunday_prarthana';
   static const String fontSelection = '/font_selection';
   static const String songs = '/songs';
+  static const String naamjap = '/naamjap';
 }

@@ -485,4 +485,90 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gajananChant => 'Gan Gan Ganat Bote';
+
+  @override
+  String get chantOmGajananay => 'Om Shri Gajananay Namah';
+
+  @override
+  String get chantShriGajananJaiGajanan => 'Shri Gajanan Jai Gajanan';
+
+  @override
+  String get naamjapTitle => 'Naamjap';
+
+  @override
+  String get malaCountingTab => 'Mala Counting';
+
+  @override
+  String get timeBasedTab => 'Time-based';
+
+  @override
+  String get manualJapTab => 'Manual';
+
+  @override
+  String get targetMalaCount => 'Target (Malas)';
+
+  @override
+  String get setTarget => 'Set Target';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get count => 'Count';
+
+  @override
+  String totalMalasCompleted(int count) {
+    return 'Total Malas Completed: $count';
+  }
+
+  @override
+  String get hours => 'Hrs';
+
+  @override
+  String get minutes => 'Mins';
+
+  @override
+  String get duration => 'Duration';
+
+  @override
+  String get timeRemaining => 'Time Remaining';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get selectMalaCount => 'Select Mala Count';
+
+  @override
+  String get mala => 'Mala';
+
+  @override
+  String get malas => 'Malas';
+
+  @override
+  String get startPlay => 'Start';
+
+  @override
+  String get audioJapWillStart => 'Audio jap will start';
+
+  @override
+  String get tap => 'Tap';
+
+  @override
+  String get tapToEdit => 'Tap to Edit';
+
+  @override
+  String get jap => 'Jap';
+
+  @override
+  String get enterCustomTarget => 'Enter Target (e.g. 11)';
 }

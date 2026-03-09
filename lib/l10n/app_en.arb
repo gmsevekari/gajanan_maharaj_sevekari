@@ -168,5 +168,40 @@
   "notificationDialogDeny": "Not Now",
   "openSettings": "Open Settings",
   "specialEvents": "Special Events",
-  "gajananChant": "Gan Gan Ganat Bote"
+  "gajananChant": "Gan Gan Ganat Bote",
+  "chantOmGajananay": "Om Shri Gajananay Namah",
+  "chantShriGajananJaiGajanan": "Shri Gajanan Jai Gajanan",
+  "naamjapTitle": "Naamjap",
+  "malaCountingTab": "Mala Counting",
+  "timeBasedTab": "Time-based",
+  "manualJapTab": "Manual",
+  "targetMalaCount": "Target (Malas)",
+  "setTarget": "Set Target",
+  "start": "Start",
+  "reset": "Reset",
+  "count": "Count",
+  "totalMalasCompleted": "Total Malas Completed: {count}",
+  "@totalMalasCompleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hours": "Hrs",
+  "minutes": "Mins",
+  "duration": "Duration",
+  "timeRemaining": "Time Remaining",
+  "cancel": "Cancel",
+  "ok": "OK",
+  "other": "Other",
+  "selectMalaCount": "Select Mala Count",
+  "mala": "Mala",
+  "malas": "Malas",
+  "startPlay": "Start",
+  "audioJapWillStart": "Audio jap will start",
+  "tap": "Tap",
+  "tapToEdit": "Tap to Edit",
+  "jap": "Jap",
+  "enterCustomTarget": "Enter Target (e.g. 11)"
 }

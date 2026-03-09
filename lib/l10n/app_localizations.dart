@@ -1015,6 +1015,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gan Gan Ganat Bote'**
   String get gajananChant;
+
+  /// No description provided for @chantOmGajananay.
+  ///
+  /// In en, this message translates to:
+  /// **'Om Shri Gajananay Namah'**
+  String get chantOmGajananay;
+
+  /// No description provided for @chantShriGajananJaiGajanan.
+  ///
+  /// In en, this message translates to:
+  /// **'Shri Gajanan Jai Gajanan'**
+  String get chantShriGajananJaiGajanan;
+
+  /// No description provided for @naamjapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Naamjap'**
+  String get naamjapTitle;
+
+  /// No description provided for @malaCountingTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Mala Counting'**
+  String get malaCountingTab;
+
+  /// No description provided for @timeBasedTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Time-based'**
+  String get timeBasedTab;
+
+  /// No description provided for @manualJapTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get manualJapTab;
+
+  /// No description provided for @targetMalaCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Target (Malas)'**
+  String get targetMalaCount;
+
+  /// No description provided for @setTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Target'**
+  String get setTarget;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// No description provided for @count.
+  ///
+  /// In en, this message translates to:
+  /// **'Count'**
+  String get count;
+
+  /// No description provided for @totalMalasCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Malas Completed: {count}'**
+  String totalMalasCompleted(int count);
+
+  /// No description provided for @hours.
+  ///
+  /// In en, this message translates to:
+  /// **'Hrs'**
+  String get hours;
+
+  /// No description provided for @minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Mins'**
+  String get minutes;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @timeRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Time Remaining'**
+  String get timeRemaining;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// No description provided for @selectMalaCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Mala Count'**
+  String get selectMalaCount;
+
+  /// No description provided for @mala.
+  ///
+  /// In en, this message translates to:
+  /// **'Mala'**
+  String get mala;
+
+  /// No description provided for @malas.
+  ///
+  /// In en, this message translates to:
+  /// **'Malas'**
+  String get malas;
+
+  /// No description provided for @startPlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get startPlay;
+
+  /// No description provided for @audioJapWillStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio jap will start'**
+  String get audioJapWillStart;
+
+  /// No description provided for @tap.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap'**
+  String get tap;
+
+  /// No description provided for @tapToEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to Edit'**
+  String get tapToEdit;
+
+  /// No description provided for @jap.
+  ///
+  /// In en, this message translates to:
+  /// **'Jap'**
+  String get jap;
+
+  /// No description provided for @enterCustomTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Target (e.g. 11)'**
+  String get enterCustomTarget;
 }
 
 class _AppLocalizationsDelegate

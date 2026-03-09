@@ -51,6 +51,8 @@ dependencies:
   firebase_messaging: ^16.1.1
   app_settings: ^7.0.0
   package_info_plus: ^9.0.0
+  audioplayers: ^6.6.0
+  wakelock_plus: ^1.4.0
 
 dev_dependencies:
   flutter_test:
@@ -140,6 +142,9 @@ flutter:
     - resources/texts/hanuman/stotras/
     - resources/images/hanuman/songs/
     - resources/texts/hanuman/songs/
+    - resources/images/naamjap/
+    - resources/texts/naamjap/
+    - resources/audio/naamjap/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

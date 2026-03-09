@@ -93,18 +93,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
     cards.add(
       _buildIconGridItem(
-        context,
-        localizations.calendarTitle,
-        Icons.calendar_month_outlined,
-        () => Navigator.pushNamed(context, Routes.calendar),
+        context: context,
+        title: localizations.calendarTitle,
+        icon: Icons.calendar_month_outlined,
+        onTap: () => Navigator.pushNamed(context, Routes.calendar),
       ),
     );
     cards.add(
       _buildIconGridItem(
-        context,
-        localizations.favoritesTitle,
-        Icons.favorite_border,
-        () => Navigator.pushNamed(context, Routes.favorites),
+        context: context,
+        title: localizations.naamjapTitle,
+        imagePath: 'resources/images/icon/Rudraksha_Mala.png',
+        imageSize: 64.0,
+        onTap: () => Navigator.pushNamed(context, Routes.naamjap),
+      ),
+    );
+    cards.add(
+      _buildIconGridItem(
+        context: context,
+        title: localizations.favoritesTitle,
+        icon: Icons.favorite_border,
+        onTap: () => Navigator.pushNamed(context, Routes.favorites),
       ),
     );
 
@@ -565,13 +574,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildIconGridItem(
-    BuildContext context,
-    String title,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
+  Widget _buildIconGridItem({
+    required BuildContext context,
+    required String title,
+    IconData? icon,
+    String? imagePath,
+    double? imageSize,
+    required VoidCallback onTap,
+  }) {
     final theme = Theme.of(context);
+    final size = imageSize ?? 48.0;
 
     return SizedBox(
       width: (MediaQuery.of(context).size.width - 32) / 3,
@@ -599,7 +611,16 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon, size: 48.0, color: theme.iconTheme.color),
+                  if (imagePath != null)
+                    Image.asset(
+                      imagePath,
+                      height: size,
+                      width: size,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Icon(Icons.error_outline, size: size, color: theme.iconTheme.color),
+                    )
+                  else if (icon != null)
+                    Icon(icon, size: size, color: theme.iconTheme.color),
                   const SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),

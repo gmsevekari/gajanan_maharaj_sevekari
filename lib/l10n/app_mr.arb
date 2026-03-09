@@ -168,5 +168,40 @@
   "notificationDialogDeny": "आता नको",
   "openSettings": "सेटिंग्ज उघडा",
   "specialEvents": "विशेष उत्सव",
-  "gajananChant": "गण गण गणात बोते"
+  "gajananChant": "गण गण गणात बोते",
+  "chantOmGajananay": "ॐ श्री गजाननाय नमः",
+  "chantShriGajananJaiGajanan": "श्री गजानन जय गजानन",
+  "naamjapTitle": "नामजप",
+  "malaCountingTab": "माळा मोजणी",
+  "timeBasedTab": "वेळ आधारित",
+  "manualJapTab": "मॅन्युअल",
+  "targetMalaCount": "लक्ष्य (माळा)",
+  "setTarget": "लक्ष्य निश्चित करा",
+  "start": "सुरू",
+  "reset": "रीसेट करा",
+  "count": "मोजणी",
+  "totalMalasCompleted": "एकूण पूर्ण झालेल्या माळा: {count}",
+  "@totalMalasCompleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hours": "तास",
+  "minutes": "मिनिटे",
+  "duration": "कालावधी",
+  "timeRemaining": "उर्वरित वेळ",
+  "cancel": "रद्द करा",
+  "ok": "ठीक आहे",
+  "other": "इतर",
+  "selectMalaCount": "माळ संख्या निवडा",
+  "mala": "माळ",
+  "malas": "माळा",
+  "startPlay": "सुरू करा",
+  "audioJapWillStart": "ऑडिओ जप चालू होईल",
+  "tap": "टॅप करा",
+  "tapToEdit": "बदलण्यासाठी टॅप करा",
+  "jap": "जप",
+  "enterCustomTarget": "लक्ष्य माळा नंबर टाका (उदा. ११)"
 }
