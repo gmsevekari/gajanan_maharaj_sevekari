@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
+import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 
@@ -31,6 +32,17 @@ class OtherScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(localizations.otherTitle),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: GlobalSearchDelegate(
+                  hintText: localizations.searchHint,
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(

@@ -167,6 +167,31 @@ class AppConfigProvider extends ChangeNotifier {
         }
       }
     }
+
+    // Search in Other section
+    if (_appConfig!.deities.isNotEmpty) {
+      final defaultDeity = _appConfig!.deities.first;
+      final otherConfig = _appConfig!.other;
+
+      await searchInContainer(
+        defaultDeity,
+        otherConfig.sundayPrarthana,
+        ContentTypeExtension.fromString(
+          otherConfig.sundayPrarthana.contentType,
+        ),
+      );
+      await searchInContainer(
+        defaultDeity,
+        otherConfig.otherAartis,
+        ContentTypeExtension.fromString(otherConfig.otherAartis.contentType),
+      );
+      await searchInContainer(
+        defaultDeity,
+        otherConfig.otherStotras,
+        ContentTypeExtension.fromString(otherConfig.otherStotras.contentType),
+      );
+    }
+
     return results;
   }
 }

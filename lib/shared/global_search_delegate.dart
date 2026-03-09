@@ -88,7 +88,12 @@ class GlobalSearchDelegate extends SearchDelegate {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text(localizations.noResultsFound));
+          return Center(
+            child: Text(
+              localizations.noResultsFound,
+              style: const TextStyle(fontSize: 18.0),
+            ),
+          );
         }
 
         final results = snapshot.data!;
