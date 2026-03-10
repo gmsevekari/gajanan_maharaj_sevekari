@@ -206,5 +206,14 @@
   "enterCustomTarget": "Enter Target (e.g. 11)",
   "search": "Search",
   "searchHint": "Search stotras, bhajans...",
-  "noResultsFound": "No results found"
+  "noResultsFound": "No results found",
+  "japTimeCompleted": "Jap time completed!",
+  "targetMalasCompleted": "Target of {count} malas completed!",
+  "@targetMalasCompleted": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

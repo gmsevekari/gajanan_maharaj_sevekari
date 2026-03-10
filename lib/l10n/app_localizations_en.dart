@@ -580,4 +580,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noResultsFound => 'No results found';
+
+  @override
+  String get japTimeCompleted => 'Jap time completed!';
+
+  @override
+  String targetMalasCompleted(String count) {
+    return 'Target of $count malas completed!';
+  }
 }

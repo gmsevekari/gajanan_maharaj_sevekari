@@ -580,4 +580,12 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get noResultsFound => 'काहीही आढळले नाही';
+
+  @override
+  String get japTimeCompleted => 'जप वेळ पूर्ण झाली!';
+
+  @override
+  String targetMalasCompleted(String count) {
+    return '$count माळांचे लक्ष्य पूर्ण झाले!';
+  }
 }

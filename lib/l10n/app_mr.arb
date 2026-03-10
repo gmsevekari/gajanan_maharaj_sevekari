@@ -206,5 +206,14 @@
   "enterCustomTarget": "लक्ष्य माळा नंबर टाका (उदा. ११)",
   "search": "शोधा",
   "searchHint": "स्तोत्रे, भजने शोधा...",
-  "noResultsFound": "काहीही आढळले नाही"
+  "noResultsFound": "काहीही आढळले नाही",
+  "japTimeCompleted": "जप वेळ पूर्ण झाली!",
+  "targetMalasCompleted": "{count} माळांचे लक्ष्य पूर्ण झाले!",
+  "@targetMalasCompleted": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

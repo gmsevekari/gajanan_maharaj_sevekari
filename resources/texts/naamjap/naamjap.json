@@ -7,28 +7,10 @@
             "audio": "gan_gan_ganat_bote.mp3"
         },
         {
-            "id": "shri_gajanan_jai_gajanan",
-            "title_mr": "श्री गजानन जय गजानन",
-            "title_en": "Shri Gajanan Jai Gajanan",
-            "audio": "shri_gajanan_jai_gajanan.mp3"
-        },
-        {
-            "id": "om_gajanan_namo_namaha",
-            "title_mr": "ओम गजानन नमो नमः",
-            "title_en": "Om Gajanan Namo Namah",
-            "audio": "om_gajanan_namo_namaha.mp3"
-        },
-        {
             "id": "digambara_digambara",
             "title_mr": "दिगंबरा दिगंबरा श्रीपाद वल्लभ दिगंबरा",
             "title_en": "Digambara Digambara Shripad Vallabh Digambara",
             "audio": "digambara_digambara.mp3"
-        },
-        {
-            "id": "shri_hari_vitthal",
-            "title_mr": "श्री हरी विठ्ठल",
-            "title_en": "Shri Hari Vitthal",
-            "audio": "shri_hari_vitthal.mp3"
         }
     ]
 }

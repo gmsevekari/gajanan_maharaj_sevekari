@@ -1201,6 +1201,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No results found'**
   String get noResultsFound;
+
+  /// No description provided for @japTimeCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Jap time completed!'**
+  String get japTimeCompleted;
+
+  /// No description provided for @targetMalasCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Target of {count} malas completed!'**
+  String targetMalasCompleted(String count);
 }
 
 class _AppLocalizationsDelegate

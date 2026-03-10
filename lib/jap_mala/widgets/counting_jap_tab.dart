@@ -104,8 +104,15 @@ class _CountingJapTabState extends State<CountingJapTab> {
       Future.microtask(() {
         if (!mounted) return;
         _stopAudio();
+        final localizations = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Target of $_targetMalas malas completed!')),
+          SnackBar(
+            content: Text(
+              localizations.targetMalasCompleted(
+                _formatNumber(context, _targetMalas, pad: false),
+              ),
+            ),
+          ),
         );
       });
     }
@@ -172,24 +179,52 @@ class _CountingJapTabState extends State<CountingJapTab> {
   void _showCustomTargetDialog(BuildContext context) {
     if (_isPlaying) return;
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final TextEditingController controller = TextEditingController();
 
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text(localizations.setTarget),
+          backgroundColor: theme.cardTheme.color ?? theme.cardColor,
+          title: Text(
+            localizations.setTarget,
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: theme.colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurface,
+            ),
             decoration: InputDecoration(
               hintText: localizations.enterCustomTarget,
+              hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.5),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: theme.colorScheme.primary.withOpacity(0.5),
+                ),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: theme.colorScheme.primary,
+                  width: 2,
+                ),
+              ),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
+              style: TextButton.styleFrom(
+                foregroundColor: theme.colorScheme.onSurface.withOpacity(0.7),
+              ),
               child: Text(localizations.cancel),
             ),
             TextButton(
@@ -200,7 +235,13 @@ class _CountingJapTabState extends State<CountingJapTab> {
                 }
                 Navigator.pop(dialogContext);
               },
-              child: Text(localizations.ok),
+              style: TextButton.styleFrom(
+                foregroundColor: theme.colorScheme.primary,
+              ),
+              child: Text(
+                localizations.ok,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         );
@@ -528,17 +569,18 @@ class _CountingJapTabState extends State<CountingJapTab> {
               ],
             ),
             const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.graphic_eq, color: Colors.orange[300], size: 16),
-                const SizedBox(width: 8),
-                Text(
-                  localizations.audioJapWillStart,
-                  style: TextStyle(color: Colors.orange[300]),
-                ),
-              ],
-            ),
+            if (!_isPlaying)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.graphic_eq, color: Colors.orange[300], size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    localizations.audioJapWillStart,
+                    style: TextStyle(color: Colors.orange[300]),
+                  ),
+                ],
+              ),
             const SizedBox(height: 32),
           ],
         ),
