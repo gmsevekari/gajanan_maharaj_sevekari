@@ -32,6 +32,11 @@ This document summarizes the key architectural patterns, design principles, and 
 -   **Region-Specific Features:** The visibility of certain dashboard cards (e.g., "Donations," "Signups") and favorite items is controlled by a `regions` array in the JSON configuration. An empty array means the feature is global; otherwise, it only appears if the user's device region matches a code in the list.
 -   **Download App Banner:** A theme-aware banner is displayed at the bottom of the home screen, but only when the app is running on the web. It detects the user's platform (iOS/Android) and redirects them to the appropriate app store to encourage native app installation.
 -   **Dynamic "About" Screen:** The title of the "About" screen is now configurable per-deity via an `about_title_key` in the deity's JSON file (e.g., "About Maharaj" vs. "About Baba").
+-   **Naamjap (Chanting) Module:**
+    -   **Unified Tracking:** Tab 1 (Mala Counting) and Tab 2 (Time-based Jap) share a unified chant counting aesthetic, pulling colors dynamically from `Theme.of(context)` down to the dialog modals.
+    -   **Timer Persistence:** The Time-based Jap tab (Tab 2) persists user-selected Hours and Minutes between sessions using `SharedPreferences`.
+    -   **Graceful Audio Limits:** The audio loops (`audioplayers`) rely on a dedicated `_isTimeUp` boolean and synchronous native `stop()` calls to ensure background buffering never bypasses Dart's logic when a target or timer concludes.
+    -   **Numeral Localization (`_formatNumber`):** Flutter defaults to casting format modifiers like `Duration` and `SnackBar` numerical `{count}` payload variables as raw base-10 integers. These must be explicitly wrapped in `_formatNumber(context)` on both UI dropdowns and `.arb` file parameter payloads (typed properly as `String` in the `.arb`) to ensure characters translate gracefully to Hindi/Marathi glyphs.
 -   **Generic List & Detail Screens:**
     -   `ContentListScreen`: A single, powerful, reusable screen that displays lists of content (stotras, bhajans, aartis, etc.). It is driven entirely by configuration.
     -   `ContentDetailScreen`: A highly reusable screen for displaying text and video content. It now uses a strict data contract and expects `title` and `content` keys to be present in the JSON.
