@@ -470,7 +470,7 @@ class _CountingJapTabState extends State<CountingJapTab> {
               crossAxisCount: 3,
               mainAxisSpacing: 6,
               crossAxisSpacing: 6,
-              childAspectRatio: 1.5,
+              childAspectRatio: 2.5,
               children: [
                 ...targets.map((target) {
                   final isSelected = _targetMalas == target;
@@ -620,21 +620,25 @@ class _CountingJapTabState extends State<CountingJapTab> {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12.0),
-        child: Column(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               number,
-              style: theme.textTheme.headlineMedium?.copyWith(
+              style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: textColor,
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: textColor.withValues(alpha: 0.8),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                subtitle,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: textColor.withValues(alpha: 0.9),
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -680,24 +684,28 @@ class _CountingJapTabState extends State<CountingJapTab> {
               ),
             ),
             Center(
-              child: Column(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (number != null)
                     Text(
                       number,
-                      style: theme.textTheme.headlineMedium?.copyWith(
+                      style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
                       ),
                     )
                   else
-                    const Icon(Icons.add, color: Colors.grey),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
+                    const Icon(Icons.add, color: Colors.grey, size: 20),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      subtitle,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -705,8 +713,8 @@ class _CountingJapTabState extends State<CountingJapTab> {
             ),
             if (number != null)
               Positioned(
-                bottom: 8,
-                right: 8,
+                top: 4,
+                right: 6,
                 child: GestureDetector(
                   onTap: () => _showCustomTargetDialog(context),
                   child: Icon(
