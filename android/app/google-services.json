@@ -12,7 +12,20 @@
           "package_name": "com.gajanan.maharaj.sevekari"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "33491188906-9utt0k0fc0eshhlqql2la6isemjqdt0g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gajanan.maharaj.sevekari",
+            "certificate_hash": "a25ecb242bc606bfd8ec7c06583cd907cd8cdfd6"
+          }
+        },
+        {
+          "client_id": "33491188906-qet8jedfk0i96nsofec8q6qilpn2e00c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDLORajkeC3JlsVzZFhWr_fqmDJRZPs2Lc"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33491188906-qet8jedfk0i96nsofec8q6qilpn2e00c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "33491188906-f29nbfqmkb7m403957kh41v8vj918go6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gajananMaharajSevekariAppDemo"
+              }
+            }
+          ]
         }
       }
     }

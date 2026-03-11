@@ -1,0 +1,203 @@
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_session_service.dart';
+import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+class AdminDashboardScreen extends StatefulWidget {
+  const AdminDashboardScreen({super.key});
+
+  @override
+  State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+}
+
+class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> _logout() async {
+    AdminSessionService.clearSession();
+    await _auth.signOut();
+    await GoogleSignIn.instance.signOut();
+    if (!mounted) return;
+    // Pop back to the settings screen where they came from
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final User? user = _auth.currentUser;
+    final theme = Theme.of(context);
+
+    final localizations = AppLocalizations.of(context)!;
+
+    // Wrap the entire scaffold in a Listener to capture any touch events and reset the timer
+    return Listener(
+      onPointerDown: (_) => AdminSessionService.registerInteraction(),
+      onPointerMove: (_) => AdminSessionService.registerInteraction(),
+      onPointerUp: (_) => AdminSessionService.registerInteraction(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(localizations.adminDashboardTitle),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home),
+              onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                context,
+                Routes.home,
+                (route) => false,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: localizations.logoutLabel,
+              onPressed: _logout,
+            ),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Card(
+                elevation: theme.cardTheme.elevation,
+                color: theme.cardTheme.color,
+                shape: theme.cardTheme.shape,
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        child: Icon(
+                          Icons.person,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              localizations.loggedInAs,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.6,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              user?.email ?? localizations.unknownAdmin,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.orange[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                localizations.adminModules,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange[600],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: ListView(
+                  children: [
+                    _buildModuleCard(
+                      context: context,
+                      title: localizations.templeNotificationsModuleTitle,
+                      subtitle: localizations.templeNotificationsModuleSubtitle,
+                      icon: Icons.notifications_active,
+                      color: theme.colorScheme.primary,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          Routes.adminTempleNotifications,
+                        );
+                      },
+                    ),
+                    // Future admin modules can be added here
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModuleCard({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    return Card(
+      elevation: theme.cardTheme.elevation,
+      color: theme.cardTheme.color,
+      shape: theme.cardTheme.shape,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 28),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange[600],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

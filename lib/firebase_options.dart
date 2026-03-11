@@ -71,6 +71,7 @@ class DefaultFirebaseOptions {
     projectId: 'app-event-calendar',
     storageBucket: 'app-event-calendar.firebasestorage.app',
     iosBundleId: 'com.gajanan.maharaj.sevekari',
+    iosClientId: '33491188906-f29nbfqmkb7m403957kh41v8vj918go6.apps.googleusercontent.com',
   );
 
 }

@@ -9,6 +9,7 @@ import 'package:gajanan_maharaj_sevekari/settings/notification_settings_screen.d
 import 'package:gajanan_maharaj_sevekari/settings/theme_selection_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -23,7 +24,11 @@ class SettingsScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
         ],
       ),
@@ -33,13 +38,44 @@ class SettingsScreen extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(8.0),
               children: [
-                _buildSettingsCard(context, Icons.language, localizations.language, const LanguageSelectionScreen()),
-                _buildSettingsCard(context, Icons.color_lens, localizations.theme, const ThemeSelectionScreen()),
-                _buildSettingsCard(context, Icons.font_download, localizations.font, const FontSelectionScreen()),
-                _buildSettingsCard(context, Icons.notifications, localizations.notificationPreferences, const NotificationSettingsScreen()),
-                _buildSettingsCard(context, Icons.info, localizations.about, const AboutAppScreen()),
-                _buildSettingsCard(context, Icons.article, localizations.disclaimer, const DisclaimerScreen()),
+                _buildSettingsCard(
+                  context,
+                  Icons.language,
+                  localizations.language,
+                  const LanguageSelectionScreen(),
+                ),
+                _buildSettingsCard(
+                  context,
+                  Icons.color_lens,
+                  localizations.theme,
+                  const ThemeSelectionScreen(),
+                ),
+                _buildSettingsCard(
+                  context,
+                  Icons.font_download,
+                  localizations.font,
+                  const FontSelectionScreen(),
+                ),
+                _buildSettingsCard(
+                  context,
+                  Icons.notifications,
+                  localizations.notificationPreferences,
+                  const NotificationSettingsScreen(),
+                ),
+                _buildSettingsCard(
+                  context,
+                  Icons.info,
+                  localizations.about,
+                  const AboutAppScreen(),
+                ),
+                _buildSettingsCard(
+                  context,
+                  Icons.article,
+                  localizations.disclaimer,
+                  const DisclaimerScreen(),
+                ),
                 _buildContactUsCard(context, localizations),
+                _buildAdminAccessCard(context),
               ],
             ),
           ),
@@ -54,7 +90,11 @@ class SettingsScreen extends StatelessWidget {
                   child: Center(
                     child: Text(
                       'Version $version ($buildNumber)',
-                      style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 14, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 );
@@ -67,7 +107,12 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingsCard(BuildContext context, IconData icon, String title, Widget screen) {
+  Widget _buildSettingsCard(
+    BuildContext context,
+    IconData icon,
+    String title,
+    Widget screen,
+  ) {
     final theme = Theme.of(context);
     return Card(
       elevation: theme.cardTheme.elevation,
@@ -76,16 +121,33 @@ class SettingsScreen extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: ListTile(
         leading: Icon(icon, color: theme.iconTheme.color),
-        title: Text(title, style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 18)),
-        trailing: Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: Colors.orange[600],
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: theme.colorScheme.primary,
+          size: 16.0,
+        ),
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => screen),
+          );
         },
       ),
     );
   }
 
-  Widget _buildContactUsCard(BuildContext context, AppLocalizations localizations) {
+  Widget _buildContactUsCard(
+    BuildContext context,
+    AppLocalizations localizations,
+  ) {
     final theme = Theme.of(context);
     return Card(
       elevation: theme.cardTheme.elevation,
@@ -94,15 +156,62 @@ class SettingsScreen extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: ListTile(
         leading: Icon(Icons.email, color: theme.iconTheme.color),
-        title: Text(localizations.contactUs, style: TextStyle(color: Colors.orange[600], fontWeight: FontWeight.bold, fontSize: 18)),
-        trailing: Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+        title: Text(
+          localizations.contactUs,
+          style: TextStyle(
+            color: Colors.orange[600],
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: theme.colorScheme.primary,
+          size: 16.0,
+        ),
         onTap: () async {
           final Uri emailLaunchUri = Uri(
             scheme: 'mailto',
             path: 'gajananmaharajsevekari@gmail.com',
-            query: 'subject=${Uri.encodeComponent('Gajanan Maharaj Sevekari App Feedback')}',
+            query:
+                'subject=${Uri.encodeComponent('Gajanan Maharaj Sevekari App Feedback')}',
           );
           await launchUrl(emailLaunchUri);
+        },
+      ),
+    );
+  }
+
+  Widget _buildAdminAccessCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context)!;
+    return Card(
+      elevation: theme.cardTheme.elevation,
+      color: theme.cardTheme.color,
+      shape: theme.cardTheme.shape,
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: ListTile(
+        leading: Icon(Icons.admin_panel_settings, color: theme.iconTheme.color),
+        title: Text(
+          localizations.adminAccess,
+          style: TextStyle(
+            color: Colors.orange[600],
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: theme.colorScheme.primary,
+          size: 16.0,
+        ),
+        onTap: () {
+          final user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            Navigator.pushNamed(context, Routes.adminDashboard);
+          } else {
+            Navigator.pushNamed(context, Routes.adminLogin);
+          }
         },
       ),
     );

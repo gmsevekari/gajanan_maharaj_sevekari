@@ -6,9 +6,11 @@ import 'package:gajanan_maharaj_sevekari/event_calendar/event_calendar_screen.da
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
 
@@ -21,13 +23,41 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<Map<String, DocumentSnapshot?>>? _upcomingEventsFuture;
+  String? _lastReadTimestamp;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _upcomingEventsFuture = _fetchUpcomingEvents();
+    _loadUnreadStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        NotificationManager.requestPermissions(context);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadUnreadStatus();
+    }
+  }
+
+  Future<void> _loadUnreadStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _lastReadTimestamp = prefs.getString('last_read_notification_timestamp');
+    });
   }
 
   Future<Map<String, DocumentSnapshot?>> _fetchUpcomingEvents() async {
@@ -135,6 +165,65 @@ class _HomeScreenState extends State<HomeScreen> {
                 delegate: GlobalSearchDelegate(
                   hintText: localizations.searchHint,
                 ),
+              );
+            },
+          ),
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('notifications')
+                .orderBy('timestamp', descending: true)
+                .limit(1)
+                .snapshots(),
+            builder: (context, snapshot) {
+              bool hasUnread = false;
+              if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                final latestDoc =
+                    snapshot.data!.docs.first.data() as Map<String, dynamic>;
+                final latestTimestampStr = latestDoc['timestamp'] as String?;
+
+                if (latestTimestampStr != null) {
+                  if (_lastReadTimestamp == null) {
+                    hasUnread = true;
+                  } else {
+                    try {
+                      final latestTime = DateTime.parse(latestTimestampStr);
+                      final lastReadTime = DateTime.parse(_lastReadTimestamp!);
+                      if (latestTime.isAfter(lastReadTime)) {
+                        hasUnread = true;
+                      }
+                    } catch (e) {
+                      // ignore parse errors
+                    }
+                  }
+                }
+              }
+
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications),
+                    onPressed: () async {
+                      await Navigator.pushNamed(
+                        context,
+                        Routes.userNotifications,
+                      );
+                      _loadUnreadStatus(); // Refresh when returning
+                    },
+                  ),
+                  if (hasUnread)
+                    Positioned(
+                      right: 12,
+                      top: 12,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                ],
               );
             },
           ),

@@ -469,7 +469,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get notificationDialogBody =>
-      'साप्ताहिक पूजेची आठवण आणि मंदिरातील महत्त्वाच्या सूचना मिळवण्यासाठी नोटिफिकेशन्स सक्षम करा.';
+      'पूजा, उत्सवाची आठवण आणि मंदिराचे महत्त्वाचे नोटिफिकेशन्स मिळवण्यासाठी सक्षम करा.\n\nतुम्ही हे कधीही \'सेटिंग्ज > नोटिफिकेशन प्राधान्ये\' मध्ये बदलू शकता.';
 
   @override
   String get notificationDialogAllow => 'परवानगी द्या';
@@ -588,4 +588,109 @@ class AppLocalizationsMr extends AppLocalizations {
   String targetMalasCompleted(String count) {
     return '$count माळांचे लक्ष्य पूर्ण झाले!';
   }
+
+  @override
+  String get templeNotifications => 'मंदिराचे नोटिफिकेशन्स';
+
+  @override
+  String get templeNotificationsNote =>
+      '(उदा., स्वयंसेवक विनंती, महत्त्वाचे नोटिफिकेशन्स)';
+
+  @override
+  String get adminAccess => 'अ‍ॅडमिन अ‍ॅक्सेस';
+
+  @override
+  String get googleSignInWebNotSupported =>
+      'वेबवर गूगल साइन-इन बंद केले आहे. कृपया अ‍ॅडमिन अ‍ॅक्सेससाठी मोबाइल ॲप वापरा.';
+
+  @override
+  String get logoutInactivity => 'निष्क्रियतेमुळे लॉग आउट झाले.';
+
+  @override
+  String get notificationRecently => 'काही वेळापूर्वी';
+
+  @override
+  String get noNewNotifications => 'नवीन नोटिफिकेशन्स नाहीत';
+
+  @override
+  String get errorRetrieveEmail => 'वापरकर्ता ईमेल प्राप्त करण्यात अयशस्वी.';
+
+  @override
+  String get signInError =>
+      'साइन इन करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get accessDeniedNotAuthorized =>
+      'प्रवेश नाकारला: तुमचा ईमेल अ‍ॅडमिन अ‍ॅक्सेससाठी अधिकृत नाही.';
+
+  @override
+  String get notificationDeleteTooltip => 'डिलीट करा';
+
+  @override
+  String get notificationDefaultTitle => 'नोटिफिकेशन';
+
+  @override
+  String get adminRestrictedArea => 'अ‍ॅडमिन प्रतिबंधित क्षेत्र';
+
+  @override
+  String get adminSignInInstruction => 'कृपया Google अकाऊंटने साइन इन करा.';
+
+  @override
+  String get adminDashboardTitle => 'अ‍ॅडमिन डॅशबोर्ड';
+
+  @override
+  String get logoutLabel => 'लॉग आउट';
+
+  @override
+  String get loggedInAs => 'लॉग इन ईमेल';
+
+  @override
+  String get unknownAdmin => 'अज्ञात अ‍ॅडमिन';
+
+  @override
+  String get adminModules => 'अ‍ॅडमिन विभाग';
+
+  @override
+  String get templeNotificationsModuleTitle => 'मंदिराचे नोटिफिकेशन्स';
+
+  @override
+  String get templeNotificationsModuleSubtitle =>
+      'सर्व सदस्यांना मॅन्युअल पुश नोटिफिकेशन पाठवा';
+
+  @override
+  String get notificationSentSuccess => 'नोटिफिकेशन यशस्वीरित्या पाठवले!';
+
+  @override
+  String notificationSendError(String error) {
+    return 'नोटिफिकेशन पाठवण्यात अयशस्वी: $error';
+  }
+
+  @override
+  String get notAuthenticatedError => 'त्रुटी: लॉग इन नाही';
+
+  @override
+  String get broadcastNotificationInstruction =>
+      'मंदिराच्या नोटिफिकेशन्स ना सबस्क्राईब केलेल्या सर्वांना त्वरित पुश नोटिफिकेशन पाठविले जाईल.';
+
+  @override
+  String get notificationTitleLabel => 'नोटिफिकेशनचे शीर्षक';
+
+  @override
+  String get notificationTitleHint => 'उदा., स्वयंसेवक पाहिजेत';
+
+  @override
+  String get notificationTitleRequired => 'कृपया शीर्षक लिहा';
+
+  @override
+  String get notificationMessageLabel => 'नोटिफिकेशन मेसेज';
+
+  @override
+  String get notificationMessageHint =>
+      'उदा., आम्हाला रविवारच्या प्रसादासाठी १० स्वयंसेवकांची गरज आहे! साइन अप करा: https://example.com\n\nवापरकर्त्यांसाठी URL आपोआप हायलाईट केल्या जातील आणि टॅप करता येतील.';
+
+  @override
+  String get notificationMessageRequired => 'कृपया नोटिफिकेशनचा मेसेज लिहा';
+
+  @override
+  String get broadcastButtonLabel => 'नोटिफिकेशन पाठवा';
 }

@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/about_maharaj/about_maharaj_screen.dart';
 import 'package:gajanan_maharaj_sevekari/aarti/aarti_screen.dart';
@@ -13,6 +15,7 @@ import 'package:gajanan_maharaj_sevekari/home/home_screen.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/nityopasana/nityopasana_screen.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
@@ -26,16 +29,26 @@ import 'package:gajanan_maharaj_sevekari/signups/signups_screen.dart';
 import 'package:gajanan_maharaj_sevekari/social_media/social_media_screen.dart';
 import 'package:gajanan_maharaj_sevekari/splash/splash_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/naamjap_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_login_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_dashboard_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_temple_notifications_screen.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/user_notifications_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/utils/navigator_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // Register background handler at the very top (must be top-level function)
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await GoogleSignIn.instance.initialize();
+
+  await NotificationManager.initialize(NavigatorService.navigatorKey);
 
   final themeProvider = ThemeProvider();
   final localeProvider = LocaleProvider();
@@ -67,68 +80,115 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer4<ThemeProvider, LocaleProvider, FontProvider, AppConfigProvider>(
-      builder: (context, themeProvider, localeProvider, fontProvider, appConfigProvider, child) {
-        final isMarathi = localeProvider.locale.languageCode == 'mr';
-        final fontFamily = isMarathi ? fontProvider.marathiFontFamily : fontProvider.englishFontFamily;
+    return Consumer4<
+      ThemeProvider,
+      LocaleProvider,
+      FontProvider,
+      AppConfigProvider
+    >(
+      builder:
+          (
+            context,
+            themeProvider,
+            localeProvider,
+            fontProvider,
+            appConfigProvider,
+            child,
+          ) {
+            final isMarathi = localeProvider.locale.languageCode == 'mr';
+            final fontFamily = isMarathi
+                ? fontProvider.marathiFontFamily
+                : fontProvider.englishFontFamily;
 
-        final lightTextTheme = GoogleFonts.getTextTheme(fontFamily, AppTheme.lightTheme.textTheme);
-        final darkTextTheme = GoogleFonts.getTextTheme(fontFamily, AppTheme.darkTheme.textTheme);
+            final lightTextTheme = GoogleFonts.getTextTheme(
+              fontFamily,
+              AppTheme.lightTheme.textTheme,
+            );
+            final darkTextTheme = GoogleFonts.getTextTheme(
+              fontFamily,
+              AppTheme.darkTheme.textTheme,
+            );
 
-        return MaterialApp(
-          onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
-          theme: AppTheme.lightTheme.copyWith(textTheme: lightTextTheme),
-          darkTheme: AppTheme.darkTheme.copyWith(textTheme: darkTextTheme),
-          themeMode: themeProvider.themeMode,
-          locale: localeProvider.locale,
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          initialRoute: Routes.splash,
-          routes: {
-            Routes.splash: (context) => const SplashScreen(),
-            Routes.home: (context) => const HomeScreen(),
-            Routes.calendar: (context) => const EventCalendarScreen(),
-            Routes.gallery: (context) => const GalleryScreen(),
-            Routes.settings: (context) => const SettingsScreen(),
-            Routes.parayan: (context) => const ParayanScreen(),
-            Routes.sankalp: (context) => const SankalpScreen(),
-            Routes.naamjap: (context) => const NaamjapScreen(),
+            return MaterialApp(
+              navigatorKey: NavigatorService.navigatorKey,
+              scaffoldMessengerKey: NavigatorService.scaffoldMessengerKey,
+              onGenerateTitle: (context) =>
+                  AppLocalizations.of(context)!.appName,
+              theme: AppTheme.lightTheme.copyWith(textTheme: lightTextTheme),
+              darkTheme: AppTheme.darkTheme.copyWith(textTheme: darkTextTheme),
+              themeMode: themeProvider.themeMode,
+              locale: localeProvider.locale,
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              initialRoute: Routes.splash,
+              routes: {
+                Routes.splash: (context) => const SplashScreen(),
+                Routes.home: (context) => const HomeScreen(),
+                Routes.calendar: (context) => const EventCalendarScreen(),
+                Routes.gallery: (context) => const GalleryScreen(),
+                Routes.settings: (context) => const SettingsScreen(),
+                Routes.parayan: (context) => const ParayanScreen(),
+                Routes.sankalp: (context) => const SankalpScreen(),
+                Routes.naamjap: (context) => const NaamjapScreen(),
+                Routes.adminLogin: (context) => const AdminLoginScreen(),
+                Routes.adminDashboard: (context) =>
+                    const AdminDashboardScreen(),
+                Routes.adminTempleNotifications: (context) =>
+                    const AdminTempleNotificationsScreen(),
+                Routes.userNotifications: (context) =>
+                    const UserNotificationsScreen(),
+              },
+              onGenerateRoute: (settings) {
+                final DeityConfig? deity = settings.arguments as DeityConfig?;
+
+                switch (settings.name) {
+                  case Routes.aarti:
+                    return MaterialPageRoute(
+                      builder: (context) => AartiScreen(deity: deity!),
+                    );
+                  case Routes.aboutMaharaj:
+                    return MaterialPageRoute(
+                      builder: (context) => AboutMaharajScreen(deity: deity!),
+                    );
+                  case Routes.donations:
+                    return MaterialPageRoute(
+                      builder: (context) => DonationsScreen(deity: deity!),
+                    );
+                  case Routes.signups:
+                    return MaterialPageRoute(
+                      builder: (context) => SignupsScreen(deity: deity!),
+                    );
+                  case Routes.other:
+                    return MaterialPageRoute(
+                      builder: (context) => const OtherScreen(),
+                    );
+                  case Routes.nityopasana:
+                    return MaterialPageRoute(
+                      builder: (context) => NityopasanaScreen(deity: deity!),
+                    );
+                  case Routes.socialMedia:
+                    return MaterialPageRoute(
+                      builder: (context) => SocialMediaScreen(deity: deity!),
+                    );
+                  case Routes.namavali:
+                    return MaterialPageRoute(
+                      builder: (context) => NamavaliScreen(deity: deity!),
+                    );
+                  case Routes.songs:
+                    return MaterialPageRoute(
+                      builder: (context) => ContentListScreen(
+                        deity: deity!,
+                        title: AppLocalizations.of(context)!.songTitle,
+                        contentType: ContentType.song,
+                        content: deity.songs!,
+                      ),
+                    );
+                  default:
+                    return null;
+                }
+              },
+            );
           },
-          onGenerateRoute: (settings) {
-            final DeityConfig? deity = settings.arguments as DeityConfig?;
-
-            switch (settings.name) {
-              case Routes.aarti:
-                return MaterialPageRoute(builder: (context) => AartiScreen(deity: deity!));
-              case Routes.aboutMaharaj:
-                return MaterialPageRoute(builder: (context) => AboutMaharajScreen(deity: deity!));
-              case Routes.donations:
-                return MaterialPageRoute(builder: (context) => DonationsScreen(deity: deity!));
-              case Routes.signups:
-                return MaterialPageRoute(builder: (context) => SignupsScreen(deity: deity!));
-              case Routes.other:
-                return MaterialPageRoute(builder: (context) => const OtherScreen());
-              case Routes.nityopasana:
-                return MaterialPageRoute(builder: (context) => NityopasanaScreen(deity: deity!));
-              case Routes.socialMedia:
-                return MaterialPageRoute(builder: (context) => SocialMediaScreen(deity: deity!));
-              case Routes.namavali:
-                return MaterialPageRoute(builder: (context) => NamavaliScreen(deity: deity!));
-              case Routes.songs:
-                return MaterialPageRoute(
-                  builder: (context) => ContentListScreen(
-                    deity: deity!,
-                    title: AppLocalizations.of(context)!.songTitle,
-                    contentType: ContentType.song,
-                    content: deity.songs!,
-                  ),
-                );
-              default:
-                return null;
-            }
-          },
-        );
-      },
     );
   }
 }

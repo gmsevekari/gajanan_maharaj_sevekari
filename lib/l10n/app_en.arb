@@ -163,7 +163,7 @@
   "weeklyPoojaReminder": "Weekly Pooja Reminders",
   "notificationsDisabledMessage": "To receive notifications, please enable them in your device settings.",
   "notificationDialogTitle": "Stay Updated!",
-  "notificationDialogBody": "Allow notifications to receive daily Darshan, weekly Pooja reminders, and important temple announcements.",
+  "notificationDialogBody": "Allow notifications to receive event reminders and important temple announcements.\n\nYou can change your preferences at any time in Settings > Notification Preferences",
   "notificationDialogAllow": "Allow Notifications",
   "notificationDialogDeny": "Not Now",
   "openSettings": "Open Settings",
@@ -215,5 +215,44 @@
         "type": "String"
       }
     }
-  }
+  },
+  "templeNotifications": "Temple Notifications",
+  "templeNotificationsNote": "(e.g., Volunteer requests, important announcements)",
+  "adminAccess": "Admin Access",
+  "googleSignInWebNotSupported": "Google Sign-In on Web is not supported in this version. Please use the mobile app for admin access.",
+  "logoutInactivity": "Logged out due to inactivity.",
+  "notificationRecently": "Recently",
+  "noNewNotifications": "No new notifications",
+  "errorRetrieveEmail": "Failed to retrieve user email.",
+  "signInError": "An error occurred during sign in. Please try again.",
+  "accessDeniedNotAuthorized": "Access Denied: Your email is not authorized for admin access.",
+  "notificationDeleteTooltip": "Delete",
+  "notificationDefaultTitle": "Notification",
+  "adminRestrictedArea": "Admin Restricted Area",
+  "adminSignInInstruction": "Please sign in with an authorized Google account to continue.",
+  "adminDashboardTitle": "Admin Dashboard",
+  "logoutLabel": "Logout",
+  "loggedInAs": "Logged in as",
+  "unknownAdmin": "Unknown Admin",
+  "adminModules": "Admin Modules",
+  "templeNotificationsModuleTitle": "Temple Notifications",
+  "templeNotificationsModuleSubtitle": "Send manual push notifications to all users",
+  "notificationSentSuccess": "Notification sent successfully!",
+  "notificationSendError": "Failed to send notification: {error}",
+  "@notificationSendError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "notAuthenticatedError": "Error: Not authenticated",
+  "broadcastNotificationInstruction": "This will send a push notification immediately to all users subscribed to Temple Notifications.",
+  "notificationTitleLabel": "Notification Title",
+  "notificationTitleHint": "e.g., Volunteer Needed",
+  "notificationTitleRequired": "Please enter a title",
+  "notificationMessageLabel": "Notification Message",
+  "notificationMessageHint": "e.g., We need 10 volunteers for Sunday Prasad! Sign up: https://example.com\n\nURLs will be automatically highlighted and tappable for users.",
+  "notificationMessageRequired": "Please enter a message body",
+  "broadcastButtonLabel": "Broadcast Notification"
 }

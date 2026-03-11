@@ -163,7 +163,7 @@
   "weeklyPoojaReminder": "साप्ताहिक पूजा आठवण",
   "notificationsDisabledMessage": " नोटिफिकेशन्स प्राप्त करण्यासाठी, कृपया तुमच्या डिव्हाइस सेटिंग्जमध्ये त्या सक्षम करा.",
   "notificationDialogTitle": "अद्ययावत रहा!",
-  "notificationDialogBody": "साप्ताहिक पूजेची आठवण आणि मंदिरातील महत्त्वाच्या सूचना मिळवण्यासाठी नोटिफिकेशन्स सक्षम करा.",
+  "notificationDialogBody": "पूजा, उत्सवाची आठवण आणि मंदिराचे महत्त्वाचे नोटिफिकेशन्स मिळवण्यासाठी सक्षम करा.\n\nतुम्ही हे कधीही 'सेटिंग्ज > नोटिफिकेशन प्राधान्ये' मध्ये बदलू शकता.",
   "notificationDialogAllow": "परवानगी द्या",
   "notificationDialogDeny": "आता नको",
   "openSettings": "सेटिंग्ज उघडा",
@@ -215,5 +215,44 @@
         "type": "String"
       }
     }
-  }
+  },
+  "templeNotifications": "मंदिराचे नोटिफिकेशन्स",
+  "templeNotificationsNote": "(उदा., स्वयंसेवक विनंती, महत्त्वाचे नोटिफिकेशन्स)",
+  "adminAccess": "अ‍ॅडमिन अ‍ॅक्सेस",
+  "googleSignInWebNotSupported": "वेबवर गूगल साइन-इन बंद केले आहे. कृपया अ‍ॅडमिन अ‍ॅक्सेससाठी मोबाइल ॲप वापरा.",
+  "logoutInactivity": "निष्क्रियतेमुळे लॉग आउट झाले.",
+  "notificationRecently": "काही वेळापूर्वी",
+  "noNewNotifications": "नवीन नोटिफिकेशन्स नाहीत",
+  "errorRetrieveEmail": "वापरकर्ता ईमेल प्राप्त करण्यात अयशस्वी.",
+  "signInError": "साइन इन करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.",
+  "accessDeniedNotAuthorized": "प्रवेश नाकारला: तुमचा ईमेल अ‍ॅडमिन अ‍ॅक्सेससाठी अधिकृत नाही.",
+  "notificationDeleteTooltip": "डिलीट करा",
+  "notificationDefaultTitle": "नोटिफिकेशन",
+  "adminRestrictedArea": "अ‍ॅडमिन प्रतिबंधित क्षेत्र",
+  "adminSignInInstruction": "कृपया Google अकाऊंटने साइन इन करा.",
+  "adminDashboardTitle": "अ‍ॅडमिन डॅशबोर्ड",
+  "logoutLabel": "लॉग आउट",
+  "loggedInAs": "लॉग इन ईमेल",
+  "unknownAdmin": "अज्ञात अ‍ॅडमिन",
+  "adminModules": "अ‍ॅडमिन विभाग",
+  "templeNotificationsModuleTitle": "मंदिराचे नोटिफिकेशन्स",
+  "templeNotificationsModuleSubtitle": "सर्व सदस्यांना मॅन्युअल पुश नोटिफिकेशन पाठवा",
+  "notificationSentSuccess": "नोटिफिकेशन यशस्वीरित्या पाठवले!",
+  "notificationSendError": "नोटिफिकेशन पाठवण्यात अयशस्वी: {error}",
+  "@notificationSendError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "notAuthenticatedError": "त्रुटी: लॉग इन नाही",
+  "broadcastNotificationInstruction": "मंदिराच्या नोटिफिकेशन्स ना सबस्क्राईब केलेल्या सर्वांना त्वरित पुश नोटिफिकेशन पाठविले जाईल.",
+  "notificationTitleLabel": "नोटिफिकेशनचे शीर्षक",
+  "notificationTitleHint": "उदा., स्वयंसेवक पाहिजेत",
+  "notificationTitleRequired": "कृपया शीर्षक लिहा",
+  "notificationMessageLabel": "नोटिफिकेशन मेसेज",
+  "notificationMessageHint": "उदा., आम्हाला रविवारच्या प्रसादासाठी १० स्वयंसेवकांची गरज आहे! साइन अप करा: https://example.com\n\nवापरकर्त्यांसाठी URL आपोआप हायलाईट केल्या जातील आणि टॅप करता येतील.",
+  "notificationMessageRequired": "कृपया नोटिफिकेशनचा मेसेज लिहा",
+  "broadcastButtonLabel": "नोटिफिकेशन पाठवा"
 }

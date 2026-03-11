@@ -469,7 +469,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationDialogBody =>
-      'Allow notifications to receive daily Darshan, weekly Pooja reminders, and important temple announcements.';
+      'Allow notifications to receive event reminders and important temple announcements.\n\nYou can change your preferences at any time in Settings > Notification Preferences';
 
   @override
   String get notificationDialogAllow => 'Allow Notifications';
@@ -588,4 +588,110 @@ class AppLocalizationsEn extends AppLocalizations {
   String targetMalasCompleted(String count) {
     return 'Target of $count malas completed!';
   }
+
+  @override
+  String get templeNotifications => 'Temple Notifications';
+
+  @override
+  String get templeNotificationsNote =>
+      '(e.g., Volunteer requests, important announcements)';
+
+  @override
+  String get adminAccess => 'Admin Access';
+
+  @override
+  String get googleSignInWebNotSupported =>
+      'Google Sign-In on Web is not supported in this version. Please use the mobile app for admin access.';
+
+  @override
+  String get logoutInactivity => 'Logged out due to inactivity.';
+
+  @override
+  String get notificationRecently => 'Recently';
+
+  @override
+  String get noNewNotifications => 'No new notifications';
+
+  @override
+  String get errorRetrieveEmail => 'Failed to retrieve user email.';
+
+  @override
+  String get signInError =>
+      'An error occurred during sign in. Please try again.';
+
+  @override
+  String get accessDeniedNotAuthorized =>
+      'Access Denied: Your email is not authorized for admin access.';
+
+  @override
+  String get notificationDeleteTooltip => 'Delete';
+
+  @override
+  String get notificationDefaultTitle => 'Notification';
+
+  @override
+  String get adminRestrictedArea => 'Admin Restricted Area';
+
+  @override
+  String get adminSignInInstruction =>
+      'Please sign in with an authorized Google account to continue.';
+
+  @override
+  String get adminDashboardTitle => 'Admin Dashboard';
+
+  @override
+  String get logoutLabel => 'Logout';
+
+  @override
+  String get loggedInAs => 'Logged in as';
+
+  @override
+  String get unknownAdmin => 'Unknown Admin';
+
+  @override
+  String get adminModules => 'Admin Modules';
+
+  @override
+  String get templeNotificationsModuleTitle => 'Temple Notifications';
+
+  @override
+  String get templeNotificationsModuleSubtitle =>
+      'Send manual push notifications to all users';
+
+  @override
+  String get notificationSentSuccess => 'Notification sent successfully!';
+
+  @override
+  String notificationSendError(String error) {
+    return 'Failed to send notification: $error';
+  }
+
+  @override
+  String get notAuthenticatedError => 'Error: Not authenticated';
+
+  @override
+  String get broadcastNotificationInstruction =>
+      'This will send a push notification immediately to all users subscribed to Temple Notifications.';
+
+  @override
+  String get notificationTitleLabel => 'Notification Title';
+
+  @override
+  String get notificationTitleHint => 'e.g., Volunteer Needed';
+
+  @override
+  String get notificationTitleRequired => 'Please enter a title';
+
+  @override
+  String get notificationMessageLabel => 'Notification Message';
+
+  @override
+  String get notificationMessageHint =>
+      'e.g., We need 10 volunteers for Sunday Prasad! Sign up: https://example.com\n\nURLs will be automatically highlighted and tappable for users.';
+
+  @override
+  String get notificationMessageRequired => 'Please enter a message body';
+
+  @override
+  String get broadcastButtonLabel => 'Broadcast Notification';
 }

@@ -983,7 +983,7 @@ abstract class AppLocalizations {
   /// No description provided for @notificationDialogBody.
   ///
   /// In en, this message translates to:
-  /// **'Allow notifications to receive daily Darshan, weekly Pooja reminders, and important temple announcements.'**
+  /// **'Allow notifications to receive event reminders and important temple announcements.\n\nYou can change your preferences at any time in Settings > Notification Preferences'**
   String get notificationDialogBody;
 
   /// No description provided for @notificationDialogAllow.
@@ -1213,6 +1213,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Target of {count} malas completed!'**
   String targetMalasCompleted(String count);
+
+  /// No description provided for @templeNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Temple Notifications'**
+  String get templeNotifications;
+
+  /// No description provided for @templeNotificationsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'(e.g., Volunteer requests, important announcements)'**
+  String get templeNotificationsNote;
+
+  /// No description provided for @adminAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Access'**
+  String get adminAccess;
+
+  /// No description provided for @googleSignInWebNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Sign-In on Web is not supported in this version. Please use the mobile app for admin access.'**
+  String get googleSignInWebNotSupported;
+
+  /// No description provided for @logoutInactivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged out due to inactivity.'**
+  String get logoutInactivity;
+
+  /// No description provided for @notificationRecently.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently'**
+  String get notificationRecently;
+
+  /// No description provided for @noNewNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No new notifications'**
+  String get noNewNotifications;
+
+  /// No description provided for @errorRetrieveEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to retrieve user email.'**
+  String get errorRetrieveEmail;
+
+  /// No description provided for @signInError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred during sign in. Please try again.'**
+  String get signInError;
+
+  /// No description provided for @accessDeniedNotAuthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Denied: Your email is not authorized for admin access.'**
+  String get accessDeniedNotAuthorized;
+
+  /// No description provided for @notificationDeleteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get notificationDeleteTooltip;
+
+  /// No description provided for @notificationDefaultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification'**
+  String get notificationDefaultTitle;
+
+  /// No description provided for @adminRestrictedArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Restricted Area'**
+  String get adminRestrictedArea;
+
+  /// No description provided for @adminSignInInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in with an authorized Google account to continue.'**
+  String get adminSignInInstruction;
+
+  /// No description provided for @adminDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Dashboard'**
+  String get adminDashboardTitle;
+
+  /// No description provided for @logoutLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logoutLabel;
+
+  /// No description provided for @loggedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in as'**
+  String get loggedInAs;
+
+  /// No description provided for @unknownAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Admin'**
+  String get unknownAdmin;
+
+  /// No description provided for @adminModules.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Modules'**
+  String get adminModules;
+
+  /// No description provided for @templeNotificationsModuleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Temple Notifications'**
+  String get templeNotificationsModuleTitle;
+
+  /// No description provided for @templeNotificationsModuleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send manual push notifications to all users'**
+  String get templeNotificationsModuleSubtitle;
+
+  /// No description provided for @notificationSentSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification sent successfully!'**
+  String get notificationSentSuccess;
+
+  /// No description provided for @notificationSendError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send notification: {error}'**
+  String notificationSendError(String error);
+
+  /// No description provided for @notAuthenticatedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: Not authenticated'**
+  String get notAuthenticatedError;
+
+  /// No description provided for @broadcastNotificationInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'This will send a push notification immediately to all users subscribed to Temple Notifications.'**
+  String get broadcastNotificationInstruction;
+
+  /// No description provided for @notificationTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Title'**
+  String get notificationTitleLabel;
+
+  /// No description provided for @notificationTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Volunteer Needed'**
+  String get notificationTitleHint;
+
+  /// No description provided for @notificationTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a title'**
+  String get notificationTitleRequired;
+
+  /// No description provided for @notificationMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Message'**
+  String get notificationMessageLabel;
+
+  /// No description provided for @notificationMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., We need 10 volunteers for Sunday Prasad! Sign up: https://example.com\n\nURLs will be automatically highlighted and tappable for users.'**
+  String get notificationMessageHint;
+
+  /// No description provided for @notificationMessageRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a message body'**
+  String get notificationMessageRequired;
+
+  /// No description provided for @broadcastButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Broadcast Notification'**
+  String get broadcastButtonLabel;
 }
 
 class _AppLocalizationsDelegate

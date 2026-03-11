@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +17,9 @@ class NotificationSettingsScreen extends StatefulWidget {
       _NotificationSettingsScreenState();
 }
 
-class _NotificationSettingsScreenState
-    extends State<NotificationSettingsScreen> with WidgetsBindingObserver {
-  bool _weeklyPoojaReminder = true;
+class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
+    with WidgetsBindingObserver {
+  bool _templeNotifications = true;
   NotificationStatus _notificationStatus = NotificationStatus.unknown;
 
   @override
@@ -44,7 +46,9 @@ class _NotificationSettingsScreenState
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _weeklyPoojaReminder = prefs.getBool(NotificationConstants.weeklyPoojaReminderPrefKey) ?? true;
+      _templeNotifications =
+          prefs.getBool(NotificationConstants.templeNotificationsPrefKey) ??
+          true;
     });
   }
 
@@ -64,24 +68,37 @@ class _NotificationSettingsScreenState
     final messaging = FirebaseMessaging.instance;
     final prefs = await SharedPreferences.getInstance();
 
+    bool isIosSimulator = false;
+    if (!kIsWeb && Platform.isIOS) {
+      final deviceInfo = DeviceInfoPlugin();
+      final iosInfo = await deviceInfo.iosInfo;
+      isIosSimulator = !iosInfo.isPhysicalDevice;
+    }
+
     if (subscribed) {
-      if (!kIsWeb) {
+      if (!kIsWeb && !isIosSimulator) {
         try {
           await messaging.subscribeToTopic(topic);
         } catch (e) {
           debugPrint('Failed to subscribe to topic ($topic): $e');
         }
       }
-      await prefs.setBool(NotificationConstants.weeklyPoojaReminderPrefKey, true);
+      await prefs.setBool(
+        NotificationConstants.templeNotificationsPrefKey,
+        true,
+      );
     } else {
-      if (!kIsWeb) {
+      if (!kIsWeb && !isIosSimulator) {
         try {
           await messaging.unsubscribeFromTopic(topic);
         } catch (e) {
           debugPrint('Failed to unsubscribe from topic ($topic): $e');
         }
       }
-      await prefs.setBool(NotificationConstants.weeklyPoojaReminderPrefKey, false);
+      await prefs.setBool(
+        NotificationConstants.templeNotificationsPrefKey,
+        false,
+      );
     }
   }
 
@@ -90,7 +107,8 @@ class _NotificationSettingsScreenState
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    final canChangeSubscriptions = _notificationStatus == NotificationStatus.authorized;
+    final canChangeSubscriptions =
+        _notificationStatus == NotificationStatus.authorized;
 
     return Scaffold(
       appBar: AppBar(
@@ -98,7 +116,11 @@ class _NotificationSettingsScreenState
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
         ],
       ),
@@ -112,20 +134,35 @@ class _NotificationSettingsScreenState
             margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             child: SwitchListTile(
               title: Text(
-                localizations.weeklyPoojaReminder,
+                localizations.templeNotifications,
                 style: TextStyle(
-                  color: canChangeSubscriptions ? Colors.orange[600] : Colors.grey,
+                  color: canChangeSubscriptions
+                      ? Colors.orange[600]
+                      : Colors.grey,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
               ),
-              value: canChangeSubscriptions && _weeklyPoojaReminder,
+              subtitle: Text(
+                localizations.templeNotificationsNote,
+                style: TextStyle(
+                  color: canChangeSubscriptions
+                      ? Colors.grey[600]
+                      : Colors.grey,
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              value: canChangeSubscriptions && _templeNotifications,
               onChanged: canChangeSubscriptions
                   ? (bool value) {
                       setState(() {
-                        _weeklyPoojaReminder = value;
+                        _templeNotifications = value;
                       });
-                      _updateSubscription(NotificationConstants.weeklyPoojaTopic, value);
+                      _updateSubscription(
+                        NotificationConstants.templeNotificationsTopic,
+                        value,
+                      );
                     }
                   : null,
             ),
@@ -136,9 +173,15 @@ class _NotificationSettingsScreenState
               color: theme.colorScheme.primary.withOpacity(0.1),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
-                side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.3), width: 1),
+                side: BorderSide(
+                  color: theme.colorScheme.primary.withOpacity(0.3),
+                  width: 1,
+                ),
               ),
-              margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              margin: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+                vertical: 8.0,
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
@@ -150,7 +193,10 @@ class _NotificationSettingsScreenState
                         Expanded(
                           child: Text(
                             localizations.notificationsDisabledMessage,
-                            style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -159,12 +205,16 @@ class _NotificationSettingsScreenState
                       const SizedBox(height: 12.0),
                       ElevatedButton.icon(
                         onPressed: () {
-                          AppSettings.openAppSettings(type: AppSettingsType.notification);
+                          AppSettings.openAppSettings(
+                            type: AppSettingsType.notification,
+                          );
                         },
                         icon: const Icon(Icons.settings),
                         label: Text(localizations.openSettings),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.appBarTheme.backgroundColor ?? theme.primaryColor,
+                          backgroundColor:
+                              theme.appBarTheme.backgroundColor ??
+                              theme.primaryColor,
                           foregroundColor: Colors.white,
                           shape: const StadiumBorder(),
                         ),
@@ -180,8 +230,4 @@ class _NotificationSettingsScreenState
   }
 }
 
-enum NotificationStatus {
-  unknown,
-  authorized,
-  denied,
-}
+enum NotificationStatus { unknown, authorized, denied }
