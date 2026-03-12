@@ -72,7 +72,7 @@ class NotificationManager {
     debugPrint('NotificationManager: Initializing...');
     // 1. Initialize Local Notifications
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('ic_notification');
 
     final DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
@@ -145,6 +145,11 @@ class NotificationManager {
 
     // 5. Ensure topic subscription if already authorized
     _ensureSubscription();
+  }
+
+  static Future<void> cancelAllNotifications() async {
+    debugPrint('NotificationManager: Cancelling all notifications');
+    await localNotifications.cancelAll();
   }
 
   static Future<void> _ensureSubscription() async {

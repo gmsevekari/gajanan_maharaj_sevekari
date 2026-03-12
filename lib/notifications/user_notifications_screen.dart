@@ -3,6 +3,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -27,6 +29,9 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
   }
 
   Future<void> _loadAndMarkRead() async {
+    // Clear all status bar notifications when viewing the notifications screen
+    NotificationManager.cancelAllNotifications();
+
     final prefs = await SharedPreferences.getInstance();
 
     // Load hidden and read notifications
