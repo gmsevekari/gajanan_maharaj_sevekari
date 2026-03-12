@@ -1160,6 +1160,12 @@ abstract class AppLocalizations {
   /// **'Audio jap will start'**
   String get audioJapWillStart;
 
+  /// No description provided for @keepPhoneUnlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Please keep the phone unlocked to keep Naamjap playing'**
+  String get keepPhoneUnlocked;
+
   /// No description provided for @tap.
   ///
   /// In en, this message translates to:

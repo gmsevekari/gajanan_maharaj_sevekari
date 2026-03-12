@@ -561,6 +561,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get audioJapWillStart => 'ऑडिओ जप चालू होईल';
 
   @override
+  String get keepPhoneUnlocked => 'नामजप सुरू ठेवण्यासाठी कृपया फोन अनलॉक ठेवा';
+
+  @override
   String get tap => 'टॅप करा';
 
   @override

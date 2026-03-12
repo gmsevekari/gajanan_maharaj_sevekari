@@ -561,6 +561,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get audioJapWillStart => 'Audio jap will start';
 
   @override
+  String get keepPhoneUnlocked =>
+      'Please keep the phone unlocked to keep Naamjap playing';
+
+  @override
   String get tap => 'Tap';
 
   @override

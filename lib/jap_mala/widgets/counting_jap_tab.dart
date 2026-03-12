@@ -569,18 +569,24 @@ class _CountingJapTabState extends State<CountingJapTab> {
               ],
             ),
             const SizedBox(height: 24),
-            if (!_isPlaying)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.graphic_eq, color: Colors.orange[300], size: 16),
-                  const SizedBox(width: 8),
-                  Text(
-                    localizations.audioJapWillStart,
-                    style: TextStyle(color: Colors.orange[300]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.graphic_eq, color: Colors.orange, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _isPlaying
+                        ? localizations.keepPhoneUnlocked
+                        : localizations.audioJapWillStart,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.orange.shade300,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
             const SizedBox(height: 32),
           ],
         ),
