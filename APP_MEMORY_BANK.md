@@ -16,6 +16,7 @@ This document summarizes the key architectural patterns, design principles, and 
 -   **Check All Targets:** When making project-level changes (like Bundle ID), I must remember to check all targets, including `Runner` and `RunnerTests` in Xcode.
 -   **Holistic Firebase Configuration:** Updating Firebase requires changing the bundle ID in three places for iOS: the Xcode project (`Runner` and `RunnerTests`), the `GoogleService-Info.plist`, and the `firebase_options.dart` file.
 -   **The `Podfile` Sledgehammer:** For stubborn iOS dependency errors related to deployment targets, the most robust solution is a `post_install` script that forcefully sets the `IPHONEOS_DEPLOYMENT_TARGET` for both each individual pod `target` and the overall `pods_project`.
+-   **Standard Plugin Registration (iOS):** For iOS, standard Flutter plugin registration via `GeneratedPluginRegistrant.register(with: self)` in `AppDelegate.swift` is the default. However, if using the `FlutterImplicitEngineDelegate` (often for background tasks), registration may be handled via the `didInitializeImplicitFlutterEngine` callback to avoid redundancy.
 
 ---
 
@@ -37,6 +38,13 @@ This document summarizes the key architectural patterns, design principles, and 
     -   **Timer Persistence:** The Time-based Jap tab (Tab 2) persists user-selected Hours and Minutes between sessions using `SharedPreferences`.
     -   **Graceful Audio Limits:** The audio loops (`audioplayers`) rely on a dedicated `_isTimeUp` boolean and synchronous native `stop()` calls to ensure background buffering never bypasses Dart's logic when a target or timer concludes.
     -   **Numeral Localization (`_formatNumber`):** Flutter defaults to casting format modifiers like `Duration` and `SnackBar` numerical `{count}` payload variables as raw base-10 integers. These must be explicitly wrapped in `_formatNumber(context)` on both UI dropdowns and `.arb` file parameter payloads (typed properly as `String` in the `.arb`) to ensure characters translate gracefully to Hindi/Marathi glyphs.
+    -   **UI Refinement:** To support varied device sizes, the counting tiles on the 1st tab use reduced vertical padding and font sizes.
+    -   **User Awareness:** A persistent reminder message encourages users to keep their screen on during chanting to prevent the device from sleeping and interrupting the count/timer.
+-   **Temple Notifications & Admin Module:**
+    -   **FCM Integration:** The app uses Firebase Cloud Messaging for broadcasting temple-wide alerts (e.g., Palkhi updates) via the `temple_notifications` topic.
+    -   **Admin System:** A secure admin login and dashboard allow moderators to draft and send push notifications directly from the app.
+    -   **Local Notifications:** Uses `flutter_local_notifications` to provide a consistent experience for foreground messages across Android and iOS, including custom actions like "Mark as Read" or "Open Link".
+    -   **Notification History:** The `UserNotificationsScreen` provides a persistent archive of all received temple notifications, automatically clearing unread badges when opened.
 -   **Generic List & Detail Screens:**
     -   `ContentListScreen`: A single, powerful, reusable screen that displays lists of content (stotras, bhajans, aartis, etc.). It is driven entirely by configuration.
     -   `ContentDetailScreen`: A highly reusable screen for displaying text and video content. It now uses a strict data contract and expects `title` and `content` keys to be present in the JSON.
@@ -75,3 +83,6 @@ This document summarizes the key architectural patterns, design principles, and 
     -   The iOS deployment target is set to **15.0**.
     -   The `ios/Podfile` contains a `post_install` script to enforce the deployment target across all pod libraries and the main pod project, resolving version conflicts.
     -   The `PRODUCT_BUNDLE_IDENTIFIER` is set to `com.gajanan.maharaj.sevekari` for the main `Runner` target and `com.gajanan.maharaj.sevekari.RunnerTests` for the test target.
+-   **Firebase Cloud Functions:**
+    -   Node.js functions (v2) handle triggered notifications on Firestore document creation.
+    -   APNS payloads are configured with `contentAvailable: true` and specific background priority headers to ensure reliable delivery to backgrounded iOS devices.
