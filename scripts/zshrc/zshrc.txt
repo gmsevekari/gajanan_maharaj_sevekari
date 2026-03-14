@@ -1,0 +1,15 @@
+# Command to deploy Gajanan Maharaj Sevekari App to iOS TestFlight (Beta)
+fl-beta-ios() {
+  echo "🚀 Starting Beta Build for iOS..."
+
+  # 1. Standard Flutter build to update code and assets
+  # --no-codesign is used because Fastlane gym will handle the signing
+  if flutter build ios --release --no-codesign; then
+    echo "✅ Flutter build successful. Handing over to Fastlane..."
+    (cd ios && bundle exec fastlane beta)
+    echo "🎉 App successfully submitted to TestFlight!"
+  else
+    echo "❌ Flutter build failed. Deployment aborted."
+    return 1
+  fi
+}
