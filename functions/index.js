@@ -36,6 +36,18 @@ exports.sendTempleNotification = onDocumentCreated(
         android: {
           priority: "high",
         },
+        apns: {
+          payload: {
+            aps: {
+              contentAvailable: true,
+              mutableContent: true,
+            },
+          },
+          headers: {
+            "apns-push-type": "background",
+            "apns-priority": "5",
+          },
+        },
         topic: "temple_notifications",
       };
 

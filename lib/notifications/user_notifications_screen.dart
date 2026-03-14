@@ -126,7 +126,18 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(localizations.templeNotifications)),
+      appBar: AppBar(
+        title: Text(localizations.templeNotifications),
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          onPressed: () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              Routes.home,
+              (route) => false,
+            );
+          },
+        ),
+      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
             .collection('notifications')
