@@ -255,5 +255,6 @@
   "notificationMessageLabel": "नोटिफिकेशन मेसेज",
   "notificationMessageHint": "उदा., आम्हाला रविवारच्या प्रसादासाठी १० स्वयंसेवकांची गरज आहे! साइन अप करा: https://example.com\n\nवापरकर्त्यांसाठी URL आपोआप हायलाईट केल्या जातील आणि टॅप करता येतील.",
   "notificationMessageRequired": "कृपया नोटिफिकेशनचा मेसेज लिहा",
-  "broadcastButtonLabel": "नोटिफिकेशन पाठवा"
+  "broadcastButtonLabel": "नोटिफिकेशन पाठवा",
+  "allNotifications": "सर्व नोटिफिकेशन्स"
 }

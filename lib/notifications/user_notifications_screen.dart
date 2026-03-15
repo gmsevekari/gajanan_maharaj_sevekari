@@ -120,23 +120,29 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
 
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text(localizations.templeNotifications)),
+        appBar: AppBar(title: Text(localizations.allNotifications)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.templeNotifications),
-        leading: IconButton(
-          icon: const Icon(Icons.home),
-          onPressed: () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              Routes.home,
-              (route) => false,
-            );
-          },
-        ),
+        title: Text(localizations.allNotifications),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                Routes.home,
+                (route) => false,
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          ),
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore

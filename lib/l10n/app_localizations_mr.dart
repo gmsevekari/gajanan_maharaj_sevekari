@@ -696,4 +696,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get broadcastButtonLabel => 'नोटिफिकेशन पाठवा';
+
+  @override
+  String get allNotifications => 'सर्व नोटिफिकेशन्स';
 }

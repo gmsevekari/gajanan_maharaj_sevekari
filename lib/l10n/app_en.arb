@@ -255,5 +255,6 @@
   "notificationMessageLabel": "Notification Message",
   "notificationMessageHint": "e.g., We need 10 volunteers for Sunday Prasad! Sign up: https://example.com\n\nURLs will be automatically highlighted and tappable for users.",
   "notificationMessageRequired": "Please enter a message body",
-  "broadcastButtonLabel": "Broadcast Notification"
+  "broadcastButtonLabel": "Broadcast Notification",
+  "allNotifications": "All Notifications"
 }

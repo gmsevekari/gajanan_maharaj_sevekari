@@ -698,4 +698,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get broadcastButtonLabel => 'Broadcast Notification';
+
+  @override
+  String get allNotifications => 'All Notifications';
 }

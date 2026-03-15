@@ -1411,6 +1411,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Broadcast Notification'**
   String get broadcastButtonLabel;
+
+  /// No description provided for @allNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'All Notifications'**
+  String get allNotifications;
 }
 
 class _AppLocalizationsDelegate
