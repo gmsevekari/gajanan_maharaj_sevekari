@@ -151,8 +151,6 @@ class NotificationManager {
           NotificationConstants.templeNotificationsTopic,
         );
       }
-
-      }
     }
   }
 
