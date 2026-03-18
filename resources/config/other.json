@@ -9,7 +9,9 @@
     "icon": "",
     "contentType": "stotra",
     "regions": [
-      "US"
+      "US",
+      "IN",
+      "CA"
     ],
     "textResourceDirectory": "resources/texts/other/sunday_prarthana",
     "imageResourceDirectory": "resources/images/other/sunday_prarthana",
