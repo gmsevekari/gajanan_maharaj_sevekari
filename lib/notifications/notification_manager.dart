@@ -329,6 +329,7 @@ class NotificationManager {
               fontWeight: FontWeight.bold,
             ),
           ),
+          titlePadding: const EdgeInsets.only(top: 16),
           content: Text(
             localizations.notificationDialogBody,
             textAlign: TextAlign.center,

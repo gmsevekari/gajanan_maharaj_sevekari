@@ -39,10 +39,11 @@
               "client_type": 3
             },
             {
-              "client_id": "33491188906-f29nbfqmkb7m403957kh41v8vj918go6.apps.googleusercontent.com",
+              "client_id": "33491188906-4rm2d4tbgiqmhk0cf1vbvqpak7is0oie.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.gajananMaharajSevekariAppDemo"
+                "bundle_id": "com.gajanan.maharaj.sevekari",
+                "app_store_id": "6759313202"
               }
             }
           ]

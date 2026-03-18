@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     // Wait for a few seconds then navigate to the HomeScreen
-    Timer(const Duration(seconds: 1), () {
+    Timer(const Duration(milliseconds: 500), () {
       Navigator.of(context).pushReplacementNamed(Routes.home);
     });
   }
@@ -27,7 +27,9 @@ class _SplashScreenState extends State<SplashScreen> {
     final locale = Localizations.localeOf(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFA500), // Saffron/Orange Background from pubspec
+      backgroundColor: const Color(
+        0xFFFFA500,
+      ), // Saffron/Orange Background from pubspec
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -37,9 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Your splash image
-                Image.asset(
-                  'resources/images/splash/App_Splash.png'
-                ),
+                Image.asset('resources/images/splash/App_Splash.png'),
                 const SizedBox(height: 24),
                 // The text you wanted to add
                 const Text(
@@ -60,7 +60,13 @@ class _SplashScreenState extends State<SplashScreen> {
             left: 0,
             right: 0,
             child: Text(
-              locale.languageCode == 'mr' ? localizations.copyrightMessage(toMarathiNumerals(DateTime.now().year.toString())) : localizations.copyrightMessage(DateTime.now().year.toString()),
+              locale.languageCode == 'mr'
+                  ? localizations.copyrightMessage(
+                      toMarathiNumerals(DateTime.now().year.toString()),
+                    )
+                  : localizations.copyrightMessage(
+                      DateTime.now().year.toString(),
+                    ),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Color(0xFF9B3746),

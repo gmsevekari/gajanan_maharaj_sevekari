@@ -66,12 +66,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCyvfr4i7aFe_Eaf1g6Ft3NDz8lFqgdsFQ',
-    appId: '1:33491188906:ios:319db3d82ad043dfc6e4d3',
+    appId: '1:33491188906:ios:a1044949e445b36dc6e4d3',
     messagingSenderId: '33491188906',
     projectId: 'app-event-calendar',
     storageBucket: 'app-event-calendar.firebasestorage.app',
+    androidClientId: '33491188906-9utt0k0fc0eshhlqql2la6isemjqdt0g.apps.googleusercontent.com',
+    iosClientId: '33491188906-4rm2d4tbgiqmhk0cf1vbvqpak7is0oie.apps.googleusercontent.com',
     iosBundleId: 'com.gajanan.maharaj.sevekari',
-    iosClientId: '33491188906-f29nbfqmkb7m403957kh41v8vj918go6.apps.googleusercontent.com',
   );
 
 }
