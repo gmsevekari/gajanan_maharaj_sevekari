@@ -256,5 +256,33 @@
   "notificationMessageHint": "e.g., We need 10 volunteers for Sunday Prasad! Sign up: https://example.com\n\nURLs will be automatically highlighted and tappable for users.",
   "notificationMessageRequired": "Please enter a message body",
   "broadcastButtonLabel": "Broadcast Notification",
-  "allNotifications": "All Notifications"
+  "allNotifications": "All Notifications",
+  "notificationRetentionMessage": "Notifications will be automatically deleted in {days} days",
+  "@notificationRetentionMessage": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "lastWeek": "Last Week",
+  "twoWeeksBack": "{count} Weeks Back",
+  "@twoWeeksBack": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "threeWeeksBack": "{count} Weeks Back",
+  "@threeWeeksBack": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "older": "Older"
 }

@@ -699,4 +699,31 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get allNotifications => 'सर्व नोटिफिकेशन्स';
+
+  @override
+  String notificationRetentionMessage(String days) {
+    return 'नोटिफिकेशन्स $days दिवसांनंतर आपोआप डिलीट केले जातील';
+  }
+
+  @override
+  String get today => 'आज';
+
+  @override
+  String get yesterday => 'काल';
+
+  @override
+  String get lastWeek => 'मागील आठवडा';
+
+  @override
+  String twoWeeksBack(String count) {
+    return '$count आठवड्यांपूर्वी';
+  }
+
+  @override
+  String threeWeeksBack(String count) {
+    return '$count आठवड्यांपूर्वी';
+  }
+
+  @override
+  String get older => 'जुने';
 }

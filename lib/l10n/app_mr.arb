@@ -256,5 +256,33 @@
   "notificationMessageHint": "उदा., आम्हाला रविवारच्या प्रसादासाठी १० स्वयंसेवकांची गरज आहे! साइन अप करा: https://example.com\n\nवापरकर्त्यांसाठी URL आपोआप हायलाईट केल्या जातील आणि टॅप करता येतील.",
   "notificationMessageRequired": "कृपया नोटिफिकेशनचा मेसेज लिहा",
   "broadcastButtonLabel": "नोटिफिकेशन पाठवा",
-  "allNotifications": "सर्व नोटिफिकेशन्स"
+  "allNotifications": "सर्व नोटिफिकेशन्स",
+  "notificationRetentionMessage": "नोटिफिकेशन्स {days} दिवसांनंतर आपोआप डिलीट केले जातील",
+  "@notificationRetentionMessage": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "today": "आज",
+  "yesterday": "काल",
+  "lastWeek": "मागील आठवडा",
+  "twoWeeksBack": "{count} आठवड्यांपूर्वी",
+  "@twoWeeksBack": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "threeWeeksBack": "{count} आठवड्यांपूर्वी",
+  "@threeWeeksBack": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "older": "जुने"
 }

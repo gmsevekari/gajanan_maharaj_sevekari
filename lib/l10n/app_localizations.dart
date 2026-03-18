@@ -1417,6 +1417,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Notifications'**
   String get allNotifications;
+
+  /// No description provided for @notificationRetentionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications will be automatically deleted in {days} days'**
+  String notificationRetentionMessage(String days);
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @lastWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Week'**
+  String get lastWeek;
+
+  /// No description provided for @twoWeeksBack.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Weeks Back'**
+  String twoWeeksBack(String count);
+
+  /// No description provided for @threeWeeksBack.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Weeks Back'**
+  String threeWeeksBack(String count);
+
+  /// No description provided for @older.
+  ///
+  /// In en, this message translates to:
+  /// **'Older'**
+  String get older;
 }
 
 class _AppLocalizationsDelegate

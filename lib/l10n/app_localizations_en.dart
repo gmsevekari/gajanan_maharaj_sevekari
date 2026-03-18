@@ -701,4 +701,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allNotifications => 'All Notifications';
+
+  @override
+  String notificationRetentionMessage(String days) {
+    return 'Notifications will be automatically deleted in $days days';
+  }
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get lastWeek => 'Last Week';
+
+  @override
+  String twoWeeksBack(String count) {
+    return '$count Weeks Back';
+  }
+
+  @override
+  String threeWeeksBack(String count) {
+    return '$count Weeks Back';
+  }
+
+  @override
+  String get older => 'Older';
 }

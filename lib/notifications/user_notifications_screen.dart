@@ -105,10 +105,7 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
     }
 
     return RichText(
-      text: TextSpan(
-        style: baseStyle,
-        children: spans,
-      ),
+      text: TextSpan(style: baseStyle, children: spans),
     );
   }
 
@@ -132,10 +129,9 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
           IconButton(
             icon: const Icon(Icons.home),
             onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                Routes.home,
-                (route) => false,
-              );
+              Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil(Routes.home, (route) => false);
             },
           ),
           IconButton(
@@ -150,16 +146,14 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
             .where(
               'timestamp',
               isGreaterThanOrEqualTo: DateTime.now()
-                  .subtract(const Duration(days: 14))
+                  .subtract(const Duration(days: 30))
                   .toIso8601String(),
             )
             .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(
-              child: Text(localizations.noResultsFound),
-            ); // Using existing key for generic failure
+            return Center(child: Text(localizations.noResultsFound));
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -172,145 +166,286 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
               .toList();
 
           if (visibleDocs.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.notifications_off,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    localizations.noNewNotifications,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                  ),
-                ],
-              ),
-            );
+            return _buildEmptyState(theme, localizations);
           }
 
-          return ListView.builder(
-            itemCount: visibleDocs.length,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemBuilder: (context, index) {
-              final doc = visibleDocs[index];
-              final data = doc.data() as Map<String, dynamic>;
+          final sections = _groupNotifications(visibleDocs, localizations);
 
-              final title =
-                  data['title'] as String? ??
-                  localizations.notificationDefaultTitle;
-              final body = data['body'] as String? ?? '';
-              final timestampStr = data['timestamp'] as String?;
-              final isRead = _readNotificationIds.contains(doc.id);
-
-              String timeAgo = '';
-              if (timestampStr != null) {
-                try {
-                  final timestamp = DateTime.parse(timestampStr);
-                  timeAgo = DateFormat.yMMMd().add_jm().format(timestamp);
-                } catch (e) {
-                  timeAgo = localizations.notificationRecently;
-                }
-              }
-
-              return Dismissible(
-                key: Key(doc.id),
-                direction: DismissDirection.endToStart,
-                onDismissed: (_) => _hideNotification(doc.id),
-                background: Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20.0),
-                  color: theme.colorScheme.error,
-                  child: Icon(Icons.delete, color: theme.colorScheme.onError),
+          return Column(
+            children: [
+              _buildInfoBanner(context, theme),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: sections.length,
+                  padding: const EdgeInsets.only(bottom: 16),
+                  itemBuilder: (context, index) {
+                    final section = sections[index];
+                    if (section is String) {
+                      return _buildSectionHeader(section, theme);
+                    } else {
+                      return _buildNotificationCard(
+                        section as QueryDocumentSnapshot,
+                        theme,
+                        localizations,
+                      );
+                    }
+                  },
                 ),
-                child: Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 6.0,
-                  ),
-                  elevation: isRead ? 0 : 2,
-                  color: isRead
-                      ? theme.cardTheme.color?.withValues(alpha: 0.6)
-                      : theme.cardTheme.color,
-                  shape:
-                      theme.cardTheme.shape ??
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                  child: Opacity(
-                    opacity: isRead ? 0.6 : 1.0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  String _formatNumber(BuildContext context, int number, {bool pad = true}) {
+    String numStr = pad ? number.toString().padLeft(2, '0') : number.toString();
+    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    if (!isMarathi) return numStr;
+
+    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const marathi = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+    for (int i = 0; i < english.length; i++) {
+      numStr = numStr.replaceAll(english[i], marathi[i]);
+    }
+    return numStr;
+  }
+
+  Widget _buildInfoBanner(BuildContext context, ThemeData theme) {
+    final localizations = AppLocalizations.of(context)!;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.1),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.info_outline, size: 16, color: theme.colorScheme.primary),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              localizations.notificationRetentionMessage(
+                _formatNumber(context, 30, pad: false),
+              ),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+      child: Text(
+        title,
+        style: theme.textTheme.titleSmall?.copyWith(
+          color: theme.colorScheme.primary,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(ThemeData theme, AppLocalizations localizations) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.notifications_off_outlined,
+              size: 80,
+              color: theme.colorScheme.primary.withValues(alpha: 0.1),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              localizations.noNewNotifications,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 32),
+            _buildInfoBanner(context, theme),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<dynamic> _groupNotifications(
+    List<QueryDocumentSnapshot> docs,
+    AppLocalizations localizations,
+  ) {
+    final List<dynamic> result = [];
+    String? lastGroup;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final twoDaysAgo = today.subtract(const Duration(days: 2));
+
+    for (final doc in docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      final timestampStr = data['timestamp'] as String?;
+      if (timestampStr == null) continue;
+
+      final date = DateTime.parse(timestampStr);
+      final notificationDate = DateTime(date.year, date.month, date.day);
+
+      final locale = Localizations.localeOf(context).toString();
+      String groupTitle;
+      final difference = today.difference(notificationDate).inDays;
+
+      if (notificationDate == today) {
+        groupTitle = localizations.today;
+      } else if (notificationDate == yesterday) {
+        groupTitle = localizations.yesterday;
+      } else if (notificationDate == twoDaysAgo) {
+        groupTitle = DateFormat(
+          'EEEE',
+          locale,
+        ).format(date); // Localized Day name
+      } else if (difference <= 7) {
+        groupTitle = localizations.lastWeek;
+      } else if (difference <= 14) {
+        groupTitle = localizations.twoWeeksBack(
+          _formatNumber(context, 2, pad: false),
+        );
+      } else if (difference <= 21) {
+        groupTitle = localizations.threeWeeksBack(
+          _formatNumber(context, 3, pad: false),
+        );
+      } else {
+        groupTitle = localizations.older;
+      }
+
+      if (groupTitle != lastGroup) {
+        result.add(groupTitle);
+        lastGroup = groupTitle;
+      }
+      result.add(doc);
+    }
+
+    return result;
+  }
+
+  Widget _buildNotificationCard(
+    QueryDocumentSnapshot doc,
+    ThemeData theme,
+    AppLocalizations localizations,
+  ) {
+    final data = doc.data() as Map<String, dynamic>;
+    final title =
+        data['title'] as String? ?? localizations.notificationDefaultTitle;
+    final body = data['body'] as String? ?? '';
+    final timestampStr = data['timestamp'] as String?;
+    final isRead = _readNotificationIds.contains(doc.id);
+
+    String timeStr = '';
+    if (timestampStr != null) {
+      try {
+        final timestamp = DateTime.parse(timestampStr);
+        timeStr = DateFormat.jm().format(timestamp);
+      } catch (e) {
+        timeStr = '';
+      }
+    }
+
+    return Dismissible(
+      key: Key(doc.id),
+      direction: DismissDirection.endToStart,
+      onDismissed: (_) => _hideNotification(doc.id),
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20.0),
+        color: theme.colorScheme.error,
+        child: Icon(Icons.delete, color: theme.colorScheme.onError),
+      ),
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+        elevation: isRead ? 0 : 1,
+        color: isRead
+            ? theme.cardTheme.color?.withValues(alpha: 0.6)
+            : theme.cardTheme.color,
+        shape:
+            theme.cardTheme.shape ??
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Opacity(
+          opacity: isRead ? 0.7 : 1.0,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.primaryContainer
-                                      .withValues(alpha: 0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.campaign,
-                                  color: theme.colorScheme.primary,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  title,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete_outline,
-                                  size: 20,
-                                ),
-                                color: theme.colorScheme.onSurface.withValues(
-                                  alpha: 0.4,
-                                ),
-                                tooltip:
-                                    localizations.notificationDeleteTooltip,
-                                padding: const EdgeInsets.all(4),
-                                constraints: const BoxConstraints(),
-                                onPressed: () => _hideNotification(doc.id),
-                              ),
-                            ],
+                          Text(
+                            title,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: isRead
+                                  ? FontWeight.w500
+                                  : FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 4),
                           _buildBodyWithLinks(
                             body,
-                            theme.textTheme.bodyMedium!.copyWith(height: 1.4),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            timeAgo,
-                            style: theme.textTheme.bodySmall?.copyWith(
+                            theme.textTheme.bodyMedium!.copyWith(
                               color: theme.colorScheme.onSurface.withValues(
-                                alpha: 0.5,
+                                alpha: 0.8,
                               ),
+                              height: 1.3,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          timeStr,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.5,
+                            ),
+                            fontSize: 11,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, size: 16),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.3,
+                          ),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () => _hideNotification(doc.id),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              );
-            },
-          );
-        },
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
