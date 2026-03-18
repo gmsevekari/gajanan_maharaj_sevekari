@@ -50,6 +50,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+android/build/
 
 # Keystore file
 /android/app/upload-keystore.jks

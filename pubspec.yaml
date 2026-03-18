@@ -57,6 +57,7 @@ dependencies:
   firebase_auth: ^6.2.0
   device_info_plus: ^12.3.0
   flutter_local_notifications: ^21.0.0
+  flutter_app_badge_control: ^0.0.1
 
 dev_dependencies:
   flutter_test:

@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
@@ -124,6 +125,12 @@ class NotificationManager {
   static Future<void> cancelAllNotifications() async {
     debugPrint('NotificationManager: Cancelling all notifications');
     await localNotifications.cancelAll();
+
+    // Clear the badge using flutter_app_badge_control
+    if (!kIsWeb && (Platform.isIOS || Platform.isMacOS || Platform.isAndroid)) {
+      FlutterAppBadgeControl.removeBadge();
+      debugPrint('NotificationManager: Badge cleared.');
+    }
   }
 
   static Future<void> _ensureSubscription() async {

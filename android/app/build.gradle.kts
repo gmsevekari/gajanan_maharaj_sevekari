@@ -13,7 +13,7 @@ plugins {
 
 android {
     namespace = "com.gajanan.maharaj.sevekari"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
