@@ -8,7 +8,6 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -27,46 +26,23 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
   );
 
-  await NotificationManager.showLocalNotification(message);
+  await NotificationManager.showLocalNotification(message, isForeground: false);
 }
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
-  // Handle background action taps
-  if (notificationResponse.actionId == 'action_mark_read') {
-    final String? notificationId = notificationResponse.payload;
-    final now = DateTime.now().toIso8601String();
-
-    SharedPreferences.getInstance().then((prefs) {
-      // 1. Mark individual notification as read
-      if (notificationId != null) {
-        final List<String> readIds =
-            prefs.getStringList('read_notifications') ?? [];
-        if (!readIds.contains(notificationId)) {
-          readIds.add(notificationId);
-          prefs.setStringList('read_notifications', readIds);
-        }
-      }
-      // 2. Sync global last read timestamp to clear red dot on Home Screen
-      prefs.setString('last_read_notification_timestamp', now);
-    });
-  } else if (notificationResponse.actionId == 'action_open_link') {
-    // Note: On Android, this might still fail if called in background isolate.
-    // For reliable URL opening, we should use foreground actions.
-    final String? url = notificationResponse.payload;
-    if (url != null) {
-      final uri = Uri.tryParse(url);
-      if (uri != null) {
-        launchUrl(uri, mode: LaunchMode.externalApplication);
-      }
-    }
-  }
+  // Handle background notification taps if needed.
+  // Custom actions have been removed for simplicity.
 }
 
 class NotificationManager {
   static const String _firstRunKey = 'first_run';
   static final FlutterLocalNotificationsPlugin localNotifications =
       FlutterLocalNotificationsPlugin();
+
+  /// Used to store a route that should be navigated to once the app is ready.
+  /// This prevents the Splash Screen from overwriting the notification navigation.
+  static String? pendingRoute;
 
   static Future<void> initialize(GlobalKey<NavigatorState> navigatorKey) async {
     debugPrint('NotificationManager: Initializing...');
@@ -79,33 +55,6 @@ class NotificationManager {
           requestAlertPermission: false,
           requestBadgePermission: false,
           requestSoundPermission: false,
-          notificationCategories: [
-            DarwinNotificationCategory(
-              'with_link',
-              actions: [
-                DarwinNotificationAction.plain(
-                  'action_open_link',
-                  'Open Link',
-                  options: {DarwinNotificationActionOption.foreground},
-                ),
-                DarwinNotificationAction.plain(
-                  'action_mark_read',
-                  'Mark as Read',
-                  options: {DarwinNotificationActionOption.destructive},
-                ),
-              ],
-            ),
-            DarwinNotificationCategory(
-              'plain',
-              actions: [
-                DarwinNotificationAction.plain(
-                  'action_mark_read',
-                  'Mark as Read',
-                  options: {DarwinNotificationActionOption.destructive},
-                ),
-              ],
-            ),
-          ],
         );
 
     final InitializationSettings initializationSettings =
@@ -122,12 +71,25 @@ class NotificationManager {
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
 
-    // 2. Handle Foreground FCM Messages
+    // 2. Set iOS Foreground Presentation Options (Important for "bubbles")
+    if (!kIsWeb && Platform.isIOS) {
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+      debugPrint(
+        'NotificationManager: iOS foreground presentation options set.',
+      );
+    }
+
+    // 3. Handle Foreground FCM Messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       debugPrint('--- FCM FOREGROUND MESSAGE RECEIVED ---');
       debugPrint('Message ID: ${message.messageId}');
       debugPrint('Data: ${message.data}');
-      showLocalNotification(message);
+      showLocalNotification(message, isForeground: true);
     });
 
     // 3. Handle notification tap when app is in background (not terminated)
@@ -136,11 +98,23 @@ class NotificationManager {
     });
 
     // 4. Handle notification tap when app was terminated
+    // A. Check for FCM terminated-state click
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        navigatorKey.currentState?.pushNamed(Routes.userNotifications);
-      });
+      debugPrint(
+        '[FCM] App launched from terminated state via FCM notification.',
+      );
+      pendingRoute = Routes.userNotifications;
+    }
+
+    // B. Check for Local Notification terminated-state click (Common on Android)
+    final localLaunchDetails = await localNotifications
+        .getNotificationAppLaunchDetails();
+    if (localLaunchDetails?.didNotificationLaunchApp == true) {
+      debugPrint(
+        '[FCM] App launched from terminated state via local notification.',
+      );
+      pendingRoute = Routes.userNotifications;
     }
 
     // 5. Ensure topic subscription if already authorized
@@ -161,12 +135,24 @@ class NotificationManager {
       'NotificationManager: isAuthorized for notifications: $isAuthorized',
     );
     if (isAuthorized && !kIsWeb) {
-      debugPrint(
-        'NotificationManager: Subscribing to topic: ${NotificationConstants.templeNotificationsTopic}',
-      );
-      await FirebaseMessaging.instance.subscribeToTopic(
-        NotificationConstants.templeNotificationsTopic,
-      );
+      // 1. Temple Notifications (US Only)
+      if (isUSRegion()) {
+        debugPrint(
+          'NotificationManager: US Region detected. Subscribing to topic: ${NotificationConstants.templeNotificationsTopic}',
+        );
+        await FirebaseMessaging.instance.subscribeToTopic(
+          NotificationConstants.templeNotificationsTopic,
+        );
+      } else {
+        debugPrint(
+          'NotificationManager: Non-US Region (${WidgetsBinding.instance.platformDispatcher.locale.countryCode}). Skipping Temple Notifications topic.',
+        );
+        await FirebaseMessaging.instance.unsubscribeFromTopic(
+          NotificationConstants.templeNotificationsTopic,
+        );
+      }
+
+      }
     }
   }
 
@@ -174,35 +160,50 @@ class NotificationManager {
     NotificationResponse response,
     GlobalKey<NavigatorState> navigatorKey,
   ) async {
-    if (response.actionId == 'action_mark_read') {
-      final String? notificationId = response.payload;
-      if (notificationId != null) {
-        final prefs = await SharedPreferences.getInstance();
-        final List<String> readIds =
-            prefs.getStringList('read_notifications') ?? [];
-        if (!readIds.contains(notificationId)) {
-          readIds.add(notificationId);
-          await prefs.setStringList('read_notifications', readIds);
-        }
-      }
-    } else if (response.actionId == 'action_open_link') {
-      final String? url = response.payload;
-      if (url != null) {
-        final uri = Uri.tryParse(url);
-        if (uri != null && await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        }
-      }
-    } else {
-      // Default tap: Open notifications screen
-      navigatorKey.currentState?.pushNamed(Routes.userNotifications);
-    }
+    // Default tap: Open notifications screen
+    navigatorKey.currentState?.pushNamed(Routes.userNotifications);
   }
 
-  static Future<void> showLocalNotification(RemoteMessage message) async {
-    debugPrint('NotificationManager: showLocalNotification called');
+  /// Consumes and returns the pending route if any.
+  /// This should be called by the Splash Screen after its transition logic.
+  static String? consumePendingRoute() {
+    final route = pendingRoute;
+    pendingRoute = null;
+    if (route != null) {
+      debugPrint('[FCM] Pending route consumed: $route');
+    }
+    return route;
+  }
+
+  static Future<void> showLocalNotification(
+    RemoteMessage message, {
+    bool isForeground = false,
+  }) async {
+    debugPrint(
+      'NotificationManager: showLocalNotification called (isForeground: $isForeground)',
+    );
     final notification = message.notification;
     final data = message.data;
+
+    // IMPORTANT: Avoid double notifications.
+    if (notification != null) {
+      if (Platform.isIOS) {
+        // iOS always handles notification blocks via APNS or presentation options.
+        // If we show a local one too, user gets two bubbles.
+        debugPrint(
+          '[FCM] iOS Notification block present — system handles display. Skipping.',
+        );
+        return;
+      }
+      if (Platform.isAndroid && !isForeground) {
+        // Android background handles notification blocks via system.
+        // In foreground, Android does NOT show a banner for notification blocks, so we proceed.
+        debugPrint(
+          '[FCM] Android Background Notification — system already showed it. Skipping.',
+        );
+        return;
+      }
+    }
 
     String? title = notification?.title ?? data['title'];
     String? body = notification?.body ?? data['body'];
@@ -215,70 +216,24 @@ class NotificationManager {
       return;
     }
 
-    // Prioritize explicit link/url fields from data, then fall back to body regex
-    String? link = data['link'] ?? data['url'];
-    if (link == null || link.isEmpty) {
-      final urlRegex = RegExp(r'https?://[^\s]+', caseSensitive: false);
-      final match = urlRegex.firstMatch(body ?? '');
-      link = match?.group(0);
-    }
-
-    // Clean empty link strings
-    if (link != null && link.isEmpty) link = null;
-
-    final List<AndroidNotificationAction> androidActions = [];
-    final List<DarwinNotificationAction> darwinActions = [];
-
-    // Add Mark as Read action
-    androidActions.add(
-      AndroidNotificationAction(
-        'action_mark_read',
-        'Mark as Read',
-        cancelNotification: true,
-      ),
-    );
-    darwinActions.add(
-      DarwinNotificationAction.plain(
-        'action_mark_read',
-        'Mark as Read',
-        options: {DarwinNotificationActionOption.destructive},
-      ),
-    );
-
-    // Add Open Link action if link exists
-    if (link != null) {
-      androidActions.add(
-        AndroidNotificationAction(
-          'action_open_link',
-          'Open Link',
-          showsUserInterface:
-              true, // This helps bring app to foreground or handle intent properly
-        ),
-      );
-      darwinActions.add(
-        DarwinNotificationAction.plain(
-          'action_open_link',
-          'Open Link',
-          options: {DarwinNotificationActionOption.foreground},
-        ),
-      );
-    }
-
-    final AndroidNotificationDetails androidDetails =
+    const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-          'temple_notifications_v3',
+          'temple_notifications',
           'Temple Notifications',
           channelDescription: 'Broadcast notifications for temple events',
           importance: Importance.max,
           priority: Priority.high,
-          actions: androidActions,
+          showWhen: true,
+          styleInformation: BigTextStyleInformation(''),
         );
 
-    final DarwinNotificationDetails darwinDetails = DarwinNotificationDetails(
-      categoryIdentifier: link != null ? 'with_link' : 'plain',
+    const DarwinNotificationDetails darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
     );
 
-    final NotificationDetails notificationDetails = NotificationDetails(
+    const NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: darwinDetails,
     );
@@ -288,7 +243,7 @@ class NotificationManager {
       title: title,
       body: body,
       notificationDetails: notificationDetails,
-      payload: link ?? message.messageId ?? data['id'],
+      payload: data['notification_id'] ?? message.messageId ?? data['id'],
     );
   }
 
@@ -389,9 +344,20 @@ class NotificationManager {
 
           if (!isIosSimulator) {
             try {
-              await messaging.subscribeToTopic(
-                NotificationConstants.templeNotificationsTopic,
-              );
+              // 1. Temple Notifications (US Only)
+              if (isUSRegion()) {
+                debugPrint(
+                  'NotificationManager: US Region detected during setup. Subscribing to ${NotificationConstants.templeNotificationsTopic}',
+                );
+                await messaging.subscribeToTopic(
+                  NotificationConstants.templeNotificationsTopic,
+                );
+              } else {
+                debugPrint(
+                  'NotificationManager: Non-US region detected during setup. Skipping ${NotificationConstants.templeNotificationsTopic}',
+                );
+              }
+
               await messaging.unsubscribeFromTopic('weekly_pooja');
             } catch (e) {
               debugPrint('Failed to subscribe to topic: $e');
@@ -407,6 +373,19 @@ class NotificationManager {
       }
     } finally {
       await prefs.setBool(_firstRunKey, false);
+    }
+  }
+
+  /// Helper to check if the device region is set to US.
+  static bool isUSRegion() {
+    try {
+      final countryCode =
+          WidgetsBinding.instance.platformDispatcher.locale.countryCode;
+      debugPrint('NotificationManager: Detected Country Code: $countryCode');
+      return countryCode?.toUpperCase() == 'US';
+    } catch (e) {
+      debugPrint('NotificationManager: Error detecting region: $e');
+      return false; // Default to false if we can't detect
     }
   }
 }

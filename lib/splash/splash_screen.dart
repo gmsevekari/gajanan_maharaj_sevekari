@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
@@ -15,9 +16,19 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Wait for a few seconds then navigate to the HomeScreen
+    // Wait for a few seconds then navigate to the HomeScreen or pending notification route
     Timer(const Duration(milliseconds: 500), () {
-      Navigator.of(context).pushReplacementNamed(Routes.home);
+      if (!mounted) return;
+      final pendingRoute = NotificationManager.consumePendingRoute();
+      if (pendingRoute != null) {
+        debugPrint(
+          '[FCM] SplashScreen: Navigating to pending route: $pendingRoute',
+        );
+        Navigator.of(context).pushReplacementNamed(Routes.home);
+        Navigator.of(context).pushNamed(pendingRoute);
+      } else {
+        Navigator.of(context).pushReplacementNamed(Routes.home);
+      }
     });
   }
 

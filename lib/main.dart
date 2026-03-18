@@ -16,7 +16,6 @@ import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/nityopasana/nityopasana_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
-import 'package:gajanan_maharaj_sevekari/parayan/parayan_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
@@ -127,7 +126,6 @@ class MyApp extends StatelessWidget {
                 Routes.calendar: (context) => const EventCalendarScreen(),
                 Routes.gallery: (context) => const GalleryScreen(),
                 Routes.settings: (context) => const SettingsScreen(),
-                Routes.parayan: (context) => const ParayanScreen(),
                 Routes.sankalp: (context) => const SankalpScreen(),
                 Routes.naamjap: (context) => const NaamjapScreen(),
                 Routes.adminLogin: (context) => const AdminLoginScreen(),

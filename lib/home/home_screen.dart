@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _loadUnreadStatus();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        NotificationManager.requestPermissions(context);
+        //NotificationManager.requestPermissions(context);
       }
     });
   }
