@@ -244,11 +244,11 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
       child: Text(
-        title,
-        style: theme.textTheme.titleSmall?.copyWith(
+        title.toUpperCase(),
+        style: theme.textTheme.labelLarge?.copyWith(
           color: theme.colorScheme.primary,
           fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
+          letterSpacing: 1.2,
         ),
       ),
     );
@@ -372,14 +372,13 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
         child: Icon(Icons.delete, color: theme.colorScheme.onError),
       ),
       child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-        elevation: isRead ? 0 : 1,
-        color: isRead
-            ? theme.cardTheme.color?.withValues(alpha: 0.6)
-            : theme.cardTheme.color,
-        shape:
-            theme.cardTheme.shape ??
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        elevation: theme.cardTheme.elevation,
+        color:
+            isRead
+                ? theme.cardTheme.color?.withValues(alpha: 0.6)
+                : theme.cardTheme.color,
+        shape: theme.cardTheme.shape,
         child: Opacity(
           opacity: isRead ? 0.7 : 1.0,
           child: Padding(
@@ -397,20 +396,19 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
                           Text(
                             title,
                             style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: isRead
-                                  ? FontWeight.w500
-                                  : FontWeight.bold,
-                              fontSize: 15,
+                              fontWeight:
+                                  isRead ? FontWeight.w500 : FontWeight.bold,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 8),
                           _buildBodyWithLinks(
                             body,
                             theme.textTheme.bodyMedium!.copyWith(
                               color: theme.colorScheme.onSurface.withValues(
-                                alpha: 0.8,
+                                alpha: 0.7,
                               ),
-                              height: 1.3,
+                              height: 1.4,
                             ),
                           ),
                         ],
@@ -429,10 +427,11 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
                             fontSize: 11,
                           ),
                         ),
+                        const SizedBox(height: 8),
                         IconButton(
                           icon: const Icon(Icons.close, size: 16),
                           color: theme.colorScheme.onSurface.withValues(
-                            alpha: 0.3,
+                            alpha: 0.4,
                           ),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),

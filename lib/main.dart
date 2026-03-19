@@ -16,6 +16,9 @@ import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/nityopasana/nityopasana_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_list_screen.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
@@ -135,6 +138,7 @@ class MyApp extends StatelessWidget {
                     const AdminTempleNotificationsScreen(),
                 Routes.userNotifications: (context) =>
                     const UserNotificationsScreen(),
+                Routes.parayanList: (context) => ParayanListScreen(),
               },
               onGenerateRoute: (settings) {
                 final DeityConfig? deity = settings.arguments as DeityConfig?;
@@ -180,6 +184,11 @@ class MyApp extends StatelessWidget {
                         contentType: ContentType.song,
                         content: deity.songs!,
                       ),
+                    );
+                  case Routes.parayanDetail:
+                    final event = settings.arguments as ParayanEvent;
+                    return MaterialPageRoute(
+                      builder: (context) => ParayanDetailScreen(event: event),
                     );
                   default:
                     return null;

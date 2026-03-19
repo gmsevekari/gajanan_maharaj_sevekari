@@ -30,7 +30,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sankalpTitle => 'Weekly Abhishek and Pooja Sankalp';
 
   @override
-  String get parayanTitle => 'Parayan Organization';
+  String get parayanTitle => 'Parayan';
+
+  @override
+  String get parayanListTitle => 'Parayan List';
 
   @override
   String get songTitle => 'Songs';
@@ -222,6 +225,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get threeDayParayan => '3-Day Parayan';
+
+  @override
+  String get guruPushyaParayan => 'Guru Pushya Parayan';
 
   @override
   String get oneDayParayanProgress => '1-Day Parayan Progress';
@@ -728,4 +734,101 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get older => 'Older';
+
+  @override
+  String get parayanCoordinationModuleTitle => 'Parayan Coordination';
+
+  @override
+  String get parayanCoordinationModuleSubtitle => 'Create and manage parayans';
+
+  @override
+  String get createParayanTitle => 'Create Parayan';
+
+  @override
+  String get parayanNameLabel => 'Parayan Name';
+
+  @override
+  String get parayanNameHint => 'e.g., Prakat Din Parayan';
+
+  @override
+  String get parayanNameRequired => 'Please enter a name';
+
+  @override
+  String get parayanDescriptionLabel => 'Description';
+
+  @override
+  String get parayanDescriptionHint => 'Briefly describe the parayan';
+
+  @override
+  String get parayanTypeLabel => 'Parayan Type';
+
+  @override
+  String get startDateLabel => 'Start Date';
+
+  @override
+  String get endDateLabel => 'End Date';
+
+  @override
+  String get reminderTimeLabel => 'Reminder Time';
+
+  @override
+  String get createParayanButton => 'Create Event';
+
+  @override
+  String get parayanJoinedSuccess =>
+      'You have successfully signed up for the Parayan!';
+
+  @override
+  String get assignedAdhyaysLabel => 'Your Assigned Adhyays';
+
+  @override
+  String get markAsRead => 'Mark as Read';
+
+  @override
+  String get readingCompleted => 'Reading Completed';
+
+  @override
+  String get submitReadingStatus => 'Submit Status';
+
+  @override
+  String get manualPingLabel => 'Send Manual Reminder';
+
+  @override
+  String statsParticipants(int count) {
+    return 'Total Participants: $count';
+  }
+
+  @override
+  String get joinParayanLabel => 'Join Parayan';
+
+  @override
+  String get noActiveParayans => 'No active parayans at the moment.';
+
+  @override
+  String get adhyaysCompleted => 'Adhyays Completed';
+
+  @override
+  String get totalSignups => 'Total Signups';
+
+  @override
+  String get ongoingParayansLabel => 'Ongoing Parayans';
+
+  @override
+  String get upcomingScheduleLabel => 'Upcoming Schedule';
+
+  @override
+  String get activeParayansLabel => 'Active events';
+
+  @override
+  String get completedParayansLabel => 'Total events';
+
+  @override
+  String get viewAllLabel => 'View All';
+
+  @override
+  String get heroCardTitle => 'Start New Parayan Event';
+
+  @override
+  String get heroCardSubtitle =>
+      'Create a new scriptural reading journey for the community.';
 }

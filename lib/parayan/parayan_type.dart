@@ -1,1 +1,1 @@
-enum ParayanType { oneDay, threeDay }
+enum ParayanType { oneDay, threeDay, guruPushya }

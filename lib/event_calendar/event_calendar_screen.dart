@@ -65,7 +65,6 @@ class Event {
       case 'special event':
       case 'special_event':
       case 'specialevent':
-      case 'special event':
         return EventType.specialEvent;
       default:
         return EventType.other;
@@ -184,6 +183,62 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
     final formattedTime = DateFormat('hh:mm').format(time);
     final marathiTime = toMarathiNumerals(formattedTime);
     return '$period $marathiTime';
+  }
+
+  List<dynamic> _getGroupedEvents(List<Event> events) {
+    final List<dynamic> grouped = [];
+    String? currentMonth;
+    final locale = Localizations.localeOf(context).languageCode;
+
+    for (var event in events) {
+      final date = event.start_time.toDate();
+      final monthYear = DateFormat('MMMM yyyy', locale).format(date);
+
+      if (monthYear != currentMonth) {
+        grouped.add(monthYear);
+        currentMonth = monthYear;
+      }
+      grouped.add(event);
+    }
+    return grouped;
+  }
+
+  Widget _buildGroupedListView(List<Event> events, {DateTime? selectedDate}) {
+    if (events.isEmpty) {
+      return Center(
+        child: Text(AppLocalizations.of(context)!.eventOnDate),
+      );
+    }
+
+    final groupedItems = _getGroupedEvents(events);
+    final theme = Theme.of(context);
+
+    return ListView.builder(
+      itemCount: groupedItems.length,
+      padding: const EdgeInsets.only(bottom: 16),
+      itemBuilder: (context, index) {
+        final item = groupedItems[index];
+
+        if (item is String) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+            child: Text(
+              item.toUpperCase(),
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+          );
+        } else {
+          final event = item as Event;
+          final isSelected = selectedDate != null &&
+              isSameDay(event.start_time.toDate(), selectedDate);
+          return _buildEventCard(event, isSelected: isSelected);
+        }
+      },
+    );
   }
 
   @override
@@ -305,53 +360,24 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: _filteredEvents.length,
-            itemBuilder: (context, index) {
-              return _buildEventCard(_filteredEvents[index], isSelected: false);
-            },
-          ),
+          child: _buildGroupedListView(_filteredEvents),
         ),
       ],
     );
   }
 
   Widget _buildSpecialEventsView() {
-    if (_specialEvents.isEmpty) {
-      return Center(
-        child: Text(AppLocalizations.of(context)!.eventOnDate),
-      );
-    }
-
-    return ListView.builder(
-      itemCount: _specialEvents.length,
-      itemBuilder: (context, index) {
-        return _buildEventCard(_specialEvents[index], isSelected: false);
-      },
-    );
+    return _buildGroupedListView(_specialEvents);
   }
 
   Widget _buildEventListForCalendar() {
-    final endDate = _selectedDay!.add(const Duration(days: 30));
+    final endDate = _selectedDay!.add(const Duration(days: 90)); // Show 3 months of upcoming events from selected day
     final eventsToShow = _allEvents.where((event) {
       final eventDate = event.start_time.toDate();
       return (eventDate.isAfter(_selectedDay!) || isSameDay(eventDate, _selectedDay)) && eventDate.isBefore(endDate);
     }).toList();
 
-    if (eventsToShow.isEmpty) {
-      return Center(
-        child: Text(AppLocalizations.of(context)!.eventOnDate),
-      );
-    }
-
-    return ListView.builder(
-      itemCount: eventsToShow.length,
-      itemBuilder: (context, index) {
-        final event = eventsToShow[index];
-        final isSelected = isSameDay(event.start_time.toDate(), _selectedDay);
-        return _buildEventCard(event, isSelected: isSelected);
-      },
-    );
+    return _buildGroupedListView(eventsToShow, selectedDate: _selectedDay);
   }
 
   Widget _buildEventCard(Event event, {required bool isSelected}) {
@@ -374,50 +400,100 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
       endTime = event.end_time != null ? timeFormatter.format(event.end_time!.toDate()) : null;
     }
 
-    final eventDateString = DateFormat.yMMMMEEEEd(locale).format(event.start_time.toDate());
+    final eventDateString = DateFormat('EEEE, d MMMM y', locale).format(event.start_time.toDate());
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: theme.cardTheme.elevation,
-      color: isSelected ? Colors.orange[200] : theme.cardTheme.color,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: isSelected
-              ? BorderSide(color: Colors.orange.shade700, width: 2)
-              : BorderSide(color: Color(0xFFFF9800), width: 1),
-        ),
+      color: isSelected
+          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
+          : theme.cardTheme.color,
+      shape:
+          isSelected
+              ? RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: theme.colorScheme.primary, width: 2),
+              )
+              : theme.cardTheme.shape,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(eventDateString, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Colors.orange[800])),
-            const SizedBox(height: 8),
-            Text(title, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.orange[800])),
-            const SizedBox(height: 8),
-            if (endTime != null) Row(children: [const Icon(Icons.access_time, size: 16, color: Colors.orange), const SizedBox(width: 8), Text('$startTime - $endTime', style: TextStyle(color: Colors.orange[700]))]) else Row(children: [const Icon(Icons.access_time, size: 16, color: Colors.orange), const SizedBox(width: 8), Text(startTime, style: TextStyle(color: Colors.orange[700]))]),
-            const SizedBox(height: 8),
-            if (location.isNotEmpty) InkWell(
-              onTap: event.address != null ? () => _launchMaps(event.address!) : null,
-              child: Row(
-                children: [
-                  const Icon(Icons.location_on, size: 16, color: Colors.orange),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      location,
-                      style: TextStyle(
-                        decoration: event.address != null ? TextDecoration.underline : TextDecoration.none,
-                        color: event.address != null ? Colors.blue : Colors.orange[700],
-                      ),
-                    ),
-                  ),
-                ],
+            Text(
+              eventDateString,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.access_time, size: 16, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  endTime != null ? '$startTime - $endTime' : startTime,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
+            if (location.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              InkWell(
+                onTap:
+                    event.address != null
+                        ? () => _launchMaps(event.address!)
+                        : null,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      size: 16,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        location,
+                        style: TextStyle(
+                          decoration:
+                              event.address != null
+                                  ? TextDecoration.underline
+                                  : TextDecoration.none,
+                          color:
+                              event.address != null
+                                  ? Colors.blue
+                                  : theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.7,
+                                  ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             if (details.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text(details, style: TextStyle(color: Colors.orange[700])),
+              const SizedBox(height: 12),
+              Divider(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+              const SizedBox(height: 4),
+              Text(
+                details,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                ),
+              ),
             ],
           ],
         ),

@@ -129,6 +129,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         );
                       },
                     ),
+                    _buildModuleCard(
+                      context: context,
+                      title: localizations.parayanCoordinationModuleTitle,
+                      subtitle: localizations.parayanCoordinationModuleSubtitle,
+                      icon: Icons.event_note,
+                      color: Colors.orange[600]!,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          Routes.adminParayanCoordination,
+                        );
+                      },
+                    ),
                     // Future admin modules can be added here
                   ],
                 ),

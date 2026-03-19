@@ -6,7 +6,8 @@
   "aartiTitle": "Aarti Collection",
   "bhajanTitle": "Bhajan Collection",
   "sankalpTitle": "Weekly Abhishek and Pooja Sankalp",
-  "parayanTitle": "Parayan Organization",
+  "parayanTitle": "Parayan",
+  "parayanListTitle": "Parayan List",
   "songTitle": "Songs",
   "aboutMaharajTitle": "About Maharaj",
   "aboutGanapatiTitle": "About Ganapati",
@@ -80,6 +81,7 @@
   "chooseParayanType": "Choose Parayan Type:",
   "oneDayParayan": "1-Day Parayan",
   "threeDayParayan": "3-Day Parayan",
+  "guruPushyaParayan": "Guru Pushya Parayan",
   "oneDayParayanProgress": "1-Day Parayan Progress",
   "threeDayParayanProgress": "3-Day Parayan Progress",
   "day": "Day",
@@ -284,5 +286,43 @@
       }
     }
   },
-  "older": "Older"
+  "older": "Older",
+  "parayanCoordinationModuleTitle": "Parayan Coordination",
+  "parayanCoordinationModuleSubtitle": "Create and manage parayans",
+  "createParayanTitle": "Create Parayan",
+  "parayanNameLabel": "Parayan Name",
+  "parayanNameHint": "e.g., Prakat Din Parayan",
+  "parayanNameRequired": "Please enter a name",
+  "parayanDescriptionLabel": "Description",
+  "parayanDescriptionHint": "Briefly describe the parayan",
+  "parayanTypeLabel": "Parayan Type",
+  "startDateLabel": "Start Date",
+  "endDateLabel": "End Date",
+  "reminderTimeLabel": "Reminder Time",
+  "createParayanButton": "Create Event",
+  "parayanJoinedSuccess": "You have successfully signed up for the Parayan!",
+  "assignedAdhyaysLabel": "Your Assigned Adhyays",
+  "markAsRead": "Mark as Read",
+  "readingCompleted": "Reading Completed",
+  "submitReadingStatus": "Submit Status",
+  "manualPingLabel": "Send Manual Reminder",
+  "statsParticipants": "Total Participants: {count}",
+  "@statsParticipants": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "joinParayanLabel": "Join Parayan",
+  "noActiveParayans": "No active parayans at the moment.",
+  "adhyaysCompleted": "Adhyays Completed",
+  "totalSignups": "Total Signups",
+  "ongoingParayansLabel": "Ongoing Parayans",
+  "upcomingScheduleLabel": "Upcoming Schedule",
+  "activeParayansLabel": "Active events",
+  "completedParayansLabel": "Total events",
+  "viewAllLabel": "View All",
+  "heroCardTitle": "Start New Parayan Event",
+  "heroCardSubtitle": "Create a new scriptural reading journey for the community."
 }

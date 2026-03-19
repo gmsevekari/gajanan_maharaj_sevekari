@@ -6,13 +6,15 @@ import 'package:gajanan_maharaj_sevekari/event_calendar/event_calendar_screen.da
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
-import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
+import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
 
 import '../deity/deity_dashboard_screen.dart';
 
@@ -24,7 +26,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
-  Future<Map<String, DocumentSnapshot?>>? _upcomingEventsFuture;
+  Future<Map<String, dynamic>>? _upcomingEventsFuture;
   String? _lastReadTimestamp;
 
   @override
@@ -60,11 +62,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     });
   }
 
-  Future<Map<String, DocumentSnapshot?>> _fetchUpcomingEvents() async {
-    final now = Timestamp.now();
-    final snapshot = await FirebaseFirestore.instance
+  Future<Map<String, dynamic>> _fetchUpcomingEvents() async {
+    final now = DateTime.now();
+    final nowTimestamp = Timestamp.fromDate(now);
+
+    // 1. Fetch from 'events' collection
+    final eventsSnapshot = await FirebaseFirestore.instance
         .collection('events')
-        .where('start_time', isGreaterThanOrEqualTo: now)
+        .where('start_time', isGreaterThanOrEqualTo: nowTimestamp)
         .orderBy('start_time')
         .limit(20)
         .get();
@@ -72,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     DocumentSnapshot? weeklyPooja;
     DocumentSnapshot? specialEvent;
 
-    for (var doc in snapshot.docs) {
+    for (var doc in eventsSnapshot.docs) {
       final eventData = doc.data();
       final eventType = eventData['event_type'] as String?;
 
@@ -88,13 +93,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               eventType == 'specialEvent')) {
         specialEvent = doc;
       }
+      if (weeklyPooja != null && specialEvent != null) break;
+    }
 
-      if (weeklyPooja != null && specialEvent != null) {
+    // 2. Fetch from 'parayan_events' collection
+    // Simplified query: Fetch recent/upcoming ones and filter in-memory
+    // to avoid needing a composite index for 'status' + 'startDate'.
+    final parayanSnapshot = await FirebaseFirestore.instance
+        .collection('parayan_events')
+        .orderBy('startDate')
+        .limit(10)
+        .get();
+
+    ParayanEvent? upcomingParayan;
+    for (var doc in parayanSnapshot.docs) {
+      final event = ParayanEvent.fromFirestore(doc);
+      // We want the first event that hasn't ended yet
+      if (event.endDate.isAfter(now)) {
+        upcomingParayan = event;
         break;
       }
     }
 
-    return {'weeklyPooja': weeklyPooja, 'specialEvent': specialEvent};
+    return {
+      'weeklyPooja': weeklyPooja,
+      'specialEvent': specialEvent,
+      'parayan': upcomingParayan,
+    };
   }
 
   void _launchAppStore() async {
@@ -110,10 +135,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
+    final localizations = AppLocalizations.of(context);
     final appConfigProvider = Provider.of<AppConfigProvider>(context);
+
+    if (localizations == null) return const SizedBox.shrink();
 
     final List<Widget> cards = [];
 
@@ -138,6 +166,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         imagePath: 'resources/images/icon/Rudraksha_Mala.png',
         imageSize: 64.0,
         onTap: () => Navigator.pushNamed(context, Routes.naamjap),
+      ),
+    );
+    cards.add(
+      _buildIconGridItem(
+        context: context,
+        title: localizations.parayanTitle,
+        icon: Icons.menu_book,
+        onTap: () => Navigator.pushNamed(context, Routes.parayanList),
       ),
     );
     cards.add(
@@ -385,23 +421,37 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   ) {
     final theme = Theme.of(context);
 
-    return FutureBuilder<Map<String, DocumentSnapshot?>>(
+    return FutureBuilder<Map<String, dynamic>>(
       future: _upcomingEventsFuture,
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          debugPrint("Error fetching upcoming events: ${snapshot.error}");
+          return Container(
+            margin: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
+            child: const Center(
+              child: Icon(Icons.error_outline, color: Colors.red),
+            ),
+          );
+        }
+
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Card(child: Center(child: CircularProgressIndicator()));
         }
 
+        final data = snapshot.data;
         if (!snapshot.hasData ||
-            (snapshot.data!['weeklyPooja'] == null &&
-                snapshot.data!['specialEvent'] == null)) {
+            data == null ||
+            (data['weeklyPooja'] == null &&
+                data['specialEvent'] == null &&
+                data['parayan'] == null)) {
           return Container(
             margin: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16.0),
               boxShadow: [
                 BoxShadow(
-                  color: theme.cardTheme.shadowColor!,
+                  color: theme.cardTheme.shadowColor ?? Colors.black12,
                   offset: const Offset(0, 4),
                   blurRadius: 0,
                   spreadRadius: 0,
@@ -432,93 +482,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           );
         }
 
-        final weeklyPoojaDoc = snapshot.data!['weeklyPooja'];
-        final specialEventDoc = snapshot.data!['specialEvent'];
-
-        Widget buildEventRow(
-          DocumentSnapshot doc,
-          IconData icon,
-          Color iconColor,
-          String eventTypeLabel,
-        ) {
-          final eventData = doc.data() as Map<String, dynamic>;
-          final event = Event.fromFirestore(doc);
-          final locale = Localizations.localeOf(context).languageCode;
-          final eventTitle = locale == 'mr' ? event.title_mr : event.title_en;
-          final eventDate = (eventData['start_time'] as Timestamp).toDate();
-          final eventDateString = DateFormat.yMMMMEEEEd(
-            locale,
-          ).format(eventDate);
-
-          return InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      EventCalendarScreen(initialDate: eventDate),
-                ),
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12.0),
-                    decoration: BoxDecoration(
-                      color: iconColor.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(icon, color: iconColor),
-                  ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          eventTitle,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.orange[600],
-                          ),
-                        ),
-                        const SizedBox(height: 2.0),
-                        Text(
-                          eventDateString,
-                          style: TextStyle(
-                            color: Colors.orange[600],
-                            fontSize: 13.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8.0),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    decoration: BoxDecoration(
-                      color: iconColor,
-                      borderRadius: BorderRadius.circular(6.0),
-                    ),
-                    child: Text(
-                      eventTypeLabel,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
+        final weeklyPoojaDoc = data['weeklyPooja'] as DocumentSnapshot?;
+        final specialEventDoc = data['specialEvent'] as DocumentSnapshot?;
+        final parayanEvent = data['parayan'] as ParayanEvent?;
 
         List<Widget> children = [
           Text(
@@ -535,11 +501,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
         if (weeklyPoojaDoc != null) {
           children.add(
-            buildEventRow(
+            _buildEventRow(
+              context,
               weeklyPoojaDoc,
               Icons.event_repeat,
               Colors.orange,
               localizations.weeklyPooja,
+              theme,
             ),
           );
         }
@@ -552,12 +520,25 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
         if (specialEventDoc != null) {
           children.add(
-            buildEventRow(
+            _buildEventRow(
+              context,
               specialEventDoc,
               Icons.celebration,
               Colors.orange,
               localizations.specialEvents,
+              theme,
             ),
+          );
+        }
+
+        if (parayanEvent != null) {
+          if (weeklyPoojaDoc != null || specialEventDoc != null) {
+            children.add(
+              Divider(color: Colors.orange.withValues(alpha: 0.2), height: 8.0),
+            );
+          }
+          children.add(
+            _buildParayanRow(context, parayanEvent, theme, localizations),
           );
         }
 
@@ -592,6 +573,172 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildEventRow(
+    BuildContext context,
+    DocumentSnapshot doc,
+    IconData icon,
+    Color iconColor,
+    String eventTypeLabel,
+    ThemeData theme,
+  ) {
+    final eventData = doc.data() as Map<String, dynamic>;
+    final event = Event.fromFirestore(doc);
+    final locale = Localizations.localeOf(context).languageCode;
+    final eventTitle = locale == 'mr' ? event.title_mr : event.title_en;
+    final eventDate = (eventData['start_time'] as Timestamp).toDate();
+    final eventDateString = DateFormat.yMMMMEEEEd(locale).format(eventDate);
+
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventCalendarScreen(initialDate: eventDate),
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12.0),
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: iconColor),
+            ),
+            const SizedBox(width: 16.0),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    eventTitle,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[600],
+                    ),
+                  ),
+                  const SizedBox(height: 2.0),
+                  Text(
+                    eventDateString,
+                    style: TextStyle(color: Colors.orange[600], fontSize: 13.0),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8.0),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+                vertical: 4.0,
+              ),
+              decoration: BoxDecoration(
+                color: iconColor,
+                borderRadius: BorderRadius.circular(6.0),
+              ),
+              child: Text(
+                eventTypeLabel.toUpperCase(),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildParayanRow(
+    BuildContext context,
+    ParayanEvent event,
+    ThemeData theme,
+    AppLocalizations localizations,
+  ) {
+    final locale = Localizations.localeOf(context).languageCode;
+    final title = locale == 'mr' ? event.titleMr : event.titleEn;
+    final isSingleDay =
+        event.type == ParayanType.oneDay ||
+        event.type == ParayanType.guruPushya;
+    final dateRange = isSingleDay
+        ? (locale == 'mr'
+              ? DateFormat('d MMMM, yyyy', 'mr').format(event.startDate)
+              : DateFormat('MMM d, yyyy').format(event.startDate))
+        : (locale == 'mr'
+              ? "${DateFormat('d MMMM', 'mr').format(event.startDate)} - ${DateFormat('d MMMM, yyyy', 'mr').format(event.endDate)}"
+              : "${DateFormat('MMM d').format(event.startDate)} - ${DateFormat('MMM d, yyyy').format(event.endDate)}");
+
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ParayanDetailScreen(event: event),
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12.0),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.menu_book, color: Colors.orange),
+            ),
+            const SizedBox(width: 16.0),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[600],
+                    ),
+                  ),
+                  const SizedBox(height: 2.0),
+                  Text(
+                    dateRange,
+                    style: TextStyle(color: Colors.orange[600], fontSize: 13.0),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8.0),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+                vertical: 4.0,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.orange,
+                borderRadius: BorderRadius.circular(6.0),
+              ),
+              child: Text(
+                localizations.parayanTitle.toUpperCase(),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

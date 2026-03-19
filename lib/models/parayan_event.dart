@@ -1,0 +1,86 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+
+class ParayanEvent {
+  final String id;
+  final String titleEn;
+  final String titleMr;
+  final String descriptionEn;
+  final String descriptionMr;
+  final ParayanType type;
+  final DateTime startDate;
+  final DateTime endDate;
+  final String status; // upcoming, ongoing, completed
+  final String reminderTime; // e.g., "20:00"
+  final DateTime? manualPingRequestedAt;
+  final DateTime createdAt;
+  final int joinedParticipants;
+
+  String get title => titleMr;
+  String get description => descriptionMr;
+
+  const ParayanEvent({
+    required this.id,
+    required this.titleEn,
+    required this.titleMr,
+    required this.descriptionEn,
+    required this.descriptionMr,
+    required this.type,
+    required this.startDate,
+    required this.endDate,
+    required this.status,
+    required this.reminderTime,
+    this.manualPingRequestedAt,
+    required this.createdAt,
+    this.joinedParticipants = 0,
+  });
+
+  factory ParayanEvent.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return ParayanEvent(
+      id: doc.id,
+      titleEn: data['title_en'] ?? data['title'] ?? '',
+      titleMr: data['title_mr'] ?? data['title'] ?? '',
+      descriptionEn: data['description_en'] ?? data['description'] ?? '',
+      descriptionMr: data['description_mr'] ?? data['description'] ?? '',
+      type: data['type'] == 'threeDay'
+          ? ParayanType.threeDay
+          : data['type'] == 'guruPushya'
+          ? ParayanType.guruPushya
+          : ParayanType.oneDay,
+      startDate: (data['startDate'] as Timestamp).toDate(),
+      endDate: (data['endDate'] as Timestamp).toDate(),
+      status: data['status'] ?? 'upcoming',
+      reminderTime: data['reminderTime'] ?? '20:00',
+      manualPingRequestedAt: data['manualPingRequestedAt'] != null
+          ? (data['manualPingRequestedAt'] as Timestamp).toDate()
+          : null,
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      joinedParticipants: data['joinedParticipants'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'title_en': titleEn,
+      'title_mr': titleMr,
+      'description_en': descriptionEn,
+      'description_mr': descriptionMr,
+      'type': type == ParayanType.threeDay
+          ? 'threeDay'
+          : type == ParayanType.guruPushya
+          ? 'guruPushya'
+          : 'oneDay',
+      'startDate': Timestamp.fromDate(startDate),
+      'endDate': Timestamp.fromDate(endDate),
+      'status': status,
+      'reminderTime': reminderTime,
+      if (manualPingRequestedAt != null)
+        'manualPingRequestedAt': Timestamp.fromDate(
+          manualPingRequestedAt as DateTime,
+        ),
+      'createdAt': Timestamp.fromDate(createdAt),
+      'joinedParticipants': joinedParticipants,
+    };
+  }
+}

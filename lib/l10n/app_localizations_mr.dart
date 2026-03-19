@@ -30,7 +30,10 @@ class AppLocalizationsMr extends AppLocalizations {
   String get sankalpTitle => 'साप्ताहिक अभिषेक आणि पूजा संकल्प';
 
   @override
-  String get parayanTitle => 'पारायण आयोजन';
+  String get parayanTitle => 'पारायण';
+
+  @override
+  String get parayanListTitle => 'पारायण सूची';
 
   @override
   String get songTitle => 'गाणी';
@@ -222,6 +225,9 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get threeDayParayan => '३-दिवसीय पारायण';
+
+  @override
+  String get guruPushyaParayan => 'गुरुपुष्यामृत योग पारायण';
 
   @override
   String get oneDayParayanProgress => '१-दिवसीय पारायण प्रगती';
@@ -726,4 +732,102 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get older => 'जुने';
+
+  @override
+  String get parayanCoordinationModuleTitle => 'पारायण आयोजन';
+
+  @override
+  String get parayanCoordinationModuleSubtitle =>
+      'नवीन पारायण तयार करा आणि मॅनेज करा';
+
+  @override
+  String get createParayanTitle => 'पारायण तयार करा';
+
+  @override
+  String get parayanNameLabel => 'पारायणाचे नाव';
+
+  @override
+  String get parayanNameHint => 'उदा., प्रकट दिन पारायण';
+
+  @override
+  String get parayanNameRequired => 'कृपया नाव लिहा';
+
+  @override
+  String get parayanDescriptionLabel => 'वर्णन';
+
+  @override
+  String get parayanDescriptionHint => 'पारायणाचे थोडक्यात वर्णन करा';
+
+  @override
+  String get parayanTypeLabel => 'पारायण प्रकार';
+
+  @override
+  String get startDateLabel => 'सुरुवात तारीख';
+
+  @override
+  String get endDateLabel => 'अंतिम तारीख';
+
+  @override
+  String get reminderTimeLabel => 'आठवण वेळ';
+
+  @override
+  String get createParayanButton => 'कार्यक्रम तयार करा';
+
+  @override
+  String get parayanJoinedSuccess =>
+      'तुम्ही पारायणासाठी यशस्वीरित्या साइन अप केले आहे!';
+
+  @override
+  String get assignedAdhyaysLabel => 'तुमचे नियुक्त अध्याय';
+
+  @override
+  String get markAsRead => 'वाचले म्हणून मार्क करा';
+
+  @override
+  String get readingCompleted => 'वाचन पूर्ण झाले';
+
+  @override
+  String get submitReadingStatus => 'स्टेटस सबमिट करा';
+
+  @override
+  String get manualPingLabel => 'मॅन्युअल आठवण पाठवा';
+
+  @override
+  String statsParticipants(int count) {
+    return 'एकूण सहभागी: $count';
+  }
+
+  @override
+  String get joinParayanLabel => 'पारायणात सहभागी व्हा';
+
+  @override
+  String get noActiveParayans => 'सध्या कोणतेही सक्रिय पारायण नाहीत.';
+
+  @override
+  String get adhyaysCompleted => 'अध्याय पूर्ण झाले';
+
+  @override
+  String get totalSignups => 'एकूण साइन-अप';
+
+  @override
+  String get ongoingParayansLabel => 'चालू पारायण';
+
+  @override
+  String get upcomingScheduleLabel => 'येणारे कार्यक्रम';
+
+  @override
+  String get activeParayansLabel => 'सक्रिय कार्यक्रम';
+
+  @override
+  String get completedParayansLabel => 'एकूण कार्यक्रम';
+
+  @override
+  String get viewAllLabel => 'सर्व पहा';
+
+  @override
+  String get heroCardTitle => 'नवीन पारायण सुरू करा';
+
+  @override
+  String get heroCardSubtitle =>
+      'समाजासाठी एक नवीन ग्रंथ वाचन यात्रा सुरू करा.';
 }

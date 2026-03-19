@@ -7,7 +7,6 @@ class Routes {
   static const String aarti = '/aarti';
   static const String bhajan = '/bhajan';
   static const String sankalp = '/sankalp';
-  static const String parayan = '/parayan';
   static const String aboutMaharaj = '/about_maharaj';
   static const String calendar = '/event_calendar';
   static const String donations = '/donations';
@@ -24,5 +23,7 @@ class Routes {
   static const String adminLogin = '/admin_login';
   static const String adminDashboard = '/admin_dashboard';
   static const String adminTempleNotifications = '/admin_temple_notifications';
+  static const String parayanList = '/parayan_list';
+  static const String parayanDetail = '/parayan_detail';
   static const String userNotifications = '/user_notifications';
 }

@@ -6,7 +6,8 @@
   "aartiTitle": "आरती संग्रह",
   "bhajanTitle": "भजन संग्रह",
   "sankalpTitle": "साप्ताहिक अभिषेक आणि पूजा संकल्प",
-  "parayanTitle": "पारायण आयोजन",
+  "parayanTitle": "पारायण",
+  "parayanListTitle": "पारायण सूची",
   "songTitle": "गाणी",
   "aboutMaharajTitle": "महाराजांविषयी",
   "aboutBabaTitle": "बाबांविषयी",
@@ -80,6 +81,7 @@
   "chooseParayanType": "पारायण प्रकार निवडा:",
   "oneDayParayan": "१-दिवसीय पारायण",
   "threeDayParayan": "३-दिवसीय पारायण",
+  "guruPushyaParayan": "गुरुपुष्यामृत योग पारायण",
   "oneDayParayanProgress": "१-दिवसीय पारायण प्रगती",
   "threeDayParayanProgress": "३-दिवसीय पारायण प्रगती",
   "day": "दिवस",
@@ -284,5 +286,43 @@
       }
     }
   },
-  "older": "जुने"
+  "older": "जुने",
+  "parayanCoordinationModuleTitle": "पारायण आयोजन",
+  "parayanCoordinationModuleSubtitle": "नवीन पारायण तयार करा आणि मॅनेज करा",
+  "createParayanTitle": "पारायण तयार करा",
+  "parayanNameLabel": "पारायणाचे नाव",
+  "parayanNameHint": "उदा., प्रकट दिन पारायण",
+  "parayanNameRequired": "कृपया नाव लिहा",
+  "parayanDescriptionLabel": "वर्णन",
+  "parayanDescriptionHint": "पारायणाचे थोडक्यात वर्णन करा",
+  "parayanTypeLabel": "पारायण प्रकार",
+  "startDateLabel": "सुरुवात तारीख",
+  "endDateLabel": "अंतिम तारीख",
+  "reminderTimeLabel": "आठवण वेळ",
+  "createParayanButton": "कार्यक्रम तयार करा",
+  "parayanJoinedSuccess": "तुम्ही पारायणासाठी यशस्वीरित्या साइन अप केले आहे!",
+  "assignedAdhyaysLabel": "तुमचे नियुक्त अध्याय",
+  "markAsRead": "वाचले म्हणून मार्क करा",
+  "readingCompleted": "वाचन पूर्ण झाले",
+  "submitReadingStatus": "स्टेटस सबमिट करा",
+  "manualPingLabel": "मॅन्युअल आठवण पाठवा",
+  "statsParticipants": "एकूण सहभागी: {count}",
+  "@statsParticipants": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "joinParayanLabel": "पारायणात सहभागी व्हा",
+  "noActiveParayans": "सध्या कोणतेही सक्रिय पारायण नाहीत.",
+  "adhyaysCompleted": "अध्याय पूर्ण झाले",
+  "totalSignups": "एकूण साइन-अप",
+  "ongoingParayansLabel": "चालू पारायण",
+  "upcomingScheduleLabel": "येणारे कार्यक्रम",
+  "activeParayansLabel": "सक्रिय कार्यक्रम",
+  "completedParayansLabel": "एकूण कार्यक्रम",
+  "viewAllLabel": "सर्व पहा",
+  "heroCardTitle": "नवीन पारायण सुरू करा",
+  "heroCardSubtitle": "समाजासाठी एक नवीन ग्रंथ वाचन यात्रा सुरू करा."
 }

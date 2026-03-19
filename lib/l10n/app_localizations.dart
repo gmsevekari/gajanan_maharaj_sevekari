@@ -143,8 +143,14 @@ abstract class AppLocalizations {
   /// No description provided for @parayanTitle.
   ///
   /// In en, this message translates to:
-  /// **'Parayan Organization'**
+  /// **'Parayan'**
   String get parayanTitle;
+
+  /// No description provided for @parayanListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan List'**
+  String get parayanListTitle;
 
   /// No description provided for @songTitle.
   ///
@@ -523,6 +529,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'3-Day Parayan'**
   String get threeDayParayan;
+
+  /// No description provided for @guruPushyaParayan.
+  ///
+  /// In en, this message translates to:
+  /// **'Guru Pushya Parayan'**
+  String get guruPushyaParayan;
 
   /// No description provided for @oneDayParayanProgress.
   ///
@@ -1459,6 +1471,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Older'**
   String get older;
+
+  /// No description provided for @parayanCoordinationModuleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan Coordination'**
+  String get parayanCoordinationModuleTitle;
+
+  /// No description provided for @parayanCoordinationModuleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create and manage parayans'**
+  String get parayanCoordinationModuleSubtitle;
+
+  /// No description provided for @createParayanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Parayan'**
+  String get createParayanTitle;
+
+  /// No description provided for @parayanNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan Name'**
+  String get parayanNameLabel;
+
+  /// No description provided for @parayanNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Prakat Din Parayan'**
+  String get parayanNameHint;
+
+  /// No description provided for @parayanNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name'**
+  String get parayanNameRequired;
+
+  /// No description provided for @parayanDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get parayanDescriptionLabel;
+
+  /// No description provided for @parayanDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Briefly describe the parayan'**
+  String get parayanDescriptionHint;
+
+  /// No description provided for @parayanTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan Type'**
+  String get parayanTypeLabel;
+
+  /// No description provided for @startDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get startDateLabel;
+
+  /// No description provided for @endDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'End Date'**
+  String get endDateLabel;
+
+  /// No description provided for @reminderTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder Time'**
+  String get reminderTimeLabel;
+
+  /// No description provided for @createParayanButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Event'**
+  String get createParayanButton;
+
+  /// No description provided for @parayanJoinedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'You have successfully signed up for the Parayan!'**
+  String get parayanJoinedSuccess;
+
+  /// No description provided for @assignedAdhyaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Assigned Adhyays'**
+  String get assignedAdhyaysLabel;
+
+  /// No description provided for @markAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Read'**
+  String get markAsRead;
+
+  /// No description provided for @readingCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading Completed'**
+  String get readingCompleted;
+
+  /// No description provided for @submitReadingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Status'**
+  String get submitReadingStatus;
+
+  /// No description provided for @manualPingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Manual Reminder'**
+  String get manualPingLabel;
+
+  /// No description provided for @statsParticipants.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Participants: {count}'**
+  String statsParticipants(int count);
+
+  /// No description provided for @joinParayanLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Parayan'**
+  String get joinParayanLabel;
+
+  /// No description provided for @noActiveParayans.
+  ///
+  /// In en, this message translates to:
+  /// **'No active parayans at the moment.'**
+  String get noActiveParayans;
+
+  /// No description provided for @adhyaysCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Adhyays Completed'**
+  String get adhyaysCompleted;
+
+  /// No description provided for @totalSignups.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Signups'**
+  String get totalSignups;
+
+  /// No description provided for @ongoingParayansLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing Parayans'**
+  String get ongoingParayansLabel;
+
+  /// No description provided for @upcomingScheduleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Schedule'**
+  String get upcomingScheduleLabel;
+
+  /// No description provided for @activeParayansLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active events'**
+  String get activeParayansLabel;
+
+  /// No description provided for @completedParayansLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total events'**
+  String get completedParayansLabel;
+
+  /// No description provided for @viewAllLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get viewAllLabel;
+
+  /// No description provided for @heroCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start New Parayan Event'**
+  String get heroCardTitle;
+
+  /// No description provided for @heroCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new scriptural reading journey for the community.'**
+  String get heroCardSubtitle;
 }
 
 class _AppLocalizationsDelegate
