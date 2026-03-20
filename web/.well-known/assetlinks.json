@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.gajanan.maharaj.sevekari",
+      "sha256_cert_fingerprints": [
+        "F9:C2:73:44:91:A8:A3:8C:FA:65:E2:98:6D:5D:94:9A:8C:D7:D5:ED:08:DB:B5:C9:E5:A3:D4:97:4C:95:D9:12"
+      ]
+    }
+  }
+]

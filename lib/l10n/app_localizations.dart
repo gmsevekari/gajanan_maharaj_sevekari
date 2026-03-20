@@ -1487,7 +1487,7 @@ abstract class AppLocalizations {
   /// No description provided for @createParayanTitle.
   ///
   /// In en, this message translates to:
-  /// **'Create Parayan'**
+  /// **'Create Parayan - Coming Soon'**
   String get createParayanTitle;
 
   /// No description provided for @parayanNameLabel.
@@ -1541,7 +1541,7 @@ abstract class AppLocalizations {
   /// No description provided for @reminderTimeLabel.
   ///
   /// In en, this message translates to:
-  /// **'Reminder Time'**
+  /// **'Reminder Notification Time'**
   String get reminderTimeLabel;
 
   /// No description provided for @createParayanButton.
@@ -1583,7 +1583,7 @@ abstract class AppLocalizations {
   /// No description provided for @manualPingLabel.
   ///
   /// In en, this message translates to:
-  /// **'Send Manual Reminder'**
+  /// **'Send Manual Reminder Notification'**
   String get manualPingLabel;
 
   /// No description provided for @statsParticipants.
@@ -1628,17 +1628,11 @@ abstract class AppLocalizations {
   /// **'Upcoming Schedule'**
   String get upcomingScheduleLabel;
 
-  /// No description provided for @activeParayansLabel.
+  /// No description provided for @nextParayanLabel.
   ///
   /// In en, this message translates to:
-  /// **'Active events'**
-  String get activeParayansLabel;
-
-  /// No description provided for @completedParayansLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Total events'**
-  String get completedParayansLabel;
+  /// **'Next Parayan'**
+  String get nextParayanLabel;
 
   /// No description provided for @viewAllLabel.
   ///
@@ -1652,11 +1646,245 @@ abstract class AppLocalizations {
   /// **'Start New Parayan Event'**
   String get heroCardTitle;
 
-  /// No description provided for @heroCardSubtitle.
+  /// No description provided for @parayanDetailsHeader.
   ///
   /// In en, this message translates to:
-  /// **'Create a new scriptural reading journey for the community.'**
-  String get heroCardSubtitle;
+  /// **'Parayan Details'**
+  String get parayanDetailsHeader;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get dateLabel;
+
+  /// No description provided for @typeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get typeLabel;
+
+  /// No description provided for @allAllocationsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of participants'**
+  String get allAllocationsLabel;
+
+  /// No description provided for @adhyayAllocationTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Adhyay Allocation'**
+  String get adhyayAllocationTab;
+
+  /// No description provided for @myAllocationTab.
+  ///
+  /// In en, this message translates to:
+  /// **'My Allocation'**
+  String get myAllocationTab;
+
+  /// No description provided for @upcomingParayanMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Adhyays will be allocated once the Parayan enrollment starts'**
+  String get upcomingParayanMessage;
+
+  /// No description provided for @noSignupsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No participants found yet'**
+  String get noSignupsFound;
+
+  /// No description provided for @statusUpcomingOneDay.
+  ///
+  /// In en, this message translates to:
+  /// **'The parayan is on {date}. Participation is not yet open.'**
+  String statusUpcomingOneDay(Object date);
+
+  /// No description provided for @statusUpcomingMultiDay.
+  ///
+  /// In en, this message translates to:
+  /// **'The parayan will start on {date}. Participation is not yet open.'**
+  String statusUpcomingMultiDay(Object date);
+
+  /// No description provided for @statusEnrolling.
+  ///
+  /// In en, this message translates to:
+  /// **'Enrolling'**
+  String get statusEnrolling;
+
+  /// No description provided for @statusOngoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing'**
+  String get statusOngoing;
+
+  /// No description provided for @statusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get statusCompleted;
+
+  /// No description provided for @day1Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 1'**
+  String get day1Label;
+
+  /// No description provided for @day2Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 2'**
+  String get day2Label;
+
+  /// No description provided for @day3Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 3'**
+  String get day3Label;
+
+  /// No description provided for @myAllocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Allocation Status'**
+  String get myAllocationTitle;
+
+  /// No description provided for @submitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submitLabel;
+
+  /// No description provided for @activeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Parayan #'**
+  String get activeLabel;
+
+  /// No description provided for @completedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Parayan #'**
+  String get completedLabel;
+
+  /// No description provided for @emailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get emailRequired;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address'**
+  String get invalidEmail;
+
+  /// No description provided for @phoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is required'**
+  String get phoneRequired;
+
+  /// No description provided for @invalidPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid 10-digit phone number'**
+  String get invalidPhone;
+
+  /// No description provided for @overviewTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get overviewTab;
+
+  /// No description provided for @participantsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Participants'**
+  String get participantsTab;
+
+  /// No description provided for @participantsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'PARTICIPANTS'**
+  String get participantsLabel;
+
+  /// No description provided for @progressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'PROGRESS'**
+  String get progressLabel;
+
+  /// No description provided for @quickActionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'QUICK ACTIONS'**
+  String get quickActionsLabel;
+
+  /// No description provided for @adminAdhyaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Adhyays: {adhyays}'**
+  String adminAdhyaysLabel(String adhyays);
+
+  /// No description provided for @totalParticipantsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Participants'**
+  String get totalParticipantsLabel;
+
+  /// No description provided for @remindersStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders Status'**
+  String get remindersStatusLabel;
+
+  /// No description provided for @reminderSentStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get reminderSentStatus;
+
+  /// No description provided for @reminderPendingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Yet to be sent'**
+  String get reminderPendingStatus;
+
+  /// No description provided for @updateStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Parayan Status'**
+  String get updateStatusLabel;
+
+  /// No description provided for @statusUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get statusUpcoming;
+
+  /// No description provided for @statusAllocated.
+  ///
+  /// In en, this message translates to:
+  /// **'Allocated'**
+  String get statusAllocated;
+
+  /// No description provided for @statusEnrollingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign-up for the parayan. It will start on {date}.'**
+  String statusEnrollingDesc(Object date);
+
+  /// No description provided for @statusAllocatedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Adhyay allocation is complete. The parayan starts on {date}.'**
+  String statusAllocatedDesc(Object date);
+
+  /// No description provided for @statusUpdateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Status updated successfully'**
+  String get statusUpdateSuccess;
 }
 
 class _AppLocalizationsDelegate

@@ -742,7 +742,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get parayanCoordinationModuleSubtitle => 'Create and manage parayans';
 
   @override
-  String get createParayanTitle => 'Create Parayan';
+  String get createParayanTitle => 'Create Parayan - Coming Soon';
 
   @override
   String get parayanNameLabel => 'Parayan Name';
@@ -769,7 +769,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get endDateLabel => 'End Date';
 
   @override
-  String get reminderTimeLabel => 'Reminder Time';
+  String get reminderTimeLabel => 'Reminder Notification Time';
 
   @override
   String get createParayanButton => 'Create Event';
@@ -791,7 +791,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get submitReadingStatus => 'Submit Status';
 
   @override
-  String get manualPingLabel => 'Send Manual Reminder';
+  String get manualPingLabel => 'Send Manual Reminder Notification';
 
   @override
   String statsParticipants(int count) {
@@ -817,10 +817,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get upcomingScheduleLabel => 'Upcoming Schedule';
 
   @override
-  String get activeParayansLabel => 'Active events';
-
-  @override
-  String get completedParayansLabel => 'Total events';
+  String get nextParayanLabel => 'Next Parayan';
 
   @override
   String get viewAllLabel => 'View All';
@@ -829,6 +826,133 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heroCardTitle => 'Start New Parayan Event';
 
   @override
-  String get heroCardSubtitle =>
-      'Create a new scriptural reading journey for the community.';
+  String get parayanDetailsHeader => 'Parayan Details';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get typeLabel => 'Type';
+
+  @override
+  String get allAllocationsLabel => 'Number of participants';
+
+  @override
+  String get adhyayAllocationTab => 'Adhyay Allocation';
+
+  @override
+  String get myAllocationTab => 'My Allocation';
+
+  @override
+  String get upcomingParayanMessage =>
+      'Adhyays will be allocated once the Parayan enrollment starts';
+
+  @override
+  String get noSignupsFound => 'No participants found yet';
+
+  @override
+  String statusUpcomingOneDay(Object date) {
+    return 'The parayan is on $date. Participation is not yet open.';
+  }
+
+  @override
+  String statusUpcomingMultiDay(Object date) {
+    return 'The parayan will start on $date. Participation is not yet open.';
+  }
+
+  @override
+  String get statusEnrolling => 'Enrolling';
+
+  @override
+  String get statusOngoing => 'Ongoing';
+
+  @override
+  String get statusCompleted => 'Completed';
+
+  @override
+  String get day1Label => 'Day 1';
+
+  @override
+  String get day2Label => 'Day 2';
+
+  @override
+  String get day3Label => 'Day 3';
+
+  @override
+  String get myAllocationTitle => 'My Allocation Status';
+
+  @override
+  String get submitLabel => 'Submit';
+
+  @override
+  String get activeLabel => 'Active Parayan #';
+
+  @override
+  String get completedLabel => 'Completed Parayan #';
+
+  @override
+  String get emailRequired => 'Email is required';
+
+  @override
+  String get invalidEmail => 'Please enter a valid email address';
+
+  @override
+  String get phoneRequired => 'Phone number is required';
+
+  @override
+  String get invalidPhone => 'Please enter a valid 10-digit phone number';
+
+  @override
+  String get overviewTab => 'Overview';
+
+  @override
+  String get participantsTab => 'Participants';
+
+  @override
+  String get participantsLabel => 'PARTICIPANTS';
+
+  @override
+  String get progressLabel => 'PROGRESS';
+
+  @override
+  String get quickActionsLabel => 'QUICK ACTIONS';
+
+  @override
+  String adminAdhyaysLabel(String adhyays) {
+    return 'Adhyays: $adhyays';
+  }
+
+  @override
+  String get totalParticipantsLabel => 'Total Participants';
+
+  @override
+  String get remindersStatusLabel => 'Reminders Status';
+
+  @override
+  String get reminderSentStatus => 'Sent';
+
+  @override
+  String get reminderPendingStatus => 'Yet to be sent';
+
+  @override
+  String get updateStatusLabel => 'Update Parayan Status';
+
+  @override
+  String get statusUpcoming => 'Upcoming';
+
+  @override
+  String get statusAllocated => 'Allocated';
+
+  @override
+  String statusEnrollingDesc(Object date) {
+    return 'Please sign-up for the parayan. It will start on $date.';
+  }
+
+  @override
+  String statusAllocatedDesc(Object date) {
+    return 'Adhyay allocation is complete. The parayan starts on $date.';
+  }
+
+  @override
+  String get statusUpdateSuccess => 'Status updated successfully';
 }

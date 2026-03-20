@@ -741,7 +741,7 @@ class AppLocalizationsMr extends AppLocalizations {
       'नवीन पारायण तयार करा आणि मॅनेज करा';
 
   @override
-  String get createParayanTitle => 'पारायण तयार करा';
+  String get createParayanTitle => 'पारायण तयार करा - लवकरच येत आहे';
 
   @override
   String get parayanNameLabel => 'पारायणाचे नाव';
@@ -768,7 +768,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get endDateLabel => 'अंतिम तारीख';
 
   @override
-  String get reminderTimeLabel => 'आठवण वेळ';
+  String get reminderTimeLabel => 'आठवण नोटिफिकेशन वेळ';
 
   @override
   String get createParayanButton => 'कार्यक्रम तयार करा';
@@ -790,7 +790,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get submitReadingStatus => 'स्टेटस सबमिट करा';
 
   @override
-  String get manualPingLabel => 'मॅन्युअल आठवण पाठवा';
+  String get manualPingLabel => 'मॅन्युअल आठवण नोटिफिकेशन पाठवा';
 
   @override
   String statsParticipants(int count) {
@@ -813,13 +813,10 @@ class AppLocalizationsMr extends AppLocalizations {
   String get ongoingParayansLabel => 'चालू पारायण';
 
   @override
-  String get upcomingScheduleLabel => 'येणारे कार्यक्रम';
+  String get upcomingScheduleLabel => 'पुढील वेळापत्रक';
 
   @override
-  String get activeParayansLabel => 'सक्रिय कार्यक्रम';
-
-  @override
-  String get completedParayansLabel => 'एकूण कार्यक्रम';
+  String get nextParayanLabel => 'पुढील पारायण';
 
   @override
   String get viewAllLabel => 'सर्व पहा';
@@ -828,6 +825,133 @@ class AppLocalizationsMr extends AppLocalizations {
   String get heroCardTitle => 'नवीन पारायण सुरू करा';
 
   @override
-  String get heroCardSubtitle =>
-      'समाजासाठी एक नवीन ग्रंथ वाचन यात्रा सुरू करा.';
+  String get parayanDetailsHeader => 'पारायण तपशील';
+
+  @override
+  String get dateLabel => 'दिनांक';
+
+  @override
+  String get typeLabel => 'प्रकार';
+
+  @override
+  String get allAllocationsLabel => 'सहभागी सदस्य';
+
+  @override
+  String get adhyayAllocationTab => 'अध्याय वाटप';
+
+  @override
+  String get myAllocationTab => 'माझे अध्याय';
+
+  @override
+  String get upcomingParayanMessage =>
+      'पारायण नोंदणी सुरू झाल्यावर अध्याय वाटप केले जाईल';
+
+  @override
+  String get noSignupsFound => 'अद्याप कोणीही सहभागी झाले नाही';
+
+  @override
+  String statusUpcomingOneDay(Object date) {
+    return 'पारायण $date रोजी आहे. सहभाग अद्याप सुरू झालेला नाही.';
+  }
+
+  @override
+  String statusUpcomingMultiDay(Object date) {
+    return 'पारायण $date पासून सुरू होईल. सहभाग अद्याप सुरू झालेला नाही.';
+  }
+
+  @override
+  String get statusEnrolling => 'प्रवेश सुरू';
+
+  @override
+  String get statusOngoing => 'सुरू आहे';
+
+  @override
+  String get statusCompleted => 'पूर्ण झाले';
+
+  @override
+  String get day1Label => 'दिवस १';
+
+  @override
+  String get day2Label => 'दिवस २';
+
+  @override
+  String get day3Label => 'दिवस ३';
+
+  @override
+  String get myAllocationTitle => 'माझी स्थिती';
+
+  @override
+  String get submitLabel => 'सबमिट करा';
+
+  @override
+  String get activeLabel => 'सक्रिय पारायण #';
+
+  @override
+  String get completedLabel => 'पूर्ण पारायण #';
+
+  @override
+  String get emailRequired => 'ईमेल आवश्यक आहे';
+
+  @override
+  String get invalidEmail => 'कृपया योग्य ईमेल पत्ता प्रविष्ट करा';
+
+  @override
+  String get phoneRequired => 'फोन नंबर आवश्यक आहे';
+
+  @override
+  String get invalidPhone => 'कृपया योग्य १०-अंकी फोन नंबर प्रविष्ट करा';
+
+  @override
+  String get overviewTab => 'आढावा';
+
+  @override
+  String get participantsTab => 'सहभागी';
+
+  @override
+  String get participantsLabel => 'सहभागी';
+
+  @override
+  String get progressLabel => 'प्रगती';
+
+  @override
+  String get quickActionsLabel => 'त्वरित कृती';
+
+  @override
+  String adminAdhyaysLabel(String adhyays) {
+    return 'अध्याय: $adhyays';
+  }
+
+  @override
+  String get totalParticipantsLabel => 'एकूण सहभागी';
+
+  @override
+  String get remindersStatusLabel => 'नोटिफिकेशन स्टेटस';
+
+  @override
+  String get reminderSentStatus => 'पाठवले';
+
+  @override
+  String get reminderPendingStatus => 'पाठवायचे आहे';
+
+  @override
+  String get updateStatusLabel => 'पारायण स्टेटस अपडेट करा';
+
+  @override
+  String get statusUpcoming => 'लवकरच';
+
+  @override
+  String get statusAllocated => 'वाटप पूर्ण';
+
+  @override
+  String statusEnrollingDesc(Object date) {
+    return 'प्रवेश सुरू आहे. पारायण $date रोजी सुरू होईल.';
+  }
+
+  @override
+  String statusAllocatedDesc(Object date) {
+    return 'अध्याय वाटप पूर्ण झाले आहे. पारायण $date रोजी सुरू होईल.';
+  }
+
+  @override
+  String get statusUpdateSuccess => 'स्टेटस यशस्वीरित्या अपडेट केले';
 }

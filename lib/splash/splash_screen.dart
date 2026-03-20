@@ -50,7 +50,15 @@ class _SplashScreenState extends State<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Your splash image
-                Image.asset('resources/images/splash/App_Splash.png'),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                    child: Image.asset(
+                      'resources/images/splash/App_Splash.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 24),
                 // The text you wanted to add
                 const Text(
@@ -62,6 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     color: Color(0xFF9B3746),
                   ),
                 ),
+                const SizedBox(height: 64), // Extra space for copyright
               ],
             ),
           ),

@@ -74,3 +74,56 @@ exports.sendTempleNotification = onDocumentCreated(
     }
   },
 );
+const { onSchedule } = require("firebase-functions/v2/scheduler");
+const { DateTime } = require("luxon");
+
+exports.updateParayanStatuses = onSchedule("0 * * * *", async (event) => {
+  const db = admin.firestore();
+
+  // Current time in Seattle
+  const nowSeattle = DateTime.now().setZone("America/Los_Angeles");
+  const todaySeattle = nowSeattle.startOf("day");
+  const currentHour = nowSeattle.hour;
+
+  logger.info(`Running Parayan status update. Seattle: ${nowSeattle.toISO()}`);
+
+  const parayansRef = db.collection("parayan_events");
+
+  // 1. Enrolling -> Allocated (6 PM the day BEFORE start date)
+  const enrollingQuery = await parayansRef.where("status", "==", "enrolling").get();
+  for (const doc of enrollingQuery.docs) {
+    const data = doc.data();
+    const startDate = DateTime.fromJSDate(data.startDate.toDate()).setZone("America/Los_Angeles").startOf("day");
+    const dayBeforeStart = startDate.minus({ days: 1 });
+
+    // If today is exactly the day before AND it's 6 PM (18:00) or later
+    if (todaySeattle.equals(dayBeforeStart) && currentHour >= 18) {
+      await doc.ref.update({ status: "allocated" });
+      logger.info(`Auto-transitioned Parayan ${doc.id} to allocated (6 PM rule).`);
+    }
+  }
+
+  // 2. Allocated -> Ongoing (On start date)
+  const allocatedQuery = await parayansRef.where("status", "==", "allocated").get();
+  for (const doc of allocatedQuery.docs) {
+    const data = doc.data();
+    const startDate = DateTime.fromJSDate(data.startDate.toDate()).setZone("America/Los_Angeles").startOf("day");
+
+    if (todaySeattle >= startDate) {
+      await doc.ref.update({ status: "ongoing" });
+      logger.info(`Auto-transitioned Parayan ${doc.id} to ongoing (Start Date reached).`);
+    }
+  }
+
+  // 3. Ongoing -> Completed (After end date)
+  const ongoingQuery = await parayansRef.where("status", "==", "ongoing").get();
+  for (const doc of ongoingQuery.docs) {
+    const data = doc.data();
+    const endDate = DateTime.fromJSDate(data.endDate.toDate()).setZone("America/Los_Angeles").startOf("day");
+
+    if (todaySeattle > endDate) {
+      await doc.ref.update({ status: "completed" });
+      logger.info(`Auto-transitioned Parayan ${doc.id} to completed (End Date passed).`);
+    }
+  }
+});

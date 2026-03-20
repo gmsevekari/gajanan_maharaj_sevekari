@@ -34,6 +34,9 @@ import 'package:gajanan_maharaj_sevekari/jap_mala/naamjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_login_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_dashboard_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_temple_notifications_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/parayan_coordination_dashboard.dart';
+import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/create_parayan_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/user_notifications_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/navigator_service.dart';
@@ -136,6 +139,10 @@ class MyApp extends StatelessWidget {
                     const AdminDashboardScreen(),
                 Routes.adminTempleNotifications: (context) =>
                     const AdminTempleNotificationsScreen(),
+                Routes.adminParayanCoordination: (context) =>
+                    ParayanCoordinationDashboard(),
+                Routes.adminCreateParayan: (context) =>
+                    const CreateParayanScreen(),
                 Routes.userNotifications: (context) =>
                     const UserNotificationsScreen(),
                 Routes.parayanList: (context) => ParayanListScreen(),
@@ -189,6 +196,12 @@ class MyApp extends StatelessWidget {
                     final event = settings.arguments as ParayanEvent;
                     return MaterialPageRoute(
                       builder: (context) => ParayanDetailScreen(event: event),
+                    );
+                  case Routes.adminParayanDetail:
+                    final event = settings.arguments as ParayanEvent;
+                    return MaterialPageRoute(
+                      builder: (context) =>
+                          ParayanAdminDetailScreen(event: event),
                     );
                   default:
                     return null;

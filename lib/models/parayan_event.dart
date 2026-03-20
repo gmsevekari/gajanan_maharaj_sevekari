@@ -10,14 +10,11 @@ class ParayanEvent {
   final ParayanType type;
   final DateTime startDate;
   final DateTime endDate;
-  final String status; // upcoming, ongoing, completed
-  final String reminderTime; // e.g., "20:00"
+  final String status; // upcoming, enrolling, ongoing, completed
+  final List<String> reminderTimes; // e.g., ["20:00", "21:00"]
   final DateTime? manualPingRequestedAt;
   final DateTime createdAt;
   final int joinedParticipants;
-
-  String get title => titleMr;
-  String get description => descriptionMr;
 
   const ParayanEvent({
     required this.id,
@@ -29,7 +26,7 @@ class ParayanEvent {
     required this.startDate,
     required this.endDate,
     required this.status,
-    required this.reminderTime,
+    required this.reminderTimes,
     this.manualPingRequestedAt,
     required this.createdAt,
     this.joinedParticipants = 0,
@@ -37,6 +34,9 @@ class ParayanEvent {
 
   factory ParayanEvent.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
+    List<String> times = List<String>.from(data['reminderTimes']);
+
     return ParayanEvent(
       id: doc.id,
       titleEn: data['title_en'] ?? data['title'] ?? '',
@@ -51,7 +51,7 @@ class ParayanEvent {
       startDate: (data['startDate'] as Timestamp).toDate(),
       endDate: (data['endDate'] as Timestamp).toDate(),
       status: data['status'] ?? 'upcoming',
-      reminderTime: data['reminderTime'] ?? '20:00',
+      reminderTimes: times,
       manualPingRequestedAt: data['manualPingRequestedAt'] != null
           ? (data['manualPingRequestedAt'] as Timestamp).toDate()
           : null,
@@ -74,7 +74,7 @@ class ParayanEvent {
       'startDate': Timestamp.fromDate(startDate),
       'endDate': Timestamp.fromDate(endDate),
       'status': status,
-      'reminderTime': reminderTime,
+      'reminderTimes': reminderTimes,
       if (manualPingRequestedAt != null)
         'manualPingRequestedAt': Timestamp.fromDate(
           manualPingRequestedAt as DateTime,

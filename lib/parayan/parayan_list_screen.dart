@@ -7,10 +7,22 @@ import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
 
-class ParayanListScreen extends StatelessWidget {
-  final ParayanService _parayanService = ParayanService();
+class ParayanListScreen extends StatefulWidget {
+  const ParayanListScreen({super.key});
 
-  ParayanListScreen({super.key});
+  @override
+  State<ParayanListScreen> createState() => _ParayanListScreenState();
+}
+
+class _ParayanListScreenState extends State<ParayanListScreen> {
+  final ParayanService _parayanService = ParayanService();
+  late Stream<List<ParayanEvent>> _eventsStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _eventsStream = _parayanService.getActiveEvents();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +59,7 @@ class ParayanListScreen extends StatelessWidget {
         ],
       ),
       body: StreamBuilder<List<ParayanEvent>>(
-        stream: _parayanService.getActiveEvents(),
+        stream: _eventsStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

@@ -9,9 +9,18 @@ class ParayanService {
   // Collection reference
   CollectionReference get _eventsRef => _db.collection('parayan_events');
 
-  // Create a new Parayan Event (Admin)
   Future<void> createEvent(ParayanEvent event) async {
     await _eventsRef.doc(event.id).set(event.toFirestore());
+  }
+
+  // Update status of a Parayan Event
+  Future<void> updateEventStatus(String eventId, String newStatus) async {
+    await _eventsRef.doc(eventId).update({'status': newStatus});
+  }
+
+  // Get a single Parayan Event by ID
+  Stream<ParayanEvent> getEventById(String eventId) {
+    return _eventsRef.doc(eventId).snapshots().map((doc) => ParayanEvent.fromFirestore(doc));
   }
 
   // Get all active/upcoming events
@@ -34,116 +43,150 @@ class ParayanService {
     return _eventsRef
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ParayanEvent.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => ParayanEvent.fromFirestore(doc))
+              .toList(),
+        );
   }
 
-  // Enrollment Logic (Round Robin / Circular Shift)
-  Future<void> enrollParticipant({
+  // Enrollment Logic (Household-based) - Optimized for restricted permissions
+  Future<void> enrollParticipants({
     required String eventId,
     required ParayanType type,
     required String deviceId,
-    required String name,
+    required List<String> names,
     required String email,
     required String phone,
   }) async {
     final eventDoc = _eventsRef.doc(eventId);
     final participantsRef = eventDoc.collection('participants');
 
-    return _db.runTransaction((transaction) async {
-      // 1. Get current participant count for FCFS logic
-      final querySnapshot = await participantsRef.get();
-      final currentCount = querySnapshot.docs.length;
+    // 1. Get current participant count OUTSIDE transaction if possible,
+    // or just use a query if the event doc has restricted WRITE permissions.
+    // We'll fetch all docs to count them accurately for allocation.
+    final querySnapshot = await participantsRef.get();
+    int currentTotal = 0;
+    for (var doc in querySnapshot.docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      final members = data['members'] as Map<String, dynamic>? ?? {};
+      currentTotal += members.length;
+    }
 
+    final Map<String, ParayanMember> membersMap = {};
+
+    for (var name in names) {
       List<int> assigned;
       Map<String, bool> completions = {};
 
       if (type == ParayanType.oneDay) {
-        // 1-Day: Sequential 1-21, then wrap
-        final adhyay = (currentCount % 21) + 1;
+        final adhyay = (currentTotal % 21) + 1;
         assigned = [adhyay];
         completions["1"] = false;
       } else {
-        // 3-Day: Circular Shift / Interlaced Round Robin
-        // Group determined by order: Group 1 (starts at 1), Group 2 (starts at 2), Group 3 (starts at 3)
-        final group = (currentCount % 3) + 1;
-        final k = currentCount ~/ 3; // Nth person in that group
+        final group = (currentTotal % 3) + 1;
+        final k = currentTotal ~/ 3;
 
-        // Day 1 Adhyay: ((Group + (k * 9)) - 1) % 21 + 1
-        // We use +9 increment per person in group to spread out coverage? 
-        // User asked for: Group 1 starts at 1 and increments by 3 for each participant.
-        // Let's re-read: "Group 1 starts at Adhyay 1 and increments by 3 for each participant."
-        // That means:
-        // Person 0 (Group 1): Day 1=1, Day 2=4, Day 3=7
-        // Person 1 (Group 2): Day 1=2, Day 2=5, Day 3=8
-        // Person 2 (Group 3): Day 1=3, Day 2=6, Day 3=9
-        // Person 3 (Group 1): Day 1=10, Day 2=13, Day 3=16 ... no wait.
-        
-        // Let's follow the user's specific text:
-        // "Group 1 starts at Adhyay 1 and increments by 3 for each participant."
-        // "Group 2 starts at Adhyay 2 and increments."
-        // "Group 3 starts at Adhyay 3 and increments."
-        
-        // This implies:
-        // Group index g = currentCount % 3 (0, 1, 2)
-        // Person index in group p = currentCount ~/ 3
-        
-        // Day 1 for Group 1 (group=1) should be: 1, 4, 7, 10, 13, 16, 19, (wrap) ... 1+3*k
         int day1 = (group + (k * 3) - 1) % 21 + 1;
         int day2 = (day1 + 3 - 1) % 21 + 1;
         int day3 = (day1 + 6 - 1) % 21 + 1;
-        
+
         assigned = [day1, day2, day3];
         completions = {"1": false, "2": false, "3": false};
       }
 
-      final participant = ParayanParticipant(
-        deviceId: deviceId,
+      membersMap[name] = ParayanMember(
         name: name,
-        email: email,
-        phone: phone,
-        joinedAt: DateTime.now(),
         assignedAdhyays: assigned,
         completions: completions,
       );
+      currentTotal++;
+    }
 
-      transaction.set(participantsRef.doc(deviceId), participant.toFirestore());
-      
-      // 4. Update joinedParticipants count in the event document
-      transaction.update(eventDoc, {
-        'joinedParticipants': FieldValue.increment(1),
-      });
-    });
+    final household = ParayanHousehold(
+      deviceId: deviceId,
+      email: email,
+      phone: phone,
+      joinedAt: DateTime.now(),
+      members: membersMap,
+    );
+
+    // We only write to the participants subcollection document.
+    // This avoids the permission error on the main parayan_events document.
+    await participantsRef.doc(deviceId).set(household.toFirestore());
+
+    // NOTE: We are skipping the eventDoc 'joinedParticipants' update here
+    // because standard users likely don't have WRITE permission on the event doc.
+    // Dashboard and Tabs calculate the count dynamically using getAllParticipants().
   }
 
-  // Submit completion
-  Future<void> submitCompletion(String eventId, String deviceId, int dayIndex) async {
-    final docRef = _eventsRef.doc(eventId).collection('participants').doc(deviceId);
-    await docRef.update({
-      'completions.$dayIndex': true,
-    });
+  // Submit completion for a specific member in a household
+  Future<void> submitCompletion({
+    required String eventId,
+    required String deviceId,
+    required String memberName,
+    required int dayIndex,
+  }) async {
+    final docRef = _eventsRef
+        .doc(eventId)
+        .collection('participants')
+        .doc(deviceId);
+    await docRef.update({'members.$memberName.completions.$dayIndex': true});
   }
 
-  // Get participant details for a user
-  Stream<ParayanParticipant?> getParticipant(String eventId, String deviceId) {
+  // Get participants (members) associated with a specific device
+  Stream<List<ParayanMember>> getParticipantsByDevice(
+    String eventId,
+    String deviceId,
+  ) {
     return _eventsRef
         .doc(eventId)
         .collection('participants')
         .doc(deviceId)
         .snapshots()
-        .map((doc) => doc.exists ? ParayanParticipant.fromFirestore(doc) : null);
+        .map((doc) {
+          if (!doc.exists) return [];
+          final household = ParayanHousehold.fromFirestore(doc);
+          final members = household.members.values.toList();
+          // Sort members by their first assigned adhyay for consistent order
+          members.sort((a, b) {
+            final aFirst = a.assignedAdhyays.isNotEmpty
+                ? a.assignedAdhyays.first
+                : 0;
+            final bFirst = b.assignedAdhyays.isNotEmpty
+                ? b.assignedAdhyays.first
+                : 0;
+            return aFirst.compareTo(bFirst);
+          });
+          return members;
+        });
   }
 
-  // Get all participants for an event (Public Table)
-  Stream<List<ParayanParticipant>> getAllParticipants(String eventId) {
+  // Get all individual members for an event (Public Table)
+  Stream<List<ParayanMember>> getAllParticipants(String eventId) {
     return _eventsRef
         .doc(eventId)
         .collection('participants')
         .orderBy('joinedAt', descending: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ParayanParticipant.fromFirestore(doc))
-            .toList());
+        .map((snapshot) {
+          final List<ParayanMember> allMembers = [];
+          for (var doc in snapshot.docs) {
+            final household = ParayanHousehold.fromFirestore(doc);
+            final members = household.members.values.toList();
+            // Sort members within each household by adhyay
+            members.sort((a, b) {
+              final aFirst = a.assignedAdhyays.isNotEmpty
+                  ? a.assignedAdhyays.first
+                  : 0;
+              final bFirst = b.assignedAdhyays.isNotEmpty
+                  ? b.assignedAdhyays.first
+                  : 0;
+              return aFirst.compareTo(bFirst);
+            });
+            allMembers.addAll(members);
+          }
+          return allMembers;
+        });
   }
 }
