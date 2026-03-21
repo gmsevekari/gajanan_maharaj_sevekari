@@ -957,4 +957,24 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get closeLabel => 'बंद करा';
+
+  @override
+  String groupLabel(String group) {
+    return 'गट $group';
+  }
+
+  @override
+  String get adhyayCompletionTitle => 'अध्याय पूर्तता';
+
+  @override
+  String get recentlyCompletedParayanLabel => 'नुकतेच पूर्ण झालेले पारायण';
+
+  @override
+  String get noCompletedParayans => 'कोणतेही नुकतेच पूर्ण झालेले पारायण नाही';
+
+  @override
+  String get upcomingParayansTab => 'आगामी';
+
+  @override
+  String get completedParayansTab => 'पूर्ण झालेले';
 }

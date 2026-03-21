@@ -958,4 +958,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get closeLabel => 'Close';
+
+  @override
+  String groupLabel(String group) {
+    return 'Group $group';
+  }
+
+  @override
+  String get adhyayCompletionTitle => 'ADHYAY COMPLETION';
+
+  @override
+  String get recentlyCompletedParayanLabel => 'Recently Completed Parayan';
+
+  @override
+  String get noCompletedParayans => 'No recently completed parayans';
+
+  @override
+  String get upcomingParayansTab => 'Upcoming';
+
+  @override
+  String get completedParayansTab => 'Completed';
 }

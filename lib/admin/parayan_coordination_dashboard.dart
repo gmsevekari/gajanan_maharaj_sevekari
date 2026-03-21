@@ -11,10 +11,12 @@ class ParayanCoordinationDashboard extends StatefulWidget {
   const ParayanCoordinationDashboard({super.key});
 
   @override
-  State<ParayanCoordinationDashboard> createState() => _ParayanCoordinationDashboardState();
+  State<ParayanCoordinationDashboard> createState() =>
+      _ParayanCoordinationDashboardState();
 }
 
-class _ParayanCoordinationDashboardState extends State<ParayanCoordinationDashboard> {
+class _ParayanCoordinationDashboardState
+    extends State<ParayanCoordinationDashboard> {
   final ParayanService _parayanService = ParayanService();
   late Stream<List<ParayanEvent>> _eventsStream;
 
@@ -35,7 +37,8 @@ class _ParayanCoordinationDashboardState extends State<ParayanCoordinationDashbo
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+            onPressed: () =>
+                Navigator.of(context).popUntil((route) => route.isFirst),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -52,22 +55,31 @@ class _ParayanCoordinationDashboardState extends State<ParayanCoordinationDashbo
 
           final nowYear = DateTime.now().year;
           final allEvents = snapshot.data ?? [];
-          
+
           final activeEvents = allEvents
-              .where((e) => (e.status == 'enrolling' || e.status == 'allocated' || e.status == 'ongoing') && e.startDate.year == nowYear)
+              .where(
+                (e) =>
+                    (e.status == 'enrolling' ||
+                        e.status == 'allocated' ||
+                        e.status == 'ongoing') &&
+                    e.startDate.year == nowYear,
+              )
               .toList();
-          
+
           final activeCount = activeEvents.length;
-          
-          final completedCount = allEvents
-              .where((e) => e.status == 'completed' && e.startDate.year == nowYear)
-              .length;
+
+          final completedEvents =
+              allEvents
+                  .where((e) => e.status == 'completed')
+                  .toList()
+                ..sort((a, b) => b.endDate.compareTo(a.endDate));
+
+          final completedCount = completedEvents.length;
 
           // Upcoming sorted by date
-          final upcomingEvents = allEvents
-              .where((e) => e.status == 'upcoming')
-              .toList()
-            ..sort((a, b) => a.startDate.compareTo(b.startDate));
+          final upcomingEvents =
+              allEvents.where((e) => e.status == 'upcoming').toList()
+                ..sort((a, b) => a.startDate.compareTo(b.startDate));
 
           return CustomScrollView(
             slivers: [
@@ -78,14 +90,31 @@ class _ParayanCoordinationDashboardState extends State<ParayanCoordinationDashbo
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 24),
-                      _HeroCard(localizations: localizations),
-                      const SizedBox(height: 24),
                       _buildStatsRow(
                         context,
                         theme,
                         activeCount,
                         completedCount,
                       ),
+                      const SizedBox(height: 32),
+                      _buildSectionHeader(
+                        context,
+                        theme,
+                        localizations.recentlyCompletedParayanLabel,
+                        showViewAll: false,
+                      ),
+                      const SizedBox(height: 12),
+                      if (completedEvents.isNotEmpty)
+                        _UpcomingCard(event: completedEvents.first)
+                      else
+                        Text(
+                          localizations.noCompletedParayans,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                        ),
                       const SizedBox(height: 32),
                       _buildSectionHeader(
                         context,
@@ -142,6 +171,24 @@ class _ParayanCoordinationDashboardState extends State<ParayanCoordinationDashbo
                   ),
                 ),
               ],
+              const SliverToBoxAdapter(child: SizedBox(height: 32)),
+              SliverToBoxAdapter(
+                child: Center(
+                  child: ElevatedButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 16,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Text(localizations.createParayanTitle),
+                  ),
+                ),
+              ),
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
           );
@@ -212,75 +259,11 @@ class _ParayanCoordinationDashboardState extends State<ParayanCoordinationDashbo
 
 // ── Extracted private widgets ────────────────────────────────────────────────
 
-class _HeroCard extends StatelessWidget {
-  final AppLocalizations localizations;
-
-  const _HeroCard({required this.localizations});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary.withValues(alpha: 0.9),
-            theme.colorScheme.secondary.withValues(alpha: 0.5),
-          ],
-        ),
-        borderRadius:
-            (theme.cardTheme.shape as RoundedRectangleBorder?)?.borderRadius ??
-            BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primary,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              Icons.menu_book,
-              color: theme.colorScheme.onPrimary,
-              size: 24,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            localizations.heroCardTitle,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              color: theme.colorScheme.onPrimary,
-              fontWeight: FontWeight.bold,
-              height: 1.2,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: null,
-            child: Text(localizations.createParayanTitle),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _StatCard extends StatelessWidget {
   final String label;
   final String value;
 
-  const _StatCard({
-    required this.label,
-    required this.value,
-  });
+  const _StatCard({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -431,77 +414,86 @@ class _UpcomingCard extends StatelessWidget {
     return Card(
       // Inherits AppTheme.cardTheme
       margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 4,
-              ),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                dateStr,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ParayanAdminDetailScreen(event: event),
+          ),
+        ),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
                 ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              Localizations.localeOf(context).languageCode == 'mr'
-                  ? event.titleMr
-                  : event.titleEn,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              Localizations.localeOf(context).languageCode == 'mr'
-                  ? event.descriptionMr
-                  : event.descriptionEn,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 10,
-                  backgroundColor: theme.colorScheme.primaryContainer,
-                  child: Icon(
-                    Icons.person,
-                    size: 12,
-                    color: theme.colorScheme.primary,
-                  ),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  event.type == ParayanType.oneDay
-                      ? '1-Day'
-                      : event.type == ParayanType.threeDay
-                      ? '3-Day'
-                      : 'Guru Pushya',
+                child: Text(
+                  dateStr,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                Localizations.localeOf(context).languageCode == 'mr'
+                    ? event.titleMr
+                    : event.titleEn,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                Localizations.localeOf(context).languageCode == 'mr'
+                    ? event.descriptionMr
+                    : event.descriptionEn,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 10,
+                    backgroundColor: theme.colorScheme.primaryContainer,
+                    child: Icon(
+                      Icons.person,
+                      size: 12,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    event.type == ParayanType.oneDay
+                        ? '1-Day'
+                        : event.type == ParayanType.threeDay
+                        ? '3-Day'
+                        : 'Guru Pushya',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

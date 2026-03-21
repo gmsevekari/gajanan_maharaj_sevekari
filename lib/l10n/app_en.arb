@@ -373,5 +373,18 @@
   "statusEnrollingDesc": "Please sign-up for the parayan. It will start on {date}.",
   "statusAllocatedDesc": "Adhyay allocation is complete. The parayan starts on {date}.",
   "statusUpdateSuccess": "Status updated successfully",
-  "closeLabel": "Close"
+  "closeLabel": "Close",
+  "groupLabel": "Group {group}",
+  "@groupLabel": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "adhyayCompletionTitle": "ADHYAY COMPLETION",
+  "recentlyCompletedParayanLabel": "Recently Completed Parayan",
+  "noCompletedParayans": "No recently completed parayans",
+  "upcomingParayansTab": "Upcoming",
+  "completedParayansTab": "Completed"
 }

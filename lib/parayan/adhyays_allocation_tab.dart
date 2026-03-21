@@ -127,44 +127,33 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                     borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
                   ),
                   clipBehavior: Clip.antiAlias,
-                  child: Table(
-                    columnWidths: {
-                      0: const FlexColumnWidth(2),
-                      if (isThreeDay) ...{
-                        1: const FlexColumnWidth(1),
-                        2: const FlexColumnWidth(1),
-                        3: const FlexColumnWidth(1),
-                      } else
-                        1: const FlexColumnWidth(1),
-                    },
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    children: participants.isEmpty
-                        ? [
-                            TableRow(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(24),
-                                  child: Text(
-                                    widget.event.status == 'upcoming'
-                                        ? localizations.upcomingParayanMessage
-                                        : localizations.noSignupsFound,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: theme.hintColor,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                if (isThreeDay) ...[
-                                  const SizedBox.shrink(),
-                                  const SizedBox.shrink(),
-                                  const SizedBox.shrink(),
-                                ] else
-                                  const SizedBox.shrink(),
-                              ],
+                  child: participants.isEmpty
+                      ? Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(24),
+                          child: Text(
+                            widget.event.status == 'upcoming'
+                                ? localizations.upcomingParayanMessage
+                                : localizations.noSignupsFound,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.hintColor,
+                              fontStyle: FontStyle.italic,
                             ),
-                          ]
-                        : participants.asMap().entries.map((entry) {
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : Table(
+                          columnWidths: {
+                            0: const FlexColumnWidth(2),
+                            if (isThreeDay) ...{
+                              1: const FlexColumnWidth(1),
+                              2: const FlexColumnWidth(1),
+                              3: const FlexColumnWidth(1),
+                            } else
+                              1: const FlexColumnWidth(1),
+                          },
+                          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                          children: participants.asMap().entries.map((entry) {
                             final index = entry.key;
                             final p = entry.value;
                             final isEnrolling = widget.event.status == 'enrolling';
@@ -176,16 +165,33 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                                   : theme.hintColor.withValues(alpha: 0.03),
                             );
 
+                            final int groupSize = (widget.event.type == ParayanType.threeDay) ? 7 : 21;
+                            final int groupNumber = (index ~/ groupSize) + 1;
+
                             final nameWidget = Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                              child: Text(
-                                p.name,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontSize: isThreeDay ? 13 : 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.9),
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    p.name,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontSize: isThreeDay ? 13 : 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: theme.colorScheme.onSurface
+                                          .withValues(alpha: 0.9),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    localizations.groupLabel(groupNumber.toString()),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      fontSize: 11,
+                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
 

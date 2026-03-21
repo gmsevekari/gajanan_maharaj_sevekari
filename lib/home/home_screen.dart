@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _buildIconGridItem(
         context: context,
         title: localizations.parayanTitle,
-        icon: Icons.menu_book,
+        imagePath: 'resources/images/icon/Parayan.png',
         imageSize: 100.0,
         onTap: () => Navigator.pushNamed(context, Routes.parayanList),
       ),

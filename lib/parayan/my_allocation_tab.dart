@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 
 class MyAllocationTab extends StatefulWidget {
@@ -25,8 +26,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
   @override
   void initState() {
     super.initState();
-    _participantsStream =
-        _parayanService.getParticipantsByDevice(widget.event.id, widget.deviceId);
+    _participantsStream = _parayanService.getAllParticipants(widget.event.id);
   }
 
   String _formatNumber(BuildContext context, int number, {bool pad = false}) {
@@ -56,7 +56,14 @@ class _MyAllocationTabState extends State<MyAllocationTab>
           return const Center(child: CircularProgressIndicator());
         }
 
-        final participants = snapshot.data ?? [];
+        final allParticipants = snapshot.data ?? [];
+        final participants = <MapEntry<int, ParayanMember>>[];
+        for (int i = 0; i < allParticipants.length; i++) {
+          if (allParticipants[i].deviceId == widget.deviceId) {
+            participants.add(MapEntry(i, allParticipants[i]));
+          }
+        }
+
         final isEnrolling = widget.event.status == 'enrolling';
         final isAllocated = widget.event.status == 'allocated';
         final isOngoing = widget.event.status == 'ongoing';
@@ -121,7 +128,13 @@ class _MyAllocationTabState extends State<MyAllocationTab>
           padding: const EdgeInsets.all(16),
           itemCount: participants.length,
           itemBuilder: (context, pIndex) {
-            final participant = participants[pIndex];
+            final entry = participants[pIndex];
+            final globalIndex = entry.key;
+            final participant = entry.value;
+
+            final int groupSize = (widget.event.type == ParayanType.threeDay) ? 7 : 21;
+            final int groupNumber = (globalIndex ~/ groupSize) + 1;
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -135,7 +148,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      participant.name,
+                      '${participant.name} (${localizations.groupLabel(groupNumber.toString())})',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.primary,

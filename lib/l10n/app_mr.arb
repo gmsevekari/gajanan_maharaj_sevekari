@@ -373,5 +373,18 @@
   "statusEnrollingDesc": "प्रवेश सुरू आहे. पारायण {date} रोजी सुरू होईल.",
   "statusAllocatedDesc": "अध्याय वाटप पूर्ण झाले आहे. पारायण {date} रोजी सुरू होईल.",
   "statusUpdateSuccess": "स्टेटस यशस्वीरित्या अपडेट केले",
-  "closeLabel": "बंद करा"
+  "closeLabel": "बंद करा",
+  "groupLabel": "गट {group}",
+  "@groupLabel": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "adhyayCompletionTitle": "अध्याय पूर्तता",
+  "recentlyCompletedParayanLabel": "नुकतेच पूर्ण झालेले पारायण",
+  "noCompletedParayans": "कोणतेही नुकतेच पूर्ण झालेले पारायण नाही",
+  "upcomingParayansTab": "आगामी",
+  "completedParayansTab": "पूर्ण झालेले"
 }

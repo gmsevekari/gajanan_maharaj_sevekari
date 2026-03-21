@@ -459,6 +459,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             final p = participants[index];
             final allDone = p.completions.values.every((v) => v);
 
+            final int groupSize = (event.type == ParayanType.threeDay) ? 7 : 21;
+            final int groupNumber = (index ~/ groupSize) + 1;
+
             return Card(
               // Uses AppTheme.cardTheme: color, elevation, shape, border
               margin: const EdgeInsets.only(bottom: 12),
@@ -482,13 +485,13 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
-                  l10n.adminAdhyaysLabel(p.assignedAdhyays.join(', ')),
+                  "${l10n.groupLabel(groupNumber.toString())} • ${l10n.adminAdhyaysLabel(p.assignedAdhyays.join(', '))}",
                   style: theme.textTheme.bodySmall,
                 ),
                 trailing: IconButton(
                   icon: Icon(Icons.edit_note,
                       color: theme.colorScheme.primary),
-                  onPressed: () => _showParticipantEditDialog(context, l10n, p, event),
+                  onPressed: () => _showParticipantEditDialog(context, l10n, p, event, groupNumber),
                 ),
               ),
             );
@@ -499,14 +502,14 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   }
 
   void _showParticipantEditDialog(
-      BuildContext context, AppLocalizations l10n, ParayanMember member, ParayanEvent event) {
+      BuildContext context, AppLocalizations l10n, ParayanMember member, ParayanEvent event, int groupNumber) {
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: Text(member.name),
+              title: Text("${member.name} (${l10n.groupLabel(groupNumber.toString())})"),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -527,9 +530,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         contentPadding: EdgeInsets.zero,
                       ),
                     const Divider(),
-                    const Text(
-                      "ADHYAY COMPLETION",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.1),
+                    Text(
+                      l10n.adhyayCompletionTitle.toUpperCase(),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.1),
                     ),
                     const SizedBox(height: 8),
                     ...member.assignedAdhyays.asMap().entries.map((entry) {

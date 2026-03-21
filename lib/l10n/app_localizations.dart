@@ -1891,6 +1891,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get closeLabel;
+
+  /// No description provided for @groupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group {group}'**
+  String groupLabel(String group);
+
+  /// No description provided for @adhyayCompletionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'ADHYAY COMPLETION'**
+  String get adhyayCompletionTitle;
+
+  /// No description provided for @recentlyCompletedParayanLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Completed Parayan'**
+  String get recentlyCompletedParayanLabel;
+
+  /// No description provided for @noCompletedParayans.
+  ///
+  /// In en, this message translates to:
+  /// **'No recently completed parayans'**
+  String get noCompletedParayans;
+
+  /// No description provided for @upcomingParayansTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get upcomingParayansTab;
+
+  /// No description provided for @completedParayansTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedParayansTab;
 }
 
 class _AppLocalizationsDelegate
