@@ -386,5 +386,7 @@
   "recentlyCompletedParayanLabel": "नुकतेच पूर्ण झालेले पारायण",
   "noCompletedParayans": "कोणतेही नुकतेच पूर्ण झालेले पारायण नाही",
   "upcomingParayansTab": "आगामी",
-  "completedParayansTab": "पूर्ण झालेले"
+  "completedParayansTab": "पूर्ण झालेले",
+  "parayanReminders": "पारायण रिमाइंडर",
+  "parayanRemindersNote": "तुम्हाला नेमून दिलेले परायणाचे अध्याय वाचण्याची आठवण करून देणारे नोटिफिकेशन्स प्राप्त करा"
 }

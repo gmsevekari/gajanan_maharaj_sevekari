@@ -127,3 +127,105 @@ exports.updateParayanStatuses = onSchedule("0 * * * *", async (event) => {
     }
   }
 });
+
+exports.sendParayanReminders = onSchedule("0 * * * *", async (event) => {
+  const db = admin.firestore();
+
+  const nowSeattle = DateTime.now().setZone("America/Los_Angeles");
+  const todaySeattle = nowSeattle.startOf("day");
+
+  // Format current hour as HH:00 to match reminderTimes (e.g. "08:00", "20:00")
+  const currentHourString = nowSeattle.toFormat("HH:00");
+
+  logger.info(
+    `Running Parayan reminders check. Seattle: ${nowSeattle.toISO()}, ` +
+    `Hour: ${currentHourString}`,
+  );
+
+  const ongoingQuery = await db.collection("parayan_events")
+    .where("status", "==", "ongoing")
+    .get();
+
+  for (const doc of ongoingQuery.docs) {
+    const data = doc.data();
+
+    const reminderTimes = data.reminderTimes || [];
+    if (!reminderTimes.includes(currentHourString)) {
+      continue;
+    }
+
+    const startDate = DateTime.fromJSDate(data.startDate.toDate())
+      .setZone("America/Los_Angeles")
+      .startOf("day");
+
+    // Calculate current day (1-indexed)
+    const diffInDays = todaySeattle.diff(startDate, "days").days;
+    const currentDay = Math.floor(diffInDays) + 1;
+
+    // Sanity check to ensure we don't send over-day reminders
+    if (currentDay < 1) continue;
+    if (data.type === "oneDay" || data.type === "guruPushya") {
+      if (currentDay !== 1) continue;
+    } else if (data.type === "threeDay") {
+      if (currentDay > 3) continue;
+    }
+
+    const topic = `parayan_${doc.id}_day${currentDay}`;
+    const title = "Parayan Reminder";
+    const eventName = data.title_en || data.title || "Parayan";
+    const body = `Reminder for ${eventName}. Please read your assigned ` +
+      `adhyays for Day ${currentDay}.`;
+
+    const message = {
+      notification: {
+        title: title,
+        body: body,
+      },
+      data: {
+        type: "PARAYAN_REMINDER",
+        event_id: doc.id,
+      },
+      android: {
+        priority: "high",
+        notification: {
+          // Use a distinct high-priority channel for Parayan Reminders
+          channelId: "parayan_notifications",
+          priority: "high",
+          defaultSound: true,
+        },
+      },
+      apns: {
+        headers: {
+          "apns-push-type": "alert",
+          "apns-priority": "10",
+        },
+        payload: {
+          aps: {
+            alert: { title: title, body: body },
+            sound: "default",
+          },
+        },
+      },
+      topic: topic,
+    };
+
+    logger.info(`Sending reminder to topic: ${topic}`);
+
+    try {
+      await admin.messaging().send(message);
+      logger.info(
+        `Successfully sent reminder for event ${doc.id} day ${currentDay}`,
+      );
+
+      const sentKey = `sentReminders.day${currentDay}_${currentHourString}`;
+      await doc.ref.update({
+        [sentKey]: admin.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (error) {
+      logger.error(
+        `Error sending reminder for event ${doc.id} on topic ${topic}:`,
+        error,
+      );
+    }
+  }
+});

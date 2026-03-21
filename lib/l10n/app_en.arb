@@ -386,5 +386,7 @@
   "recentlyCompletedParayanLabel": "Recently Completed Parayan",
   "noCompletedParayans": "No recently completed parayans",
   "upcomingParayansTab": "Upcoming",
-  "completedParayansTab": "Completed"
+  "completedParayansTab": "Completed",
+  "parayanReminders": "Parayan Reminders",
+  "parayanRemindersNote": "Notifications to remind you to read your assigned parayan adhyays"
 }

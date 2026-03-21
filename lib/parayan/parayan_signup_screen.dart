@@ -4,6 +4,10 @@ import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ParayanSignupScreen extends StatefulWidget {
   final ParayanEvent event;
@@ -18,7 +22,9 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _parayanService = ParayanService();
 
-  final List<TextEditingController> _nameControllers = [TextEditingController()];
+  final List<TextEditingController> _nameControllers = [
+    TextEditingController(),
+  ];
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
 
@@ -90,6 +96,30 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
         phone: _phoneController.text,
       );
 
+      // Subscribe to topics if parayan reminders are enabled
+      final prefs = await SharedPreferences.getInstance();
+      final parayanRemindersEnabled =
+          prefs.getBool(NotificationConstants.parayanRemindersPrefKey) ?? true;
+      if (parayanRemindersEnabled) {
+        final messaging = FirebaseMessaging.instance;
+        if (widget.event.type == ParayanType.oneDay ||
+            widget.event.type == ParayanType.guruPushya) {
+          final topic = NotificationConstants.getParayanReminderTopic(
+            widget.event.id,
+            1,
+          );
+          await messaging.subscribeToTopic(topic);
+        } else {
+          for (int i = 1; i <= 3; i++) {
+            final topic = NotificationConstants.getParayanReminderTopic(
+              widget.event.id,
+              i,
+            );
+            await messaging.subscribeToTopic(topic);
+          }
+        }
+      }
+
       if (!mounted) return;
 
       // Navigate to confirmation
@@ -149,7 +179,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Household Members Header
                   Row(
                     children: [
@@ -185,14 +215,18 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                                 labelText: "${localizations.name} ${index + 1}",
                                 icon: const Icon(Icons.person),
                               ),
-                              validator: (value) => value == null || value.isEmpty
+                              validator: (value) =>
+                                  value == null || value.isEmpty
                                   ? localizations.parayanNameRequired
                                   : null,
                             ),
                           ),
                           if (_nameControllers.length > 1)
                             IconButton(
-                              icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                              icon: const Icon(
+                                Icons.remove_circle_outline,
+                                color: Colors.red,
+                              ),
                               onPressed: () => _removeNameField(index),
                               padding: const EdgeInsets.only(top: 12),
                             ),
@@ -210,14 +244,16 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                     decoration: InputDecoration(
                       labelText: "Email",
                       icon: const Icon(Icons.email),
-                      hintText: isMarathi ? "उदा. seva@example.com" : "e.g. seva@example.com",
+                      hintText: "e.g. seva@example.com",
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return localizations.emailRequired;
                       }
-                      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                      final emailRegex = RegExp(
+                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      );
                       if (!emailRegex.hasMatch(value.trim())) {
                         return localizations.invalidEmail;
                       }
@@ -238,7 +274,9 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                         return localizations.phoneRequired;
                       }
                       final phoneRegex = RegExp(r'^[0-9]{10}$');
-                      if (!phoneRegex.hasMatch(value.trim().replaceAll(RegExp(r'[\s\-\(\)]'), ''))) {
+                      if (!phoneRegex.hasMatch(
+                        value.trim().replaceAll(RegExp(r'[\s\-\(\)]'), ''),
+                      )) {
                         return localizations.invalidPhone;
                       }
                       return null;

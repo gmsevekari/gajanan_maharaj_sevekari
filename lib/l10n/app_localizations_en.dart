@@ -978,4 +978,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get completedParayansTab => 'Completed';
+
+  @override
+  String get parayanReminders => 'Parayan Reminders';
+
+  @override
+  String get parayanRemindersNote =>
+      'Notifications to remind you to read your assigned parayan adhyays';
 }

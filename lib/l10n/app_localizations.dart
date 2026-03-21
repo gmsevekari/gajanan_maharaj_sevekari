@@ -1927,6 +1927,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Completed'**
   String get completedParayansTab;
+
+  /// No description provided for @parayanReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan Reminders'**
+  String get parayanReminders;
+
+  /// No description provided for @parayanRemindersNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications to remind you to read your assigned parayan adhyays'**
+  String get parayanRemindersNote;
 }
 
 class _AppLocalizationsDelegate

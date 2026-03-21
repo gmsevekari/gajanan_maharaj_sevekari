@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ParayanService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -20,7 +23,10 @@ class ParayanService {
 
   // Get a single Parayan Event by ID
   Stream<ParayanEvent> getEventById(String eventId) {
-    return _eventsRef.doc(eventId).snapshots().map((doc) => ParayanEvent.fromFirestore(doc));
+    return _eventsRef
+        .doc(eventId)
+        .snapshots()
+        .map((doc) => ParayanEvent.fromFirestore(doc));
   }
 
   // Get all active/upcoming events
@@ -120,7 +126,6 @@ class ParayanService {
     // Dashboard and Tabs calculate the count dynamically using getAllParticipants().
   }
 
-  // Update completion for a specific member in a household (Admin/User)
   Future<void> updateMemberCompletion({
     required String eventId,
     required String deviceId,
@@ -132,7 +137,38 @@ class ParayanService {
         .doc(eventId)
         .collection('participants')
         .doc(deviceId);
-    await docRef.update({'members.$memberName.completions.$dayIndex': completed});
+    await docRef.update({
+      'members.$memberName.completions.$dayIndex': completed,
+    });
+
+    // Topic subscription logic for day-specific reminders
+    try {
+      final updatedDoc = await docRef.get();
+      if (updatedDoc.exists) {
+        final household = ParayanHousehold.fromFirestore(updatedDoc);
+        final allCompleted = household.members.values.every(
+          (m) => m.completions[dayIndex.toString()] == true,
+        );
+
+        final topic = NotificationConstants.getParayanReminderTopic(
+          eventId,
+          dayIndex,
+        );
+        if (completed && allCompleted) {
+          await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+        } else if (!completed) {
+          final prefs = await SharedPreferences.getInstance();
+          final remindersEnabled =
+              prefs.getBool(NotificationConstants.parayanRemindersPrefKey) ??
+              true;
+          if (remindersEnabled) {
+            await FirebaseMessaging.instance.subscribeToTopic(topic);
+          }
+        }
+      }
+    } catch (e) {
+      // Silently ignore topic errors
+    }
   }
 
   // Get participants (members) associated with a specific device
@@ -189,5 +225,31 @@ class ParayanService {
           }
           return allMembers;
         });
+  }
+
+  // Get all active enrollments for a specific device
+  Future<List<Map<String, dynamic>>> getMyActiveEnrollmentsWithHousehold(
+    String deviceId,
+  ) async {
+    final querySnapshot = await _eventsRef
+        .where('endDate', isGreaterThanOrEqualTo: Timestamp.now())
+        .get();
+
+    final List<Map<String, dynamic>> results = [];
+
+    for (var doc in querySnapshot.docs) {
+      final participantDoc = await doc.reference
+          .collection('participants')
+          .doc(deviceId)
+          .get();
+      if (participantDoc.exists) {
+        results.add({
+          'event': ParayanEvent.fromFirestore(doc),
+          'household': ParayanHousehold.fromFirestore(participantDoc),
+        });
+      }
+    }
+
+    return results;
   }
 }

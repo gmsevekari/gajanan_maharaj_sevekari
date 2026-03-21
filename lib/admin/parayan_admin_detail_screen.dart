@@ -31,8 +31,12 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _overviewParticipantsStream = _parayanService.getAllParticipants(widget.event.id);
-    _participantsTabStream = _parayanService.getAllParticipants(widget.event.id);
+    _overviewParticipantsStream = _parayanService.getAllParticipants(
+      widget.event.id,
+    );
+    _participantsTabStream = _parayanService.getAllParticipants(
+      widget.event.id,
+    );
     _eventStream = _parayanService.getEventById(widget.event.id);
   }
 
@@ -63,15 +67,15 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     try {
       await _parayanService.updateEventStatus(widget.event.id, newStatus);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.statusUpdateSuccess)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.statusUpdateSuccess)));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -93,48 +97,57 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                   ? event.titleMr
                   : event.titleEn,
             ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home),
-            onPressed: () =>
-                Navigator.of(context).popUntil((route) => route.isFirst),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () =>
+                    Navigator.of(context).popUntil((route) => route.isFirst),
+              ),
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () => Navigator.pushNamed(context, Routes.settings),
+              ),
+            ],
+            bottom: TabBar(
+              controller: _tabController,
+              labelColor: theme.appBarTheme.foregroundColor,
+              unselectedLabelColor: theme.appBarTheme.foregroundColor
+                  ?.withValues(alpha: 0.6),
+              indicatorColor: theme.appBarTheme.foregroundColor,
+              indicatorWeight: 3.0,
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.normal,
+              ),
+              tabs: [
+                Tab(text: localizations.overviewTab),
+                Tab(text: localizations.participantsTab),
+              ],
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          body: TabBarView(
+            controller: _tabController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              KeepAlivePage(
+                child: _buildOverviewTab(localizations, theme, event),
+              ),
+              KeepAlivePage(
+                child: _buildParticipantsTab(localizations, theme, event),
+              ),
+            ],
           ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: theme.appBarTheme.foregroundColor,
-          unselectedLabelColor:
-              theme.appBarTheme.foregroundColor?.withValues(alpha: 0.6),
-          indicatorColor: theme.appBarTheme.foregroundColor,
-          indicatorWeight: 3.0,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-          tabs: [
-            Tab(text: localizations.overviewTab),
-            Tab(text: localizations.participantsTab),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          KeepAlivePage(child: _buildOverviewTab(localizations, theme, event)),
-          KeepAlivePage(child: _buildParticipantsTab(localizations, theme, event)),
-        ],
-      ),
+        );
+      },
     );
-  },
-);
-}
+  }
   // ── Overview Tab ────────────────────────────────────────────────────────────
 
   Widget _buildOverviewTab(
-      AppLocalizations l10n, ThemeData theme, ParayanEvent event) {
+    AppLocalizations l10n,
+    ThemeData theme,
+    ParayanEvent event,
+  ) {
     return StreamBuilder<List<ParayanMember>>(
       stream: _overviewParticipantsStream,
       builder: (context, snapshot) {
@@ -151,8 +164,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           completedAdhyays += p.completions.values.where((c) => c).length;
         }
 
-        final progress =
-            totalAdhyays > 0 ? completedAdhyays / totalAdhyays : 0.0;
+        final progress = totalAdhyays > 0
+            ? completedAdhyays / totalAdhyays
+            : 0.0;
 
         return ListView(
           padding: const EdgeInsets.all(16),
@@ -208,7 +222,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 20),
+                      vertical: 12,
+                      horizontal: 20,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -226,7 +242,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     backgroundColor: theme.colorScheme.secondaryContainer,
                     foregroundColor: theme.colorScheme.onSecondaryContainer,
                     padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 20),
+                      vertical: 12,
+                      horizontal: 20,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -245,7 +263,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   }
 
   Widget _buildStatusUpdateSection(
-      AppLocalizations l10n, ThemeData theme, ParayanEvent event) {
+    AppLocalizations l10n,
+    ThemeData theme,
+    ParayanEvent event,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -264,27 +285,37 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               segments: [
                 ButtonSegment(
                   value: 'enrolling',
-                  label: Text(l10n.statusEnrolling,
-                      style: const TextStyle(fontSize: 12)),
+                  label: Text(
+                    l10n.statusEnrolling,
+                    style: const TextStyle(fontSize: 12),
+                  ),
                   icon: const Icon(Icons.person_add_outlined, size: 16),
                 ),
                 ButtonSegment(
                   value: 'allocated',
-                  label: Text(l10n.statusAllocated,
-                      style: const TextStyle(fontSize: 12)),
-                  icon:
-                      const Icon(Icons.assignment_turned_in_outlined, size: 16),
+                  label: Text(
+                    l10n.statusAllocated,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  icon: const Icon(
+                    Icons.assignment_turned_in_outlined,
+                    size: 16,
+                  ),
                 ),
                 ButtonSegment(
                   value: 'ongoing',
-                  label: Text(l10n.statusOngoing,
-                      style: const TextStyle(fontSize: 12)),
+                  label: Text(
+                    l10n.statusOngoing,
+                    style: const TextStyle(fontSize: 12),
+                  ),
                   icon: const Icon(Icons.play_circle_outline, size: 16),
                 ),
                 ButtonSegment(
                   value: 'completed',
-                  label: Text(l10n.statusCompleted,
-                      style: const TextStyle(fontSize: 12)),
+                  label: Text(
+                    l10n.statusCompleted,
+                    style: const TextStyle(fontSize: 12),
+                  ),
                   icon: const Icon(Icons.check_circle_outline, size: 16),
                 ),
               ],
@@ -306,7 +337,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   }
 
   Widget _buildRemindersSection(
-      AppLocalizations l10n, ThemeData theme, ParayanEvent event) {
+    AppLocalizations l10n,
+    ThemeData theme,
+    ParayanEvent event,
+  ) {
     final now = DateTime.now();
     final totalDays = event.endDate.difference(event.startDate).inDays + 1;
 
@@ -347,8 +381,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                             ? toMarathiNumerals(dateStr)
                             : dateStr,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color:
-                              theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                       ),
                     ],
@@ -362,8 +397,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
 
                     final reminderHour =
                         int.tryParse(reminderTimeParts[0]) ?? 20;
-                    final reminderMin =
-                        int.tryParse(reminderTimeParts[1]) ?? 0;
+                    final reminderMin = int.tryParse(reminderTimeParts[1]) ?? 0;
 
                     final reminderDateTime = DateTime(
                       dayDate.year,
@@ -373,7 +407,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                       reminderMin,
                     );
 
-                    final isSent = now.isAfter(reminderDateTime);
+                    final trackingKey = 'day${dayIdx + 1}_$timeStr';
+                    final isSent = event.sentReminders.containsKey(trackingKey);
                     final statusText = isSent
                         ? l10n.reminderSentStatus
                         : l10n.reminderPendingStatus;
@@ -395,8 +430,11 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                           Row(
                             children: [
                               if (isSent)
-                                const Icon(Icons.check_circle,
-                                    size: 14, color: Colors.green),
+                                const Icon(
+                                  Icons.check_circle,
+                                  size: 14,
+                                  color: Colors.green,
+                                ),
                               const SizedBox(width: 4),
                               Text(
                                 statusText,
@@ -425,7 +463,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   // ── Participants Tab ─────────────────────────────────────────────────────────
 
   Widget _buildParticipantsTab(
-      AppLocalizations l10n, ThemeData theme, ParayanEvent event) {
+    AppLocalizations l10n,
+    ThemeData theme,
+    ParayanEvent event,
+  ) {
     return StreamBuilder<List<ParayanMember>>(
       stream: _participantsTabStream,
       builder: (context, snapshot) {
@@ -466,32 +507,38 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               // Uses AppTheme.cardTheme: color, elevation, shape, border
               margin: const EdgeInsets.only(bottom: 12),
               child: ListTile(
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 leading: CircleAvatar(
                   backgroundColor: allDone
                       ? Colors.green.withValues(alpha: 0.15)
                       : theme.colorScheme.primaryContainer,
                   child: Icon(
                     allDone ? Icons.check_circle : Icons.person_outline,
-                    color: allDone
-                        ? Colors.green
-                        : theme.colorScheme.primary,
+                    color: allDone ? Colors.green : theme.colorScheme.primary,
                   ),
                 ),
                 title: Text(
                   p.name,
-                  style: theme.textTheme.titleSmall
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 subtitle: Text(
                   "${l10n.groupLabel(groupNumber.toString())} • ${l10n.adminAdhyaysLabel(p.assignedAdhyays.join(', '))}",
                   style: theme.textTheme.bodySmall,
                 ),
                 trailing: IconButton(
-                  icon: Icon(Icons.edit_note,
-                      color: theme.colorScheme.primary),
-                  onPressed: () => _showParticipantEditDialog(context, l10n, p, event, groupNumber),
+                  icon: Icon(Icons.edit_note, color: theme.colorScheme.primary),
+                  onPressed: () => _showParticipantEditDialog(
+                    context,
+                    l10n,
+                    p,
+                    event,
+                    groupNumber,
+                  ),
                 ),
               ),
             );
@@ -502,14 +549,21 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   }
 
   void _showParticipantEditDialog(
-      BuildContext context, AppLocalizations l10n, ParayanMember member, ParayanEvent event, int groupNumber) {
+    BuildContext context,
+    AppLocalizations l10n,
+    ParayanMember member,
+    ParayanEvent event,
+    int groupNumber,
+  ) {
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: Text("${member.name} (${l10n.groupLabel(groupNumber.toString())})"),
+              title: Text(
+                "${member.name} (${l10n.groupLabel(groupNumber.toString())})",
+              ),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -532,15 +586,22 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     const Divider(),
                     Text(
                       l10n.adhyayCompletionTitle.toUpperCase(),
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.1),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        letterSpacing: 1.1,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     ...member.assignedAdhyays.asMap().entries.map((entry) {
                       final idx = entry.key + 1;
                       final adhyay = entry.value;
-                      final isDone = member.completions[idx.toString()] ?? false;
+                      final isDone =
+                          member.completions[idx.toString()] ?? false;
                       return CheckboxListTile(
-                        title: Text("${l10n.day} ${_formatNumber(context, idx)}: ${l10n.adhyay} ${_formatNumber(context, adhyay)}"),
+                        title: Text(
+                          "${l10n.day} ${_formatNumber(context, idx)}: ${l10n.adhyay} ${_formatNumber(context, adhyay)}",
+                        ),
                         value: isDone,
                         onChanged: (val) async {
                           if (val == null) return;
@@ -553,14 +614,14 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                               completed: val,
                             );
                             setDialogState(() {
-                               member.completions[idx.toString()] = val;
+                              member.completions[idx.toString()] = val;
                             });
                           } catch (e) {
-                             if (mounted) {
-                               ScaffoldMessenger.of(context).showSnackBar(
-                                 SnackBar(content: Text('Error: $e')),
-                               );
-                             }
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Error: $e')),
+                              );
+                            }
                           }
                         },
                       );
@@ -680,18 +741,21 @@ class _ProgressStatCard extends StatelessWidget {
                     width: 72,
                     child: CircularProgressIndicator(
                       value: progress,
-                      backgroundColor:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                      backgroundColor: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.1,
+                      ),
                       valueColor: AlwaysStoppedAnimation<Color>(
-                          theme.colorScheme.primary),
+                        theme.colorScheme.primary,
+                      ),
                       strokeWidth: 6,
                     ),
                   ),
                   Text(
                     value,
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),

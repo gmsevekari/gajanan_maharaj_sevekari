@@ -15,6 +15,7 @@ class ParayanEvent {
   final DateTime? manualPingRequestedAt;
   final DateTime createdAt;
   final int joinedParticipants;
+  final Map<String, dynamic> sentReminders; // e.g., {'day1_20:00': Timestamp}
 
   const ParayanEvent({
     required this.id,
@@ -30,6 +31,7 @@ class ParayanEvent {
     this.manualPingRequestedAt,
     required this.createdAt,
     this.joinedParticipants = 0,
+    this.sentReminders = const {},
   });
 
   factory ParayanEvent.fromFirestore(DocumentSnapshot doc) {
@@ -57,6 +59,9 @@ class ParayanEvent {
           : null,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       joinedParticipants: data['joinedParticipants'] ?? 0,
+      sentReminders: data['sentReminders'] != null
+          ? Map<String, dynamic>.from(data['sentReminders'] as Map)
+          : {},
     );
   }
 
@@ -81,6 +86,7 @@ class ParayanEvent {
         ),
       'createdAt': Timestamp.fromDate(createdAt),
       'joinedParticipants': joinedParticipants,
+      'sentReminders': sentReminders,
     };
   }
 }

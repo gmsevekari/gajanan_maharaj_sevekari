@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
+import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_settings/app_settings.dart';
 
@@ -20,6 +24,7 @@ class NotificationSettingsScreen extends StatefulWidget {
 class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     with WidgetsBindingObserver {
   bool _templeNotifications = true;
+  bool _parayanReminders = true;
   NotificationStatus _notificationStatus = NotificationStatus.unknown;
 
   @override
@@ -49,6 +54,8 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       _templeNotifications =
           prefs.getBool(NotificationConstants.templeNotificationsPrefKey) ??
           true;
+      _parayanReminders =
+          prefs.getBool(NotificationConstants.parayanRemindersPrefKey) ?? true;
     });
   }
 
@@ -99,6 +106,82 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         NotificationConstants.templeNotificationsPrefKey,
         false,
       );
+    }
+  }
+
+  Future<void> _updateParayanSubscription(bool subscribed) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(
+      NotificationConstants.parayanRemindersPrefKey,
+      subscribed,
+    );
+
+    bool isIosSimulator = false;
+    if (!kIsWeb && Platform.isIOS) {
+      final deviceInfo = DeviceInfoPlugin();
+      final iosInfo = await deviceInfo.iosInfo;
+      isIosSimulator = !iosInfo.isPhysicalDevice;
+    }
+    if (kIsWeb || isIosSimulator) return;
+
+    final deviceInfo = DeviceInfoPlugin();
+    String? deviceId;
+    if (Platform.isAndroid) {
+      final androidInfo = await deviceInfo.androidInfo;
+      deviceId = androidInfo.id;
+    } else if (Platform.isIOS) {
+      final iosInfo = await deviceInfo.iosInfo;
+      deviceId = iosInfo.identifierForVendor;
+    }
+
+    if (deviceId == null) return;
+
+    try {
+      final messaging = FirebaseMessaging.instance;
+      final enrollments = await ParayanService()
+          .getMyActiveEnrollmentsWithHousehold(deviceId);
+
+      for (var enrollment in enrollments) {
+        final event = enrollment['event'] as ParayanEvent;
+        final household = enrollment['household'] as ParayanHousehold;
+
+        if (event.type == ParayanType.oneDay ||
+            event.type == ParayanType.guruPushya) {
+          bool allCompleted = household.members.values.every(
+            (m) => m.completions['1'] == true,
+          );
+          if (!allCompleted) {
+            final topic = NotificationConstants.getParayanReminderTopic(
+              event.id,
+              1,
+            );
+            if (subscribed) {
+              await messaging.subscribeToTopic(topic);
+            } else {
+              await messaging.unsubscribeFromTopic(topic);
+            }
+          }
+        } else {
+          for (int i = 1; i <= 3; i++) {
+            bool allCompleted = household.members.values.every(
+              (m) => m.completions[i.toString()] == true,
+            );
+            if (!allCompleted) {
+              final topic = NotificationConstants.getParayanReminderTopic(
+                event.id,
+                i,
+              );
+              if (subscribed) {
+                await messaging.subscribeToTopic(topic);
+              } else {
+                await messaging.unsubscribeFromTopic(topic);
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to update parayan subscriptions: $e');
     }
   }
 
@@ -163,6 +246,43 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                         NotificationConstants.templeNotificationsTopic,
                         value,
                       );
+                    }
+                  : null,
+            ),
+          ),
+          Card(
+            elevation: theme.cardTheme.elevation,
+            color: theme.cardTheme.color,
+            shape: theme.cardTheme.shape,
+            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: SwitchListTile(
+              title: Text(
+                localizations.parayanReminders,
+                style: TextStyle(
+                  color: canChangeSubscriptions
+                      ? Colors.orange[600]
+                      : Colors.grey,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              subtitle: Text(
+                localizations.parayanRemindersNote,
+                style: TextStyle(
+                  color: canChangeSubscriptions
+                      ? Colors.grey[600]
+                      : Colors.grey,
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              value: canChangeSubscriptions && _parayanReminders,
+              onChanged: canChangeSubscriptions
+                  ? (bool value) {
+                      setState(() {
+                        _parayanReminders = value;
+                      });
+                      _updateParayanSubscription(value);
                     }
                   : null,
             ),

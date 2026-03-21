@@ -14,6 +14,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+import 'package:gajanan_maharaj_sevekari/home/nityopasana_consolidated_screen.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
 
 import '../deity/deity_dashboard_screen.dart';
@@ -37,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _loadUnreadStatus();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        //NotificationManager.requestPermissions(context);
+        NotificationManager.requestPermissions(context);
       }
     });
   }
@@ -134,7 +136,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

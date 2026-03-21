@@ -977,4 +977,11 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get completedParayansTab => 'पूर्ण झालेले';
+
+  @override
+  String get parayanReminders => 'पारायण रिमाइंडर';
+
+  @override
+  String get parayanRemindersNote =>
+      'तुम्हाला नेमून दिलेले परायणाचे अध्याय वाचण्याची आठवण करून देणारे नोटिफिकेशन्स प्राप्त करा';
 }
