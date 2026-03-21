@@ -12,9 +12,9 @@ import 'package:gajanan_maharaj_sevekari/other/other_screen.dart';
 import 'package:gajanan_maharaj_sevekari/firebase_options.dart';
 import 'package:gajanan_maharaj_sevekari/gallery/gallery_screen.dart';
 import 'package:gajanan_maharaj_sevekari/home/home_screen.dart';
+import 'package:gajanan_maharaj_sevekari/home/nityopasana_consolidated_screen.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
-import 'package:gajanan_maharaj_sevekari/nityopasana/nityopasana_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
@@ -146,6 +146,8 @@ class MyApp extends StatelessWidget {
                 Routes.userNotifications: (context) =>
                     const UserNotificationsScreen(),
                 Routes.parayanList: (context) => ParayanListScreen(),
+                Routes.nityopasanaConsolidated: (context) =>
+                    const NityopasanaConsolidatedScreen(),
               },
               onGenerateRoute: (settings) {
                 final DeityConfig? deity = settings.arguments as DeityConfig?;
@@ -170,10 +172,6 @@ class MyApp extends StatelessWidget {
                   case Routes.other:
                     return MaterialPageRoute(
                       builder: (context) => const OtherScreen(),
-                    );
-                  case Routes.nityopasana:
-                    return MaterialPageRoute(
-                      builder: (context) => NityopasanaScreen(deity: deity!),
                     );
                   case Routes.socialMedia:
                     return MaterialPageRoute(

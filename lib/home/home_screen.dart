@@ -145,18 +145,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     final List<Widget> cards = [];
 
-    if (appConfigProvider.appConfig != null) {
-      for (var deity in appConfigProvider.appConfig!.deities) {
-        cards.add(_buildDeityGridItem(context, deity));
-      }
-    }
-
     cards.add(
       _buildIconGridItem(
         context: context,
-        title: localizations.otherTitle, // "Other" card
+        title: localizations.nityopasanaTitle,
         icon: Icons.temple_hindu,
-        onTap: () => Navigator.pushNamed(context, Routes.other),
+        onTap: () => Navigator.pushNamed(context, Routes.nityopasanaConsolidated),
       ),
     );
     cards.add(
@@ -742,87 +736,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildDeityGridItem(BuildContext context, DeityConfig deity) {
-    final theme = Theme.of(context);
-    final locale = Localizations.localeOf(context).languageCode;
-    final name = locale == 'mr' ? deity.nameMr : deity.nameEn;
-
-    return SizedBox(
-      width: (MediaQuery.of(context).size.width - 32) / 3,
-      child: AspectRatio(
-        aspectRatio: 1.0, // Make cards square
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: theme.cardTheme.shadowColor!,
-                offset: const Offset(0, 4),
-                blurRadius: 0,
-                spreadRadius: 0,
-              ),
-            ],
-          ),
-          child: Card(
-            clipBehavior: Clip.antiAlias,
-            elevation: 0,
-            margin: EdgeInsets.zero,
-            shape: theme.cardTheme.shape,
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DeityDashboardScreen(deity: deity),
-                  ),
-                );
-              },
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset(
-                        deity.imagePath,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) => Icon(
-                          Icons.error,
-                          color: Colors.red.shade300,
-                          size: 40,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    color: theme.cardTheme.color,
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 4,
-                      horizontal: 4,
-                    ),
-                    child: Center(
-                      child: Text(
-                        name,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.orange[600],
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildIconGridItem({
     required BuildContext context,
     required String title,
@@ -835,9 +748,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final size = imageSize ?? 48.0;
 
     return SizedBox(
-      width: (MediaQuery.of(context).size.width - 32) / 3,
+      width: (MediaQuery.of(context).size.width - 24) / 2,
       child: AspectRatio(
-        aspectRatio: 1.0, // Make cards square
+        aspectRatio: 1.4,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16.0),
@@ -884,7 +797,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       style: TextStyle(
                         color: Colors.orange[600],
                         fontWeight: FontWeight.bold,
-                        fontSize: 13,
                       ),
                     ),
                   ),

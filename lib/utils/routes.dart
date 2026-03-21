@@ -29,4 +29,5 @@ class Routes {
   static const String parayanList = '/parayan_list';
   static const String parayanDetail = '/parayan_detail';
   static const String userNotifications = '/user_notifications';
+  static const String nityopasanaConsolidated = '/nityopasana_consolidated';
 }

@@ -57,40 +57,65 @@ class OtherScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView(
-          children: otherConfig.order.map((key) {
-            final content = otherMap[key];
-            if (content == null) return const SizedBox.shrink();
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                alignment: WrapAlignment.center,
+                children: otherConfig.order.map((key) {
+                  final content = otherMap[key];
+                  if (content == null) return const SizedBox.shrink();
 
-            // Region check
-            if (content.regions.isNotEmpty &&
-                !content.regions.contains(deviceCountryCode)) {
-              return const SizedBox.shrink(); // Do not build the card if region doesn't match
-            }
+                  // Region check
+                  if (content.regions.isNotEmpty &&
+                      !content.regions.contains(deviceCountryCode)) {
+                    return const SizedBox
+                        .shrink(); // Do not build the card if region doesn't match
+                  }
 
-            final title = _getTitle(localizations, content.titleKey);
+                  final title = _getTitle(localizations, content.titleKey);
+                  final icon = _getIcon(key);
 
-            return _buildOtherCard(context, theme, title, () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ContentListScreen(
-                    deity: defaultDeity,
-                    title: title,
-                    contentType: ContentTypeExtension.fromString(
-                      content.contentType,
-                    ),
-                    content: content,
-                  ),
-                ),
-              );
-            });
-          }).toList(),
+                  return _buildOtherCard(context, theme, title, icon, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ContentListScreen(
+                          deity: defaultDeity,
+                          title: title,
+                          contentType: ContentTypeExtension.fromString(
+                            content.contentType,
+                          ),
+                          content: content,
+                        ),
+                      ),
+                    );
+                  });
+                }).toList(),
+              ),
+              const SizedBox(height: 100),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  IconData _getIcon(String key) {
+    switch (key) {
+      case 'sunday_prarthana':
+        return Icons.auto_stories;
+      case 'other_aartis':
+        return Icons.lyrics_outlined;
+      case 'other_stotras':
+        return Icons.menu_book_outlined;
+      default:
+        return Icons.info_outline;
+    }
   }
 
   String _getTitle(AppLocalizations localizations, String key) {
@@ -110,28 +135,55 @@ class OtherScreen extends StatelessWidget {
     BuildContext context,
     ThemeData theme,
     String title,
+    IconData icon,
     VoidCallback onTap,
   ) {
-    return Card(
-      elevation: theme.cardTheme.elevation,
-      color: theme.cardTheme.color,
-      shape: theme.cardTheme.shape,
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-      child: ListTile(
-        title: Text(
-          title,
-          style: TextStyle(
-            color: theme.colorScheme.primary,
-            fontWeight: FontWeight.bold,
-            fontSize: 18.0,
+    return SizedBox(
+      width: (MediaQuery.of(context).size.width - 24) / 2,
+      child: AspectRatio(
+        aspectRatio: 1.4,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: theme.cardTheme.shadowColor!,
+                offset: const Offset(0, 4),
+                blurRadius: 0,
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          child: Card(
+            elevation: 0,
+            margin: EdgeInsets.zero,
+            color: theme.cardTheme.color,
+            shape: theme.cardTheme.shape,
+            child: InkWell(
+              onTap: onTap,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: 40.0, color: theme.iconTheme.color),
+                  const SizedBox(height: 8.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.orange[600],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          color: theme.colorScheme.primary,
-          size: 16.0,
-        ),
-        onTap: onTap,
       ),
     );
   }
