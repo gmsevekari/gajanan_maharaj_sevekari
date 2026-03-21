@@ -372,5 +372,6 @@
   "statusCompleted": "Completed",
   "statusEnrollingDesc": "Please sign-up for the parayan. It will start on {date}.",
   "statusAllocatedDesc": "Adhyay allocation is complete. The parayan starts on {date}.",
-  "statusUpdateSuccess": "Status updated successfully"
+  "statusUpdateSuccess": "Status updated successfully",
+  "closeLabel": "Close"
 }

@@ -4,18 +4,36 @@ class ParayanMember {
   final String name;
   final List<int> assignedAdhyays;
   final Map<String, bool> completions;
+  final String? deviceId;
+  final String? email;
+  final String? phone;
 
   const ParayanMember({
     required this.name,
     required this.assignedAdhyays,
     required this.completions,
+    this.deviceId,
+    this.email,
+    this.phone,
   });
 
-  factory ParayanMember.fromMap(String name, Map<String, dynamic> data) {
+  factory ParayanMember.fromMap(
+    String name,
+    Map<String, dynamic> data, {
+    String? deviceId,
+    String? email,
+    String? phone,
+  }) {
+    final rawCompletions = data['completions'] as Map<dynamic, dynamic>? ?? {};
+    final completions = rawCompletions.map((key, value) => MapEntry(key.toString(), value as bool));
+
     return ParayanMember(
       name: name,
       assignedAdhyays: List<int>.from(data['assignedAdhyays'] ?? []),
-      completions: Map<String, bool>.from(data['completions'] ?? {}),
+      completions: completions,
+      deviceId: deviceId,
+      email: email,
+      phone: phone,
     );
   }
 
@@ -42,14 +60,33 @@ class ParayanHousehold {
   factory ParayanHousehold.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     final membersData = Map<String, dynamic>.from(data['members'] ?? {});
+    final deviceId = doc.id;
+    final email = data['email'] ?? '';
+    final phone = data['phone'] ?? '';
+
+    DateTime joinedAt;
+    try {
+      joinedAt = (data['joinedAt'] as Timestamp).toDate();
+    } catch (_) {
+      joinedAt = DateTime.now();
+    }
 
     return ParayanHousehold(
-      deviceId: doc.id,
-      email: data['email'] ?? '',
-      phone: data['phone'] ?? '',
-      joinedAt: (data['joinedAt'] as Timestamp).toDate(),
+      deviceId: deviceId,
+      email: email,
+      phone: phone,
+      joinedAt: joinedAt,
       members: membersData.map(
-        (key, value) => MapEntry(key, ParayanMember.fromMap(key, value)),
+        (key, value) => MapEntry(
+          key,
+          ParayanMember.fromMap(
+            key,
+            value,
+            deviceId: deviceId,
+            email: email,
+            phone: phone,
+          ),
+        ),
       ),
     );
   }

@@ -1885,6 +1885,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Status updated successfully'**
   String get statusUpdateSuccess;
+
+  /// No description provided for @closeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeLabel;
 }
 
 class _AppLocalizationsDelegate

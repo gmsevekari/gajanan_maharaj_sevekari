@@ -42,6 +42,8 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/navigator_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:app_links/app_links.dart';
+import 'dart:async';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,133 +82,182 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _initDeepLinks();
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _initDeepLinks() async {
+    _appLinks = AppLinks();
+
+    // Check initial link if app was closed
+    final appLink = await _appLinks.getInitialLink();
+    if (appLink != null) {
+      _handleDeepLink(appLink);
+    }
+
+    // Handle link when app is in background or foreground
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      _handleDeepLink(uri);
+    });
+  }
+
+  void _handleDeepLink(Uri uri) {
+    if (uri.path == '/parayan_detail') {
+      final id = uri.queryParameters['id'];
+      if (id != null) {
+        NavigatorService.navigatorKey.currentState?.pushNamed(
+          Routes.parayanDetail,
+          arguments: {'id': id},
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Consumer4<
-      ThemeProvider,
-      LocaleProvider,
-      FontProvider,
-      AppConfigProvider
-    >(
-      builder:
-          (
-            context,
-            themeProvider,
-            localeProvider,
-            fontProvider,
-            appConfigProvider,
-            child,
-          ) {
-            final isMarathi = localeProvider.locale.languageCode == 'mr';
-            final fontFamily = isMarathi
-                ? fontProvider.marathiFontFamily
-                : fontProvider.englishFontFamily;
+    return Consumer4<ThemeProvider, LocaleProvider, FontProvider,
+        AppConfigProvider>(
+      builder: (
+        context,
+        themeProvider,
+        localeProvider,
+        fontProvider,
+        appConfigProvider,
+        child,
+      ) {
+        final isMarathi = localeProvider.locale.languageCode == 'mr';
+        final fontFamily = isMarathi
+            ? fontProvider.marathiFontFamily
+            : fontProvider.englishFontFamily;
 
-            final lightTextTheme = GoogleFonts.getTextTheme(
-              fontFamily,
-              AppTheme.lightTheme.textTheme,
-            );
-            final darkTextTheme = GoogleFonts.getTextTheme(
-              fontFamily,
-              AppTheme.darkTheme.textTheme,
-            );
+        final lightTextTheme = GoogleFonts.getTextTheme(
+          fontFamily,
+          AppTheme.lightTheme.textTheme,
+        );
+        final darkTextTheme = GoogleFonts.getTextTheme(
+          fontFamily,
+          AppTheme.darkTheme.textTheme,
+        );
 
-            return MaterialApp(
-              navigatorKey: NavigatorService.navigatorKey,
-              scaffoldMessengerKey: NavigatorService.scaffoldMessengerKey,
-              onGenerateTitle: (context) =>
-                  AppLocalizations.of(context)!.appName,
-              theme: AppTheme.lightTheme.copyWith(textTheme: lightTextTheme),
-              darkTheme: AppTheme.darkTheme.copyWith(textTheme: darkTextTheme),
-              themeMode: themeProvider.themeMode,
-              locale: localeProvider.locale,
-              supportedLocales: AppLocalizations.supportedLocales,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              initialRoute: Routes.splash,
-              routes: {
-                Routes.splash: (context) => const SplashScreen(),
-                Routes.home: (context) => const HomeScreen(),
-                Routes.calendar: (context) => const EventCalendarScreen(),
-                Routes.gallery: (context) => const GalleryScreen(),
-                Routes.settings: (context) => const SettingsScreen(),
-                Routes.sankalp: (context) => const SankalpScreen(),
-                Routes.naamjap: (context) => const NaamjapScreen(),
-                Routes.adminLogin: (context) => const AdminLoginScreen(),
-                Routes.adminDashboard: (context) =>
-                    const AdminDashboardScreen(),
-                Routes.adminTempleNotifications: (context) =>
-                    const AdminTempleNotificationsScreen(),
-                Routes.adminParayanCoordination: (context) =>
-                    ParayanCoordinationDashboard(),
-                Routes.adminCreateParayan: (context) =>
-                    const CreateParayanScreen(),
-                Routes.userNotifications: (context) =>
-                    const UserNotificationsScreen(),
-                Routes.parayanList: (context) => ParayanListScreen(),
-                Routes.nityopasanaConsolidated: (context) =>
-                    const NityopasanaConsolidatedScreen(),
-              },
-              onGenerateRoute: (settings) {
-                final DeityConfig? deity = settings.arguments as DeityConfig?;
-
-                switch (settings.name) {
-                  case Routes.aarti:
-                    return MaterialPageRoute(
-                      builder: (context) => AartiScreen(deity: deity!),
-                    );
-                  case Routes.aboutMaharaj:
-                    return MaterialPageRoute(
-                      builder: (context) => AboutMaharajScreen(deity: deity!),
-                    );
-                  case Routes.donations:
-                    return MaterialPageRoute(
-                      builder: (context) => DonationsScreen(deity: deity!),
-                    );
-                  case Routes.signups:
-                    return MaterialPageRoute(
-                      builder: (context) => SignupsScreen(deity: deity!),
-                    );
-                  case Routes.other:
-                    return MaterialPageRoute(
-                      builder: (context) => const OtherScreen(),
-                    );
-                  case Routes.socialMedia:
-                    return MaterialPageRoute(
-                      builder: (context) => SocialMediaScreen(deity: deity!),
-                    );
-                  case Routes.namavali:
-                    return MaterialPageRoute(
-                      builder: (context) => NamavaliScreen(deity: deity!),
-                    );
-                  case Routes.songs:
-                    return MaterialPageRoute(
-                      builder: (context) => ContentListScreen(
-                        deity: deity!,
-                        title: AppLocalizations.of(context)!.songTitle,
-                        contentType: ContentType.song,
-                        content: deity.songs!,
-                      ),
-                    );
-                  case Routes.parayanDetail:
-                    final event = settings.arguments as ParayanEvent;
-                    return MaterialPageRoute(
-                      builder: (context) => ParayanDetailScreen(event: event),
-                    );
-                  case Routes.adminParayanDetail:
-                    final event = settings.arguments as ParayanEvent;
-                    return MaterialPageRoute(
-                      builder: (context) =>
-                          ParayanAdminDetailScreen(event: event),
-                    );
-                  default:
-                    return null;
-                }
-              },
-            );
+        return MaterialApp(
+          navigatorKey: NavigatorService.navigatorKey,
+          scaffoldMessengerKey: NavigatorService.scaffoldMessengerKey,
+          onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
+          theme: AppTheme.lightTheme.copyWith(textTheme: lightTextTheme),
+          darkTheme: AppTheme.darkTheme.copyWith(textTheme: darkTextTheme),
+          themeMode: themeProvider.themeMode,
+          locale: localeProvider.locale,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          initialRoute: Routes.splash,
+          routes: {
+            Routes.splash: (context) => const SplashScreen(),
+            Routes.home: (context) => const HomeScreen(),
+            Routes.calendar: (context) => const EventCalendarScreen(),
+            Routes.gallery: (context) => const GalleryScreen(),
+            Routes.settings: (context) => const SettingsScreen(),
+            Routes.sankalp: (context) => const SankalpScreen(),
+            Routes.naamjap: (context) => const NaamjapScreen(),
+            Routes.adminLogin: (context) => const AdminLoginScreen(),
+            Routes.adminDashboard: (context) => const AdminDashboardScreen(),
+            Routes.adminTempleNotifications: (context) =>
+                const AdminTempleNotificationsScreen(),
+            Routes.adminParayanCoordination: (context) =>
+                ParayanCoordinationDashboard(),
+            Routes.adminCreateParayan: (context) => const CreateParayanScreen(),
+            Routes.userNotifications: (context) =>
+                const UserNotificationsScreen(),
+            Routes.parayanList: (context) => ParayanListScreen(),
+            Routes.nityopasanaConsolidated: (context) =>
+                const NityopasanaConsolidatedScreen(),
           },
+          onGenerateRoute: (settings) {
+            final DeityConfig? deity = settings.arguments is DeityConfig
+                ? settings.arguments as DeityConfig
+                : null;
+
+            switch (settings.name) {
+              case Routes.aarti:
+                return MaterialPageRoute(
+                  builder: (context) => AartiScreen(deity: deity!),
+                );
+              case Routes.aboutMaharaj:
+                return MaterialPageRoute(
+                  builder: (context) => AboutMaharajScreen(deity: deity!),
+                );
+              case Routes.donations:
+                return MaterialPageRoute(
+                  builder: (context) => DonationsScreen(deity: deity!),
+                );
+              case Routes.signups:
+                return MaterialPageRoute(
+                  builder: (context) => SignupsScreen(deity: deity!),
+                );
+              case Routes.other:
+                return MaterialPageRoute(
+                  builder: (context) => const OtherScreen(),
+                );
+              case Routes.socialMedia:
+                return MaterialPageRoute(
+                  builder: (context) => SocialMediaScreen(deity: deity!),
+                );
+              case Routes.namavali:
+                return MaterialPageRoute(
+                  builder: (context) => NamavaliScreen(deity: deity!),
+                );
+              case Routes.songs:
+                return MaterialPageRoute(
+                  builder: (context) => ContentListScreen(
+                    deity: deity!,
+                    title: AppLocalizations.of(context)!.songTitle,
+                    contentType: ContentType.song,
+                    content: deity.songs!,
+                  ),
+                );
+              case Routes.parayanDetail:
+                if (settings.arguments is ParayanEvent) {
+                  return MaterialPageRoute(
+                    builder: (context) => ParayanDetailScreen(
+                        event: settings.arguments as ParayanEvent),
+                  );
+                } else if (settings.arguments is Map) {
+                  final args = settings.arguments as Map;
+                  return MaterialPageRoute(
+                    builder: (context) =>
+                        ParayanDetailScreen(eventId: args['id']),
+                  );
+                }
+                return null;
+              case Routes.adminParayanDetail:
+                final event = settings.arguments as ParayanEvent;
+                return MaterialPageRoute(
+                  builder: (context) => ParayanAdminDetailScreen(event: event),
+                );
+              default:
+                return null;
+            }
+          },
+        );
+      },
     );
   }
 }

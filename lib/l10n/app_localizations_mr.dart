@@ -954,4 +954,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get statusUpdateSuccess => 'स्टेटस यशस्वीरित्या अपडेट केले';
+
+  @override
+  String get closeLabel => 'बंद करा';
 }

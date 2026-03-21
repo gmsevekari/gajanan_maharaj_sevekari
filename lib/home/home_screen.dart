@@ -149,8 +149,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _buildIconGridItem(
         context: context,
         title: localizations.nityopasanaTitle,
-        icon: Icons.temple_hindu,
-        onTap: () => Navigator.pushNamed(context, Routes.nityopasanaConsolidated),
+        imagePath: 'resources/images/icon/Nityopasana.png',
+        imageSize: 100.0,
+        onTap: () =>
+            Navigator.pushNamed(context, Routes.nityopasanaConsolidated),
       ),
     );
     cards.add(
@@ -158,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         context: context,
         title: localizations.naamjapTitle,
         imagePath: 'resources/images/icon/Rudraksha_Mala.png',
-        imageSize: 64.0,
+        imageSize: 100.0,
         onTap: () => Navigator.pushNamed(context, Routes.naamjap),
       ),
     );
@@ -167,6 +169,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         context: context,
         title: localizations.parayanTitle,
         icon: Icons.menu_book,
+        imageSize: 100.0,
         onTap: () => Navigator.pushNamed(context, Routes.parayanList),
       ),
     );
@@ -175,6 +178,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         context: context,
         title: localizations.calendarTitle,
         icon: Icons.calendar_month_outlined,
+        imageSize: 100.0,
         onTap: () => Navigator.pushNamed(context, Routes.calendar),
       ),
     );

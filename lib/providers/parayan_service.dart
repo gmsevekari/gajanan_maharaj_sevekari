@@ -120,18 +120,19 @@ class ParayanService {
     // Dashboard and Tabs calculate the count dynamically using getAllParticipants().
   }
 
-  // Submit completion for a specific member in a household
-  Future<void> submitCompletion({
+  // Update completion for a specific member in a household (Admin/User)
+  Future<void> updateMemberCompletion({
     required String eventId,
     required String deviceId,
     required String memberName,
     required int dayIndex,
+    required bool completed,
   }) async {
     final docRef = _eventsRef
         .doc(eventId)
         .collection('participants')
         .doc(deviceId);
-    await docRef.update({'members.$memberName.completions.$dayIndex': true});
+    await docRef.update({'members.$memberName.completions.$dayIndex': completed});
   }
 
   // Get participants (members) associated with a specific device

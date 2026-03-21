@@ -160,11 +160,12 @@ class _MyAllocationTabState extends State<MyAllocationTab>
                       isRead: isRead,
                       isOngoing: isOngoing,
                       theme: theme,
-                      onComplete: () => _parayanService.submitCompletion(
+                      onComplete: () => _parayanService.updateMemberCompletion(
                         eventId: widget.event.id,
                         deviceId: widget.deviceId,
                         memberName: participant.name,
                         dayIndex: dayNum,
+                        completed: true,
                       ),
                     ),
                   );

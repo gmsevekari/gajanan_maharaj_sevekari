@@ -955,4 +955,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusUpdateSuccess => 'Status updated successfully';
+
+  @override
+  String get closeLabel => 'Close';
 }

@@ -58,6 +58,7 @@ dependencies:
   device_info_plus: ^12.3.0
   flutter_local_notifications: ^21.0.0
   flutter_app_badge_control: ^0.0.1
+  app_links: ^6.3.3
 
 dev_dependencies:
   flutter_test:

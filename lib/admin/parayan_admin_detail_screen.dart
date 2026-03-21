@@ -23,14 +23,16 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ParayanService _parayanService = ParayanService();
-  late Stream<List<ParayanMember>> _participantsStream;
+  late Stream<List<ParayanMember>> _overviewParticipantsStream;
+  late Stream<List<ParayanMember>> _participantsTabStream;
   late Stream<ParayanEvent> _eventStream;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _participantsStream = _parayanService.getAllParticipants(widget.event.id);
+    _overviewParticipantsStream = _parayanService.getAllParticipants(widget.event.id);
+    _participantsTabStream = _parayanService.getAllParticipants(widget.event.id);
     _eventStream = _parayanService.getEventById(widget.event.id);
   }
 
@@ -121,8 +123,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         controller: _tabController,
         physics: const NeverScrollableScrollPhysics(),
         children: [
-          _buildOverviewTab(localizations, theme, event),
-          _buildParticipantsTab(localizations, theme, event),
+          KeepAlivePage(child: _buildOverviewTab(localizations, theme, event)),
+          KeepAlivePage(child: _buildParticipantsTab(localizations, theme, event)),
         ],
       ),
     );
@@ -134,7 +136,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   Widget _buildOverviewTab(
       AppLocalizations l10n, ThemeData theme, ParayanEvent event) {
     return StreamBuilder<List<ParayanMember>>(
-      stream: _participantsStream,
+      stream: _overviewParticipantsStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -425,8 +427,21 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   Widget _buildParticipantsTab(
       AppLocalizations l10n, ThemeData theme, ParayanEvent event) {
     return StreamBuilder<List<ParayanMember>>(
-      stream: _parayanService.getAllParticipants(event.id),
+      stream: _participantsTabStream,
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Text(
+                'Error: ${snapshot.error}',
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
+
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -473,11 +488,89 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 trailing: IconButton(
                   icon: Icon(Icons.edit_note,
                       color: theme.colorScheme.primary),
-                  onPressed: () {
-                    // TODO: Manual adjustment dialog
-                  },
+                  onPressed: () => _showParticipantEditDialog(context, l10n, p, event),
                 ),
               ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showParticipantEditDialog(
+      BuildContext context, AppLocalizations l10n, ParayanMember member, ParayanEvent event) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text(member.name),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (member.email != null && member.email!.isNotEmpty)
+                      ListTile(
+                        leading: const Icon(Icons.email),
+                        title: Text(member.email!),
+                        visualDensity: VisualDensity.compact,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    if (member.phone != null && member.phone!.isNotEmpty)
+                      ListTile(
+                        leading: const Icon(Icons.phone),
+                        title: Text(member.phone!),
+                        visualDensity: VisualDensity.compact,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    const Divider(),
+                    const Text(
+                      "ADHYAY COMPLETION",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.1),
+                    ),
+                    const SizedBox(height: 8),
+                    ...member.assignedAdhyays.asMap().entries.map((entry) {
+                      final idx = entry.key + 1;
+                      final adhyay = entry.value;
+                      final isDone = member.completions[idx.toString()] ?? false;
+                      return CheckboxListTile(
+                        title: Text("${l10n.day} ${_formatNumber(context, idx)}: ${l10n.adhyay} ${_formatNumber(context, adhyay)}"),
+                        value: isDone,
+                        onChanged: (val) async {
+                          if (val == null) return;
+                          try {
+                            await _parayanService.updateMemberCompletion(
+                              eventId: event.id,
+                              deviceId: member.deviceId!,
+                              memberName: member.name,
+                              dayIndex: idx,
+                              completed: val,
+                            );
+                            setDialogState(() {
+                               member.completions[idx.toString()] = val;
+                            });
+                          } catch (e) {
+                             if (mounted) {
+                               ScaffoldMessenger.of(context).showSnackBar(
+                                 SnackBar(content: Text('Error: $e')),
+                               );
+                             }
+                          }
+                        },
+                      );
+                    }),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(l10n.closeLabel),
+                ),
+              ],
             );
           },
         );
@@ -612,5 +705,25 @@ class _ProgressStatCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class KeepAlivePage extends StatefulWidget {
+  final Widget child;
+  const KeepAlivePage({super.key, required this.child});
+
+  @override
+  State<KeepAlivePage> createState() => _KeepAlivePageState();
+}
+
+class _KeepAlivePageState extends State<KeepAlivePage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
   }
 }
