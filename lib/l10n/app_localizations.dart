@@ -1939,6 +1939,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notifications to remind you to read your assigned parayan adhyays'**
   String get parayanRemindersNote;
+
+  /// No description provided for @favorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favorites;
+
+  /// No description provided for @myFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'My Favorites'**
+  String get myFavorites;
+
+  /// No description provided for @createPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Playlist'**
+  String get createPlaylist;
+
+  /// No description provided for @renamePlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename Playlist'**
+  String get renamePlaylist;
+
+  /// No description provided for @deletePlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Playlist'**
+  String get deletePlaylist;
+
+  /// No description provided for @playlistName.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist Name'**
+  String get playlistName;
+
+  /// No description provided for @addAarti.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get addAarti;
+
+  /// No description provided for @removeAarti.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get removeAarti;
+
+  /// No description provided for @playAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Play All'**
+  String get playAll;
+
+  /// No description provided for @addToPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Playlist'**
+  String get addToPlaylist;
+
+  /// No description provided for @createNewPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New Playlist'**
+  String get createNewPlaylist;
+
+  /// No description provided for @playlistCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist Created'**
+  String get playlistCreated;
+
+  /// No description provided for @playlistRenamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist Renamed'**
+  String get playlistRenamed;
+
+  /// No description provided for @playlistDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist Deleted'**
+  String get playlistDeleted;
+
+  /// No description provided for @playlistNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist name is required'**
+  String get playlistNameRequired;
+
+  /// No description provided for @playlistNameMaxChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist name must be under 50 characters'**
+  String get playlistNameMaxChars;
+
+  /// No description provided for @playlistAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'A playlist with this name already exists'**
+  String get playlistAlreadyExists;
+
+  /// No description provided for @addedToPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to Playlist'**
+  String get addedToPlaylist;
+
+  /// No description provided for @removedFromPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from Playlist'**
+  String get removedFromPlaylist;
+
+  /// No description provided for @defaultPlaylistCannotBeDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Default playlist cannot be deleted'**
+  String get defaultPlaylistCannotBeDeleted;
+
+  /// No description provided for @myPlaylists.
+  ///
+  /// In en, this message translates to:
+  /// **'My Playlists'**
+  String get myPlaylists;
 }
 
 class _AppLocalizationsDelegate

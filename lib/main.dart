@@ -22,6 +22,7 @@ import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
+import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
 import 'package:gajanan_maharaj_sevekari/sankalp/sankalp_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
@@ -38,6 +39,8 @@ import 'package:gajanan_maharaj_sevekari/admin/parayan_coordination_dashboard.da
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/create_parayan_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/user_notifications_screen.dart';
+import 'package:gajanan_maharaj_sevekari/other/my_playlist_screen.dart';
+import 'package:gajanan_maharaj_sevekari/other/playlist_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/navigator_service.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -61,12 +64,14 @@ void main() async {
   final localeProvider = LocaleProvider();
   final fontProvider = FontProvider();
   final appConfigProvider = AppConfigProvider();
+  final playlistProvider = PlaylistProvider();
 
   await Future.wait([
     themeProvider.loadTheme(),
     localeProvider.loadLocale(),
     fontProvider.loadFonts(),
     appConfigProvider.loadAppConfig(),
+    playlistProvider.init(),
   ]);
 
   runApp(
@@ -76,6 +81,7 @@ void main() async {
         ChangeNotifierProvider.value(value: localeProvider),
         ChangeNotifierProvider.value(value: fontProvider),
         ChangeNotifierProvider.value(value: appConfigProvider),
+        ChangeNotifierProvider.value(value: playlistProvider),
       ],
       child: const MyApp(),
     ),
@@ -189,6 +195,8 @@ class _MyAppState extends State<MyApp> {
             Routes.parayanList: (context) => ParayanListScreen(),
             Routes.nityopasanaConsolidated: (context) =>
                 const NityopasanaConsolidatedScreen(),
+            Routes.myPlaylists: (context) => const MyPlaylistsScreen(),
+            Routes.playlistDetail: (context) => const PlaylistDetailScreen(),
           },
           onGenerateRoute: (settings) {
             final DeityConfig? deity = settings.arguments is DeityConfig

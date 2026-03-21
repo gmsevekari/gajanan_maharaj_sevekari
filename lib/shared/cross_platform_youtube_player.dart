@@ -7,8 +7,15 @@ class CrossPlatformYoutubePlayer extends StatefulWidget {
   final String videoId;
   final bool autoPlay;
   final VoidCallback? onLaunchYoutube;
+  final VoidCallback? onEnded;
 
-  const CrossPlatformYoutubePlayer({super.key, required this.videoId, this.autoPlay = false, this.onLaunchYoutube});
+  const CrossPlatformYoutubePlayer({
+    super.key, 
+    required this.videoId, 
+    this.autoPlay = false, 
+    this.onLaunchYoutube,
+    this.onEnded,
+  });
 
   @override
   State<CrossPlatformYoutubePlayer> createState() => _CrossPlatformYoutubePlayerState();
@@ -30,6 +37,11 @@ class _CrossPlatformYoutubePlayerState extends State<CrossPlatformYoutubePlayer>
           mute: false,
         ),
       );
+      _webController!.listen((event) {
+        if (event.playerState == web_player.PlayerState.ended) {
+          widget.onEnded?.call();
+        }
+      });
     } else {
       _mobileController = mobile_player.YoutubePlayerController(
         initialVideoId: widget.videoId,
@@ -37,6 +49,11 @@ class _CrossPlatformYoutubePlayerState extends State<CrossPlatformYoutubePlayer>
           autoPlay: widget.autoPlay,
         ),
       );
+      _mobileController!.addListener(() {
+        if (_mobileController!.value.playerState == mobile_player.PlayerState.ended) {
+          widget.onEnded?.call();
+        }
+      });
     }
   }
 

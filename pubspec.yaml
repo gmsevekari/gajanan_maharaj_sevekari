@@ -59,6 +59,7 @@ dependencies:
   flutter_local_notifications: ^21.0.0
   flutter_app_badge_control: ^0.0.1
   app_links: ^6.3.3
+  uuid: ^4.5.3
 
 dev_dependencies:
   flutter_test:
