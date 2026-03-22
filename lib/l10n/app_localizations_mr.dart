@@ -998,10 +998,10 @@ class AppLocalizationsMr extends AppLocalizations {
   String get filterCompleted => 'पूर्ण झालेले';
 
   @override
-  String get filterPending => 'प्रलंबित';
+  String get filterPending => 'अपूर्ण';
 
   @override
-  String get exportAllocations => 'सर्व गट निर्यात करा';
+  String get exportAllocations => 'अध्याय स्टेटस एक्स्पोर्ट करा';
 
   @override
   String get exportingGroups => 'गट स्नॅपशॉट तयार करत आहे...';
@@ -1019,8 +1019,8 @@ class AppLocalizationsMr extends AppLocalizations {
   String get adhyaysLabel => 'अध्याय';
 
   @override
-  String get statusLabel => 'स्थिती';
+  String get statusLabel => 'स्टेटस';
 
   @override
-  String get allGroups => 'सर्व गट';
+  String get shareParayan => 'पारायण लिंक शेअर करा';
 }

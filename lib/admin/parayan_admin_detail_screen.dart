@@ -107,12 +107,6 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.ios_share),
-                tooltip: localizations.exportAllocations,
-                onPressed: () =>
-                    _exportAllGroups(context, event, localizations),
-              ),
-              IconButton(
                 icon: const Icon(Icons.home),
                 onPressed: () =>
                     Navigator.of(context).popUntil((route) => route.isFirst),
@@ -221,7 +215,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               l10n.quickActionsLabel.toUpperCase(),
               style: theme.textTheme.labelSmall?.copyWith(
                 letterSpacing: 1.2,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                color: theme.colorScheme.onSurface.withOpacity(0.5),
               ),
             ),
             const SizedBox(height: 12),
@@ -233,8 +227,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 ElevatedButton.icon(
                   onPressed: _sendManualPing,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
+                    backgroundColor: theme.colorScheme.primaryContainer,
+                    foregroundColor: theme.colorScheme.onPrimaryContainer,
                     padding: const EdgeInsets.symmetric(
                       vertical: 12,
                       horizontal: 20,
@@ -253,18 +247,39 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     Share.share(shareText);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.secondaryContainer,
-                    foregroundColor: theme.colorScheme.onSecondaryContainer,
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       vertical: 12,
-                      horizontal: 20,
+                      horizontal: 16,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   icon: const Icon(Icons.share, size: 20),
-                  label: const Text("Share Parayan"),
+                  label: Text(l10n.shareParayan),
+                ),
+                // const SizedBox(width: 8), // Removed as Wrap handles spacing
+                ElevatedButton.icon(
+                  onPressed: participants.isNotEmpty
+                      ? () => _exportAllGroups(context, event, l10n)
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.secondary,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey.shade200,
+                    disabledForegroundColor: Colors.grey.shade400,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.ios_share, size: 20),
+                  label: Text(l10n.exportAllocations),
                 ),
               ],
             ),
@@ -798,8 +813,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
 
       final String shareText =
           Localizations.localeOf(context).languageCode == 'mr'
-              ? "${event.titleMr} - ${l10n.allGroups}"
-              : "${event.titleEn} - All Groups";
+              ? "${event.titleMr}"
+              : "${event.titleEn}";
 
       if (context.mounted) Navigator.of(context).pop(); // Close loading dialog
 
@@ -920,6 +935,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         l10n.parayanParticipant,
+                        textAlign: TextAlign.center,
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                       ),
                     ),
@@ -927,6 +943,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         l10n.adhyaysLabel,
+                        textAlign: TextAlign.center,
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                       ),
                     ),
@@ -934,6 +951,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         l10n.statusLabel,
+                        textAlign: TextAlign.center,
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                       ),
                     ),
@@ -946,6 +964,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           p.name,
+                          textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 13),
                         ),
                       ),
@@ -953,6 +972,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           p.assignedAdhyays.join(', '),
+                          textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
@@ -963,6 +983,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           p.isFullyCompleted ? "Done" : "Pending",
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,

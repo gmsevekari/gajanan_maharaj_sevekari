@@ -81,11 +81,11 @@ class _ParayanListScreenState extends State<ParayanListScreen> {
 
             final upcomingEvents = allEvents.where(
               (e) => e.status != 'completed' && e.startDate.year == currentYear
-            ).toList();
+            ).toList()..sort((a, b) => a.startDate.compareTo(b.startDate));
 
             final completedEvents = allEvents.where(
               (e) => e.status == 'completed' && e.startDate.year == currentYear
-            ).toList();
+            ).toList()..sort((a, b) => b.startDate.compareTo(a.startDate));
 
             return TabBarView(
               physics: const NeverScrollableScrollPhysics(),

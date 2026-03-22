@@ -2012,11 +2012,11 @@ abstract class AppLocalizations {
   /// **'Status'**
   String get statusLabel;
 
-  /// No description provided for @allGroups.
+  /// No description provided for @shareParayan.
   ///
   /// In en, this message translates to:
-  /// **'All Groups'**
-  String get allGroups;
+  /// **'Share Parayan'**
+  String get shareParayan;
 }
 
 class _AppLocalizationsDelegate

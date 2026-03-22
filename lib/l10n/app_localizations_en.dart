@@ -1023,5 +1023,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusLabel => 'Status';
 
   @override
-  String get allGroups => 'All Groups';
+  String get shareParayan => 'Share Parayan';
 }

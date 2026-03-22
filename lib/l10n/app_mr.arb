@@ -393,13 +393,13 @@
   "updateEnrollmentLabel": "साईन-अप अपडेट करा",
   "filterAll": "सर्व",
   "filterCompleted": "पूर्ण झालेले",
-  "filterPending": "प्रलंबित",
-  "exportAllocations": "सर्व गट निर्यात करा",
+  "filterPending": "अपूर्ण",
+  "exportAllocations": "अध्याय स्टेटस एक्स्पोर्ट करा",
   "exportingGroups": "गट स्नॅपशॉट तयार करत आहे...",
   "seattleGajananMaharajParivar": "सिएटल गजानन महाराज परिवार",
   "jaiGajanan": "जय गजानन",
   "parayanParticipant": "सहभागी",
   "adhyaysLabel": "अध्याय",
-  "statusLabel": "स्थिती",
-  "allGroups": "सर्व गट"
+  "statusLabel": "स्टेटस",
+  "shareParayan": "पारायण लिंक शेअर करा"
 }
