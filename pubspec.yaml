@@ -122,6 +122,8 @@ flutter:
     - resources/images/gajanan_maharaj/social/
     - resources/images/datta_maharaj/
     - resources/texts/datta_maharaj/about/
+    - resources/texts/datta_maharaj/granth/
+    - resources/images/datta_maharaj/granth/
     - resources/texts/datta_maharaj/stotras/
     - resources/images/datta_maharaj/stotras/
     - resources/texts/datta_maharaj/bhajans/
