@@ -388,5 +388,10 @@
   "upcomingParayansTab": "Upcoming",
   "completedParayansTab": "Completed",
   "parayanReminders": "Parayan Reminders",
-  "parayanRemindersNote": "Notifications to remind you to read your assigned parayan adhyays"
+  "parayanRemindersNote": "Notifications to remind you to read your assigned parayan adhyays",
+  "editEnrollmentLabel": "Edit Enrollment",
+  "updateEnrollmentLabel": "Update Enrollment",
+  "filterAll": "All",
+  "filterCompleted": "Completed",
+  "filterPending": "Pending"
 }

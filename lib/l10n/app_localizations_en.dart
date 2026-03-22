@@ -985,4 +985,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get parayanRemindersNote =>
       'Notifications to remind you to read your assigned parayan adhyays';
+
+  @override
+  String get editEnrollmentLabel => 'Edit Enrollment';
+
+  @override
+  String get updateEnrollmentLabel => 'Update Enrollment';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterCompleted => 'Completed';
+
+  @override
+  String get filterPending => 'Pending';
 }

@@ -1939,6 +1939,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notifications to remind you to read your assigned parayan adhyays'**
   String get parayanRemindersNote;
+
+  /// No description provided for @editEnrollmentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Enrollment'**
+  String get editEnrollmentLabel;
+
+  /// No description provided for @updateEnrollmentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Enrollment'**
+  String get updateEnrollmentLabel;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get filterCompleted;
+
+  /// No description provided for @filterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get filterPending;
 }
 
 class _AppLocalizationsDelegate

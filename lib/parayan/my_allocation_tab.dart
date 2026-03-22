@@ -9,7 +9,11 @@ class MyAllocationTab extends StatefulWidget {
   final ParayanEvent event;
   final String deviceId;
 
-  const MyAllocationTab({super.key, required this.event, required this.deviceId});
+  const MyAllocationTab({
+    super.key,
+    required this.event,
+    required this.deviceId,
+  });
 
   @override
   State<MyAllocationTab> createState() => _MyAllocationTabState();
@@ -65,7 +69,6 @@ class _MyAllocationTabState extends State<MyAllocationTab>
         }
 
         final isEnrolling = widget.event.status == 'enrolling';
-        final isAllocated = widget.event.status == 'allocated';
         final isOngoing = widget.event.status == 'ongoing';
 
         if (participants.isEmpty) {
@@ -124,65 +127,78 @@ class _MyAllocationTabState extends State<MyAllocationTab>
           );
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: participants.length,
-          itemBuilder: (context, pIndex) {
-            final entry = participants[pIndex];
-            final globalIndex = entry.key;
-            final participant = entry.value;
+        return Builder(
+          builder: (context) {
+            Widget buildParticipantCard(int pIndex) {
+              final entry = participants[pIndex];
+              final globalIndex = entry.key;
+              final participant = entry.value;
 
-            final int groupSize = (widget.event.type == ParayanType.threeDay) ? 7 : 21;
-            final int groupNumber = (globalIndex ~/ groupSize) + 1;
+              final int groupSize = (widget.event.type == ParayanType.threeDay)
+                  ? 7
+                  : 21;
+              final int groupNumber = (globalIndex ~/ groupSize) + 1;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (pIndex > 0) const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.person,
-                      size: 20,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${participant.name} (${localizations.groupLabel(groupNumber.toString())})',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (pIndex > 0) const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.person,
+                        size: 20,
                         color: theme.colorScheme.primary,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ...participant.assignedAdhyays.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final adhyay = entry.value;
-                  final dayNum = index + 1;
-                  final isRead =
-                      participant.completions[dayNum.toString()] ?? false;
-
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: _buildAllocationItem(
-                      context,
-                      dayNum: dayNum,
-                      adhyay: adhyay,
-                      isRead: isRead,
-                      isOngoing: isOngoing,
-                      theme: theme,
-                      onComplete: () => _parayanService.updateMemberCompletion(
-                        eventId: widget.event.id,
-                        deviceId: widget.deviceId,
-                        memberName: participant.name,
-                        dayIndex: dayNum,
-                        completed: true,
+                      const SizedBox(width: 8),
+                      Text(
+                        '${participant.name} (${localizations.groupLabel(groupNumber.toString())})',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ...participant.assignedAdhyays.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final adhyay = entry.value;
+                    final dayNum = index + 1;
+                    final isRead =
+                        participant.completions[dayNum.toString()] ?? false;
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: _buildAllocationItem(
+                        context,
+                        dayNum: dayNum,
+                        adhyay: adhyay,
+                        isRead: isRead,
+                        isOngoing: isOngoing,
+                        theme: theme,
+                        onComplete: () =>
+                            _parayanService.updateMemberCompletion(
+                              eventId: widget.event.id,
+                              deviceId: widget.deviceId,
+                              memberName: participant.name,
+                              dayIndex: dayNum,
+                              completed: true,
+                            ),
+                      ),
+                    );
+                  }),
+                ],
+              );
+            }
+
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                ...List.generate(
+                  participants.length,
+                  (pIndex) => buildParticipantCard(pIndex),
+                ),
               ],
             );
           },
@@ -221,7 +237,9 @@ class _MyAllocationTabState extends State<MyAllocationTab>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: isRead ? Colors.green : theme.colorScheme.primary.withValues(alpha: 0.1),
+                color: isRead
+                    ? Colors.green
+                    : theme.colorScheme.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: isRead ? Colors.green : theme.colorScheme.primary,
@@ -232,9 +250,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
               child: Text(
                 _formatNumber(context, dayNum),
                 style: TextStyle(
-                  color: isRead
-                      ? Colors.white
-                      : theme.colorScheme.primary,
+                  color: isRead ? Colors.white : theme.colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -277,7 +293,16 @@ class _MyAllocationTabState extends State<MyAllocationTab>
                 child: Text(localizations.submitLabel),
               )
             else
-              Icon(Icons.radio_button_unchecked, color: Colors.grey[600]),
+              ElevatedButton(
+                onPressed: null,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Text(localizations.submitLabel),
+              ),
           ],
         ),
       ),
@@ -301,7 +326,8 @@ class _MyAllocationTabState extends State<MyAllocationTab>
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                    content: Text("Reading progress updated successfully!")),
+                  content: Text("Reading progress updated successfully!"),
+                ),
               );
             },
             child: const Text("Yes"),

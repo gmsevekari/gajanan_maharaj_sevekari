@@ -11,13 +11,14 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
+import 'dart:async';
 
 class ParayanDetailScreen extends StatefulWidget {
   final ParayanEvent? event;
   final String? eventId;
 
   const ParayanDetailScreen({super.key, this.event, this.eventId})
-      : assert(event != null || eventId != null);
+    : assert(event != null || eventId != null);
 
   @override
   State<ParayanDetailScreen> createState() => _ParayanDetailScreenState();
@@ -31,6 +32,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
   bool _isRegistered = false;
   late Stream<List<ParayanMember>> _participantsStream;
   ParayanEvent? _event;
+  StreamSubscription<ParayanEvent>? _eventSubscription;
 
   @override
   void initState() {
@@ -42,15 +44,21 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
     _getDeviceId();
 
     if (_event == null) {
-      _fetchEvent(widget.eventId!);
+      _fetchEvent(effectiveEventId);
+    } else {
+      // Setup live listener even if we already have the widget.event
+      _fetchEvent(effectiveEventId);
     }
   }
 
   void _fetchEvent(String id) {
-    _parayanService.getEventById(id).first.then((event) {
+    _eventSubscription?.cancel();
+    _eventSubscription = _parayanService.getEventById(id).listen((
+      updatedEvent,
+    ) {
       if (mounted) {
         setState(() {
-          _event = event;
+          _event = updatedEvent;
         });
       }
     });
@@ -80,26 +88,29 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
         .getParticipantsByDevice(effectiveEventId, deviceId)
         .first
         .then((list) {
-      if (mounted) {
-        final newIsRegistered = list.isNotEmpty;
-        if (newIsRegistered != _isRegistered) {
-          setState(() {
-            _isRegistered = newIsRegistered;
-            final oldController = _tabController;
-            _tabController =
-                TabController(length: _isRegistered ? 2 : 1, vsync: this);
-            // Dispose the old controller after the new one is assigned
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              oldController.dispose();
-            });
-          });
-        }
-      }
-    });
+          if (mounted) {
+            final newIsRegistered = list.isNotEmpty;
+            if (newIsRegistered != _isRegistered) {
+              setState(() {
+                _isRegistered = newIsRegistered;
+                final oldController = _tabController;
+                _tabController = TabController(
+                  length: _isRegistered ? 2 : 1,
+                  vsync: this,
+                );
+                // Dispose the old controller after the new one is assigned
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  oldController.dispose();
+                });
+              });
+            }
+          }
+        });
   }
 
   @override
   void dispose() {
+    _eventSubscription?.cancel();
     _tabController.dispose();
     super.dispose();
   }
@@ -159,7 +170,9 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          locale == 'mr' ? _event!.titleMr : _event!.titleEn,
+          _event == null
+              ? localizations.parayanTitle
+              : (locale == 'mr' ? _event!.titleMr : _event!.titleEn),
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -196,10 +209,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                       child: Row(
                         children: [
                           // Vertical Saffron Accent Line
-                          Container(
-                            width: 4,
-                            color: theme.colorScheme.primary,
-                          ),
+                          Container(width: 4, color: theme.colorScheme.primary),
                           Expanded(
                             child: Padding(
                               padding: EdgeInsets.all(isLandscape ? 8.0 : 16.0),
@@ -209,12 +219,13 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                 children: [
                                   Text(
                                     localizations.parayanDetailsHeader,
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      color: theme.colorScheme.secondary,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1.2,
-                                      fontSize: isLandscape ? 14 : null,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          color: theme.colorScheme.secondary,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 1.2,
+                                          fontSize: isLandscape ? 14 : null,
+                                        ),
                                   ),
                                   SizedBox(height: isLandscape ? 4 : 12),
                                   Row(
@@ -229,26 +240,30 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                               localizations.dateLabel,
                                               style: theme.textTheme.bodySmall
                                                   ?.copyWith(
-                                                color: theme.brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.grey[400]
-                                                    : Colors.grey[700],
-                                                fontWeight: FontWeight.bold,
-                                                fontSize:
-                                                    isLandscape ? 10 : null,
-                                              ),
+                                                    color:
+                                                        theme.brightness ==
+                                                            Brightness.dark
+                                                        ? Colors.grey[400]
+                                                        : Colors.grey[700],
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: isLandscape
+                                                        ? 10
+                                                        : null,
+                                                  ),
                                             ),
                                             const SizedBox(height: 2),
                                             Text(
                                               _getSmartDate(locale),
                                               style: theme.textTheme.titleMedium
                                                   ?.copyWith(
-                                                color: theme
-                                                    .colorScheme.onSurface,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize:
-                                                    isLandscape ? 14 : null,
-                                              ),
+                                                    color: theme
+                                                        .colorScheme
+                                                        .onSurface,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: isLandscape
+                                                        ? 14
+                                                        : null,
+                                                  ),
                                             ),
                                           ],
                                         ),
@@ -271,33 +286,37 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                               localizations.typeLabel,
                                               style: theme.textTheme.bodySmall
                                                   ?.copyWith(
-                                                color: theme.brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.grey[400]
-                                                    : Colors.grey[700],
-                                                fontWeight: FontWeight.bold,
-                                                fontSize:
-                                                    isLandscape ? 10 : null,
-                                              ),
+                                                    color:
+                                                        theme.brightness ==
+                                                            Brightness.dark
+                                                        ? Colors.grey[400]
+                                                        : Colors.grey[700],
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: isLandscape
+                                                        ? 10
+                                                        : null,
+                                                  ),
                                             ),
                                             const SizedBox(height: 2),
                                             Text(
                                               _event!.type == ParayanType.oneDay
                                                   ? localizations.oneDayParayan
                                                   : _event!.type ==
-                                                          ParayanType.threeDay
-                                                      ? localizations
-                                                          .threeDayParayan
-                                                      : localizations
-                                                          .guruPushyaParayan,
+                                                        ParayanType.threeDay
+                                                  ? localizations
+                                                        .threeDayParayan
+                                                  : localizations
+                                                        .guruPushyaParayan,
                                               style: theme.textTheme.titleMedium
                                                   ?.copyWith(
-                                                color: theme
-                                                    .colorScheme.onSurface,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize:
-                                                    isLandscape ? 14 : null,
-                                              ),
+                                                    color: theme
+                                                        .colorScheme
+                                                        .onSurface,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: isLandscape
+                                                        ? 14
+                                                        : null,
+                                                  ),
                                             ),
                                           ],
                                         ),
@@ -306,18 +325,23 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                   ),
                                   if (!isLandscape &&
                                       (_event!.descriptionEn.isNotEmpty ||
-                                          _event!.descriptionMr.isNotEmpty)) ...[
+                                          _event!
+                                              .descriptionMr
+                                              .isNotEmpty)) ...[
                                     Divider(
-                                        height: 24, color: theme.dividerColor),
+                                      height: 24,
+                                      color: theme.dividerColor,
+                                    ),
                                     Text(
                                       locale == 'mr'
                                           ? _event!.descriptionMr
                                           : _event!.descriptionEn,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.onSurface
-                                            .withValues(alpha: 0.8),
-                                        height: 1.4,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme.colorScheme.onSurface
+                                                .withValues(alpha: 0.8),
+                                            height: 1.4,
+                                          ),
                                     ),
                                   ],
                                   SizedBox(height: isLandscape ? 4 : 12),
@@ -325,7 +349,9 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                     context,
                                     Icons.info_outline,
                                     _getDescriptiveStatus(
-                                        localizations, locale),
+                                      localizations,
+                                      locale,
+                                    ),
                                     isLandscape: isLandscape,
                                   ),
                                 ],
@@ -342,8 +368,13 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                   stream: _participantsStream,
                   builder: (context, snapshot) {
                     final count = snapshot.data?.length ?? 0;
-                    final canJoin = _event!.status == 'enrolling' ||
+                    final canJoin =
+                        _event!.status == 'enrolling' ||
                         _event!.status == 'allocated';
+
+                    final isEditable = _isRegistered && canJoin;
+                    final isJoinable = !_isRegistered && canJoin;
+                    final isActionEnabled = isEditable || isJoinable;
 
                     return Padding(
                       padding: EdgeInsets.symmetric(
@@ -368,56 +399,89 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                               ),
                               Text(
                                 count.toString(),
-                                style: (isLandscape
-                                        ? theme.textTheme.titleMedium
-                                        : theme.textTheme.titleLarge)
-                                    ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.primary,
-                                ),
+                                style:
+                                    (isLandscape
+                                            ? theme.textTheme.titleMedium
+                                            : theme.textTheme.titleLarge)
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: theme.colorScheme.primary,
+                                        ),
                               ),
                             ],
                           ),
-                          // Join Button
+                          // Join / Edit Button
                           SizedBox(
                             height: isLandscape ? 32 : 40,
                             child: ElevatedButton.icon(
-                              onPressed: canJoin && !_isRegistered
+                              onPressed: isActionEnabled
                                   ? () async {
-                                      final result = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              ParayanSignupScreen(
-                                                  event: _event!),
-                                        ),
-                                      );
-                                      if (result == true && _deviceId != null) {
-                                        _checkRegistration(_deviceId!);
+                                      if (isEditable && _deviceId != null) {
+                                        final household = await _parayanService
+                                            .getHousehold(
+                                              _event!.id,
+                                              _deviceId!,
+                                            );
+                                        if (household != null && mounted) {
+                                          final result = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ParayanSignupScreen(
+                                                    event: _event!,
+                                                    existingEnrollment:
+                                                        household,
+                                                  ),
+                                            ),
+                                          );
+                                          if (result == true &&
+                                              _deviceId != null) {
+                                            _checkRegistration(_deviceId!);
+                                          }
+                                        }
+                                      } else {
+                                        final result = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ParayanSignupScreen(
+                                                  event: _event!,
+                                                ),
+                                          ),
+                                        );
+                                        if (result == true &&
+                                            _deviceId != null) {
+                                          _checkRegistration(_deviceId!);
+                                        }
                                       }
                                     }
                                   : null,
                               icon: Icon(
-                                _isRegistered
-                                    ? Icons.check_circle_outline
-                                    : Icons.person_add_outlined,
+                                isEditable
+                                    ? Icons.edit
+                                    : (_isRegistered
+                                          ? Icons.check_circle_outline
+                                          : Icons.person_add_outlined),
                                 size: isLandscape ? 14 : 18,
                               ),
                               label: Text(
                                 _isRegistered
-                                    ? "Signed Up"
+                                    ? (canJoin
+                                          ? localizations.editEnrollmentLabel
+                                          : "Signed Up")
                                     : localizations.joinParayanLabel,
                                 style: TextStyle(
-                                    fontSize: isLandscape ? 12 : null),
+                                  fontSize: isLandscape ? 12 : null,
+                                ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: canJoin && !_isRegistered
+                                backgroundColor: isActionEnabled
                                     ? theme.colorScheme.primary
                                     : Colors.grey.withValues(alpha: 0.1),
-                                foregroundColor: canJoin && !_isRegistered
+                                foregroundColor: isActionEnabled
                                     ? Colors.white
                                     : Colors.grey,
-                                elevation: canJoin && !_isRegistered ? 2 : 0,
+                                elevation: isActionEnabled ? 2 : 0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
@@ -471,8 +535,12 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
     );
   }
 
-  Widget _buildInfoChip(BuildContext context, IconData icon, String label,
-      {bool isLandscape = false}) {
+  Widget _buildInfoChip(
+    BuildContext context,
+    IconData icon,
+    String label, {
+    bool isLandscape = false,
+  }) {
     final theme = Theme.of(context);
     return Container(
       padding: EdgeInsets.all(isLandscape ? 4 : 8),
@@ -483,18 +551,25 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: isLandscape ? 12 : 16, color: theme.colorScheme.primary),
+          Icon(
+            icon,
+            size: isLandscape ? 12 : 16,
+            color: theme.colorScheme.primary,
+          ),
           const SizedBox(width: 8),
           Flexible(
             child: Text(
               label,
-              style: (isLandscape
-                      ? theme.textTheme.labelSmall?.copyWith(fontSize: 9)
-                      : theme.textTheme.labelSmall)
-                  ?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                fontStyle: FontStyle.italic,
-              ),
+              style:
+                  (isLandscape
+                          ? theme.textTheme.labelSmall?.copyWith(fontSize: 9)
+                          : theme.textTheme.labelSmall)
+                      ?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.8,
+                        ),
+                        fontStyle: FontStyle.italic,
+                      ),
               maxLines: isLandscape ? 1 : null,
               overflow: isLandscape ? TextOverflow.ellipsis : null,
             ),

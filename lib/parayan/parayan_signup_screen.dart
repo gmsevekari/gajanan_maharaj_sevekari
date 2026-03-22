@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
+import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
@@ -11,8 +12,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ParayanSignupScreen extends StatefulWidget {
   final ParayanEvent event;
+  final ParayanHousehold? existingEnrollment;
 
-  const ParayanSignupScreen({super.key, required this.event});
+  const ParayanSignupScreen({
+    super.key,
+    required this.event,
+    this.existingEnrollment,
+  });
 
   @override
   State<ParayanSignupScreen> createState() => _ParayanSignupScreenState();
@@ -25,17 +31,42 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
   final List<TextEditingController> _nameControllers = [
     TextEditingController(),
   ];
-  final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-
+  String _selectedCountryCode = '+1';
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.existingEnrollment != null) {
+      final household = widget.existingEnrollment!;
+      _nameControllers.clear();
+      for (var member in household.members.values) {
+        _nameControllers.add(TextEditingController(text: member.name));
+      }
+      if (_nameControllers.isEmpty) {
+        _nameControllers.add(TextEditingController());
+      }
+
+      // Attempt to split country code from phone
+      var rawPhone = household.phone;
+      final countryCodes = ['+91', '+1', '+44', '+61', '+971'];
+      for (var code in countryCodes) {
+        if (rawPhone.startsWith(code)) {
+          _selectedCountryCode = code;
+          rawPhone = rawPhone.substring(code.length).trim();
+          break;
+        }
+      }
+      _phoneController.text = rawPhone;
+    }
+  }
 
   @override
   void dispose() {
     for (var controller in _nameControllers) {
       controller.dispose();
     }
-    _emailController.dispose();
     _phoneController.dispose();
     super.dispose();
   }
@@ -92,8 +123,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
         type: widget.event.type,
         deviceId: deviceId,
         names: names,
-        email: _emailController.text,
-        phone: _phoneController.text,
+        phone: '$_selectedCountryCode ${_phoneController.text.trim()}',
       );
 
       // Subscribe to topics if parayan reminders are enabled
@@ -153,8 +183,16 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
 
     final isMarathi = localizations.localeName == 'mr';
 
+    final isEditMode = widget.existingEnrollment != null;
+
     return Scaffold(
-      appBar: AppBar(title: Text(localizations.joinParayanLabel)),
+      appBar: AppBar(
+        title: Text(
+          isEditMode
+              ? localizations.editEnrollmentLabel
+              : localizations.joinParayanLabel,
+        ),
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Form(
@@ -203,6 +241,10 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                   ..._nameControllers.asMap().entries.map((entry) {
                     final index = entry.key;
                     final controller = entry.value;
+                    final isExistingMember =
+                        widget.existingEnrollment != null &&
+                        index < widget.existingEnrollment!.members.length;
+
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12.0),
                       child: Row(
@@ -211,17 +253,30 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                           Expanded(
                             child: TextFormField(
                               controller: controller,
+                              enabled: !isExistingMember,
                               decoration: InputDecoration(
                                 labelText: "${localizations.name} ${index + 1}",
-                                icon: const Icon(Icons.person),
+                                icon: Icon(
+                                  Icons.person,
+                                  color: isExistingMember
+                                      ? theme.hintColor
+                                      : theme.colorScheme.primary,
+                                ),
+                                filled: isExistingMember,
+                                fillColor: isExistingMember
+                                    ? theme.disabledColor.withValues(alpha: 0.05)
+                                    : null,
                               ),
+                              style: isExistingMember
+                                  ? TextStyle(color: theme.hintColor)
+                                  : null,
                               validator: (value) =>
                                   value == null || value.isEmpty
-                                  ? localizations.parayanNameRequired
-                                  : null,
+                                      ? localizations.parayanNameRequired
+                                      : null,
                             ),
                           ),
-                          if (_nameControllers.length > 1)
+                          if (_nameControllers.length > 1 && !isExistingMember)
                             IconButton(
                               icon: const Icon(
                                 Icons.remove_circle_outline,
@@ -239,34 +294,36 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                   Divider(color: Colors.grey.withValues(alpha: 0.2)),
                   const SizedBox(height: 24),
 
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      labelText: "Email",
-                      icon: const Icon(Icons.email),
-                      hintText: "e.g. seva@example.com",
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return localizations.emailRequired;
-                      }
-                      final emailRegex = RegExp(
-                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                      );
-                      if (!emailRegex.hasMatch(value.trim())) {
-                        return localizations.invalidEmail;
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   TextFormField(
                     controller: _phoneController,
                     decoration: InputDecoration(
                       labelText: isMarathi ? "फोन नंबर" : "Phone Number",
                       icon: const Icon(Icons.phone),
                       hintText: isMarathi ? "१०-अंकी नंबर" : "10-digit number",
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _selectedCountryCode,
+                            items: ['+91', '+1', '+44', '+61', '+971'].map((
+                              String value,
+                            ) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  _selectedCountryCode = newValue;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
                     ),
                     keyboardType: TextInputType.phone,
                     validator: (value) {
@@ -288,7 +345,11 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: Text(localizations.joinParayanLabel),
+                    child: Text(
+                      isEditMode
+                          ? localizations.updateEnrollmentLabel
+                          : localizations.joinParayanLabel,
+                    ),
                   ),
                 ],
               ),

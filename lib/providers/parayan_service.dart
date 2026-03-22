@@ -62,7 +62,6 @@ class ParayanService {
     required ParayanType type,
     required String deviceId,
     required List<String> names,
-    required String email,
     required String phone,
   }) async {
     final eventDoc = _eventsRef.doc(eventId);
@@ -73,7 +72,12 @@ class ParayanService {
     // We'll fetch all docs to count them accurately for allocation.
     final querySnapshot = await participantsRef.get();
     int currentTotal = 0;
+    ParayanHousehold? existingHousehold;
+
     for (var doc in querySnapshot.docs) {
+      if (doc.id == deviceId) {
+        existingHousehold = ParayanHousehold.fromFirestore(doc);
+      }
       final data = doc.data() as Map<String, dynamic>;
       final members = data['members'] as Map<String, dynamic>? ?? {};
       currentTotal += members.length;
@@ -82,6 +86,13 @@ class ParayanService {
     final Map<String, ParayanMember> membersMap = {};
 
     for (var name in names) {
+      if (existingHousehold != null &&
+          existingHousehold.members.containsKey(name)) {
+        // PRESERVE HISTORICAL ALLOCATION ACTUALLY
+        membersMap[name] = existingHousehold.members[name]!;
+        continue;
+      }
+
       List<int> assigned;
       Map<String, bool> completions = {};
 
@@ -111,7 +122,6 @@ class ParayanService {
 
     final household = ParayanHousehold(
       deviceId: deviceId,
-      email: email,
       phone: phone,
       joinedAt: DateTime.now(),
       members: membersMap,
@@ -124,6 +134,21 @@ class ParayanService {
     // NOTE: We are skipping the eventDoc 'joinedParticipants' update here
     // because standard users likely don't have WRITE permission on the event doc.
     // Dashboard and Tabs calculate the count dynamically using getAllParticipants().
+  }
+
+  Future<ParayanHousehold?> getHousehold(
+    String eventId,
+    String deviceId,
+  ) async {
+    final docRef = _eventsRef
+        .doc(eventId)
+        .collection('participants')
+        .doc(deviceId);
+    final doc = await docRef.get();
+    if (doc.exists) {
+      return ParayanHousehold.fromFirestore(doc);
+    }
+    return null;
   }
 
   Future<void> updateMemberCompletion({

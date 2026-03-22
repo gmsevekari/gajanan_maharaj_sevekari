@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/utils/deeplink_manager.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -19,6 +20,22 @@ class _SplashScreenState extends State<SplashScreen> {
     // Wait for a few seconds then navigate to the HomeScreen or pending notification route
     Timer(const Duration(milliseconds: 500), () {
       if (!mounted) return;
+
+      // 1. Check for Pending Deep Link (High Priority)
+      final pendingDeepLink = DeepLinkManager.consumePendingRoute();
+      if (pendingDeepLink != null) {
+        debugPrint(
+          '[DeepLinkManager] SplashScreen: Navigating to pending deep link: ${pendingDeepLink['route']}',
+        );
+        Navigator.of(context).pushReplacementNamed(Routes.home);
+        Navigator.of(context).pushNamed(
+          pendingDeepLink['route'],
+          arguments: pendingDeepLink['arguments'],
+        );
+        return;
+      }
+
+      // 2. Check for Pending Push Notification
       final pendingRoute = NotificationManager.consumePendingRoute();
       if (pendingRoute != null) {
         debugPrint(
@@ -27,6 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.of(context).pushReplacementNamed(Routes.home);
         Navigator.of(context).pushNamed(pendingRoute);
       } else {
+        // 3. Fallback to Home
         Navigator.of(context).pushReplacementNamed(Routes.home);
       }
     });

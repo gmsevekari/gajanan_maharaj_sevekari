@@ -388,5 +388,10 @@
   "upcomingParayansTab": "आगामी",
   "completedParayansTab": "पूर्ण झालेले",
   "parayanReminders": "पारायण रिमाइंडर",
-  "parayanRemindersNote": "तुम्हाला नेमून दिलेले परायणाचे अध्याय वाचण्याची आठवण करून देणारे नोटिफिकेशन्स प्राप्त करा"
+  "parayanRemindersNote": "तुम्हाला नेमून दिलेले परायणाचे अध्याय वाचण्याची आठवण करून देणारे नोटिफिकेशन्स प्राप्त करा",
+  "editEnrollmentLabel": "साईन-अप बदला",
+  "updateEnrollmentLabel": "साईन-अप अपडेट करा",
+  "filterAll": "सर्व",
+  "filterCompleted": "पूर्ण झालेले",
+  "filterPending": "अपूर्ण"
 }

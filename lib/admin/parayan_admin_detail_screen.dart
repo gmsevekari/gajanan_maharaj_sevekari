@@ -8,6 +8,9 @@ import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+enum _ParticipantFilter { all, completed, pending }
 
 class ParayanAdminDetailScreen extends StatefulWidget {
   final ParayanEvent event;
@@ -26,6 +29,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   late Stream<List<ParayanMember>> _overviewParticipantsStream;
   late Stream<List<ParayanMember>> _participantsTabStream;
   late Stream<ParayanEvent> _eventStream;
+  _ParticipantFilter _currentFilter = _ParticipantFilter.all;
 
   @override
   void initState() {
@@ -235,7 +239,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 ElevatedButton.icon(
                   onPressed: () {
                     final shareText =
-                        'Join this Parayan: ${event.titleEn}\n\nLink: http://gajananmaharajsevekari.org/parayan/${event.id}';
+                        'Join this Parayan: ${event.titleEn}\n\nLink: https://gajananmaharajsevekari.org/parayan/${event.id}';
                     Share.share(shareText);
                   },
                   style: ElevatedButton.styleFrom(
@@ -489,62 +493,136 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
 
         final participants = snapshot.data ?? [];
 
-        if (participants.isEmpty) {
-          return Center(child: Text(l10n.noResultsFound));
-        }
+        // Map participants to their original index for correct group number calculation
+        final indexedParticipants = participants.asMap().entries.toList();
 
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: participants.length,
-          itemBuilder: (context, index) {
-            final p = participants[index];
-            final allDone = p.completions.values.every((v) => v);
+        // Filter based on completion status
+        final filteredParticipants = indexedParticipants.where((entry) {
+          final allDone = entry.value.completions.values.every((v) => v);
+          if (_currentFilter == _ParticipantFilter.completed) return allDone;
+          if (_currentFilter == _ParticipantFilter.pending) return !allDone;
+          return true;
+        }).toList();
 
-            final int groupSize = (event.type == ParayanType.threeDay) ? 7 : 21;
-            final int groupNumber = (index ~/ groupSize) + 1;
+        return Column(
+          children: [
+            _buildParticipantsFilterBar(l10n, theme),
+            Expanded(
+              child: filteredParticipants.isEmpty
+                  ? Center(child: Text(l10n.noResultsFound))
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: filteredParticipants.length,
+                      itemBuilder: (context, index) {
+                        final entry = filteredParticipants[index];
+                        final originalIndex = entry.key;
+                        final p = entry.value;
+                        final allDone = p.completions.values.every((v) => v);
 
-            return Card(
-              // Uses AppTheme.cardTheme: color, elevation, shape, border
-              margin: const EdgeInsets.only(bottom: 12),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                leading: CircleAvatar(
-                  backgroundColor: allDone
-                      ? Colors.green.withValues(alpha: 0.15)
-                      : theme.colorScheme.primaryContainer,
-                  child: Icon(
-                    allDone ? Icons.check_circle : Icons.person_outline,
-                    color: allDone ? Colors.green : theme.colorScheme.primary,
-                  ),
-                ),
-                title: Text(
-                  p.name,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(
-                  "${l10n.groupLabel(groupNumber.toString())} • ${l10n.adminAdhyaysLabel(p.assignedAdhyays.join(', '))}",
-                  style: theme.textTheme.bodySmall,
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.edit_note, color: theme.colorScheme.primary),
-                  onPressed: () => _showParticipantEditDialog(
-                    context,
-                    l10n,
-                    p,
-                    event,
-                    groupNumber,
-                  ),
-                ),
-              ),
-            );
-          },
+                        final int groupSize =
+                            (event.type == ParayanType.threeDay) ? 7 : 21;
+                        final int groupNumber =
+                            (originalIndex ~/ groupSize) + 1;
+
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            leading: CircleAvatar(
+                              backgroundColor: allDone
+                                  ? Colors.green.withValues(alpha: 0.15)
+                                  : theme.colorScheme.primaryContainer,
+                              child: Icon(
+                                allDone
+                                    ? Icons.check_circle
+                                    : Icons.person_outline,
+                                color: allDone
+                                    ? Colors.green
+                                    : theme.colorScheme.primary,
+                              ),
+                            ),
+                            title: Text(
+                              p.name,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              "${l10n.groupLabel(groupNumber.toString())} • ${l10n.adminAdhyaysLabel(p.assignedAdhyays.join(', '))}",
+                              style: theme.textTheme.bodySmall,
+                            ),
+                            trailing: IconButton(
+                              icon: Icon(
+                                Icons.edit_note,
+                                color: theme.colorScheme.primary,
+                              ),
+                              onPressed: () => _showParticipantEditDialog(
+                                context,
+                                l10n,
+                                p,
+                                event,
+                                groupNumber,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
         );
       },
+    );
+  }
+
+  Widget _buildParticipantsFilterBar(AppLocalizations l10n, ThemeData theme) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          _buildFilterChip(l10n.filterAll, _ParticipantFilter.all, theme),
+          const SizedBox(width: 8),
+          _buildFilterChip(
+            l10n.filterCompleted,
+            _ParticipantFilter.completed,
+            theme,
+          ),
+          const SizedBox(width: 8),
+          _buildFilterChip(
+            l10n.filterPending,
+            _ParticipantFilter.pending,
+            theme,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(
+    String label,
+    _ParticipantFilter filter,
+    ThemeData theme,
+  ) {
+    final isSelected = _currentFilter == filter;
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        if (selected) {
+          setState(() {
+            _currentFilter = filter;
+          });
+        }
+      },
+      selectedColor: theme.colorScheme.primary.withValues(alpha: 0.2),
+      labelStyle: TextStyle(
+        color: isSelected ? theme.colorScheme.primary : theme.hintColor,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      ),
     );
   }
 
@@ -569,17 +647,26 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (member.email != null && member.email!.isNotEmpty)
-                      ListTile(
-                        leading: const Icon(Icons.email),
-                        title: Text(member.email!),
-                        visualDensity: VisualDensity.compact,
-                        contentPadding: EdgeInsets.zero,
-                      ),
                     if (member.phone != null && member.phone!.isNotEmpty)
                       ListTile(
                         leading: const Icon(Icons.phone),
                         title: Text(member.phone!),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.message, color: Colors.green),
+                          onPressed: () async {
+                            final number = member.phone!.replaceAll(
+                              RegExp(r"[^\d+]"),
+                              "",
+                            );
+                            final url = 'https://wa.me/$number';
+                            if (await canLaunchUrl(Uri.parse(url))) {
+                              await launchUrl(
+                                Uri.parse(url),
+                                mode: LaunchMode.externalApplication,
+                              );
+                            }
+                          },
+                        ),
                         visualDensity: VisualDensity.compact,
                         contentPadding: EdgeInsets.zero,
                       ),
@@ -605,6 +692,12 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         value: isDone,
                         onChanged: (val) async {
                           if (val == null) return;
+
+                          // Optimistic update for instant UI feedback
+                          setDialogState(() {
+                            member.completions[idx.toString()] = val;
+                          });
+
                           try {
                             await _parayanService.updateMemberCompletion(
                               eventId: event.id,
@@ -613,10 +706,11 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                               dayIndex: idx,
                               completed: val,
                             );
-                            setDialogState(() {
-                              member.completions[idx.toString()] = val;
-                            });
                           } catch (e) {
+                            // Revert optimistic update on failure
+                            setDialogState(() {
+                              member.completions[idx.toString()] = !val;
+                            });
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('Error: $e')),

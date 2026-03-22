@@ -984,4 +984,19 @@ class AppLocalizationsMr extends AppLocalizations {
   @override
   String get parayanRemindersNote =>
       'तुम्हाला नेमून दिलेले परायणाचे अध्याय वाचण्याची आठवण करून देणारे नोटिफिकेशन्स प्राप्त करा';
+
+  @override
+  String get editEnrollmentLabel => 'साईन-अप बदला';
+
+  @override
+  String get updateEnrollmentLabel => 'साईन-अप अपडेट करा';
+
+  @override
+  String get filterAll => 'सर्व';
+
+  @override
+  String get filterCompleted => 'पूर्ण झालेले';
+
+  @override
+  String get filterPending => 'अपूर्ण';
 }
