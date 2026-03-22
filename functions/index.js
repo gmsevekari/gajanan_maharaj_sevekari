@@ -89,19 +89,7 @@ exports.updateParayanStatuses = onSchedule("0 * * * *", async (event) => {
 
   const parayansRef = db.collection("parayan_events");
 
-  // 1. Enrolling -> Allocated (6 PM the day BEFORE start date)
-  const enrollingQuery = await parayansRef.where("status", "==", "enrolling").get();
-  for (const doc of enrollingQuery.docs) {
-    const data = doc.data();
-    const startDate = DateTime.fromJSDate(data.startDate.toDate()).setZone("America/Los_Angeles").startOf("day");
-    const dayBeforeStart = startDate.minus({ days: 1 });
-
-    // If today is exactly the day before AND it's 6 PM (18:00) or later
-    if (todaySeattle.equals(dayBeforeStart) && currentHour >= 18) {
-      await doc.ref.update({ status: "allocated" });
-      logger.info(`Auto-transitioned Parayan ${doc.id} to allocated (6 PM rule).`);
-    }
-  }
+  // (Removed: Enrolling -> Allocated transition - now handled manually by Admin in app)
 
   // 2. Allocated -> Ongoing (On start date)
   const allocatedQuery = await parayansRef.where("status", "==", "allocated").get();

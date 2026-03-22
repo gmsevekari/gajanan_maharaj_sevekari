@@ -3,12 +3,11 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'dart:io';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
+import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
 
 class ParayanSignupScreen extends StatefulWidget {
   final ParayanEvent event;
@@ -72,6 +71,18 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
   }
 
   void _addNameField() {
+    if (_nameControllers.length >= 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            Localizations.localeOf(context).languageCode == 'mr'
+                ? "एका घरात जास्तीत जास्त ५ सदस्य असू शकतात"
+                : "Maximum 5 members allowed per household",
+          ),
+        ),
+      );
+      return;
+    }
     setState(() {
       _nameControllers.add(TextEditingController());
     });
@@ -95,19 +106,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
     });
 
     try {
-      final deviceInfo = DeviceInfoPlugin();
-      String? deviceId;
-      if (Platform.isAndroid) {
-        final androidInfo = await deviceInfo.androidInfo;
-        deviceId = androidInfo.id;
-      } else if (Platform.isIOS) {
-        final iosInfo = await deviceInfo.iosInfo;
-        deviceId = iosInfo.identifierForVendor;
-      }
-
-      if (deviceId == null) {
-        throw Exception("Could not determine device ID");
-      }
+      final deviceId = await UniqueIdService.getUniqueId();
 
       final names = _nameControllers
           .map((c) => c.text.trim())
@@ -126,29 +125,26 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
         phone: '$_selectedCountryCode ${_phoneController.text.trim()}',
       );
 
-      // Subscribe to topics if parayan reminders are enabled
-      final prefs = await SharedPreferences.getInstance();
-      final parayanRemindersEnabled =
-          prefs.getBool(NotificationConstants.parayanRemindersPrefKey) ?? true;
-      if (parayanRemindersEnabled) {
-        final messaging = FirebaseMessaging.instance;
-        if (widget.event.type == ParayanType.oneDay ||
-            widget.event.type == ParayanType.guruPushya) {
-          final topic = NotificationConstants.getParayanReminderTopic(
-            widget.event.id,
-            1,
-          );
-          await messaging.subscribeToTopic(topic);
-        } else {
-          for (int i = 1; i <= 3; i++) {
-            final topic = NotificationConstants.getParayanReminderTopic(
+      // Subscribe to topics in the background via NotificationServiceHelper
+      SharedPreferences.getInstance().then((prefs) {
+        final parayanRemindersEnabled =
+            prefs.getBool(NotificationConstants.parayanRemindersPrefKey) ?? true;
+        if (parayanRemindersEnabled) {
+          final List<String> topics = [];
+          if (widget.event.type == ParayanType.oneDay ||
+              widget.event.type == ParayanType.guruPushya) {
+            topics.add(NotificationConstants.getParayanReminderTopic(
               widget.event.id,
-              i,
-            );
-            await messaging.subscribeToTopic(topic);
+              1,
+            ));
+          } else {
+            topics.add(NotificationConstants.getParayanReminderTopic(widget.event.id, 1));
+            topics.add(NotificationConstants.getParayanReminderTopic(widget.event.id, 2));
+            topics.add(NotificationConstants.getParayanReminderTopic(widget.event.id, 3));
           }
+          NotificationServiceHelper.addPendingSubscriptions(topics);
         }
-      }
+      });
 
       if (!mounted) return;
 
@@ -228,11 +224,12 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                         ),
                       ),
                       const Spacer(),
-                      TextButton.icon(
-                        onPressed: _addNameField,
-                        icon: const Icon(Icons.add),
-                        label: Text(isMarathi ? "जोडा" : "Add"),
-                      ),
+                      if (_nameControllers.length < 5)
+                        TextButton.icon(
+                          onPressed: _addNameField,
+                          icon: const Icon(Icons.add_circle_outline),
+                          label: Text(isMarathi ? "जोडा" : "Add"),
+                        ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -270,10 +267,24 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                               style: isExistingMember
                                   ? TextStyle(color: theme.hintColor)
                                   : null,
-                              validator: (value) =>
-                                  value == null || value.isEmpty
-                                      ? localizations.parayanNameRequired
-                                      : null,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return localizations.parayanNameRequired;
+                                }
+                                // Duplicate name check within household
+                                final otherNames = _nameControllers
+                                    .where((c) => c != controller)
+                                    .map((c) => c.text.trim().toLowerCase())
+                                    .toList();
+                                if (otherNames.contains(
+                                  value.trim().toLowerCase(),
+                                )) {
+                                  return isMarathi
+                                      ? "हे नाव आधीच वापरले आहे"
+                                      : "Duplicate name within household";
+                                }
+                                return null;
+                              },
                             ),
                           ),
                           if (_nameControllers.length > 1 && !isExistingMember)

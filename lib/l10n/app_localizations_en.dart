@@ -1000,4 +1000,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filterPending => 'Pending';
+
+  @override
+  String get exportAllocations => 'Export All Groups';
+
+  @override
+  String get exportingGroups => 'Generating group snapshots...';
+
+  @override
+  String get seattleGajananMaharajParivar => 'Seattle Gajanan Maharaj Parivar';
+
+  @override
+  String get jaiGajanan => 'Jai Gajanan';
+
+  @override
+  String get parayanParticipant => 'Participant';
+
+  @override
+  String get adhyaysLabel => 'Adhyays';
+
+  @override
+  String get statusLabel => 'Status';
+
+  @override
+  String get allGroups => 'All Groups';
 }

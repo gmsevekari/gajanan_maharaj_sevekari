@@ -8,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.da
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
+import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -124,17 +125,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     }
     if (kIsWeb || isIosSimulator) return;
 
-    final deviceInfo = DeviceInfoPlugin();
-    String? deviceId;
-    if (Platform.isAndroid) {
-      final androidInfo = await deviceInfo.androidInfo;
-      deviceId = androidInfo.id;
-    } else if (Platform.isIOS) {
-      final iosInfo = await deviceInfo.iosInfo;
-      deviceId = iosInfo.identifierForVendor;
-    }
-
-    if (deviceId == null) return;
+    final deviceId = await UniqueIdService.getUniqueId();
 
     try {
       final messaging = FirebaseMessaging.instance;

@@ -4,10 +4,12 @@ import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/my_allocation_tab.dart';
+import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/adhyays_allocation_tab.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_signup_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
 import 'package:intl/intl.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
@@ -60,20 +62,17 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
         setState(() {
           _event = updatedEvent;
         });
+
+        // Auto-unsubscribe if parayan is completed
+        if (updatedEvent.status == 'completed') {
+          NotificationServiceHelper.unsubscribeFromEventTopics(updatedEvent.id);
+        }
       }
     });
   }
 
   Future<void> _getDeviceId() async {
-    final deviceInfo = DeviceInfoPlugin();
-    String? id;
-    if (Platform.isAndroid) {
-      final androidInfo = await deviceInfo.androidInfo;
-      id = androidInfo.id;
-    } else if (Platform.isIOS) {
-      final iosInfo = await deviceInfo.iosInfo;
-      id = iosInfo.identifierForVendor;
-    }
+    final id = await UniqueIdService.getUniqueId();
     setState(() {
       _deviceId = id;
     });

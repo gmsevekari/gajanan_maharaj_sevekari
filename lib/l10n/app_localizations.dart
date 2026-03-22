@@ -1969,6 +1969,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pending'**
   String get filterPending;
+
+  /// No description provided for @exportAllocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Export All Groups'**
+  String get exportAllocations;
+
+  /// No description provided for @exportingGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating group snapshots...'**
+  String get exportingGroups;
+
+  /// No description provided for @seattleGajananMaharajParivar.
+  ///
+  /// In en, this message translates to:
+  /// **'Seattle Gajanan Maharaj Parivar'**
+  String get seattleGajananMaharajParivar;
+
+  /// No description provided for @jaiGajanan.
+  ///
+  /// In en, this message translates to:
+  /// **'Jai Gajanan'**
+  String get jaiGajanan;
+
+  /// No description provided for @parayanParticipant.
+  ///
+  /// In en, this message translates to:
+  /// **'Participant'**
+  String get parayanParticipant;
+
+  /// No description provided for @adhyaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Adhyays'**
+  String get adhyaysLabel;
+
+  /// No description provided for @statusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusLabel;
+
+  /// No description provided for @allGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'All Groups'**
+  String get allGroups;
 }
 
 class _AppLocalizationsDelegate

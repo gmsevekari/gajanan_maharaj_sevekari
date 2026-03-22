@@ -998,5 +998,29 @@ class AppLocalizationsMr extends AppLocalizations {
   String get filterCompleted => 'पूर्ण झालेले';
 
   @override
-  String get filterPending => 'अपूर्ण';
+  String get filterPending => 'प्रलंबित';
+
+  @override
+  String get exportAllocations => 'सर्व गट निर्यात करा';
+
+  @override
+  String get exportingGroups => 'गट स्नॅपशॉट तयार करत आहे...';
+
+  @override
+  String get seattleGajananMaharajParivar => 'सिएटल गजानन महाराज परिवार';
+
+  @override
+  String get jaiGajanan => 'जय गजानन';
+
+  @override
+  String get parayanParticipant => 'सहभागी';
+
+  @override
+  String get adhyaysLabel => 'अध्याय';
+
+  @override
+  String get statusLabel => 'स्थिती';
+
+  @override
+  String get allGroups => 'सर्व गट';
 }

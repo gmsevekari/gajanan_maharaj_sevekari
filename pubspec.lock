@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.67"
+  android_id:
+    dependency: "direct main"
+    description:
+      name: android_id
+      sha256: "50d62501d623a7e7358b3ceffd1bdd9b420292eba66cec8347d33ed10791f28e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.1"
   ansicolor:
     dependency: transitive
     description:
@@ -790,7 +798,7 @@ packages:
     source: hosted
     version: "1.9.1"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider
       sha256: "50c5dd5b6e1aaf6fb3a78b33f6aa3afca52bf903a8a5298f53101fdaee55bbcd"
@@ -885,6 +893,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+  screenshot:
+    dependency: "direct main"
+    description:
+      name: screenshot
+      sha256: "63817697a7835e6ce82add4228e15d233b74d42975c143ad8cfe07009fab866b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   share_plus:
     dependency: "direct main"
     description:
@@ -1123,7 +1139,7 @@ packages:
     source: hosted
     version: "3.1.5"
   uuid:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: uuid
       sha256: "1fef9e8e11e2991bb773070d4656b7bd5d850967a2456cfc83cf47925ba79489"

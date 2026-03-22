@@ -99,7 +99,12 @@ class _MyAllocationTabState extends State<MyAllocationTab>
           );
         }
 
-        if (isEnrolling) {
+        final isAllocated = widget.event.status == 'allocated';
+        final hasAnyUnallocated = participants.any(
+          (p) => p.value.assignedAdhyays.isEmpty,
+        );
+
+        if (isEnrolling || (isAllocated && hasAnyUnallocated)) {
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(24.0),

@@ -393,5 +393,13 @@
   "updateEnrollmentLabel": "Update Enrollment",
   "filterAll": "All",
   "filterCompleted": "Completed",
-  "filterPending": "Pending"
+  "filterPending": "Pending",
+  "exportAllocations": "Export All Groups",
+  "exportingGroups": "Generating group snapshots...",
+  "seattleGajananMaharajParivar": "Seattle Gajanan Maharaj Parivar",
+  "jaiGajanan": "Jai Gajanan",
+  "parayanParticipant": "Participant",
+  "adhyaysLabel": "Adhyays",
+  "statusLabel": "Status",
+  "allGroups": "All Groups"
 }

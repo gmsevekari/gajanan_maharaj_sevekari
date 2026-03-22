@@ -195,7 +195,9 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                               ),
                             );
 
-                            if (isEnrolling) {
+                            final hasAnyUnallocated = p.assignedAdhyays.isEmpty;
+
+                            if (isEnrolling || hasAnyUnallocated) {
                               return TableRow(
                                 decoration: rowDecoration,
                                 children: [

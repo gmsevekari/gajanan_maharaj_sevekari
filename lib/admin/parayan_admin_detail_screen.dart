@@ -9,6 +9,9 @@ import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
+import 'package:screenshot/screenshot.dart';
+import 'package:path_provider/path_provider.dart';
 
 enum _ParticipantFilter { all, completed, pending }
 
@@ -26,6 +29,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ParayanService _parayanService = ParayanService();
+  final _screenshotController = ScreenshotController();
   late Stream<List<ParayanMember>> _overviewParticipantsStream;
   late Stream<List<ParayanMember>> _participantsTabStream;
   late Stream<ParayanEvent> _eventStream;
@@ -102,6 +106,12 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                   : event.titleEn,
             ),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.ios_share),
+                tooltip: localizations.exportAllocations,
+                onPressed: () =>
+                    _exportAllGroups(context, event, localizations),
+              ),
               IconButton(
                 icon: const Icon(Icons.home),
                 onPressed: () =>
@@ -328,11 +338,6 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 _updateStatus(newSelection.first);
               },
               showSelectedIcon: false,
-              style: SegmentedButton.styleFrom(
-                selectedBackgroundColor: theme.colorScheme.primary,
-                selectedForegroundColor: theme.colorScheme.onPrimary,
-                visualDensity: VisualDensity.compact,
-              ),
             ),
           ),
         ),
@@ -498,7 +503,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
 
         // Filter based on completion status
         final filteredParticipants = indexedParticipants.where((entry) {
-          final allDone = entry.value.completions.values.every((v) => v);
+          final allDone = entry.value.isFullyCompleted;
           if (_currentFilter == _ParticipantFilter.completed) return allDone;
           if (_currentFilter == _ParticipantFilter.pending) return !allDone;
           return true;
@@ -517,7 +522,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         final entry = filteredParticipants[index];
                         final originalIndex = entry.key;
                         final p = entry.value;
-                        final allDone = p.completions.values.every((v) => v);
+                        final allDone = p.isFullyCompleted;
 
                         final int groupSize =
                             (event.type == ParayanType.threeDay) ? 7 : 21;
@@ -733,6 +738,261 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           },
         );
       },
+    );
+  }
+
+  Future<void> _exportAllGroups(
+    BuildContext context,
+    ParayanEvent event,
+    AppLocalizations l10n,
+  ) async {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                Text(l10n.exportingGroups),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    try {
+      final participants =
+          await _parayanService.getAllParticipants(event.id).first;
+      final int groupSize = (event.type == ParayanType.threeDay) ? 7 : 21;
+      final int totalGroups = (participants.length / groupSize).ceil();
+
+      final List<XFile> files = [];
+      final tempDir = await getTemporaryDirectory();
+
+      for (int i = 1; i <= totalGroups; i++) {
+        final groupParticipants = participants.where((p) {
+          final index = participants.indexOf(p);
+          return (index ~/ groupSize) + 1 == i;
+        }).toList();
+
+        if (groupParticipants.isEmpty) continue;
+
+        final imageBytes = await _screenshotController.captureFromWidget(
+          _buildExportableGroupCard(context, event, i, groupParticipants, l10n),
+          delay: const Duration(milliseconds: 100),
+          pixelRatio: 2.0, // High quality
+        );
+
+        final String fileName = 'Parayan_Group_$i.png';
+        final File file = File('${tempDir.path}/$fileName');
+        await file.writeAsBytes(imageBytes);
+        files.add(XFile(file.path));
+      }
+
+      final String shareText =
+          Localizations.localeOf(context).languageCode == 'mr'
+              ? "${event.titleMr} - ${l10n.allGroups}"
+              : "${event.titleEn} - All Groups";
+
+      if (context.mounted) Navigator.of(context).pop(); // Close loading dialog
+
+      if (files.isNotEmpty) {
+        await Share.shareXFiles(files, text: shareText);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    }
+  }
+
+  Widget _buildExportableGroupCard(
+    BuildContext context,
+    ParayanEvent event,
+    int groupNumber,
+    List<ParayanMember> participants,
+    AppLocalizations l10n,
+  ) {
+    final locale = Localizations.localeOf(context).languageCode;
+    final title = locale == 'mr' ? event.titleMr : event.titleEn;
+    final date = locale == 'mr'
+        ? DateFormat('d MMMM, yyyy', 'mr').format(event.startDate)
+        : DateFormat('MMMM d, yyyy').format(event.startDate);
+
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: 400, // Fixed width for consistent export look
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.orange, width: 2),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              children: [
+                Image.asset(
+                  'resources/images/logo/App_Logo.png',
+                  width: 50,
+                  height: 50,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.seattleGajananMaharajParivar,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange,
+                        ),
+                      ),
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 32, thickness: 1.5, color: Colors.orange),
+
+            // Group Number
+            Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  l10n.groupLabel(groupNumber.toString()),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Date
+            Text(
+              "${l10n.dateLabel}: $date",
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 16),
+
+            // Participants Table
+            Table(
+              columnWidths: const {
+                0: FlexColumnWidth(2.5),
+                1: FlexColumnWidth(1.2),
+                2: FlexColumnWidth(1),
+              },
+              border: TableBorder.all(color: Colors.grey.shade300),
+              children: [
+                TableRow(
+                  decoration: BoxDecoration(color: Colors.grey.shade100),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        l10n.parayanParticipant,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        l10n.adhyaysLabel,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        l10n.statusLabel,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+                ...participants.map(
+                  (p) => TableRow(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          p.name,
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          p.assignedAdhyays.join(', '),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          p.isFullyCompleted ? "Done" : "Pending",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: p.isFullyCompleted ? Colors.green.shade700 : Colors.grey.shade600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 32),
+
+            // Footer
+            Center(
+              child: Text(
+                l10n.jaiGajanan,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF9B3746), // Maroon color from theme
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

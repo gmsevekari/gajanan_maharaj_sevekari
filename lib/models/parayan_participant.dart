@@ -38,6 +38,11 @@ class ParayanMember {
   Map<String, dynamic> toMap() {
     return {'assignedAdhyays': assignedAdhyays, 'completions': completions};
   }
+
+  bool get isFullyCompleted =>
+      assignedAdhyays.isNotEmpty &&
+      completions.isNotEmpty &&
+      completions.values.every((v) => v);
 }
 
 class ParayanHousehold {
