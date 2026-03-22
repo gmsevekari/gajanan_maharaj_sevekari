@@ -127,6 +127,10 @@
       {
         "file": "shri_sukta.json",
         "image": "shri_sukta.png"
+      },
+      {
+        "file": "pasaydan.json",
+        "image": "pasaydan.png"
       }
     ]
   }
