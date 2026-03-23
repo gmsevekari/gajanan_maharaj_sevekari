@@ -10,7 +10,7 @@ class UniqueIdService {
   static String? _cachedId;
 
   /// Returns a persistent unique identifier for this device.
-  /// 
+  ///
   /// Priority:
   /// 1. Cached ID (memory)
   /// 2. Android ID (Hardware-bound) or iOS IdentifierForVendor
@@ -21,10 +21,10 @@ class UniqueIdService {
 
     String? hardwareId;
     try {
-      if (Platform.isAndroid) {
+      if (!kIsWeb && Platform.isAndroid) {
         const androidIdPlugin = AndroidId();
         hardwareId = await androidIdPlugin.getId();
-      } else if (Platform.isIOS) {
+      } else if (!kIsWeb && Platform.isIOS) {
         final deviceInfo = DeviceInfoPlugin();
         final iosInfo = await deviceInfo.iosInfo;
         hardwareId = iosInfo.identifierForVendor;
@@ -42,7 +42,7 @@ class UniqueIdService {
     // Fallback to SharedPreferences UUID
     final prefs = await SharedPreferences.getInstance();
     String? storedUuid = prefs.getString(_uuidKey);
-    
+
     if (storedUuid != null && storedUuid.isNotEmpty) {
       _cachedId = storedUuid;
       return storedUuid;

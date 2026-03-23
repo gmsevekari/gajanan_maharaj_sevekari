@@ -252,34 +252,20 @@ class _MyAllocationTabState extends State<MyAllocationTab>
                 ),
               ),
               alignment: Alignment.center,
-              child: Text(
-                _formatNumber(context, dayNum),
-                style: TextStyle(
-                  color: isRead ? Colors.white : theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Icon(
+                Icons.menu_book,
+                size: 20,
+                color: isRead ? Colors.white : theme.colorScheme.primary,
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "${localizations.day} ${_formatNumber(context, dayNum)}",
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: theme.colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "${localizations.adhyay} ${_formatNumber(context, adhyay)}",
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                  ),
-                ],
+              child: Text(
+                "${localizations.day} ${_formatNumber(context, dayNum)} - ${localizations.adhyay} ${_formatNumber(context, adhyay)}",
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             if (isRead)

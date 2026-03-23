@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _upcomingEventsFuture = _fetchUpcomingEvents();
     _loadUnreadStatus();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
+      if (mounted && !kIsWeb) {
         NotificationManager.requestPermissions(context);
       }
     });
@@ -110,8 +110,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ParayanEvent? upcomingParayan;
     for (var doc in parayanSnapshot.docs) {
       final event = ParayanEvent.fromFirestore(doc);
-      // We want the first event that hasn't ended yet
-      if (event.endDate.isAfter(now)) {
+      // We want the first event that hasn't ended yet and is not completed
+      if (event.endDate.isAfter(now) && event.status != 'completed') {
         upcomingParayan = event;
         break;
       }

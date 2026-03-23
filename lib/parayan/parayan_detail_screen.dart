@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
@@ -35,6 +36,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
   late Stream<List<ParayanMember>> _participantsStream;
   ParayanEvent? _event;
   StreamSubscription<ParayanEvent>? _eventSubscription;
+  StreamSubscription<List<ParayanMember>>? _registrationSubscription;
 
   @override
   void initState() {
@@ -83,10 +85,10 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
 
   void _checkRegistration(String deviceId) {
     final effectiveEventId = _event?.id ?? widget.eventId!;
-    _parayanService
+    _registrationSubscription?.cancel();
+    _registrationSubscription = _parayanService
         .getParticipantsByDevice(effectiveEventId, deviceId)
-        .first
-        .then((list) {
+        .listen((list) {
           if (mounted) {
             final newIsRegistered = list.isNotEmpty;
             if (newIsRegistered != _isRegistered) {
@@ -110,6 +112,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
   @override
   void dispose() {
     _eventSubscription?.cancel();
+    _registrationSubscription?.cancel();
     _tabController.dispose();
     super.dispose();
   }
@@ -373,7 +376,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
 
                     final isEditable = _isRegistered && canJoin;
                     final isJoinable = !_isRegistered && canJoin;
-                    final isActionEnabled = isEditable || isJoinable;
+                    final isActionEnabled = (isEditable || isJoinable) && !kIsWeb;
 
                     return Padding(
                       padding: EdgeInsets.symmetric(
