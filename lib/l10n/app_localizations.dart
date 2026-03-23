@@ -110,6 +110,12 @@ abstract class AppLocalizations {
   /// **'Gajanan Vijay Granth'**
   String get granthTitle;
 
+  /// No description provided for @guruCharitraTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shri Guru Charitra'**
+  String get guruCharitraTitle;
+
   /// No description provided for @stotraTitle.
   ///
   /// In en, this message translates to:

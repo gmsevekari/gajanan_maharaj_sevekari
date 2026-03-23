@@ -15,6 +15,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get granthTitle => 'Gajanan Vijay Granth';
 
   @override
+  String get guruCharitraTitle => 'Shri Guru Charitra';
+
+  @override
   String get stotraTitle => 'Stotra Collection';
 
   @override

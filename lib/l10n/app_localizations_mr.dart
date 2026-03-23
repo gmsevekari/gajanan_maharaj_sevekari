@@ -15,6 +15,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get granthTitle => 'गजानन विजय ग्रंथ';
 
   @override
+  String get guruCharitraTitle => 'श्री गुरु चरित्र';
+
+  @override
   String get stotraTitle => 'स्तोत्र संग्रह';
 
   @override
