@@ -359,4 +359,13 @@ class ParayanService {
     }
     return results;
   }
+
+  // Delete enrollment for a specific device
+  Future<void> deleteEnrollment(String eventId, String deviceId) async {
+    final docRef = _eventsRef
+        .doc(eventId)
+        .collection('participants')
+        .doc(deviceId);
+    await docRef.delete();
+  }
 }

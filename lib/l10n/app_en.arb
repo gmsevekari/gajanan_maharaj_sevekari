@@ -302,6 +302,7 @@
   "reminderTimeLabel": "Reminder Notification Time",
   "createParayanButton": "Create Event",
   "parayanJoinedSuccess": "You have successfully signed up for the Parayan!",
+  "parayanUpdatedSuccess": "Your Parayan signup has been updated successfully!",
   "assignedAdhyaysLabel": "Your Assigned Adhyays",
   "markAsRead": "Mark as Read",
   "readingCompleted": "Reading Completed",
@@ -402,5 +403,19 @@
   "parayanParticipant": "Participant",
   "adhyaysLabel": "Adhyays",
   "statusLabel": "Status",
-  "shareParayan": "Share Parayan"
+  "shareParayan": "Share Parayan",
+  "deleteSignupLabel": "Delete Signup",
+  "deleteSignupConfirmTitle": "Delete Signup?",
+  "deleteSignupConfirmMessage": "Your registration will be deleted and all members of your household will be removed from this parayan. Are you sure you want to proceed?",
+  "signupDeletedSuccess": "Your signup has been deleted successfully.",
+  "duplicateNameError": "Duplicate name within household",
+  "maxMembersError": "Maximum 5 members allowed per household",
+  "householdMembersLabel": "Household Members",
+  "addLabel": "Add",
+  "phoneNumberLabel": "Phone Number",
+  "joiningSignupProgress": "Joining parayan...",
+  "updatingSignupProgress": "Updating your signup...",
+  "deletingSignupProgress": "Deleting your signup...",
+  "subscribingProgress": "Setting up notifications...",
+  "unsubscribingProgress": "Removing notification subscriptions..."
 }

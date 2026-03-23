@@ -376,7 +376,8 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
 
                     final isEditable = _isRegistered && canJoin;
                     final isJoinable = !_isRegistered && canJoin;
-                    final isActionEnabled = (isEditable || isJoinable) && !kIsWeb;
+                    final isActionEnabled =
+                        (isEditable || isJoinable) && !kIsWeb;
 
                     return Padding(
                       padding: EdgeInsets.symmetric(
@@ -436,9 +437,24 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                                   ),
                                             ),
                                           );
-                                          if (result == true &&
+                                          if (result != null &&
                                               _deviceId != null) {
-                                            _checkRegistration(_deviceId!);
+                                            if (result == true) {
+                                              _checkRegistration(_deviceId!);
+                                            } else if (result is Map &&
+                                                result['deleted'] == true) {
+                                              _checkRegistration(_deviceId!);
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    localizations
+                                                        .signupDeletedSuccess,
+                                                  ),
+                                                ),
+                                              );
+                                            }
                                           }
                                         }
                                       } else {
@@ -451,9 +467,24 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                                 ),
                                           ),
                                         );
-                                        if (result == true &&
+                                        if (result != null &&
                                             _deviceId != null) {
-                                          _checkRegistration(_deviceId!);
+                                          if (result == true) {
+                                            _checkRegistration(_deviceId!);
+                                          } else if (result is Map &&
+                                              result['deleted'] == true) {
+                                            _checkRegistration(_deviceId!);
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  localizations
+                                                      .signupDeletedSuccess,
+                                                ),
+                                              ),
+                                            );
+                                          }
                                         }
                                       }
                                     }

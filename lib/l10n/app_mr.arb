@@ -302,6 +302,7 @@
   "reminderTimeLabel": "आठवण नोटिफिकेशन वेळ",
   "createParayanButton": "कार्यक्रम तयार करा",
   "parayanJoinedSuccess": "तुम्ही पारायणासाठी यशस्वीरित्या साइन अप केले आहे!",
+  "parayanUpdatedSuccess": "तुमचे पारायण साईन-अप यशस्वीरित्या अपडेट केले आहे!",
   "assignedAdhyaysLabel": "तुमचे नियुक्त अध्याय",
   "markAsRead": "वाचले म्हणून मार्क करा",
   "readingCompleted": "वाचन पूर्ण झाले",
@@ -402,5 +403,19 @@
   "parayanParticipant": "सहभागी",
   "adhyaysLabel": "अध्याय",
   "statusLabel": "स्टेटस",
-  "shareParayan": "पारायण लिंक शेअर करा"
+  "shareParayan": "पारायण लिंक शेअर करा",
+  "deleteSignupLabel": "साईन-अप डिलीट करा",
+  "deleteSignupConfirmTitle": "साईन-अप डिलीट करा?",
+  "deleteSignupConfirmMessage": "तुमचे साईन-अप डिलीट केले जाईल. तुम्ही खात्रीने तुमचे साईन-अप डिलीट करू इच्छिता?",
+  "signupDeletedSuccess": "तुमचे साईन-अप यशस्वीरित्या डिलीट केले आहे.",
+  "duplicateNameError": "हे नाव आधीच वापरले आहे",
+  "maxMembersError": "एका घरातून जास्तीत जास्त ५ सदस्य साईन-अप करू शकतात",
+  "householdMembersLabel": "घरातील सदस्य",
+  "addLabel": "सदस्य जोडा",
+  "phoneNumberLabel": "फोन नंबर",
+  "joiningSignupProgress": "पारायणासाठी साइन-अप करत आहे...",
+  "updatingSignupProgress": "तुमचे साईन-अप अपडेट करत आहे...",
+  "deletingSignupProgress": "तुमचे साईन-अप डिलीट करत आहे...",
+  "subscribingProgress": "नोटिफिकेशन्स सबस्क्राइब करत आहे...",
+  "unsubscribingProgress": "नोटिफिकेशन्स अनसबस्क्राइब करत आहे..."
 }

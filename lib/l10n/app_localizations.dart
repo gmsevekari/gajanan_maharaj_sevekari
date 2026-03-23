@@ -1562,6 +1562,12 @@ abstract class AppLocalizations {
   /// **'You have successfully signed up for the Parayan!'**
   String get parayanJoinedSuccess;
 
+  /// No description provided for @parayanUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Parayan signup has been updated successfully!'**
+  String get parayanUpdatedSuccess;
+
   /// No description provided for @assignedAdhyaysLabel.
   ///
   /// In en, this message translates to:
@@ -2023,6 +2029,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share Parayan'**
   String get shareParayan;
+
+  /// No description provided for @deleteSignupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Signup'**
+  String get deleteSignupLabel;
+
+  /// No description provided for @deleteSignupConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Signup?'**
+  String get deleteSignupConfirmTitle;
+
+  /// No description provided for @deleteSignupConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your registration will be deleted and all members of your household will be removed from this parayan. Are you sure you want to proceed?'**
+  String get deleteSignupConfirmMessage;
+
+  /// No description provided for @signupDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your signup has been deleted successfully.'**
+  String get signupDeletedSuccess;
+
+  /// No description provided for @duplicateNameError.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate name within household'**
+  String get duplicateNameError;
+
+  /// No description provided for @maxMembersError.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum 5 members allowed per household'**
+  String get maxMembersError;
+
+  /// No description provided for @householdMembersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Household Members'**
+  String get householdMembersLabel;
+
+  /// No description provided for @addLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get addLabel;
+
+  /// No description provided for @phoneNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phoneNumberLabel;
+
+  /// No description provided for @joiningSignupProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining parayan...'**
+  String get joiningSignupProgress;
+
+  /// No description provided for @updatingSignupProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating your signup...'**
+  String get updatingSignupProgress;
+
+  /// No description provided for @deletingSignupProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting your signup...'**
+  String get deletingSignupProgress;
+
+  /// No description provided for @subscribingProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Setting up notifications...'**
+  String get subscribingProgress;
+
+  /// No description provided for @unsubscribingProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Removing notification subscriptions...'**
+  String get unsubscribingProgress;
 }
 
 class _AppLocalizationsDelegate
