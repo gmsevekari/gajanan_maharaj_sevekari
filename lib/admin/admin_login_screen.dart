@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_session_service.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
@@ -103,22 +104,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   }
 
   Future<void> _logLoginEvent(String email) async {
-    try {
-      debugPrint('Attempting to log LOGIN event for $email...');
-      final now = DateTime.now();
-      final expiresAt = now.add(const Duration(days: 30)); // 1 month TTL
-
-      await _firestore.collection('admin_audit_logs').add({
-        'admin_email': email,
-        'action': 'LOGIN',
-        'timestamp': now.toIso8601String(),
-        'expires_at': expiresAt.toIso8601String(),
-      });
-      debugPrint('SUCCESS: Audit log written to Firestore.');
-    } catch (e) {
-      debugPrint('Failed to write audit log: $e');
-      // We don't block login if audit log fails, but it's noted.
-    }
+    await AdminAuditService.logAction(action: 'LOGIN');
   }
 
   @override

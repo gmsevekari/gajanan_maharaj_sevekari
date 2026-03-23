@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
@@ -74,6 +75,14 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     final l10n = AppLocalizations.of(context)!;
     try {
       await _parayanService.updateEventStatus(widget.event.id, newStatus);
+      await AdminAuditService.logAction(
+        action: 'UPDATE_PARAYAN_STATUS',
+        details: {
+          'event_id': widget.event.id,
+          'old_status': widget.event.status,
+          'new_status': newStatus,
+        },
+      );
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -726,6 +735,17 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                               dayIndex: idx,
                               completed: val,
                             );
+
+                            await AdminAuditService.logAction(
+                              action: 'UPDATE_MEMBER_COMPLETION',
+                              details: {
+                                'event_id': event.id,
+                                'device_id': member.deviceId,
+                                'member_name': member.name,
+                                'day_index': idx,
+                                'completed': val,
+                              },
+                            );
                           } catch (e) {
                             // Revert optimistic update on failure
                             setDialogState(() {
@@ -783,8 +803,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     );
 
     try {
-      final participants =
-          await _parayanService.getAllParticipants(event.id).first;
+      final participants = await _parayanService
+          .getAllParticipants(event.id)
+          .first;
       final int groupSize = (event.type == ParayanType.threeDay) ? 7 : 21;
       final int totalGroups = (participants.length / groupSize).ceil();
 
@@ -813,8 +834,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
 
       final String shareText =
           Localizations.localeOf(context).languageCode == 'mr'
-              ? "${event.titleMr}"
-              : "${event.titleEn}";
+          ? "${event.titleMr}"
+          : "${event.titleEn}";
 
       if (context.mounted) Navigator.of(context).pop(); // Close loading dialog
 
@@ -824,9 +845,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     } catch (e) {
       if (context.mounted) {
         Navigator.of(context).pop(); // Close loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Export failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Export failed: $e')));
       }
     }
   }
@@ -895,7 +916,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             // Group Number
             Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -936,7 +960,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                       child: Text(
                         l10n.parayanParticipant,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                     Padding(
@@ -944,7 +971,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                       child: Text(
                         l10n.adhyaysLabel,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                     Padding(
@@ -952,7 +982,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                       child: Text(
                         l10n.statusLabel,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],
@@ -987,7 +1020,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: p.isFullyCompleted ? Colors.green.shade700 : Colors.grey.shade600,
+                            color: p.isFullyCompleted
+                                ? Colors.green.shade700
+                                : Colors.grey.shade600,
                           ),
                         ),
                       ),
