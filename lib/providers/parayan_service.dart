@@ -271,12 +271,12 @@ class ParayanService {
           assigned = [adhyay];
           completions["1"] = false;
         } else if (type == ParayanType.threeDay) {
-          final group = (currentTotal % 3) + 1;
-          final k = currentTotal ~/ 3;
+          final groupOffset = (currentTotal ~/ 7) % 3;
+          final participantOffset = (currentTotal % 7) * 3;
 
-          int day1 = (group + (k * 3) - 1) % 21 + 1;
-          int day2 = (day1 + 3 - 1) % 21 + 1;
-          int day3 = (day1 + 6 - 1) % 21 + 1;
+          final day1 = (groupOffset + participantOffset) % 21 + 1;
+          final day2 = (day1 % 21) + 1;
+          final day3 = (day2 % 21) + 1;
 
           assigned = [day1, day2, day3];
           completions = {"1": false, "2": false, "3": false};
