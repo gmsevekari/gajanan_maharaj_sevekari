@@ -23,9 +23,7 @@ class AppTheme {
         side: BorderSide(color: Color(0xFFFF9800), width: 1),
       ),
     ),
-    iconTheme: IconThemeData(
-        color: Colors.orange[400]
-    ),
+    iconTheme: IconThemeData(color: Colors.orange[400]),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.orange[50],
@@ -37,6 +35,12 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
         textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
       ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: Colors.orange,
+      contentTextStyle: const TextStyle(color: Colors.white),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
     ),
   );
 
@@ -62,9 +66,7 @@ class AppTheme {
         side: BorderSide(color: Color(0xFFFF9800), width: 1),
       ),
     ),
-    iconTheme: IconThemeData(
-        color: Colors.orange[400]
-    ),
+    iconTheme: IconThemeData(color: Colors.orange[400]),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: Color(0xFF0A0805),
@@ -76,6 +78,12 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
         textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
       ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: Colors.orange,
+      contentTextStyle: const TextStyle(color: Colors.white),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
     ),
   );
 }

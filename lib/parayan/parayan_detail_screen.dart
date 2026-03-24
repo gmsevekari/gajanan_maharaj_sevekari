@@ -12,6 +12,7 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
 import 'package:intl/intl.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
 import 'dart:async';
@@ -117,10 +118,18 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
     super.dispose();
   }
 
+  String _formatNumber(BuildContext context, dynamic number) {
+    if (number == null) return '';
+    String numStr = number.toString();
+    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    return isMarathi ? toMarathiNumerals(numStr) : numStr;
+  }
+
   String _formatDate(DateTime date, String locale) {
-    return locale == 'mr'
+    final dateStr = locale == 'mr'
         ? DateFormat('d MMMM, yyyy', 'mr').format(date)
         : DateFormat('MMMM d, yyyy').format(date);
+    return locale == 'mr' ? toMarathiNumerals(dateStr) : dateStr;
   }
 
   String _getSmartDate(String locale) {
@@ -129,9 +138,10 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
         _event!.type == ParayanType.guruPushya) {
       return _formatDate(_event!.startDate, locale);
     } else {
-      final start = locale == 'mr'
+      final startStr = locale == 'mr'
           ? DateFormat('d MMMM', 'mr').format(_event!.startDate)
           : DateFormat('MMMM d').format(_event!.startDate);
+      final start = locale == 'mr' ? toMarathiNumerals(startStr) : startStr;
       final end = _formatDate(_event!.endDate, locale);
       return "$start - $end";
     }
@@ -401,7 +411,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                 ),
                               ),
                               Text(
-                                count.toString(),
+                                _formatNumber(context, count),
                                 style:
                                     (isLandscape
                                             ? theme.textTheme.titleMedium
