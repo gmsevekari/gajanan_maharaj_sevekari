@@ -15,6 +15,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get granthTitle => 'गजानन विजय ग्रंथ';
 
   @override
+  String get guruCharitraTitle => 'श्री गुरु चरित्र';
+
+  @override
   String get stotraTitle => 'स्तोत्र संग्रह';
 
   @override
@@ -778,6 +781,10 @@ class AppLocalizationsMr extends AppLocalizations {
       'तुम्ही पारायणासाठी यशस्वीरित्या साइन अप केले आहे!';
 
   @override
+  String get parayanUpdatedSuccess =>
+      'तुमचे पारायण साईन-अप यशस्वीरित्या अपडेट केले आहे!';
+
+  @override
   String get assignedAdhyaysLabel => 'तुमचे नियुक्त अध्याय';
 
   @override
@@ -1023,4 +1030,49 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get shareParayan => 'पारायण लिंक शेअर करा';
+
+  @override
+  String get deleteSignupLabel => 'साईन-अप डिलीट करा';
+
+  @override
+  String get deleteSignupConfirmTitle => 'साईन-अप डिलीट करा?';
+
+  @override
+  String get deleteSignupConfirmMessage =>
+      'तुमचे साईन-अप डिलीट केले जाईल. तुम्ही खात्रीने तुमचे साईन-अप डिलीट करू इच्छिता?';
+
+  @override
+  String get signupDeletedSuccess =>
+      'तुमचे साईन-अप यशस्वीरित्या डिलीट केले आहे.';
+
+  @override
+  String get duplicateNameError => 'हे नाव आधीच वापरले आहे';
+
+  @override
+  String get maxMembersError =>
+      'एका घरातून जास्तीत जास्त ५ सदस्य साईन-अप करू शकतात';
+
+  @override
+  String get householdMembersLabel => 'घरातील सदस्य';
+
+  @override
+  String get addLabel => 'सदस्य जोडा';
+
+  @override
+  String get phoneNumberLabel => 'फोन नंबर';
+
+  @override
+  String get joiningSignupProgress => 'पारायणासाठी साइन-अप करत आहे...';
+
+  @override
+  String get updatingSignupProgress => 'तुमचे साईन-अप अपडेट करत आहे...';
+
+  @override
+  String get deletingSignupProgress => 'तुमचे साईन-अप डिलीट करत आहे...';
+
+  @override
+  String get subscribingProgress => 'नोटिफिकेशन्स सबस्क्राइब करत आहे...';
+
+  @override
+  String get unsubscribingProgress => 'नोटिफिकेशन्स अनसबस्क्राइब करत आहे...';
 }

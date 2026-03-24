@@ -16,16 +16,16 @@ class NotificationServiceHelper {
     if (existingJson != null) {
       pending = List<String>.from(json.decode(existingJson));
     }
-    
+
     // Add new topics if not already present
     for (var topic in topics) {
       if (!pending.contains(topic)) {
         pending.add(topic);
       }
     }
-    
+
     await prefs.setString(_pendingSubscriptionsKey, json.encode(pending));
-    
+
     // Trigger immediate attempt in background
     _processPendingSubscriptions();
   }
@@ -39,13 +39,20 @@ class NotificationServiceHelper {
     List<String> pending = List<String>.from(json.decode(existingJson));
     if (pending.isEmpty) return;
 
+    if (kIsWeb) {
+      await prefs.remove(_pendingSubscriptionsKey);
+      return;
+    }
+
     final messaging = FirebaseMessaging.instance;
     final List<String> succeeded = [];
 
     for (var topic in pending) {
       try {
         debugPrint('Attempting background subscription to topic: $topic');
-        await messaging.subscribeToTopic(topic).timeout(const Duration(seconds: 10));
+        await messaging
+            .subscribeToTopic(topic)
+            .timeout(const Duration(seconds: 10));
         succeeded.add(topic);
         debugPrint('Successfully subscribed to topic: $topic');
       } catch (e) {
@@ -94,13 +101,20 @@ class NotificationServiceHelper {
 
   /// Unsubscribe from reminder topics for a specific event.
   static Future<void> unsubscribeFromEventTopics(String eventId) async {
+    if (kIsWeb) return;
     try {
       final messaging = FirebaseMessaging.instance;
       debugPrint('Unsubscribing from topics for completed event: $eventId');
       await Future.wait([
-        messaging.unsubscribeFromTopic('parayan_reminders_${eventId}_1').timeout(const Duration(seconds: 5)),
-        messaging.unsubscribeFromTopic('parayan_reminders_${eventId}_2').timeout(const Duration(seconds: 5)),
-        messaging.unsubscribeFromTopic('parayan_reminders_${eventId}_3').timeout(const Duration(seconds: 5)),
+        messaging
+            .unsubscribeFromTopic('parayan_reminders_${eventId}_1')
+            .timeout(const Duration(seconds: 5)),
+        messaging
+            .unsubscribeFromTopic('parayan_reminders_${eventId}_2')
+            .timeout(const Duration(seconds: 5)),
+        messaging
+            .unsubscribeFromTopic('parayan_reminders_${eventId}_3')
+            .timeout(const Duration(seconds: 5)),
       ]);
     } catch (e) {
       debugPrint('Error unsubscribing from event $eventId: $e');

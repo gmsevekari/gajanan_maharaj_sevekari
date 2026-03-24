@@ -13,18 +13,18 @@
       "aartis"
     ],
     "granth": {
-      "title_key": "granthTitle",
+      "title_key": "guruCharitraTitle",
       "icon": "menu_book_outlined",
       "contentType": "granth",
       "textResourceDirectory": "resources/texts/datta_maharaj/granth",
       "imageResourceDirectory": "resources/images/datta_maharaj/granth",
       "files": [
         {
-          "file": "gurucharitra_adhyay_14.json",
-          "image": "gurucharitra_adhyay_14.png"
+          "file": "adhyay_14.json",
+          "image": "adhyay_14.png"
         }
       ]
-    },    
+    },
     "bhajans": {
       "title_key": "bhajanTitle",
       "icon": "lyrics_outlined",

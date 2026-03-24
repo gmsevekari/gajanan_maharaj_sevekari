@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_session_service.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
@@ -52,15 +53,11 @@ class _AdminTempleNotificationsScreenState
         'type': 'TEMPLE_NOTIFICATION',
       });
 
-      // 2. Write to the Audit Logs with a 1-month TTL
-      final expiresAt = now.add(const Duration(days: 30));
-      await _firestore.collection('admin_audit_logs').add({
-        'admin_email': user.email,
-        'action': 'SEND_TEMPLE_NOTIFICATION',
-        'details': {'title': title, 'body': body},
-        'timestamp': now.toIso8601String(),
-        'expires_at': expiresAt.toIso8601String(),
-      });
+      // 2. Write to the Audit Logs
+      await AdminAuditService.logAction(
+        action: 'SEND_TEMPLE_NOTIFICATION',
+        details: {'title': title, 'body': body},
+      );
 
       // 3. Backend Triggered FCM
       // The push notification is now handled securely by Firebase Cloud Functions.

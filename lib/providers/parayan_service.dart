@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
+import 'package:flutter/foundation.dart';
 
 class ParayanService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -26,7 +27,9 @@ class ParayanService {
       await allocateAdhyays(eventId);
     } else if (newStatus == 'completed') {
       // Unsubscribe the current (admin) device as well
-      await NotificationServiceHelper.unsubscribeFromEventTopics(eventId);
+      if (!kIsWeb) {
+        await NotificationServiceHelper.unsubscribeFromEventTopics(eventId);
+      }
     }
   }
 
@@ -146,6 +149,7 @@ class ParayanService {
     });
 
     // Topic subscription logic for day-specific reminders
+    if (kIsWeb) return;
     try {
       final updatedDoc = await docRef.get();
       if (updatedDoc.exists) {
@@ -230,6 +234,7 @@ class ParayanService {
           return allMembers;
         });
   }
+
   // Perform batch adhyay allocation for all participants
   Future<void> allocateAdhyays(String eventId) async {
     final eventDoc = await _eventsRef.doc(eventId).get();
@@ -238,8 +243,9 @@ class ParayanService {
     final type = event.type;
 
     final participantsRef = _eventsRef.doc(eventId).collection('participants');
-    final querySnapshot =
-        await participantsRef.orderBy('joinedAt', descending: false).get();
+    final querySnapshot = await participantsRef
+        .orderBy('joinedAt', descending: false)
+        .get();
 
     final WriteBatch batch = _db.batch();
     int currentTotal = 0;
@@ -333,7 +339,9 @@ class ParayanService {
   }
 
   // Get ALL enrollments for a specific device (including past ones)
-  Future<List<Map<String, dynamic>>> getAllMyEnrollments(String deviceId) async {
+  Future<List<Map<String, dynamic>>> getAllMyEnrollments(
+    String deviceId,
+  ) async {
     final querySnapshot = await _eventsRef.get();
     final List<Map<String, dynamic>> results = [];
 
@@ -350,5 +358,14 @@ class ParayanService {
       }
     }
     return results;
+  }
+
+  // Delete enrollment for a specific device
+  Future<void> deleteEnrollment(String eventId, String deviceId) async {
+    final docRef = _eventsRef
+        .doc(eventId)
+        .collection('participants')
+        .doc(deviceId);
+    await docRef.delete();
   }
 }

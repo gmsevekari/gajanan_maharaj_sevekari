@@ -15,6 +15,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get granthTitle => 'Gajanan Vijay Granth';
 
   @override
+  String get guruCharitraTitle => 'Shri Guru Charitra';
+
+  @override
   String get stotraTitle => 'Stotra Collection';
 
   @override
@@ -779,6 +782,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'You have successfully signed up for the Parayan!';
 
   @override
+  String get parayanUpdatedSuccess =>
+      'Your Parayan signup has been updated successfully!';
+
+  @override
   String get assignedAdhyaysLabel => 'Your Assigned Adhyays';
 
   @override
@@ -1024,4 +1031,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareParayan => 'Share Parayan';
+
+  @override
+  String get deleteSignupLabel => 'Delete Signup';
+
+  @override
+  String get deleteSignupConfirmTitle => 'Delete Signup?';
+
+  @override
+  String get deleteSignupConfirmMessage =>
+      'Your registration will be deleted and all members of your household will be removed from this parayan. Are you sure you want to proceed?';
+
+  @override
+  String get signupDeletedSuccess =>
+      'Your signup has been deleted successfully.';
+
+  @override
+  String get duplicateNameError => 'Duplicate name within household';
+
+  @override
+  String get maxMembersError => 'Maximum 5 members allowed per household';
+
+  @override
+  String get householdMembersLabel => 'Household Members';
+
+  @override
+  String get addLabel => 'Add';
+
+  @override
+  String get phoneNumberLabel => 'Phone Number';
+
+  @override
+  String get joiningSignupProgress => 'Joining parayan...';
+
+  @override
+  String get updatingSignupProgress => 'Updating your signup...';
+
+  @override
+  String get deletingSignupProgress => 'Deleting your signup...';
+
+  @override
+  String get subscribingProgress => 'Setting up notifications...';
+
+  @override
+  String get unsubscribingProgress => 'Removing notification subscriptions...';
 }
