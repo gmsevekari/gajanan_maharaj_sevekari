@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "33491188906-frikkvooi93na8an2oai8tg7ehksmsoa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gajanan.maharaj.sevekari",
+            "certificate_hash": "c4286bc7a08499acdbb69940d69b915c3f7b798c"
+          }
+        },
+        {
           "client_id": "33491188906-qet8jedfk0i96nsofec8q6qilpn2e00c.apps.googleusercontent.com",
           "client_type": 3
         }
