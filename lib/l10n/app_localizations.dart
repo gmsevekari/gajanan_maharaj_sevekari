@@ -1595,7 +1595,7 @@ abstract class AppLocalizations {
   /// No description provided for @manualPingLabel.
   ///
   /// In en, this message translates to:
-  /// **'Send Manual Reminder Notification'**
+  /// **'Send Reminder Notification'**
   String get manualPingLabel;
 
   /// No description provided for @statsParticipants.
