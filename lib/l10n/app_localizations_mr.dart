@@ -1008,7 +1008,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get filterPending => 'अपूर्ण';
 
   @override
-  String get exportAllocations => 'अध्याय स्टेटस एक्स्पोर्ट करा';
+  String get exportAllocations => 'स्टेटस एक्स्पोर्ट करा';
 
   @override
   String get exportingGroups => 'गट स्नॅपशॉट तयार करत आहे...';
@@ -1029,7 +1029,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get statusLabel => 'स्टेटस';
 
   @override
-  String get shareParayan => 'पारायण लिंक शेअर करा';
+  String get shareParayan => 'पारायण शेअर करा';
 
   @override
   String get deleteSignupLabel => 'साईन-अप डिलीट करा';

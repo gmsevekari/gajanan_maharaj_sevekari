@@ -1985,7 +1985,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportAllocations.
   ///
   /// In en, this message translates to:
-  /// **'Export All Groups'**
+  /// **'Export Status'**
   String get exportAllocations;
 
   /// No description provided for @exportingGroups.

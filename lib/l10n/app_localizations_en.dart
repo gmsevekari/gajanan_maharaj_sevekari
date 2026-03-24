@@ -1009,7 +1009,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterPending => 'Pending';
 
   @override
-  String get exportAllocations => 'Export All Groups';
+  String get exportAllocations => 'Export Status';
 
   @override
   String get exportingGroups => 'Generating group snapshots...';

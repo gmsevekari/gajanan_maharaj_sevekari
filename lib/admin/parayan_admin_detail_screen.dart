@@ -228,67 +228,67 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               ),
             ),
             const SizedBox(height: 12),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              alignment: WrapAlignment.center,
+            Column(
               children: [
-                ElevatedButton.icon(
-                  onPressed: _sendManualPing,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primaryContainer,
-                    foregroundColor: theme.colorScheme.onPrimaryContainer,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 20,
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _sendManualPing,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    icon: const Icon(Icons.notification_important, size: 20),
+                    label: Text(l10n.manualPingLabel),
                   ),
-                  icon: const Icon(Icons.notification_important, size: 20),
-                  label: Text(l10n.manualPingLabel),
                 ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    final shareText =
-                        'Join this Parayan: ${event.titleEn}\n\nLink: https://gajananmaharajsevekari.org/parayan/${event.id}';
-                    Share.share(shareText);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 16,
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          final shareText =
+                              'Join this Parayan: ${event.titleEn}\n\nLink: https://gajananmaharajsevekari.org/parayan/${event.id}';
+                          Share.share(shareText);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: const Icon(Icons.share, size: 20),
+                        label: Text(l10n.shareParayan),
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: participants.isNotEmpty
+                            ? () => _exportAllGroups(context, event, l10n)
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor: Colors.grey.shade200,
+                          disabledForegroundColor: Colors.grey.shade400,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: const Icon(Icons.ios_share, size: 20),
+                        label: Text(l10n.exportAllocations),
+                      ),
                     ),
-                  ),
-                  icon: const Icon(Icons.share, size: 20),
-                  label: Text(l10n.shareParayan),
-                ),
-                // const SizedBox(width: 8), // Removed as Wrap handles spacing
-                ElevatedButton.icon(
-                  onPressed: participants.isNotEmpty
-                      ? () => _exportAllGroups(context, event, l10n)
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.secondary,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: Colors.grey.shade200,
-                    disabledForegroundColor: Colors.grey.shade400,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  icon: const Icon(Icons.ios_share, size: 20),
-                  label: Text(l10n.exportAllocations),
+                  ],
                 ),
               ],
             ),
