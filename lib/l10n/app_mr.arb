@@ -299,7 +299,7 @@
   "parayanTypeLabel": "पारायण प्रकार",
   "startDateLabel": "सुरुवात तारीख",
   "endDateLabel": "अंतिम तारीख",
-  "reminderTimeLabel": "आठवण नोटिफिकेशन वेळ",
+  "reminderTimeLabel": "रिमाईंडर नोटिफिकेशन वेळ",
   "createParayanButton": "कार्यक्रम तयार करा",
   "parayanJoinedSuccess": "तुम्ही पारायणासाठी यशस्वीरित्या साइन अप केले आहे!",
   "parayanUpdatedSuccess": "तुमचे पारायण साईन-अप यशस्वीरित्या अपडेट केले आहे!",
@@ -307,7 +307,7 @@
   "markAsRead": "वाचले म्हणून मार्क करा",
   "readingCompleted": "वाचन पूर्ण झाले",
   "submitReadingStatus": "स्टेटस सबमिट करा",
-  "manualPingLabel": "मॅन्युअल आठवण नोटिफिकेशन पाठवा",
+  "manualPingLabel": "रिमाईंडर नोटिफिकेशन पाठवा",
   "statsParticipants": "एकूण सहभागी: {count}",
   "@statsParticipants": {
     "placeholders": {
