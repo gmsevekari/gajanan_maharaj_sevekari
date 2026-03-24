@@ -709,57 +709,81 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                       ),
                     ),
                     const SizedBox(height: 8),
-                    ...member.assignedAdhyays.asMap().entries.map((entry) {
-                      final idx = entry.key + 1;
-                      final adhyay = entry.value;
-                      final isDone =
-                          member.completions[idx.toString()] ?? false;
-                      return CheckboxListTile(
-                        title: Text(
-                          "${l10n.day} ${_formatNumber(context, idx)}: ${l10n.adhyay} ${_formatNumber(context, adhyay)}",
-                        ),
-                        value: isDone,
-                        onChanged: (val) async {
-                          if (val == null) return;
+                    ...member.assignedAdhyays
+                        .asMap()
+                        .entries
+                        .where((entry) {
+                          // Filter based on current day of the event
+                          final now = DateTime.now();
+                          final today = DateTime(now.year, now.month, now.day);
+                          final start = DateTime(
+                            event.startDate.year,
+                            event.startDate.month,
+                            event.startDate.day,
+                          );
+                          final currentDayOfEvent =
+                              today.difference(start).inDays + 1;
 
-                          // Optimistic update for instant UI feedback
-                          setDialogState(() {
-                            member.completions[idx.toString()] = val;
-                          });
+                          // Show day 1 adhyay if currentDayOfEvent >= 1, day 2 if >= 2, etc.
+                          // idx (entry.key) starts from 0, so entry.key + 1 is the day index.
+                          final dayIndex = entry.key + 1;
 
-                          try {
-                            await _parayanService.updateMemberCompletion(
-                              eventId: event.id,
-                              deviceId: member.deviceId!,
-                              memberName: member.name,
-                              dayIndex: idx,
-                              completed: val,
-                            );
+                          // Always show at least the first day if the event is ongoing or later,
+                          // or if we are exactly on the start date.
+                          // Otherwise, show only up to the current day.
+                          return dayIndex <= currentDayOfEvent;
+                        })
+                        .map((entry) {
+                          final idx = entry.key + 1;
+                          final adhyay = entry.value;
+                          final isDone =
+                              member.completions[idx.toString()] ?? false;
+                          return CheckboxListTile(
+                            title: Text(
+                              "${l10n.day} ${_formatNumber(context, idx)}: ${l10n.adhyay} ${_formatNumber(context, adhyay)}",
+                            ),
+                            value: isDone,
+                            onChanged: (val) async {
+                              if (val == null) return;
 
-                            await AdminAuditService.logAction(
-                              action: 'UPDATE_MEMBER_COMPLETION',
-                              details: {
-                                'event_id': event.id,
-                                'device_id': member.deviceId,
-                                'member_name': member.name,
-                                'day_index': idx,
-                                'completed': val,
-                              },
-                            );
-                          } catch (e) {
-                            // Revert optimistic update on failure
-                            setDialogState(() {
-                              member.completions[idx.toString()] = !val;
-                            });
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Error: $e')),
-                              );
-                            }
-                          }
-                        },
-                      );
-                    }),
+                              // Optimistic update for instant UI feedback
+                              setDialogState(() {
+                                member.completions[idx.toString()] = val;
+                              });
+
+                              try {
+                                await _parayanService.updateMemberCompletion(
+                                  eventId: event.id,
+                                  deviceId: member.deviceId!,
+                                  memberName: member.name,
+                                  dayIndex: idx,
+                                  completed: val,
+                                );
+
+                                await AdminAuditService.logAction(
+                                  action: 'UPDATE_MEMBER_COMPLETION',
+                                  details: {
+                                    'event_id': event.id,
+                                    'device_id': member.deviceId,
+                                    'member_name': member.name,
+                                    'day_index': idx,
+                                    'completed': val,
+                                  },
+                                );
+                              } catch (e) {
+                                // Revert optimistic update on failure
+                                setDialogState(() {
+                                  member.completions[idx.toString()] = !val;
+                                });
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Error: $e')),
+                                  );
+                                }
+                              }
+                            },
+                          );
+                        }),
                   ],
                 ),
               ),

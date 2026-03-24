@@ -798,7 +798,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get submitReadingStatus => 'Submit Status';
 
   @override
-  String get manualPingLabel => 'Send Manual Reminder Notification';
+  String get manualPingLabel => 'Send Reminder Notification';
 
   @override
   String statsParticipants(int count) {

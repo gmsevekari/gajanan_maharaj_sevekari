@@ -771,7 +771,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get endDateLabel => 'अंतिम तारीख';
 
   @override
-  String get reminderTimeLabel => 'आठवण नोटिफिकेशन वेळ';
+  String get reminderTimeLabel => 'रिमाईंडर नोटिफिकेशन वेळ';
 
   @override
   String get createParayanButton => 'कार्यक्रम तयार करा';
@@ -797,7 +797,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get submitReadingStatus => 'स्टेटस सबमिट करा';
 
   @override
-  String get manualPingLabel => 'मॅन्युअल आठवण नोटिफिकेशन पाठवा';
+  String get manualPingLabel => 'रिमाईंडर नोटिफिकेशन पाठवा';
 
   @override
   String statsParticipants(int count) {
