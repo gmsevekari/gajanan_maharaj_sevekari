@@ -200,14 +200,31 @@ exports.sendParayanReminders = onSchedule("0 * * * *", async (event) => {
     logger.info(`Sending reminder to topic: ${topic}`);
 
     try {
+      // 1. Record in notifications collection for user history FIRST
+      // This ensures that if the user taps the notification immediately,
+      // the record is already available in the app's history screen.
+      await db.collection("notifications").add({
+        title: title,
+        body: body,
+        timestamp: nowSeattle.toISO(),
+        expires_at: admin.firestore.Timestamp.fromDate(
+          nowSeattle.plus({ days: 30 }).toJSDate(),
+        ),
+        type: "PARAYAN_REMINDER",
+        eventId: doc.id,
+        day: currentDay,
+      });
+
+      // 2. Then send the FCM message
       await admin.messaging().send(message);
+
       logger.info(
         `Successfully sent reminder for event ${doc.id} day ${currentDay}`,
       );
 
       const sentKey = `sentReminders.day${currentDay}_${currentHourString}`;
       await doc.ref.update({
-        [sentKey]: admin.firestore.FieldValue.serverTimestamp()
+        [sentKey]: admin.firestore.FieldValue.serverTimestamp(),
       });
     } catch (error) {
       logger.error(
