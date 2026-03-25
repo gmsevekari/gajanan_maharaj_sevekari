@@ -160,7 +160,7 @@ class ParayanService {
 
         final topic = NotificationConstants.getParayanReminderTopic(
           eventId,
-          dayIndex,
+          dayIndex + 1,
         );
         if (completed && allCompleted) {
           await FirebaseMessaging.instance.unsubscribeFromTopic(topic);

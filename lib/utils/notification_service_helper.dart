@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
+import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 
 class NotificationServiceHelper {
   static const String _pendingSubscriptionsKey = 'pending_fcm_subscriptions';
@@ -76,8 +78,48 @@ class NotificationServiceHelper {
     // Small delay to ensure firebase is ready and network might be stable
     Future.delayed(const Duration(seconds: 5), () {
       _processPendingSubscriptions();
+      syncActiveParayanSubscriptions();
       cleanUpOldSubscriptions();
     });
+  }
+
+  /// Syncs subscriptions for all active (upcoming/ongoing) parayan enrollments.
+  /// Call this on app startup to ensure existing users stay subscribed to topics.
+  static Future<void> syncActiveParayanSubscriptions() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final remindersEnabled =
+          prefs.getBool(NotificationConstants.parayanRemindersPrefKey) ?? true;
+      if (!remindersEnabled || kIsWeb) return;
+
+      final deviceId = await UniqueIdService.getUniqueId();
+      final parayanService = ParayanService();
+
+      // Get all active enrollments for this device
+      final enrollments = await parayanService
+          .getMyActiveEnrollmentsWithHousehold(deviceId);
+
+      final messaging = FirebaseMessaging.instance;
+      for (var entry in enrollments) {
+        final event = entry['event'];
+        if (event is! ParayanEvent) continue;
+
+        // Subscribe to all days needed for the event type
+        final int daysToSubscribe = (event.type.name == 'threeDay') ? 3 : 1;
+        for (int day = 1; day <= daysToSubscribe; day++) {
+          final topic = NotificationConstants.getParayanReminderTopic(
+            event.id,
+            day,
+          );
+          debugPrint('Syncing subscription for event ${event.id} Day $day');
+          await messaging
+              .subscribeToTopic(topic)
+              .timeout(const Duration(seconds: 5));
+        }
+      }
+    } catch (e) {
+      debugPrint('Error syncing active parayan subscriptions: $e');
+    }
   }
 
   /// Scan all user enrollments and unsubscribe from completed ones.
@@ -107,13 +149,13 @@ class NotificationServiceHelper {
       debugPrint('Unsubscribing from topics for completed event: $eventId');
       await Future.wait([
         messaging
-            .unsubscribeFromTopic('parayan_reminders_${eventId}_1')
+            .unsubscribeFromTopic('parayan_${eventId}_day1')
             .timeout(const Duration(seconds: 5)),
         messaging
-            .unsubscribeFromTopic('parayan_reminders_${eventId}_2')
+            .unsubscribeFromTopic('parayan_${eventId}_day2')
             .timeout(const Duration(seconds: 5)),
         messaging
-            .unsubscribeFromTopic('parayan_reminders_${eventId}_3')
+            .unsubscribeFromTopic('parayan_${eventId}_day3')
             .timeout(const Duration(seconds: 5)),
       ]);
     } catch (e) {
