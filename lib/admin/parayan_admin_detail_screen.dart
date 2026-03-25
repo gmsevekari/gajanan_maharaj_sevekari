@@ -522,20 +522,65 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
 
         final participants = snapshot.data ?? [];
 
+        // Calculate current parayan day (1-indexed)
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        final start = DateTime(
+          event.startDate.year,
+          event.startDate.month,
+          event.startDate.day,
+        );
+        int currentDay = today.difference(start).inDays + 1;
+        final maxDays = (event.type == ParayanType.threeDay) ? 3 : 1;
+        if (currentDay < 1) currentDay = 1;
+        if (currentDay > maxDays) currentDay = maxDays;
+
+        int allCount = participants.length;
+        int completedCount = 0;
+        int pendingCount = 0;
+        for (final entry in participants) {
+          bool upToDate = true;
+          for (int d = 1; d <= currentDay; d++) {
+            if (!(entry.completions[d.toString()] ?? false)) {
+              upToDate = false;
+              break;
+            }
+          }
+          if (upToDate) {
+            completedCount++;
+          } else {
+            pendingCount++;
+          }
+        }
+
         // Map participants to their original index for correct group number calculation
         final indexedParticipants = participants.asMap().entries.toList();
 
-        // Filter based on completion status
+        // Filter based on completion status for current and previous days
         final filteredParticipants = indexedParticipants.where((entry) {
-          final allDone = entry.value.isFullyCompleted;
-          if (_currentFilter == _ParticipantFilter.completed) return allDone;
-          if (_currentFilter == _ParticipantFilter.pending) return !allDone;
+          final p = entry.value;
+          bool isUpToDate = true;
+          for (int d = 1; d <= currentDay; d++) {
+            if (!(p.completions[d.toString()] ?? false)) {
+              isUpToDate = false;
+              break;
+            }
+          }
+
+          if (_currentFilter == _ParticipantFilter.completed) return isUpToDate;
+          if (_currentFilter == _ParticipantFilter.pending) return !isUpToDate;
           return true;
         }).toList();
 
         return Column(
           children: [
-            _buildParticipantsFilterBar(l10n, theme),
+            _buildParticipantsFilterBar(
+              l10n,
+              theme,
+              all: allCount,
+              completed: completedCount,
+              pending: pendingCount,
+            ),
             Expanded(
               child: filteredParticipants.isEmpty
                   ? Center(child: Text(l10n.noResultsFound))
@@ -546,7 +591,15 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         final entry = filteredParticipants[index];
                         final originalIndex = entry.key;
                         final p = entry.value;
-                        final allDone = p.isFullyCompleted;
+
+                        // Visual indicator should also be "Up to date for today"
+                        bool isUpToDate = true;
+                        for (int d = 1; d <= currentDay; d++) {
+                          if (!(p.completions[d.toString()] ?? false)) {
+                            isUpToDate = false;
+                            break;
+                          }
+                        }
 
                         final int groupSize =
                             (event.type == ParayanType.threeDay) ? 7 : 21;
@@ -561,14 +614,14 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                               vertical: 8,
                             ),
                             leading: CircleAvatar(
-                              backgroundColor: allDone
+                              backgroundColor: isUpToDate
                                   ? Colors.green.withValues(alpha: 0.15)
                                   : theme.colorScheme.primaryContainer,
                               child: Icon(
-                                allDone
+                                isUpToDate
                                     ? Icons.check_circle
                                     : Icons.person_outline,
-                                color: allDone
+                                color: isUpToDate
                                     ? Colors.green
                                     : theme.colorScheme.primary,
                               ),
@@ -579,9 +632,42 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            subtitle: Text(
-                              "${l10n.groupLabel(groupNumber.toString())} • ${l10n.adminAdhyaysLabel(p.assignedAdhyays.join(', '))}",
-                              style: theme.textTheme.bodySmall,
+                            subtitle: RichText(
+                              text: TextSpan(
+                                style: theme.textTheme.bodySmall,
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        "${l10n.groupLabel(groupNumber.toString())} • ",
+                                  ),
+                                  ...p.assignedAdhyays
+                                      .asMap()
+                                      .entries
+                                      .map((entry) {
+                                        final dayIdx = entry.key + 1;
+                                        final adhyay = entry.value;
+                                        final isDone =
+                                            p.completions[dayIdx.toString()] ??
+                                            false;
+                                        final isLast =
+                                            entry.key ==
+                                            p.assignedAdhyays.length - 1;
+
+                                        return TextSpan(
+                                          text:
+                                              "${_formatNumber(context, adhyay)}${isLast ? '' : ', '}",
+                                          style: TextStyle(
+                                            color: isDone ? Colors.green : null,
+                                            fontWeight:
+                                                isDone
+                                                    ? FontWeight.bold
+                                                    : null,
+                                            fontSize: 12,
+                                          ),
+                                        );
+                                      }),
+                                ],
+                              ),
                             ),
                             trailing: IconButton(
                               icon: Icon(
@@ -607,22 +693,28 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     );
   }
 
-  Widget _buildParticipantsFilterBar(AppLocalizations l10n, ThemeData theme) {
+  Widget _buildParticipantsFilterBar(
+    AppLocalizations l10n,
+    ThemeData theme, {
+    required int all,
+    required int completed,
+    required int pending,
+  }) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          _buildFilterChip(l10n.filterAll, _ParticipantFilter.all, theme),
+          _buildFilterChip("${l10n.filterAll} - $all", _ParticipantFilter.all, theme),
           const SizedBox(width: 8),
           _buildFilterChip(
-            l10n.filterCompleted,
+            "${l10n.filterCompleted} - $completed",
             _ParticipantFilter.completed,
             theme,
           ),
           const SizedBox(width: 8),
           _buildFilterChip(
-            l10n.filterPending,
+            "${l10n.filterPending} - $pending",
             _ParticipantFilter.pending,
             theme,
           ),
