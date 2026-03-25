@@ -4,6 +4,7 @@ class ParayanMember {
   final String name;
   final List<int> assignedAdhyays;
   final Map<String, bool> completions;
+  final DateTime joinedAt;
   final String? deviceId;
   final String? phone;
 
@@ -11,6 +12,7 @@ class ParayanMember {
     required this.name,
     required this.assignedAdhyays,
     required this.completions,
+    required this.joinedAt,
     this.deviceId,
     this.phone,
   });
@@ -26,17 +28,29 @@ class ParayanMember {
       (key, value) => MapEntry(key.toString(), value as bool),
     );
 
+    DateTime joinedAt;
+    try {
+      joinedAt = (data['joinedAt'] as Timestamp).toDate();
+    } catch (_) {
+      joinedAt = DateTime.now();
+    }
+
     return ParayanMember(
       name: name,
       assignedAdhyays: List<int>.from(data['assignedAdhyays'] ?? []),
       completions: completions,
+      joinedAt: joinedAt,
       deviceId: deviceId,
       phone: phone,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {'assignedAdhyays': assignedAdhyays, 'completions': completions};
+    return {
+      'assignedAdhyays': assignedAdhyays,
+      'completions': completions,
+      'joinedAt': Timestamp.fromDate(joinedAt),
+    };
   }
 
   bool get isFullyCompleted =>

@@ -100,6 +100,7 @@ class ParayanService {
         name: name,
         assignedAdhyays: [], // Empty initially
         completions: {},
+        joinedAt: DateTime.now(),
       );
     }
 
@@ -219,18 +220,10 @@ class ParayanService {
           for (var doc in snapshot.docs) {
             final household = ParayanHousehold.fromFirestore(doc);
             final members = household.members.values.toList();
-            // Sort members within each household by adhyay
-            members.sort((a, b) {
-              final aFirst = a.assignedAdhyays.isNotEmpty
-                  ? a.assignedAdhyays.first
-                  : 0;
-              final bFirst = b.assignedAdhyays.isNotEmpty
-                  ? b.assignedAdhyays.first
-                  : 0;
-              return aFirst.compareTo(bFirst);
-            });
             allMembers.addAll(members);
           }
+          // Sort globally by member joinedAt
+          allMembers.sort((a, b) => a.joinedAt.compareTo(b.joinedAt));
           return allMembers;
         });
   }
@@ -243,70 +236,88 @@ class ParayanService {
     final type = event.type;
 
     final participantsRef = _eventsRef.doc(eventId).collection('participants');
-    final querySnapshot = await participantsRef
-        .orderBy('joinedAt', descending: false)
-        .get();
+    final querySnapshot = await participantsRef.get();
 
-    final WriteBatch batch = _db.batch();
-    int currentTotal = 0;
+    // 1. Flatten all members and their parent household info
+    final List<Map<String, dynamic>> allMembersWithHousehold = [];
+    final Map<String, ParayanHousehold> households = {};
 
     for (var doc in querySnapshot.docs) {
       final household = ParayanHousehold.fromFirestore(doc);
-      final newMembers = <String, ParayanMember>{};
-      bool changed = false;
+      households[household.deviceId] = household;
+      for (var member in household.members.values) {
+        allMembersWithHousehold.add({
+          'member': member,
+          'deviceId': household.deviceId,
+        });
+      }
+    }
 
-      // Sort house members consistently for group allocation
-      final membersList = household.members.values.toList();
-      // No extra sort needed here as we want to preserve internal household order
+    // 2. Sort globally by member joinedAt
+    allMembersWithHousehold.sort((a, b) {
+      final ParayanMember memberA = a['member'];
+      final ParayanMember memberB = b['member'];
+      return memberA.joinedAt.compareTo(memberB.joinedAt);
+    });
 
-      for (var member in membersList) {
-        // Skip if already assigned? Or re-assign everyone for perfect alignment?
-        // Let's re-assign everyone to guarantee consistency.
+    // 3. Allocate adhyays to the sorted list
+    final Map<String, Map<String, ParayanMember>> updatedHouseholdsMembers = {};
 
-        List<int> assigned;
-        Map<String, bool> completions = {};
+    for (int i = 0; i < allMembersWithHousehold.length; i++) {
+      final ParayanMember member = allMembersWithHousehold[i]['member'];
+      final String deviceId = allMembersWithHousehold[i]['deviceId'];
 
-        if (type == ParayanType.oneDay || type == ParayanType.guruPushya) {
-          final adhyay = (currentTotal % 21) + 1;
-          assigned = [adhyay];
-          completions["1"] = false;
-        } else if (type == ParayanType.threeDay) {
-          final groupOffset = (currentTotal ~/ 7) % 3;
-          final participantOffset = (currentTotal % 7) * 3;
+      List<int> assigned;
+      Map<String, bool> completions = {};
 
-          final day1 = (groupOffset + participantOffset) % 21 + 1;
-          final day2 = (day1 % 21) + 1;
-          final day3 = (day2 % 21) + 1;
+      if (type == ParayanType.oneDay || type == ParayanType.guruPushya) {
+        final adhyay = (i % 21) + 1;
+        assigned = [adhyay];
+        completions["1"] = false;
+      } else if (type == ParayanType.threeDay) {
+        final groupOffset = (i ~/ 7) % 3;
+        final participantOffset = (i % 7) * 3;
 
-          assigned = [day1, day2, day3];
-          completions = {"1": false, "2": false, "3": false};
-        } else {
-          // Default to 1-21 if type unknown
-          final adhyay = (currentTotal % 21) + 1;
-          assigned = [adhyay];
-          completions["1"] = false;
-        }
+        final day1 = (groupOffset + participantOffset) % 21 + 1;
+        final day2 = (day1 % 21) + 1;
+        final day3 = (day2 % 21) + 1;
 
-        newMembers[member.name] = ParayanMember(
-          name: member.name,
-          assignedAdhyays: assigned,
-          completions: completions,
-          deviceId: member.deviceId,
-          phone: member.phone,
-        );
-        currentTotal++;
-        changed = true;
+        assigned = [day1, day2, day3];
+        completions = {"1": false, "2": false, "3": false};
+      } else {
+        final adhyay = (i % 21) + 1;
+        assigned = [adhyay];
+        completions["1"] = false;
       }
 
-      if (changed) {
-        final updatedHousehold = ParayanHousehold(
-          deviceId: household.deviceId,
-          phone: household.phone,
-          joinedAt: household.joinedAt,
-          members: newMembers,
-        );
-        batch.set(doc.reference, updatedHousehold.toFirestore());
-      }
+      final updatedMember = ParayanMember(
+        name: member.name,
+        assignedAdhyays: assigned,
+        completions: completions,
+        joinedAt: member.joinedAt,
+        deviceId: member.deviceId,
+        phone: member.phone,
+      );
+
+      updatedHouseholdsMembers.putIfAbsent(deviceId, () => {});
+      updatedHouseholdsMembers[deviceId]![member.name] = updatedMember;
+    }
+
+    // 4. Batch commit updates
+    final WriteBatch batch = _db.batch();
+    for (var entry in updatedHouseholdsMembers.entries) {
+      final deviceId = entry.key;
+      final newMembersMap = entry.value;
+      final originalHousehold = households[deviceId]!;
+
+      final updatedHousehold = ParayanHousehold(
+        deviceId: originalHousehold.deviceId,
+        phone: originalHousehold.phone,
+        joinedAt: originalHousehold.joinedAt,
+        members: newMembersMap,
+      );
+
+      batch.set(participantsRef.doc(deviceId), updatedHousehold.toFirestore());
     }
 
     await batch.commit();
