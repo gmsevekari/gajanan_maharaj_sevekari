@@ -367,8 +367,16 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                                   ? TextStyle(color: theme.hintColor)
                                   : null,
                               validator: (value) {
-                                if (value == null || value.isEmpty) {
+                                if (value == null || value.trim().isEmpty) {
                                   return localizations.parayanNameRequired;
+                                }
+                                if (value.startsWith(' ')) {
+                                  return "Name cannot start with a space";
+                                }
+                                final nameRegex =
+                                    RegExp(r'^[a-zA-Z0-9\u0900-\u097F\s]+$');
+                                if (!nameRegex.hasMatch(value)) {
+                                  return "Only alphanumeric characters and space allowed";
                                 }
                                 // Duplicate name check within household
                                 final otherNames = _nameControllers
