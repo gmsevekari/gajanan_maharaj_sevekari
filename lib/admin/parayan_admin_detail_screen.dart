@@ -836,21 +836,70 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       final List<XFile> files = [];
       final tempDir = await getTemporaryDirectory();
 
-      for (int i = 1; i <= totalGroups; i++) {
-        final groupParticipants = participants.where((p) {
-          final index = participants.indexOf(p);
-          return (index ~/ groupSize) + 1 == i;
-        }).toList();
+      // Batch groups in sets of 3 per screenshot
+      const int batchSize = 3;
+      final int totalBatches = (totalGroups / batchSize).ceil();
 
-        if (groupParticipants.isEmpty) continue;
+      for (int batch = 0; batch < totalBatches; batch++) {
+        final int startGroup = batch * batchSize + 1;
+        final int endGroup = (startGroup + batchSize - 1).clamp(1, totalGroups);
+
+        Widget batchWidget;
+
+        if (event.type == ParayanType.threeDay) {
+          // 3-day: unified table with group separator rows
+          final batchGroups = <MapEntry<int, List<ParayanMember>>>[];
+          for (int i = startGroup; i <= endGroup; i++) {
+            final groupParticipants = participants.where((p) {
+              final index = participants.indexOf(p);
+              return (index ~/ groupSize) + 1 == i;
+            }).toList();
+            if (groupParticipants.isNotEmpty) {
+              batchGroups.add(MapEntry(i, groupParticipants));
+            }
+          }
+          if (batchGroups.isEmpty) continue;
+          batchWidget = _buildExportableThreeDayBatchCard(
+            context,
+            event,
+            batchGroups,
+            l10n,
+          );
+        } else {
+          // 1-day: stack individual group cards
+          final List<Widget> batchCards = [];
+          for (int i = startGroup; i <= endGroup; i++) {
+            final groupParticipants = participants.where((p) {
+              final index = participants.indexOf(p);
+              return (index ~/ groupSize) + 1 == i;
+            }).toList();
+            if (groupParticipants.isEmpty) continue;
+            if (batchCards.isNotEmpty)
+              batchCards.add(const SizedBox(height: 16));
+            batchCards.add(
+              _buildExportableGroupCard(
+                context,
+                event,
+                i,
+                groupParticipants,
+                l10n,
+              ),
+            );
+          }
+          if (batchCards.isEmpty) continue;
+          batchWidget = Material(
+            color: Colors.transparent,
+            child: Column(mainAxisSize: MainAxisSize.min, children: batchCards),
+          );
+        }
 
         final imageBytes = await _screenshotController.captureFromWidget(
-          _buildExportableGroupCard(context, event, i, groupParticipants, l10n),
+          batchWidget,
           delay: const Duration(milliseconds: 100),
-          pixelRatio: 2.0, // High quality
+          pixelRatio: 2.0,
         );
 
-        final String fileName = 'Parayan_Group_$i.png';
+        final String fileName = 'Parayan_Groups_${startGroup}-${endGroup}.png';
         final File file = File('${tempDir.path}/$fileName');
         await file.writeAsBytes(imageBytes);
         files.add(XFile(file.path));
@@ -968,93 +1017,215 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             const SizedBox(height: 16),
 
             // Participants Table
-            Table(
-              columnWidths: const {
-                0: FlexColumnWidth(2.5),
-                1: FlexColumnWidth(1.2),
-                2: FlexColumnWidth(1),
-              },
-              border: TableBorder.all(color: Colors.grey.shade300),
-              children: [
-                TableRow(
-                  decoration: BoxDecoration(color: Colors.grey.shade100),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        l10n.parayanParticipant,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        l10n.adhyaysLabel,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        l10n.statusLabel,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                ...participants.map(
-                  (p) => TableRow(
+            if (event.type == ParayanType.threeDay)
+              // 3-day: 4-column layout — Day 1, Day 2, Day 3 each show adhyay# + ✓/pending
+              Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(2.0),
+                  1: FlexColumnWidth(1.2),
+                  2: FlexColumnWidth(1.2),
+                  3: FlexColumnWidth(1.2),
+                },
+                border: TableBorder.all(color: Colors.grey.shade300),
+                children: [
+                  TableRow(
+                    decoration: BoxDecoration(color: Colors.grey.shade100),
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          p.name,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          p.assignedAdhyays.join(', '),
+                          l10n.parayanParticipant,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            fontSize: 13,
                             fontWeight: FontWeight.bold,
+                            fontSize: 13,
                           ),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          p.isFullyCompleted ? "Done" : "Pending",
+                          l10n.day1Label,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: p.isFullyCompleted
-                                ? Colors.green.shade700
-                                : Colors.grey.shade600,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          l10n.day2Label,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          l10n.day3Label,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
                           ),
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
+                  ...participants.map((p) {
+                    Widget dayCell(int dayIndex) {
+                      final adhyay = dayIndex <= p.assignedAdhyays.length
+                          ? p.assignedAdhyays[dayIndex - 1]
+                          : null;
+                      final isDone =
+                          p.completions[dayIndex.toString()] ?? false;
+                      final label = adhyay != null ? '$adhyay' : '–';
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                label,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: isDone
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: isDone
+                                      ? Colors.green.shade700
+                                      : Colors.grey.shade600,
+                                ),
+                              ),
+                            ),
+                            if (isDone) ...[
+                              const SizedBox(width: 2),
+                              Icon(
+                                Icons.check,
+                                size: 12,
+                                color: Colors.green.shade700,
+                              ),
+                            ],
+                          ],
+                        ),
+                      );
+                    }
+
+                    return TableRow(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            p.name,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ),
+                        dayCell(1),
+                        dayCell(2),
+                        dayCell(3),
+                      ],
+                    );
+                  }),
+                ],
+              )
+            else
+              // 1-day: original 3-column layout — Participant | Adhyay | Status
+              Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(2.5),
+                  1: FlexColumnWidth(1.2),
+                  2: FlexColumnWidth(1),
+                },
+                border: TableBorder.all(color: Colors.grey.shade300),
+                children: [
+                  TableRow(
+                    decoration: BoxDecoration(color: Colors.grey.shade100),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          l10n.parayanParticipant,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          l10n.adhyaysLabel,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          l10n.statusLabel,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  ...participants.map(
+                    (p) => TableRow(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            p.name,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            p.assignedAdhyays.join(', '),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            p.isFullyCompleted ? "Done" : "Pending",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: p.isFullyCompleted
+                                  ? Colors.green.shade700
+                                  : Colors.grey.shade600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
 
             const SizedBox(height: 32),
 
@@ -1066,6 +1237,282 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF9B3746), // Maroon color from theme
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Renders a single export image for up to 3 groups of a 3-day parayan.
+  /// One shared header, one unified grid with full-width group separator rows,
+  /// actual event dates as column headers, and one footer.
+  Widget _buildExportableThreeDayBatchCard(
+    BuildContext context,
+    ParayanEvent event,
+    List<MapEntry<int, List<ParayanMember>>> groups,
+    AppLocalizations l10n,
+  ) {
+    final locale = Localizations.localeOf(context).languageCode;
+    final title = locale == 'mr' ? event.titleMr : event.titleEn;
+
+    // Fixed column widths — total 380px matches inner container (420 - 20*2)
+    const double nameColW = 152.0;
+    const double dayColW = 76.0;
+
+    String dayHeader(int dayOffset) {
+      final date = event.startDate.add(Duration(days: dayOffset));
+      return locale == 'mr'
+          ? DateFormat('d MMM', 'mr').format(date)
+          : DateFormat('MMM d').format(date);
+    }
+
+    // A single bordered cell
+    Widget cell({
+      required Widget child,
+      required double width,
+      bool rightBorder = true,
+      bool bottomBorder = true,
+      Color? background,
+      AlignmentGeometry alignment = Alignment.center,
+    }) {
+      return Container(
+        width: width,
+        alignment: alignment,
+        decoration: BoxDecoration(
+          color: background,
+          border: Border(
+            right: rightBorder
+                ? BorderSide(color: Colors.grey.shade300)
+                : BorderSide.none,
+            bottom: bottomBorder
+                ? BorderSide(color: Colors.grey.shade300)
+                : BorderSide.none,
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        child: child,
+      );
+    }
+
+    // A day-data cell with adhyay number + optional ✓
+    Widget dayCell(
+      ParayanMember p,
+      int dayIndex, {
+      bool bottomBorder = true,
+      bool rightBorder = true,
+    }) {
+      final adhyay = dayIndex <= p.assignedAdhyays.length
+          ? p.assignedAdhyays[dayIndex - 1]
+          : null;
+      final isDone = p.completions[dayIndex.toString()] ?? false;
+      return cell(
+        width: dayColW,
+        rightBorder: rightBorder,
+        bottomBorder: bottomBorder,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              adhyay != null ? '$adhyay' : '–',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isDone ? FontWeight.bold : FontWeight.normal,
+                color: isDone ? Colors.green.shade700 : Colors.grey.shade600,
+              ),
+            ),
+            if (isDone) ...[
+              const SizedBox(width: 2),
+              Icon(Icons.check, size: 11, color: Colors.green.shade700),
+            ],
+          ],
+        ),
+      );
+    }
+
+    // Build grid rows
+    final rows = <Widget>[];
+
+    // ── Header row ──
+    rows.add(
+      IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            cell(
+              child: Text(
+                l10n.parayanParticipant,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+              width: nameColW,
+              background: Colors.grey.shade200,
+              alignment: Alignment.center,
+            ),
+            cell(
+              child: Text(
+                dayHeader(0),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+              width: dayColW,
+              background: Colors.grey.shade200,
+            ),
+            cell(
+              child: Text(
+                dayHeader(1),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+              width: dayColW,
+              background: Colors.grey.shade200,
+            ),
+            cell(
+              child: Text(
+                dayHeader(2),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+              width: dayColW,
+              background: Colors.grey.shade200,
+              rightBorder: false,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    for (int gi = 0; gi < groups.length; gi++) {
+      final groupNumber = groups[gi].key;
+      final members = groups[gi].value;
+      final isLastGroup = gi == groups.length - 1;
+
+      // ── Full-width group separator row ──
+      rows.add(
+        Container(
+          width: nameColW + dayColW * 3,
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(vertical: 5),
+          decoration: BoxDecoration(
+            color: Colors.orange.withValues(alpha: 0.12),
+            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+          ),
+          child: Text(
+            l10n.groupLabel(groupNumber.toString()),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              color: Colors.orange,
+            ),
+          ),
+        ),
+      );
+
+      // ── Participant rows ──
+      for (int pi = 0; pi < members.length; pi++) {
+        final p = members[pi];
+        final isLastRow = isLastGroup && pi == members.length - 1;
+        rows.add(
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                cell(
+                  child: Text(p.name, style: const TextStyle(fontSize: 12)),
+                  width: nameColW,
+                  alignment: Alignment.centerLeft,
+                  bottomBorder: !isLastRow,
+                ),
+                dayCell(p, 1, bottomBorder: !isLastRow),
+                dayCell(p, 2, bottomBorder: !isLastRow),
+                dayCell(p, 3, rightBorder: false, bottomBorder: !isLastRow),
+              ],
+            ),
+          ),
+        );
+      }
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: 420,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.orange, width: 2),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Shared header
+            Row(
+              children: [
+                Image.asset(
+                  'resources/images/logo/App_Logo.png',
+                  width: 44,
+                  height: 44,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.seattleGajananMaharajParivar,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange,
+                        ),
+                      ),
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 20, thickness: 1.5, color: Colors.orange),
+
+            // Unified grid with outer border
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Column(mainAxisSize: MainAxisSize.min, children: rows),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Footer
+            Center(
+              child: Text(
+                l10n.jaiGajanan,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF9B3746),
                   fontStyle: FontStyle.italic,
                 ),
               ),
