@@ -320,54 +320,91 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           ),
         ),
         const SizedBox(height: 12),
-        Center(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: SegmentedButton<String>(
-              segments: [
-                ButtonSegment(
-                  value: 'enrolling',
-                  label: Text(
-                    l10n.statusEnrolling,
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  icon: const Icon(Icons.person_add_outlined, size: 16),
+        Column(
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<String>(
+                style: SegmentedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                  textStyle: const TextStyle(fontSize: 11),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                ButtonSegment(
-                  value: 'allocated',
-                  label: Text(
-                    l10n.statusAllocated,
-                    style: const TextStyle(fontSize: 12),
+                emptySelectionAllowed: true,
+                segments: [
+                  ButtonSegment(
+                    value: 'upcoming',
+                    label: Text(l10n.statusUpcoming),
+                    icon: const Icon(Icons.calendar_today_outlined, size: 14),
                   ),
-                  icon: const Icon(
-                    Icons.assignment_turned_in_outlined,
-                    size: 16,
+                  ButtonSegment(
+                    value: 'enrolling',
+                    label: Text(l10n.statusEnrolling),
+                    icon: const Icon(Icons.person_add_outlined, size: 14),
                   ),
-                ),
-                ButtonSegment(
-                  value: 'ongoing',
-                  label: Text(
-                    l10n.statusOngoing,
-                    style: const TextStyle(fontSize: 12),
+                  ButtonSegment(
+                    value: 'allocated',
+                    label: Text(l10n.statusAllocated),
+                    icon: const Icon(
+                      Icons.assignment_turned_in_outlined,
+                      size: 14,
+                    ),
                   ),
-                  icon: const Icon(Icons.play_circle_outline, size: 16),
-                ),
-                ButtonSegment(
-                  value: 'completed',
-                  label: Text(
-                    l10n.statusCompleted,
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  icon: const Icon(Icons.check_circle_outline, size: 16),
-                ),
-              ],
-              selected: {event.status},
-              onSelectionChanged: (Set<String> newSelection) {
-                _updateStatus(newSelection.first);
-              },
-              showSelectedIcon: false,
+                ],
+                selected:
+                    [
+                      'upcoming',
+                      'enrolling',
+                      'allocated',
+                    ].contains(event.status)
+                    ? {event.status}
+                    : {},
+                onSelectionChanged: (Set<String> newSelection) {
+                  final value = newSelection.firstOrNull;
+                  if (value != null && value != event.status) {
+                    _updateStatus(value);
+                  }
+                },
+                showSelectedIcon: false,
+              ),
             ),
-          ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<String>(
+                style: SegmentedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                  textStyle: const TextStyle(fontSize: 11),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                emptySelectionAllowed: true,
+                segments: [
+                  ButtonSegment(
+                    value: 'ongoing',
+                    label: Text(l10n.statusOngoing),
+                    icon: const Icon(Icons.play_circle_outline, size: 14),
+                  ),
+                  ButtonSegment(
+                    value: 'completed',
+                    label: Text(l10n.statusCompleted),
+                    icon: const Icon(Icons.check_circle_outline, size: 14),
+                  ),
+                ],
+                selected: ['ongoing', 'completed'].contains(event.status)
+                    ? {event.status}
+                    : {},
+                onSelectionChanged: (Set<String> newSelection) {
+                  final value = newSelection.firstOrNull;
+                  if (value != null && value != event.status) {
+                    _updateStatus(value);
+                  }
+                },
+                showSelectedIcon: false,
+              ),
+            ),
+          ],
         ),
       ],
     );
