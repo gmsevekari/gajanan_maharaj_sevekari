@@ -2113,6 +2113,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Removing notification subscriptions...'**
   String get unsubscribingProgress;
+
+  /// No description provided for @exportSuffixAllocated.
+  ///
+  /// In en, this message translates to:
+  /// **' - Adhyay Allocation'**
+  String get exportSuffixAllocated;
+
+  /// No description provided for @exportSuffixOngoing.
+  ///
+  /// In en, this message translates to:
+  /// **' - Current Status'**
+  String get exportSuffixOngoing;
+
+  /// No description provided for @exportSuffixCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **' Completed. Jai Gajanan 🙏🏻'**
+  String get exportSuffixCompleted;
 }
 
 class _AppLocalizationsDelegate

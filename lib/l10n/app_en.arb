@@ -417,5 +417,8 @@
   "updatingSignupProgress": "Updating your signup...",
   "deletingSignupProgress": "Deleting your signup...",
   "subscribingProgress": "Setting up notifications...",
-  "unsubscribingProgress": "Removing notification subscriptions..."
+  "unsubscribingProgress": "Removing notification subscriptions...",
+  "exportSuffixAllocated": " - Adhyay Allocation",
+  "exportSuffixOngoing": " - Current Status",
+  "exportSuffixCompleted": " Completed. Jai Gajanan 🙏🏻"
 }

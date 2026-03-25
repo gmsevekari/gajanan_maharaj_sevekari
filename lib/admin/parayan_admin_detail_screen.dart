@@ -55,11 +55,15 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     super.dispose();
   }
 
-  String _formatNumber(BuildContext context, dynamic number) {
+  String _formatNumberInternal(dynamic number, bool isMarathi) {
     if (number == null) return '';
     String numStr = number.toString();
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
     return isMarathi ? toMarathiNumerals(numStr) : numStr;
+  }
+
+  String _formatNumber(BuildContext context, dynamic number) {
+    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    return _formatNumberInternal(number, isMarathi);
   }
 
   Future<void> _sendManualPing() async {
@@ -224,7 +228,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               l10n.quickActionsLabel.toUpperCase(),
               style: theme.textTheme.labelSmall?.copyWith(
                 letterSpacing: 1.2,
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: 12),
@@ -374,7 +378,6 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     ThemeData theme,
     ParayanEvent event,
   ) {
-    final now = DateTime.now();
     final totalDays = event.endDate.difference(event.startDate).inDays + 1;
 
     return Column(
@@ -427,18 +430,6 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     if (reminderTimeParts.length != 2) {
                       return const SizedBox.shrink();
                     }
-
-                    final reminderHour =
-                        int.tryParse(reminderTimeParts[0]) ?? 20;
-                    final reminderMin = int.tryParse(reminderTimeParts[1]) ?? 0;
-
-                    final reminderDateTime = DateTime(
-                      dayDate.year,
-                      dayDate.month,
-                      dayDate.day,
-                      reminderHour,
-                      reminderMin,
-                    );
 
                     final trackingKey = 'day${dayIdx + 1}_$timeStr';
                     final isSent = event.sentReminders.containsKey(trackingKey);
@@ -640,32 +631,30 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                                     text:
                                         "${l10n.groupLabel(groupNumber.toString())} • ",
                                   ),
-                                  ...p.assignedAdhyays
-                                      .asMap()
-                                      .entries
-                                      .map((entry) {
-                                        final dayIdx = entry.key + 1;
-                                        final adhyay = entry.value;
-                                        final isDone =
-                                            p.completions[dayIdx.toString()] ??
-                                            false;
-                                        final isLast =
-                                            entry.key ==
-                                            p.assignedAdhyays.length - 1;
+                                  ...p.assignedAdhyays.asMap().entries.map((
+                                    entry,
+                                  ) {
+                                    final dayIdx = entry.key + 1;
+                                    final adhyay = entry.value;
+                                    final isDone =
+                                        p.completions[dayIdx.toString()] ??
+                                        false;
+                                    final isLast =
+                                        entry.key ==
+                                        p.assignedAdhyays.length - 1;
 
-                                        return TextSpan(
-                                          text:
-                                              "${_formatNumber(context, adhyay)}${isLast ? '' : ', '}",
-                                          style: TextStyle(
-                                            color: isDone ? Colors.green : null,
-                                            fontWeight:
-                                                isDone
-                                                    ? FontWeight.bold
-                                                    : null,
-                                            fontSize: 12,
-                                          ),
-                                        );
-                                      }),
+                                    return TextSpan(
+                                      text:
+                                          "${_formatNumber(context, adhyay)}${isLast ? '' : ', '}",
+                                      style: TextStyle(
+                                        color: isDone ? Colors.green : null,
+                                        fontWeight: isDone
+                                            ? FontWeight.bold
+                                            : null,
+                                        fontSize: 12,
+                                      ),
+                                    );
+                                  }),
                                 ],
                               ),
                             ),
@@ -705,16 +694,20 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          _buildFilterChip("${l10n.filterAll} - $all", _ParticipantFilter.all, theme),
+          _buildFilterChip(
+            "${l10n.filterAll} - ${_formatNumber(context, all)}",
+            _ParticipantFilter.all,
+            theme,
+          ),
           const SizedBox(width: 8),
           _buildFilterChip(
-            "${l10n.filterCompleted} - $completed",
+            "${l10n.filterCompleted} - ${_formatNumber(context, completed)}",
             _ParticipantFilter.completed,
             theme,
           ),
           const SizedBox(width: 8),
           _buildFilterChip(
-            "${l10n.filterPending} - $pending",
+            "${l10n.filterPending} - ${_formatNumber(context, pending)}",
             _ParticipantFilter.pending,
             theme,
           ),
@@ -761,7 +754,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           builder: (context, setDialogState) {
             return AlertDialog(
               title: Text(
-                "${member.name} (${l10n.groupLabel(groupNumber.toString())})",
+                "${member.name} (${l10n.groupLabel(_formatNumber(context, groupNumber))})",
               ),
               content: SingleChildScrollView(
                 child: Column(
@@ -867,7 +860,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                                 setDialogState(() {
                                   member.completions[idx.toString()] = !val;
                                 });
-                                if (mounted) {
+                                if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text('Error: $e')),
                                   );
@@ -881,7 +874,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Navigator.of(context).pop(),
                   child: Text(l10n.closeLabel),
                 ),
               ],
@@ -897,11 +890,27 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     ParayanEvent event,
     AppLocalizations l10n,
   ) async {
+    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    final title = isMarathi ? event.titleMr : event.titleEn;
+    final dateString = isMarathi
+        ? DateFormat('d MMMM, yyyy', 'mr').format(event.startDate)
+        : DateFormat('MMMM d, yyyy').format(event.startDate);
+
+    String suffix = "";
+    if (event.status == 'allocated') {
+      suffix = l10n.exportSuffixAllocated;
+    } else if (event.status == 'ongoing') {
+      suffix = l10n.exportSuffixOngoing;
+    } else if (event.status == 'completed') {
+      suffix = l10n.exportSuffixCompleted;
+    }
+    final String shareText = "$title$suffix";
+
     // Show loading indicator
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => Center(
+      builder: (ctx) => Center(
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -939,7 +948,6 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         Widget batchWidget;
 
         if (event.type == ParayanType.threeDay) {
-          // 3-day: unified table with group separator rows
           final batchGroups = <MapEntry<int, List<ParayanMember>>>[];
           for (int i = startGroup; i <= endGroup; i++) {
             final groupParticipants = participants.where((p) {
@@ -952,13 +960,14 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           }
           if (batchGroups.isEmpty) continue;
           batchWidget = _buildExportableThreeDayBatchCard(
-            context,
-            event,
-            batchGroups,
-            l10n,
+            event: event,
+            batchGroups: batchGroups,
+            l10n: l10n,
+            isMarathi: isMarathi,
+            title: title,
+            dateString: dateString,
           );
         } else {
-          // 1-day: stack individual group cards
           final List<Widget> batchCards = [];
           for (int i = startGroup; i <= endGroup; i++) {
             final groupParticipants = participants.where((p) {
@@ -966,15 +975,18 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               return (index ~/ groupSize) + 1 == i;
             }).toList();
             if (groupParticipants.isEmpty) continue;
-            if (batchCards.isNotEmpty)
+            if (batchCards.isNotEmpty) {
               batchCards.add(const SizedBox(height: 16));
+            }
             batchCards.add(
               _buildExportableGroupCard(
-                context,
-                event,
-                i,
-                groupParticipants,
-                l10n,
+                event: event,
+                groupNumber: i,
+                participants: groupParticipants,
+                l10n: l10n,
+                isMarathi: isMarathi,
+                title: title,
+                dateString: dateString,
               ),
             );
           }
@@ -991,16 +1003,17 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           pixelRatio: 2.0,
         );
 
-        final String fileName = 'Parayan_Groups_${startGroup}-${endGroup}.png';
+        final String startFormatted = _formatNumberInternal(
+          startGroup,
+          isMarathi,
+        );
+        final String endFormatted = _formatNumberInternal(endGroup, isMarathi);
+        final String fileName =
+            'Parayan_Groups_$startFormatted-$endFormatted.png';
         final File file = File('${tempDir.path}/$fileName');
         await file.writeAsBytes(imageBytes);
         files.add(XFile(file.path));
       }
-
-      final String shareText =
-          Localizations.localeOf(context).languageCode == 'mr'
-          ? "${event.titleMr}"
-          : "${event.titleEn}";
 
       if (context.mounted) Navigator.of(context).pop(); // Close loading dialog
 
@@ -1017,18 +1030,16 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     }
   }
 
-  Widget _buildExportableGroupCard(
-    BuildContext context,
-    ParayanEvent event,
-    int groupNumber,
-    List<ParayanMember> participants,
-    AppLocalizations l10n,
-  ) {
-    final locale = Localizations.localeOf(context).languageCode;
-    final title = locale == 'mr' ? event.titleMr : event.titleEn;
-    final date = locale == 'mr'
-        ? DateFormat('d MMMM, yyyy', 'mr').format(event.startDate)
-        : DateFormat('MMMM d, yyyy').format(event.startDate);
+  Widget _buildExportableGroupCard({
+    required ParayanEvent event,
+    required int groupNumber,
+    required List<ParayanMember> participants,
+    required AppLocalizations l10n,
+    required bool isMarathi,
+    required String title,
+    required String dateString,
+  }) {
+    final date = dateString;
 
     return Material(
       color: Colors.transparent,
@@ -1090,7 +1101,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  l10n.groupLabel(groupNumber.toString()),
+                  l10n.groupLabel(
+                    _formatNumberInternal(groupNumber, isMarathi),
+                  ),
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -1176,7 +1189,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                           : null;
                       final isDone =
                           p.completions[dayIndex.toString()] ?? false;
-                      final label = adhyay != null ? '$adhyay' : '–';
+                      final label = adhyay != null
+                          ? _formatNumberInternal(adhyay, isMarathi)
+                          : '–';
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
@@ -1291,7 +1306,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            p.assignedAdhyays.join(', '),
+                            p.assignedAdhyays
+                                .map((a) => _formatNumberInternal(a, isMarathi))
+                                .join(', '),
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 13,
@@ -1342,22 +1359,21 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   /// Renders a single export image for up to 3 groups of a 3-day parayan.
   /// One shared header, one unified grid with full-width group separator rows,
   /// actual event dates as column headers, and one footer.
-  Widget _buildExportableThreeDayBatchCard(
-    BuildContext context,
-    ParayanEvent event,
-    List<MapEntry<int, List<ParayanMember>>> groups,
-    AppLocalizations l10n,
-  ) {
-    final locale = Localizations.localeOf(context).languageCode;
-    final title = locale == 'mr' ? event.titleMr : event.titleEn;
-
+  Widget _buildExportableThreeDayBatchCard({
+    required ParayanEvent event,
+    required List<MapEntry<int, List<ParayanMember>>> batchGroups,
+    required AppLocalizations l10n,
+    required bool isMarathi,
+    required String title,
+    required String dateString,
+  }) {
     // Fixed column widths — total 380px matches inner container (420 - 20*2)
     const double nameColW = 152.0;
     const double dayColW = 76.0;
 
     String dayHeader(int dayOffset) {
       final date = event.startDate.add(Duration(days: dayOffset));
-      return locale == 'mr'
+      return isMarathi
           ? DateFormat('d MMM', 'mr').format(date)
           : DateFormat('MMM d').format(date);
     }
@@ -1487,10 +1503,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       ),
     );
 
-    for (int gi = 0; gi < groups.length; gi++) {
-      final groupNumber = groups[gi].key;
-      final members = groups[gi].value;
-      final isLastGroup = gi == groups.length - 1;
+    for (int gi = 0; gi < batchGroups.length; gi++) {
+      final groupNumber = batchGroups[gi].key;
+      final members = batchGroups[gi].value;
+      final isLastGroup = gi == batchGroups.length - 1;
 
       // ── Full-width group separator row ──
       rows.add(
@@ -1542,7 +1558,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     return Material(
       color: Colors.transparent,
       child: Container(
-        width: 420,
+        width: 440,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,

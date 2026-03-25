@@ -189,7 +189,6 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
 
   Future<void> _deleteSignup() async {
     final localizations = AppLocalizations.of(context);
-    final isMarathi = localizations?.localeName == 'mr';
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -373,8 +372,9 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                                 if (value.startsWith(' ')) {
                                   return "Name cannot start with a space";
                                 }
-                                final nameRegex =
-                                    RegExp(r'^[a-zA-Z0-9\u0900-\u097F\s]+$');
+                                final nameRegex = RegExp(
+                                  r'^[a-zA-Z0-9\u0900-\u097F\s]+$',
+                                );
                                 if (!nameRegex.hasMatch(value)) {
                                   return "Only alphanumeric characters and space allowed";
                                 }

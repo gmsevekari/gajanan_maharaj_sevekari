@@ -417,5 +417,8 @@
   "updatingSignupProgress": "तुमचे साईन-अप अपडेट करत आहे...",
   "deletingSignupProgress": "तुमचे साईन-अप डिलीट करत आहे...",
   "subscribingProgress": "नोटिफिकेशन्स सबस्क्राइब करत आहे...",
-  "unsubscribingProgress": "नोटिफिकेशन्स अनसबस्क्राइब करत आहे..."
+  "unsubscribingProgress": "नोटिफिकेशन्स अनसबस्क्राइब करत आहे...",
+  "exportSuffixAllocated": " - अध्याय वाटप",
+  "exportSuffixOngoing": " - आत्ताचे स्टेटस",
+  "exportSuffixCompleted": " पूर्ण झाले. जय गजानन 🙏🏻"
 }

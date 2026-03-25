@@ -1075,4 +1075,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unsubscribingProgress => 'Removing notification subscriptions...';
+
+  @override
+  String get exportSuffixAllocated => ' - Adhyay Allocation';
+
+  @override
+  String get exportSuffixOngoing => ' - Current Status';
+
+  @override
+  String get exportSuffixCompleted => ' Completed. Jai Gajanan 🙏🏻';
 }

@@ -271,32 +271,39 @@ class _MyAllocationTabState extends State<MyAllocationTab>
             if (isRead)
               const Icon(Icons.check_circle, color: Colors.green)
             else if (isOngoing)
-              Builder(builder: (context) {
-                final now = DateTime.now();
-                final today = DateTime(now.year, now.month, now.day);
-                final start = widget.event.startDate;
-                final startDate = DateTime(start.year, start.month, start.day);
-                final currentDayOfEvent = today.difference(startDate).inDays + 1;
+              Builder(
+                builder: (context) {
+                  final now = DateTime.now();
+                  final today = DateTime(now.year, now.month, now.day);
+                  final start = widget.event.startDate;
+                  final startDate = DateTime(
+                    start.year,
+                    start.month,
+                    start.day,
+                  );
+                  final currentDayOfEvent =
+                      today.difference(startDate).inDays + 1;
 
-                final canSubmit = dayNum <= currentDayOfEvent;
+                  final canSubmit = dayNum <= currentDayOfEvent;
 
-                return ElevatedButton(
-                  onPressed: canSubmit
-                      ? () => _showCompletionDialog(context, onComplete)
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: canSubmit
-                        ? theme.colorScheme.primary
-                        : Colors.grey.withValues(alpha: 0.1),
-                    foregroundColor: canSubmit ? Colors.white : Colors.grey,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                  return ElevatedButton(
+                    onPressed: canSubmit
+                        ? () => _showCompletionDialog(context, onComplete)
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: canSubmit
+                          ? theme.colorScheme.primary
+                          : Colors.grey.withValues(alpha: 0.1),
+                      foregroundColor: canSubmit ? Colors.white : Colors.grey,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
-                  ),
-                  child: Text(localizations.submitLabel),
-                );
-              })
+                    child: Text(localizations.submitLabel),
+                  );
+                },
+              )
             else
               ElevatedButton(
                 onPressed: null,

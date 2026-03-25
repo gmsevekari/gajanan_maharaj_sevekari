@@ -1075,4 +1075,13 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get unsubscribingProgress => 'नोटिफिकेशन्स अनसबस्क्राइब करत आहे...';
+
+  @override
+  String get exportSuffixAllocated => ' - अध्याय वाटप';
+
+  @override
+  String get exportSuffixOngoing => ' - आत्ताचे स्टेटस';
+
+  @override
+  String get exportSuffixCompleted => ' पूर्ण झाले. जय गजानन 🙏🏻';
 }
