@@ -299,7 +299,7 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
       final timestampStr = data['timestamp'] as String?;
       if (timestampStr == null) continue;
 
-      final date = DateTime.parse(timestampStr);
+      final date = DateTime.parse(timestampStr).toLocal();
       final notificationDate = DateTime(date.year, date.month, date.day);
 
       final locale = Localizations.localeOf(context).toString();
@@ -354,7 +354,7 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
     String timeStr = '';
     if (timestampStr != null) {
       try {
-        final timestamp = DateTime.parse(timestampStr);
+        final timestamp = DateTime.parse(timestampStr).toLocal();
         timeStr = DateFormat.jm().format(timestamp);
       } catch (e) {
         timeStr = '';
@@ -374,10 +374,9 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         elevation: theme.cardTheme.elevation,
-        color:
-            isRead
-                ? theme.cardTheme.color?.withValues(alpha: 0.6)
-                : theme.cardTheme.color,
+        color: isRead
+            ? theme.cardTheme.color?.withValues(alpha: 0.6)
+            : theme.cardTheme.color,
         shape: theme.cardTheme.shape,
         child: Opacity(
           opacity: isRead ? 0.7 : 1.0,
@@ -396,8 +395,9 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
                           Text(
                             title,
                             style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight:
-                                  isRead ? FontWeight.w500 : FontWeight.bold,
+                              fontWeight: isRead
+                                  ? FontWeight.w500
+                                  : FontWeight.bold,
                               color: theme.colorScheme.primary,
                             ),
                           ),
