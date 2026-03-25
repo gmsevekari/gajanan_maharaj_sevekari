@@ -380,9 +380,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                   stream: _participantsStream,
                   builder: (context, snapshot) {
                     final count = snapshot.data?.length ?? 0;
-                    final canJoin =
-                        _event!.status == 'enrolling' ||
-                        _event!.status == 'allocated';
+                    final canJoin = _event!.status == 'enrolling';
 
                     final isEditable = _isRegistered && canJoin;
                     final isJoinable = !_isRegistered && canJoin;
