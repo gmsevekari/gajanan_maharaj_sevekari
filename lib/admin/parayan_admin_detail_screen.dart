@@ -11,6 +11,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
+import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_add_participants_screen.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -40,6 +41,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (mounted) setState(() {});
+    });
     _overviewParticipantsStream = _parayanService.getAllParticipants(
       widget.event.id,
     );
@@ -189,6 +193,22 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               ),
             ],
           ),
+          floatingActionButton:
+              (_tabController.index == 1 && event.status != 'completed')
+              ? FloatingActionButton.extended(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ParayanAdminAddParticipantsScreen(event: event),
+                    ),
+                  ),
+                  icon: const Icon(Icons.group_add),
+                  label: Text(localizations.addParticipantLabel),
+                  backgroundColor: theme.primaryColor,
+                  foregroundColor: Colors.white,
+                )
+              : null,
         );
       },
     );
@@ -207,7 +227,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           return const Center(child: CircularProgressIndicator());
         }
 
-        final participants = snapshot.data ?? [];
+        final participants = (snapshot.data ?? [])
+          ..sort((a, b) => (a.globalIndex ?? 0).compareTo(b.globalIndex ?? 0));
         final adhyaysPerPerson = event.type == ParayanType.oneDay ? 1 : 3;
         final totalAdhyays = participants.length * adhyaysPerPerson;
 
@@ -579,7 +600,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           return const Center(child: CircularProgressIndicator());
         }
 
-        final participants = snapshot.data ?? [];
+        final participants = (snapshot.data ?? [])
+          ..sort((a, b) => (a.globalIndex ?? 0).compareTo(b.globalIndex ?? 0));
 
         // Calculate current parayan day (1-indexed)
         final now = DateTime.now();
@@ -612,8 +634,26 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           }
         }
 
+        // Sort participants by globalIndex with joinedAt fallback
+        final sortedList = participants.toList()
+          ..sort((a, b) {
+            // Treat -1 or null as unallocated (legacy compatibility)
+            final int? idxA = (a.globalIndex ?? -1) < 0 ? null : a.globalIndex;
+            final int? idxB = (b.globalIndex ?? -1) < 0 ? null : b.globalIndex;
+
+            if (idxA != null && idxB != null) {
+              return idxA.compareTo(idxB);
+            }
+            if (idxA != null) return -1;
+            if (idxB != null) return 1;
+
+            final res = a.joinedAt.compareTo(b.joinedAt);
+            if (res != 0) return res;
+            return a.name.compareTo(b.name);
+          });
+
         // Map participants to their original index for correct group number calculation
-        final indexedParticipants = participants.asMap().entries.toList();
+        final indexedParticipants = sortedList.asMap().entries.toList();
 
         // Filter based on completion status for current and previous days
         final filteredParticipants = indexedParticipants.where((entry) {
@@ -643,103 +683,164 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             Expanded(
               child: filteredParticipants.isEmpty
                   ? Center(child: Text(l10n.noResultsFound))
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: filteredParticipants.length,
-                      itemBuilder: (context, index) {
-                        final entry = filteredParticipants[index];
-                        final originalIndex = entry.key;
-                        final p = entry.value;
+                  : Builder(
+                      builder: (context) {
+                        final Map<int, List<MapEntry<int, ParayanMember>>>
+                        grouped = {};
+                        final bool isThreeDay =
+                            event.type == ParayanType.threeDay;
+                        final int gSize = isThreeDay ? 7 : 21;
 
-                        // Visual indicator should also be "Up to date for today"
-                        bool isUpToDate = true;
-                        for (int d = 1; d <= currentDay; d++) {
-                          if (!(p.completions[d.toString()] ?? false)) {
-                            isUpToDate = false;
-                            break;
-                          }
+                        for (final entry in filteredParticipants) {
+                          final p = entry.value;
+                          final int gNum =
+                              p.groupNumber ??
+                              ((p.globalIndex ?? entry.key) ~/ gSize) + 1;
+                          grouped.putIfAbsent(gNum, () => []).add(entry);
                         }
+                        final bool showHeaders =
+                            event.status != 'upcoming' &&
+                            event.status != 'enrolling';
+                        final sortedGroupKeys = grouped.keys.toList()..sort();
 
-                        final int groupSize =
-                            (event.type == ParayanType.threeDay) ? 7 : 21;
-                        final int groupNumber =
-                            (originalIndex ~/ groupSize) + 1;
+                        return ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: sortedGroupKeys.length,
+                          itemBuilder: (context, gi) {
+                            final gNum = sortedGroupKeys[gi];
+                            final members = grouped[gNum]!;
 
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            leading: CircleAvatar(
-                              backgroundColor: isUpToDate
-                                  ? Colors.green.withValues(alpha: 0.15)
-                                  : theme.colorScheme.primaryContainer,
-                              child: Icon(
-                                isUpToDate
-                                    ? Icons.check_circle
-                                    : Icons.person_outline,
-                                color: isUpToDate
-                                    ? Colors.green
-                                    : theme.colorScheme.primary,
-                              ),
-                            ),
-                            title: Text(
-                              p.name,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: RichText(
-                              text: TextSpan(
-                                style: theme.textTheme.bodySmall,
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        "${l10n.groupLabel(groupNumber.toString())} • ",
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Group Header
+                                if (showHeaders)
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      20,
+                                      16,
+                                      8,
+                                    ),
+                                    child: Text(
+                                      l10n
+                                          .groupLabel(
+                                            _formatNumber(context, gNum),
+                                          )
+                                          .toUpperCase(),
+                                      style: theme.textTheme.labelLarge
+                                          ?.copyWith(
+                                            color: theme.colorScheme.primary,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1.2,
+                                          ),
+                                    ),
                                   ),
-                                  ...p.assignedAdhyays.asMap().entries.map((
-                                    entry,
-                                  ) {
-                                    final dayIdx = entry.key + 1;
-                                    final adhyay = entry.value;
-                                    final isDone =
-                                        p.completions[dayIdx.toString()] ??
-                                        false;
-                                    final isLast =
-                                        entry.key ==
-                                        p.assignedAdhyays.length - 1;
+                                // Member Cards
+                                ...members.map((entry) {
+                                  final p = entry.value;
 
-                                    return TextSpan(
-                                      text:
-                                          "${_formatNumber(context, adhyay)}${isLast ? '' : ', '}",
-                                      style: TextStyle(
-                                        color: isDone ? Colors.green : null,
-                                        fontWeight: isDone
-                                            ? FontWeight.bold
-                                            : null,
-                                        fontSize: 12,
+                                  bool isUpToDate = true;
+                                  for (int d = 1; d <= currentDay; d++) {
+                                    if (!(p.completions[d.toString()] ??
+                                        false)) {
+                                      isUpToDate = false;
+                                      break;
+                                    }
+                                  }
+
+                                  return Card(
+                                    margin: const EdgeInsets.only(bottom: 12),
+                                    child: ListTile(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 8,
+                                          ),
+                                      leading: CircleAvatar(
+                                        backgroundColor: isUpToDate
+                                            ? Colors.green.withValues(
+                                                alpha: 0.15,
+                                              )
+                                            : theme
+                                                  .colorScheme
+                                                  .primaryContainer,
+                                        child: Icon(
+                                          isUpToDate
+                                              ? Icons.check_circle
+                                              : Icons.person_outline,
+                                          color: isUpToDate
+                                              ? Colors.green
+                                              : theme.colorScheme.primary,
+                                        ),
                                       ),
-                                    );
-                                  }),
-                                ],
-                              ),
-                            ),
-                            trailing: IconButton(
-                              icon: Icon(
-                                Icons.edit_note,
-                                color: theme.colorScheme.primary,
-                              ),
-                              onPressed: () => _showParticipantEditDialog(
-                                context,
-                                l10n,
-                                p,
-                                event,
-                                groupNumber,
-                              ),
-                            ),
-                          ),
+                                      title: Text(
+                                        p.name,
+                                        style: theme.textTheme.titleSmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                      subtitle: RichText(
+                                        text: TextSpan(
+                                          style: theme.textTheme.bodySmall,
+                                          children: [
+                                            TextSpan(
+                                              text:
+                                                  "${l10n.groupLabel(_formatNumber(context, gNum))} • ",
+                                            ),
+                                            ...p.assignedAdhyays
+                                                .asMap()
+                                                .entries
+                                                .map((entry) {
+                                                  final dayIdx = entry.key + 1;
+                                                  final adhyay = entry.value;
+                                                  final isDone =
+                                                      p.completions[dayIdx
+                                                          .toString()] ??
+                                                      false;
+                                                  final isLast =
+                                                      entry.key ==
+                                                      p.assignedAdhyays.length -
+                                                          1;
+
+                                                  return TextSpan(
+                                                    text:
+                                                        "${_formatNumber(context, adhyay)}${isLast ? '' : ', '}",
+                                                    style: TextStyle(
+                                                      color: isDone
+                                                          ? Colors.green
+                                                          : null,
+                                                      fontWeight: isDone
+                                                          ? FontWeight.bold
+                                                          : null,
+                                                      fontSize: 12,
+                                                    ),
+                                                  );
+                                                }),
+                                          ],
+                                        ),
+                                      ),
+                                      trailing: IconButton(
+                                        icon: Icon(
+                                          Icons.edit_note,
+                                          color: theme.colorScheme.primary,
+                                        ),
+                                        onPressed: () =>
+                                            _showParticipantEditDialog(
+                                              context,
+                                              l10n,
+                                              p,
+                                              event,
+                                              gNum,
+                                            ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ],
+                            );
+                          },
                         );
                       },
                     ),
@@ -996,17 +1097,33 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     );
 
     try {
-      final participants = await _parayanService
-          .getAllParticipants(event.id)
-          .first;
+      final participants =
+          (await _parayanService.getAllParticipants(event.id).first)..sort((
+            a,
+            b,
+          ) {
+            // Treat -1 or null as unallocated (legacy compatibility)
+            final int? idxA = (a.globalIndex ?? -1) < 0 ? null : a.globalIndex;
+            final int? idxB = (b.globalIndex ?? -1) < 0 ? null : b.globalIndex;
+
+            if (idxA != null && idxB != null) {
+              return idxA.compareTo(idxB);
+            }
+            if (idxA != null) return -1;
+            if (idxB != null) return 1;
+
+            final res = a.joinedAt.compareTo(b.joinedAt);
+            if (res != 0) return res;
+            return a.name.compareTo(b.name);
+          });
       final int groupSize = (event.type == ParayanType.threeDay) ? 7 : 21;
       final int totalGroups = (participants.length / groupSize).ceil();
 
       final List<XFile> files = [];
       final tempDir = await getTemporaryDirectory();
 
-      // Batch groups in sets of 3 per screenshot
-      const int batchSize = 3;
+      // Batch groups: 1 group per file for 1-day (easy sharing), 3 groups per file for 3-day.
+      final int batchSize = (event.type == ParayanType.threeDay) ? 3 : 1;
       final int totalBatches = (totalGroups / batchSize).ceil();
 
       for (int batch = 0; batch < totalBatches; batch++) {
@@ -1018,13 +1135,17 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         if (event.type == ParayanType.threeDay) {
           final batchGroups = <MapEntry<int, List<ParayanMember>>>[];
           for (int i = startGroup; i <= endGroup; i++) {
-            final groupParticipants = participants.where((p) {
-              final index = participants.indexOf(p);
-              return (index ~/ groupSize) + 1 == i;
-            }).toList();
-            if (groupParticipants.isNotEmpty) {
-              batchGroups.add(MapEntry(i, groupParticipants));
-            }
+            final int startIdx = (i - 1) * groupSize;
+            if (startIdx >= participants.length) break;
+            final int endIdx = (startIdx + groupSize).clamp(
+              0,
+              participants.length,
+            );
+            final List<ParayanMember> groupParticipants = participants.sublist(
+              startIdx,
+              endIdx,
+            );
+            batchGroups.add(MapEntry(i, groupParticipants));
           }
           if (batchGroups.isEmpty) continue;
           batchWidget = _buildExportableThreeDayBatchCard(
@@ -1038,11 +1159,16 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         } else {
           final List<Widget> batchCards = [];
           for (int i = startGroup; i <= endGroup; i++) {
-            final groupParticipants = participants.where((p) {
-              final index = participants.indexOf(p);
-              return (index ~/ groupSize) + 1 == i;
-            }).toList();
-            if (groupParticipants.isEmpty) continue;
+            final int startIdx = (i - 1) * groupSize;
+            if (startIdx >= participants.length) break;
+            final int endIdx = (startIdx + groupSize).clamp(
+              0,
+              participants.length,
+            );
+            final List<ParayanMember> groupParticipants = participants.sublist(
+              startIdx,
+              endIdx,
+            );
             if (batchCards.isNotEmpty) {
               batchCards.add(const SizedBox(height: 16));
             }
@@ -1061,7 +1187,15 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           if (batchCards.isEmpty) continue;
           batchWidget = Material(
             color: Colors.transparent,
-            child: Column(mainAxisSize: MainAxisSize.min, children: batchCards),
+            child: OverflowBox(
+              minHeight: 0,
+              maxHeight: double.infinity,
+              alignment: Alignment.topCenter,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: batchCards,
+              ),
+            ),
           );
         }
 
@@ -1158,29 +1292,31 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             const Divider(height: 32, thickness: 1.5, color: Colors.orange),
 
             // Group Number
-            Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  l10n.groupLabel(
-                    _formatNumberInternal(groupNumber, isMarathi),
+            if (event.status != 'upcoming' && event.status != 'enrolling')
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
                   ),
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange,
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    l10n.groupLabel(
+                      _formatNumberInternal(groupNumber, isMarathi),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
+            if (event.status != 'upcoming' && event.status != 'enrolling')
+              const SizedBox(height: 24),
 
             // Date
             Text(
@@ -1577,26 +1713,27 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       final isLastGroup = gi == batchGroups.length - 1;
 
       // ── Full-width group separator row ──
-      rows.add(
-        Container(
-          width: nameColW + dayColW * 3,
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(vertical: 5),
-          decoration: BoxDecoration(
-            color: Colors.orange.withValues(alpha: 0.12),
-            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
-          ),
-          child: Text(
-            l10n.groupLabel(groupNumber.toString()),
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: Colors.orange,
+      if (event.status != 'upcoming' && event.status != 'enrolling')
+        rows.add(
+          Container(
+            width: nameColW + dayColW * 3,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.12),
+              border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+            ),
+            child: Text(
+              l10n.groupLabel(_formatNumberInternal(groupNumber, isMarathi)),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: Colors.orange,
+              ),
             ),
           ),
-        ),
-      );
+        );
 
       // ── Participant rows ──
       for (int pi = 0; pi < members.length; pi++) {
@@ -1632,68 +1769,73 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           color: Colors.white,
           border: Border.all(color: Colors.orange, width: 2),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Shared header
-            Row(
-              children: [
-                Image.asset(
-                  'resources/images/logo/App_Logo.png',
-                  width: 44,
-                  height: 44,
+        child: OverflowBox(
+          minHeight: 0,
+          maxHeight: double.infinity,
+          alignment: Alignment.topCenter,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Shared header
+              Row(
+                children: [
+                  Image.asset(
+                    'resources/images/logo/App_Logo.png',
+                    width: 44,
+                    height: 44,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.seattleGajananMaharajParivar,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
+                          ),
+                        ),
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 20, thickness: 1.5, color: Colors.orange),
+
+              // Unified grid with outer border
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.seattleGajananMaharajParivar,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                        ),
-                      ),
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                child: Column(mainAxisSize: MainAxisSize.min, children: rows),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Footer
+              Center(
+                child: Text(
+                  l10n.jaiGajanan,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF9B3746),
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
-              ],
-            ),
-            const Divider(height: 20, thickness: 1.5, color: Colors.orange),
-
-            // Unified grid with outer border
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
               ),
-              child: Column(mainAxisSize: MainAxisSize.min, children: rows),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Footer
-            Center(
-              child: Text(
-                l10n.jaiGajanan,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF9B3746),
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -509,7 +509,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                 _isRegistered
                                     ? (canJoin
                                           ? localizations.editEnrollmentLabel
-                                          : "Signed Up")
+                                          : localizations.signedUpLabel)
                                     : localizations.joinParayanLabel,
                                 style: TextStyle(
                                   fontSize: isLandscape ? 12 : null,

@@ -774,15 +774,37 @@ class AppLocalizationsMr extends AppLocalizations {
   String get reminderTimeLabel => 'रिमाईंडर नोटिफिकेशन वेळ';
 
   @override
-  String get createParayanButton => 'कार्यक्रम तयार करा';
+  String get createParayanButton => 'नवीन पारायण तयार करा';
+
+  @override
+  String get addParticipantLabel => 'सदस्य ॲड करा';
+
+  @override
+  String get nameAlphabetRegexError =>
+      'केवळ अक्षरे, अंक आणि स्पेस वापरण्याची परवानगी आहे';
 
   @override
   String get parayanJoinedSuccess =>
-      'तुम्ही पारायणासाठी यशस्वीरित्या साइन अप केले आहे!';
+      'तुम्ही पारायणासाठी यशस्वीरित्या साइन-अप केले आहे!';
 
   @override
   String get parayanUpdatedSuccess =>
       'तुमचे पारायण साईन-अप यशस्वीरित्या अपडेट केले आहे!';
+
+  @override
+  String get addHousehold => 'दुसरे कुटुंब ॲड करा';
+
+  @override
+  String get addParticipant => 'दुसरा सदस्य ॲड करा';
+
+  @override
+  String get submitAll => 'सर्व सबमिट करा';
+
+  @override
+  String get householdLabel => 'कुटुंब';
+
+  @override
+  String get participantsAddedSuccess => 'सदस्य यशस्वीरित्या ॲड केले';
 
   @override
   String get assignedAdhyaysLabel => 'तुमचे नियुक्त अध्याय';
@@ -801,11 +823,14 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String statsParticipants(int count) {
-    return 'एकूण सहभागी: $count';
+    return 'एकूण सदस्य: $count';
   }
 
   @override
   String get joinParayanLabel => 'पारायणात सहभागी व्हा';
+
+  @override
+  String get signedUpLabel => 'साइन-अप केले आहे';
 
   @override
   String get noActiveParayans => 'सध्या कोणतेही सक्रिय पारायण नाहीत.';
@@ -851,7 +876,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get upcomingParayanMessage =>
-      'पारायण नोंदणी सुरू झाल्यावर अध्याय वाटप केले जाईल';
+      'पारायण साइन-अप पूर्ण झाल्यावर अध्याय वाटप केले जाईल';
 
   @override
   String get noSignupsFound => 'अद्याप कोणीही सहभागी झाले नाही';
@@ -912,10 +937,10 @@ class AppLocalizationsMr extends AppLocalizations {
   String get overviewTab => 'आढावा';
 
   @override
-  String get participantsTab => 'सहभागी';
+  String get participantsTab => 'सदस्य';
 
   @override
-  String get participantsLabel => 'सहभागी';
+  String get participantsLabel => 'सदस्य';
 
   @override
   String get progressLabel => 'प्रगती';
@@ -929,7 +954,7 @@ class AppLocalizationsMr extends AppLocalizations {
   }
 
   @override
-  String get totalParticipantsLabel => 'एकूण सहभागी';
+  String get totalParticipantsLabel => 'एकूण सदस्य';
 
   @override
   String get remindersStatusLabel => 'नोटिफिकेशन स्टेटस';
@@ -1020,7 +1045,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get jaiGajanan => 'जय गजानन';
 
   @override
-  String get parayanParticipant => 'सहभागी';
+  String get parayanParticipant => 'सदस्य';
 
   @override
   String get adhyaysLabel => 'अध्याय';
@@ -1056,7 +1081,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get householdMembersLabel => 'घरातील सदस्य';
 
   @override
-  String get addLabel => 'सदस्य जोडा';
+  String get addLabel => 'सदस्य ॲड करा';
 
   @override
   String get phoneNumberLabel => 'फोन नंबर';

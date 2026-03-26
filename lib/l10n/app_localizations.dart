@@ -1553,20 +1553,62 @@ abstract class AppLocalizations {
   /// No description provided for @createParayanButton.
   ///
   /// In en, this message translates to:
-  /// **'Create Event'**
+  /// **'Create a new Parayan'**
   String get createParayanButton;
+
+  /// No description provided for @addParticipantLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Participant'**
+  String get addParticipantLabel;
+
+  /// No description provided for @nameAlphabetRegexError.
+  ///
+  /// In en, this message translates to:
+  /// **'Only letters, numbers, and spaces allowed'**
+  String get nameAlphabetRegexError;
 
   /// No description provided for @parayanJoinedSuccess.
   ///
   /// In en, this message translates to:
-  /// **'You have successfully signed up for the Parayan!'**
+  /// **'Joined Parayan successfully'**
   String get parayanJoinedSuccess;
 
   /// No description provided for @parayanUpdatedSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Your Parayan signup has been updated successfully!'**
+  /// **'Enrollment updated successfully'**
   String get parayanUpdatedSuccess;
+
+  /// No description provided for @addHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Another Family'**
+  String get addHousehold;
+
+  /// No description provided for @addParticipant.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Another Participant'**
+  String get addParticipant;
+
+  /// No description provided for @submitAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit All'**
+  String get submitAll;
+
+  /// No description provided for @householdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get householdLabel;
+
+  /// No description provided for @participantsAddedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Participants added successfully'**
+  String get participantsAddedSuccess;
 
   /// No description provided for @assignedAdhyaysLabel.
   ///
@@ -1609,6 +1651,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join Parayan'**
   String get joinParayanLabel;
+
+  /// No description provided for @signedUpLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed Up'**
+  String get signedUpLabel;
 
   /// No description provided for @noActiveParayans.
   ///
@@ -2057,19 +2105,19 @@ abstract class AppLocalizations {
   /// No description provided for @duplicateNameError.
   ///
   /// In en, this message translates to:
-  /// **'Duplicate name within household'**
+  /// **'Duplicate name within a family'**
   String get duplicateNameError;
 
   /// No description provided for @maxMembersError.
   ///
   /// In en, this message translates to:
-  /// **'Maximum 5 members allowed per household'**
+  /// **'Maximum 5 members allowed per family'**
   String get maxMembersError;
 
   /// No description provided for @householdMembersLabel.
   ///
   /// In en, this message translates to:
-  /// **'Household Members'**
+  /// **'Family Members'**
   String get householdMembersLabel;
 
   /// No description provided for @addLabel.

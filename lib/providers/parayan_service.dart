@@ -242,6 +242,10 @@ class ParayanService {
 
           // Sort members for consistent order in MyAllocationTab
           members.sort((a, b) {
+            final aIdx = a.globalIndex ?? -1;
+            final bIdx = b.globalIndex ?? -1;
+            if (aIdx != -1 && bIdx != -1) return aIdx.compareTo(bIdx);
+
             final aFirst = a.assignedAdhyays.isNotEmpty
                 ? a.assignedAdhyays.first
                 : 0;
@@ -339,5 +343,21 @@ class ParayanService {
       batch.delete(doc.reference);
     }
     await batch.commit();
+  }
+
+  // Admin: Add multiple participants manually (via Cloud Function)
+  // groups: List of { 'phone': String, 'names': List<String> }
+  Future<void> adminAddParticipants({
+    required String eventId,
+    required List<Map<String, dynamic>> groups,
+  }) async {
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable(
+        'adminAddParticipants',
+      );
+      await callable.call({'eventId': eventId, 'groups': groups});
+    } catch (e) {
+      rethrow;
+    }
   }
 }

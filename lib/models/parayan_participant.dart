@@ -36,7 +36,8 @@ class ParayanMember {
     try {
       joinedAt = (data['joinedAt'] as Timestamp).toDate();
     } catch (_) {
-      joinedAt = DateTime.now();
+      // Default to a fixed past date for legacy data compatibility
+      joinedAt = DateTime(2024, 1, 1);
     }
 
     return ParayanMember(

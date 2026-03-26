@@ -775,15 +775,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reminderTimeLabel => 'Reminder Notification Time';
 
   @override
-  String get createParayanButton => 'Create Event';
+  String get createParayanButton => 'Create a new Parayan';
 
   @override
-  String get parayanJoinedSuccess =>
-      'You have successfully signed up for the Parayan!';
+  String get addParticipantLabel => 'Add Participant';
 
   @override
-  String get parayanUpdatedSuccess =>
-      'Your Parayan signup has been updated successfully!';
+  String get nameAlphabetRegexError =>
+      'Only letters, numbers, and spaces allowed';
+
+  @override
+  String get parayanJoinedSuccess => 'Joined Parayan successfully';
+
+  @override
+  String get parayanUpdatedSuccess => 'Enrollment updated successfully';
+
+  @override
+  String get addHousehold => 'Add Another Family';
+
+  @override
+  String get addParticipant => 'Add Another Participant';
+
+  @override
+  String get submitAll => 'Submit All';
+
+  @override
+  String get householdLabel => 'Family';
+
+  @override
+  String get participantsAddedSuccess => 'Participants added successfully';
 
   @override
   String get assignedAdhyaysLabel => 'Your Assigned Adhyays';
@@ -807,6 +827,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get joinParayanLabel => 'Join Parayan';
+
+  @override
+  String get signedUpLabel => 'Signed Up';
 
   @override
   String get noActiveParayans => 'No active parayans at the moment.';
@@ -1047,13 +1070,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your signup has been deleted successfully.';
 
   @override
-  String get duplicateNameError => 'Duplicate name within household';
+  String get duplicateNameError => 'Duplicate name within a family';
 
   @override
-  String get maxMembersError => 'Maximum 5 members allowed per household';
+  String get maxMembersError => 'Maximum 5 members allowed per family';
 
   @override
-  String get householdMembersLabel => 'Household Members';
+  String get householdMembersLabel => 'Family Members';
 
   @override
   String get addLabel => 'Add';

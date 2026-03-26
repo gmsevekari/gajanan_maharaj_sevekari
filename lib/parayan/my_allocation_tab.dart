@@ -131,10 +131,20 @@ class _MyAllocationTabState extends State<MyAllocationTab>
 
         return Builder(
           builder: (context) {
-            Widget buildParticipantCard(int pIndex) {
-              final participant = participants[pIndex];
+            final sortedParticipants = participants.toList()
+              ..sort(
+                (a, b) => (a.globalIndex ?? 0).compareTo(b.globalIndex ?? 0),
+              );
 
-              final int groupNumber = participant.groupNumber ?? 1;
+            Widget buildParticipantCard(int pIndex) {
+              final participant = sortedParticipants[pIndex];
+
+              final int groupSize = (widget.event.type == ParayanType.threeDay)
+                  ? 7
+                  : 21;
+              final int groupNumber =
+                  participant.groupNumber ??
+                  ((participant.globalIndex ?? 0) ~/ groupSize) + 1;
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,7 +203,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
               padding: const EdgeInsets.all(16),
               children: [
                 ...List.generate(
-                  participants.length,
+                  sortedParticipants.length,
                   (pIndex) => buildParticipantCard(pIndex),
                 ),
               ],
