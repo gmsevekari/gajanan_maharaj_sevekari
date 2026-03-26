@@ -77,8 +77,36 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     if (newStatus == null || newStatus == widget.event.status) return;
 
     final l10n = AppLocalizations.of(context)!;
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Updating Status...'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
     try {
-      await _parayanService.updateEventStatus(widget.event.id, newStatus);
+      if (newStatus == 'allocated') {
+        // Trigger cloud-based allocation
+        await _parayanService.allocateAdhyays(widget.event.id);
+      } else {
+        await _parayanService.updateEventStatus(widget.event.id, newStatus);
+      }
+
       await AdminAuditService.logAction(
         action: 'UPDATE_PARAYAN_STATUS',
         details: {
@@ -87,13 +115,16 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           'new_status': newStatus,
         },
       );
+
       if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l10n.statusUpdateSuccess)));
       }
     } catch (e) {
       if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Error: $e')));

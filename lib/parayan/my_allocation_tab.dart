@@ -30,7 +30,10 @@ class _MyAllocationTabState extends State<MyAllocationTab>
   @override
   void initState() {
     super.initState();
-    _participantsStream = _parayanService.getAllParticipants(widget.event.id);
+    _participantsStream = _parayanService.getParticipantsByDevice(
+      widget.event.id,
+      widget.deviceId,
+    );
   }
 
   String _formatNumber(BuildContext context, int number, {bool pad = false}) {
@@ -60,13 +63,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
           return const Center(child: CircularProgressIndicator());
         }
 
-        final allParticipants = snapshot.data ?? [];
-        final participants = <MapEntry<int, ParayanMember>>[];
-        for (int i = 0; i < allParticipants.length; i++) {
-          if (allParticipants[i].deviceId == widget.deviceId) {
-            participants.add(MapEntry(i, allParticipants[i]));
-          }
-        }
+        final participants = snapshot.data ?? [];
 
         final isEnrolling = widget.event.status == 'enrolling';
         final isOngoing = widget.event.status == 'ongoing';
@@ -101,7 +98,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
 
         final isAllocated = widget.event.status == 'allocated';
         final hasAnyUnallocated = participants.any(
-          (p) => p.value.assignedAdhyays.isEmpty,
+          (p) => p.assignedAdhyays.isEmpty,
         );
 
         if (isEnrolling || (isAllocated && hasAnyUnallocated)) {
@@ -135,14 +132,9 @@ class _MyAllocationTabState extends State<MyAllocationTab>
         return Builder(
           builder: (context) {
             Widget buildParticipantCard(int pIndex) {
-              final entry = participants[pIndex];
-              final globalIndex = entry.key;
-              final participant = entry.value;
+              final participant = participants[pIndex];
 
-              final int groupSize = (widget.event.type == ParayanType.threeDay)
-                  ? 7
-                  : 21;
-              final int groupNumber = (globalIndex ~/ groupSize) + 1;
+              final int groupNumber = participant.groupNumber ?? 1;
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

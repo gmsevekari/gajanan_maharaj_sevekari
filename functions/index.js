@@ -1,4 +1,5 @@
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 
@@ -232,5 +233,114 @@ exports.sendParayanReminders = onSchedule("0 * * * *", async (event) => {
         error,
       );
     }
+  }
+});
+
+/**
+ * Phase 4: Cloud Allocation & Data Flattening
+ * This function will be the single target for Parayan adhyay assignment.
+ */
+exports.allocateParayanAdhyays = onCall(async (request) => {
+  const { eventId } = request.data;
+  const auth = request.auth;
+
+  if (!auth) {
+    throw new HttpsError("unauthenticated", "Admin authentication required.");
+  }
+
+  logger.info(`Starting allocation for event: ${eventId} by ${auth.uid}`);
+
+  const db = admin.firestore();
+  try {
+    const eventRef = db.collection("parayan_events").doc(eventId);
+    const eventDoc = await eventRef.get();
+
+    if (!eventDoc.exists) {
+      throw new HttpsError("not-found", "Parayan event not found.");
+    }
+
+    const eventData = eventDoc.data();
+    const type = eventData.type; // 'oneDay', 'threeDay', etc.
+
+    const participantsRef = eventRef.collection("participants");
+    const snapshot = await participantsRef.get();
+
+    if (snapshot.empty) {
+      return { success: false, message: "No participants to allocate." };
+    }
+
+    // 1. Flatten and Sort
+    // Since we've flattened the schema, each doc is a unique member.
+    const allMembers = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // Sort globally by joinedAt to maintain chronological order
+    allMembers.sort((a, b) => {
+      const timeA = a.joinedAt ? a.joinedAt.toMillis() : 0;
+      const timeB = b.joinedAt ? b.joinedAt.toMillis() : 0;
+      return timeA - timeB;
+    });
+
+    // 2. Allocate Adhyays
+    const batch = db.batch();
+    const now = admin.firestore.Timestamp.now();
+
+    for (let i = 0; i < allMembers.length; i++) {
+      const member = allMembers[i];
+      let assigned = [];
+      let completions = {};
+      let groupNumber = 1;
+
+      if (type === "oneDay" || type === "guruPushya") {
+        const adhyay = (i % 21) + 1;
+        assigned = [adhyay];
+        completions["1"] = false;
+        groupNumber = Math.floor(i / 21) + 1;
+      } else if (type === "threeDay") {
+        const groupSize = 7;
+        const groupOffset = Math.floor(i / groupSize) % 3;
+        const participantOffset = (i % groupSize) * 3;
+
+        const day1 = ((groupOffset + participantOffset) % 21) + 1;
+        const day2 = (day1 % 21) + 1;
+        const day3 = (day2 % 21) + 1;
+
+        assigned = [day1, day2, day3];
+        completions = { "1": false, "2": false, "3": false };
+        groupNumber = Math.floor(i / groupSize) + 1;
+      } else {
+        const adhyay = (i % 21) + 1;
+        assigned = [adhyay];
+        completions["1"] = false;
+        groupNumber = Math.floor(i / 21) + 1;
+      }
+
+      batch.update(participantsRef.doc(member.id), {
+        assignedAdhyays: assigned,
+        completions: completions,
+        globalIndex: i,
+        groupNumber: groupNumber,
+        allocatedAt: now,
+      });
+    }
+
+    // 3. Update Event Status
+    batch.update(eventRef, {
+      status: "allocated",
+      allocatedAt: now,
+    });
+
+    await batch.commit();
+
+    logger.info(`Successfully allocated adhyays for ${allMembers.length} members in event ${eventId}`);
+    return {
+      success: true,
+      count: allMembers.length,
+    };
+  } catch (error) {
+    logger.error(`Error in allocateParayanAdhyays: ${error}`);
+    throw new HttpsError("internal", error.message);
   }
 });

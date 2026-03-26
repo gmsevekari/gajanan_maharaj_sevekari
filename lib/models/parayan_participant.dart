@@ -7,6 +7,8 @@ class ParayanMember {
   final DateTime joinedAt;
   final String? deviceId;
   final String? phone;
+  final int? globalIndex;
+  final int? groupNumber;
 
   const ParayanMember({
     required this.name,
@@ -15,6 +17,8 @@ class ParayanMember {
     required this.joinedAt,
     this.deviceId,
     this.phone,
+    this.globalIndex,
+    this.groupNumber,
   });
 
   factory ParayanMember.fromMap(
@@ -36,20 +40,28 @@ class ParayanMember {
     }
 
     return ParayanMember(
-      name: name,
+      name: data['memberName'] ?? data['name'] ?? name,
       assignedAdhyays: List<int>.from(data['assignedAdhyays'] ?? []),
       completions: completions,
       joinedAt: joinedAt,
-      deviceId: deviceId,
-      phone: phone,
+      deviceId: data['deviceId'] ?? deviceId,
+      phone: data['phone'] ?? phone,
+      globalIndex: data['globalIndex'] as int?,
+      groupNumber: data['groupNumber'] as int?,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
+      'memberName': name,
+      'name': name, // backward compatibility
       'assignedAdhyays': assignedAdhyays,
       'completions': completions,
       'joinedAt': Timestamp.fromDate(joinedAt),
+      'deviceId': deviceId,
+      'phone': phone,
+      'globalIndex': globalIndex,
+      'groupNumber': groupNumber,
     };
   }
 
@@ -74,8 +86,7 @@ class ParayanHousehold {
 
   factory ParayanHousehold.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    final membersData = Map<String, dynamic>.from(data['members'] ?? {});
-    final deviceId = doc.id;
+    final deviceId = data['deviceId'] ?? doc.id;
     final phone = data['phone'] ?? '';
 
     DateTime joinedAt;
@@ -85,6 +96,25 @@ class ParayanHousehold {
       joinedAt = DateTime.now();
     }
 
+    // Check if this is a flattened member doc or an old household doc
+    if (data.containsKey('memberName') || data.containsKey('assignedAdhyays')) {
+      // Virtual household for a single member
+      final member = ParayanMember.fromMap(
+        '',
+        data,
+        deviceId: deviceId,
+        phone: phone,
+      );
+      return ParayanHousehold(
+        deviceId: deviceId,
+        phone: phone,
+        joinedAt: joinedAt,
+        members: {member.name: member},
+      );
+    }
+
+    // Traditional household with nested members map
+    final membersData = Map<String, dynamic>.from(data['members'] ?? {});
     return ParayanHousehold(
       deviceId: deviceId,
       phone: phone,
@@ -99,7 +129,10 @@ class ParayanHousehold {
   }
 
   Map<String, dynamic> toFirestore() {
+    // We primarily write via ParayanMember.toMap() now,
+    // but keep this for any residual household-level writes.
     return {
+      'deviceId': deviceId,
       'phone': phone,
       'joinedAt': Timestamp.fromDate(joinedAt),
       'members': members.map((key, value) => MapEntry(key, value.toMap())),

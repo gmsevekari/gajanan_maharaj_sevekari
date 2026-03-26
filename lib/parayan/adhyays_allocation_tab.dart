@@ -166,7 +166,7 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                             );
 
                             final int groupSize = (widget.event.type == ParayanType.threeDay) ? 7 : 21;
-                            final int groupNumber = (index ~/ groupSize) + 1;
+                            final int groupNumber = p.groupNumber ?? (index ~/ groupSize) + 1;
 
                             final nameWidget = Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

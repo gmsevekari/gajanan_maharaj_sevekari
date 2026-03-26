@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
@@ -79,40 +80,50 @@ class ParayanService {
     final eventDoc = _eventsRef.doc(eventId);
     final participantsRef = eventDoc.collection('participants');
 
-    final doc = await participantsRef.doc(deviceId).get();
-    ParayanHousehold? existingHousehold;
-    if (doc.exists) {
-      existingHousehold = ParayanHousehold.fromFirestore(doc);
+    // 1. Get all existing members for this device to handle deletions
+    final existingSnapshot = await participantsRef
+        .where('deviceId', isEqualTo: deviceId)
+        .get();
+    final Map<String, String> existingDocIdsByName = {
+      for (var doc in existingSnapshot.docs)
+        doc.data()['memberName'] ?? doc.data()['name'] ?? '': doc.id,
+    };
+
+    final batch = _db.batch();
+
+    // 2. Delete members that are no longer in the list
+    for (var entry in existingDocIdsByName.entries) {
+      if (!names.contains(entry.key)) {
+        batch.delete(participantsRef.doc(entry.value));
+      }
     }
 
-    final Map<String, ParayanMember> membersMap = {};
-
+    // 3. Add or update remaining members
     for (var name in names) {
-      if (existingHousehold != null &&
-          existingHousehold.members.containsKey(name)) {
-        // PRESERVE HISTORICAL ALLOCATION ACTUALLY
-        membersMap[name] = existingHousehold.members[name]!;
+      final docId =
+          existingDocIdsByName[name] ??
+          "${deviceId}_${name.replaceAll(RegExp(r'\s+'), '_')}";
+      final memberDoc = await participantsRef.doc(docId).get();
+
+      if (memberDoc.exists) {
+        // preserve existing (or update phone if changed)
+        batch.update(participantsRef.doc(docId), {'phone': phone});
         continue;
       }
 
-      // No adhyay assignment here anymore - will be done in batch later
-      membersMap[name] = ParayanMember(
+      final member = ParayanMember(
         name: name,
-        assignedAdhyays: [], // Empty initially
+        assignedAdhyays: [],
         completions: {},
         joinedAt: DateTime.now(),
+        deviceId: deviceId,
+        phone: phone,
       );
+
+      batch.set(participantsRef.doc(docId), member.toMap());
     }
 
-    final household = ParayanHousehold(
-      deviceId: deviceId,
-      phone: phone,
-      joinedAt: existingHousehold?.joinedAt ?? DateTime.now(),
-      members: membersMap,
-    );
-
-    // We only write to the participants subcollection document.
-    await participantsRef.doc(deviceId).set(household.toFirestore());
+    await batch.commit();
 
     // NOTE: We are skipping the eventDoc 'joinedParticipants' update here
     // because standard users likely don't have WRITE permission on the event doc.
@@ -121,17 +132,41 @@ class ParayanService {
 
   Future<ParayanHousehold?> getHousehold(
     String eventId,
-    String deviceId,
-  ) async {
-    final docRef = _eventsRef
-        .doc(eventId)
-        .collection('participants')
-        .doc(deviceId);
-    final doc = await docRef.get();
-    if (doc.exists) {
-      return ParayanHousehold.fromFirestore(doc);
+    String deviceId, {
+    bool forceServer = false,
+  }) async {
+    final participantsRef = _eventsRef.doc(eventId).collection('participants');
+    final snapshot = await participantsRef
+        .where('deviceId', isEqualTo: deviceId)
+        .get(
+          GetOptions(
+            source: forceServer ? Source.server : Source.serverAndCache,
+          ),
+        );
+
+    if (snapshot.docs.isEmpty) return null;
+
+    final members = <String, ParayanMember>{};
+    String phone = '';
+    DateTime earliestJoin = DateTime.now();
+
+    for (var doc in snapshot.docs) {
+      final member = ParayanMember.fromMap('', doc.data(), deviceId: deviceId);
+      members[member.name] = member;
+      if (member.phone != null && member.phone!.isNotEmpty) {
+        phone = member.phone!;
+      }
+      if (member.joinedAt.isBefore(earliestJoin)) {
+        earliestJoin = member.joinedAt;
+      }
     }
-    return null;
+
+    return ParayanHousehold(
+      deviceId: deviceId,
+      phone: phone,
+      joinedAt: earliestJoin,
+      members: members,
+    );
   }
 
   Future<void> updateMemberCompletion({
@@ -141,31 +176,36 @@ class ParayanService {
     required int dayIndex,
     required bool completed,
   }) async {
+    final docId = "${deviceId}_${memberName.replaceAll(RegExp(r'\s+'), '_')}";
     final docRef = _eventsRef
         .doc(eventId)
         .collection('participants')
-        .doc(deviceId);
-    await docRef.update({
-      'members.$memberName.completions.$dayIndex': completed,
-    });
+        .doc(docId);
+
+    await docRef.update({'completions.$dayIndex': completed});
 
     // Topic subscription logic for day-specific reminders
     if (kIsWeb) return;
     try {
-      final updatedDoc = await docRef.get();
-      if (updatedDoc.exists) {
-        final household = ParayanHousehold.fromFirestore(updatedDoc);
+      // 1. Get all members for this device to check if everyone is done (Force latest from server)
+      final household = await getHousehold(
+        eventId,
+        deviceId,
+        forceServer: true,
+      );
+      if (household != null) {
         final allCompleted = household.members.values.every(
           (m) => m.completions[dayIndex.toString()] == true,
         );
 
         final topic = NotificationConstants.getParayanReminderTopic(
           eventId,
-          dayIndex + 1,
+          dayIndex,
         );
-        if (completed && allCompleted) {
+        if (allCompleted) {
           await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-        } else if (!completed) {
+          print('Unsubscribed from $topic - All family members completed.');
+        } else {
           final prefs = await SharedPreferences.getInstance();
           final remindersEnabled =
               prefs.getBool(NotificationConstants.parayanRemindersPrefKey) ??
@@ -188,13 +228,19 @@ class ParayanService {
     return _eventsRef
         .doc(eventId)
         .collection('participants')
-        .doc(deviceId)
+        .where('deviceId', isEqualTo: deviceId)
         .snapshots()
-        .map((doc) {
-          if (!doc.exists) return [];
-          final household = ParayanHousehold.fromFirestore(doc);
-          final members = household.members.values.toList();
-          // Sort members by their first assigned adhyay for consistent order
+        .map((snapshot) {
+          final members = snapshot.docs
+              .map(
+                (doc) => ParayanMember.fromMap(doc.data()['name'] ?? '', {
+                  ...doc.data(),
+                  'id': doc.id,
+                }),
+              )
+              .toList();
+
+          // Sort members for consistent order in MyAllocationTab
           members.sort((a, b) {
             final aFirst = a.assignedAdhyays.isNotEmpty
                 ? a.assignedAdhyays.first
@@ -216,111 +262,27 @@ class ParayanService {
         .orderBy('joinedAt', descending: false)
         .snapshots()
         .map((snapshot) {
-          final List<ParayanMember> allMembers = [];
-          for (var doc in snapshot.docs) {
-            final household = ParayanHousehold.fromFirestore(doc);
-            final members = household.members.values.toList();
-            allMembers.addAll(members);
-          }
-          // Sort globally by member joinedAt
-          allMembers.sort((a, b) => a.joinedAt.compareTo(b.joinedAt));
-          return allMembers;
+          return snapshot.docs
+              .map(
+                (doc) => ParayanMember.fromMap(doc.data()['name'] ?? '', {
+                  ...doc.data(),
+                  'id': doc.id,
+                }),
+              )
+              .toList();
         });
   }
 
   // Perform batch adhyay allocation for all participants
   Future<void> allocateAdhyays(String eventId) async {
-    final eventDoc = await _eventsRef.doc(eventId).get();
-    if (!eventDoc.exists) return;
-    final event = ParayanEvent.fromFirestore(eventDoc);
-    final type = event.type;
-
-    final participantsRef = _eventsRef.doc(eventId).collection('participants');
-    final querySnapshot = await participantsRef.get();
-
-    // 1. Flatten all members and their parent household info
-    final List<Map<String, dynamic>> allMembersWithHousehold = [];
-    final Map<String, ParayanHousehold> households = {};
-
-    for (var doc in querySnapshot.docs) {
-      final household = ParayanHousehold.fromFirestore(doc);
-      households[household.deviceId] = household;
-      for (var member in household.members.values) {
-        allMembersWithHousehold.add({
-          'member': member,
-          'deviceId': household.deviceId,
-        });
-      }
-    }
-
-    // 2. Sort globally by member joinedAt
-    allMembersWithHousehold.sort((a, b) {
-      final ParayanMember memberA = a['member'];
-      final ParayanMember memberB = b['member'];
-      return memberA.joinedAt.compareTo(memberB.joinedAt);
-    });
-
-    // 3. Allocate adhyays to the sorted list
-    final Map<String, Map<String, ParayanMember>> updatedHouseholdsMembers = {};
-
-    for (int i = 0; i < allMembersWithHousehold.length; i++) {
-      final ParayanMember member = allMembersWithHousehold[i]['member'];
-      final String deviceId = allMembersWithHousehold[i]['deviceId'];
-
-      List<int> assigned;
-      Map<String, bool> completions = {};
-
-      if (type == ParayanType.oneDay || type == ParayanType.guruPushya) {
-        final adhyay = (i % 21) + 1;
-        assigned = [adhyay];
-        completions["1"] = false;
-      } else if (type == ParayanType.threeDay) {
-        final groupOffset = (i ~/ 7) % 3;
-        final participantOffset = (i % 7) * 3;
-
-        final day1 = (groupOffset + participantOffset) % 21 + 1;
-        final day2 = (day1 % 21) + 1;
-        final day3 = (day2 % 21) + 1;
-
-        assigned = [day1, day2, day3];
-        completions = {"1": false, "2": false, "3": false};
-      } else {
-        final adhyay = (i % 21) + 1;
-        assigned = [adhyay];
-        completions["1"] = false;
-      }
-
-      final updatedMember = ParayanMember(
-        name: member.name,
-        assignedAdhyays: assigned,
-        completions: completions,
-        joinedAt: member.joinedAt,
-        deviceId: member.deviceId,
-        phone: member.phone,
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable(
+        'allocateParayanAdhyays',
       );
-
-      updatedHouseholdsMembers.putIfAbsent(deviceId, () => {});
-      updatedHouseholdsMembers[deviceId]![member.name] = updatedMember;
+      await callable.call({'eventId': eventId});
+    } catch (e) {
+      rethrow;
     }
-
-    // 4. Batch commit updates
-    final WriteBatch batch = _db.batch();
-    for (var entry in updatedHouseholdsMembers.entries) {
-      final deviceId = entry.key;
-      final newMembersMap = entry.value;
-      final originalHousehold = households[deviceId]!;
-
-      final updatedHousehold = ParayanHousehold(
-        deviceId: originalHousehold.deviceId,
-        phone: originalHousehold.phone,
-        joinedAt: originalHousehold.joinedAt,
-        members: newMembersMap,
-      );
-
-      batch.set(participantsRef.doc(deviceId), updatedHousehold.toFirestore());
-    }
-
-    await batch.commit();
   }
 
   // Get all active enrollments for a specific device
@@ -334,14 +296,11 @@ class ParayanService {
     final List<Map<String, dynamic>> results = [];
 
     for (var doc in querySnapshot.docs) {
-      final participantDoc = await doc.reference
-          .collection('participants')
-          .doc(deviceId)
-          .get();
-      if (participantDoc.exists) {
+      final household = await getHousehold(doc.id, deviceId);
+      if (household != null) {
         results.add({
           'event': ParayanEvent.fromFirestore(doc),
-          'household': ParayanHousehold.fromFirestore(participantDoc),
+          'household': household,
         });
       }
     }
@@ -357,26 +316,28 @@ class ParayanService {
     final List<Map<String, dynamic>> results = [];
 
     for (var doc in querySnapshot.docs) {
-      final participantDoc = await doc.reference
-          .collection('participants')
-          .doc(deviceId)
-          .get();
-      if (participantDoc.exists) {
+      final household = await getHousehold(doc.id, deviceId);
+      if (household != null) {
         results.add({
           'event': ParayanEvent.fromFirestore(doc),
-          'household': ParayanHousehold.fromFirestore(participantDoc),
+          'household': household,
         });
       }
     }
     return results;
   }
 
-  // Delete enrollment for a specific device
+  // Delete enrollment for a specific device (Delete ALL member docs)
   Future<void> deleteEnrollment(String eventId, String deviceId) async {
-    final docRef = _eventsRef
-        .doc(eventId)
-        .collection('participants')
-        .doc(deviceId);
-    await docRef.delete();
+    final participantsRef = _eventsRef.doc(eventId).collection('participants');
+    final snapshot = await participantsRef
+        .where('deviceId', isEqualTo: deviceId)
+        .get();
+
+    final batch = _db.batch();
+    for (var doc in snapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
   }
 }
