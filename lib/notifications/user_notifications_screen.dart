@@ -21,10 +21,14 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
   List<String> _hiddenNotificationIds = [];
   List<String> _readNotificationIds = [];
   bool _isLoading = true;
+  late final String _retentionTimestamp;
 
   @override
   void initState() {
     super.initState();
+    _retentionTimestamp = DateTime.now()
+        .subtract(const Duration(days: 30))
+        .toIso8601String();
     _loadAndMarkRead();
   }
 
@@ -143,12 +147,7 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
             .collection('notifications')
-            .where(
-              'timestamp',
-              isGreaterThanOrEqualTo: DateTime.now()
-                  .subtract(const Duration(days: 30))
-                  .toIso8601String(),
-            )
+            .where('timestamp', isGreaterThanOrEqualTo: _retentionTimestamp)
             .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
@@ -156,7 +155,8 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
             return Center(child: Text(localizations.noResultsFound));
           }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting &&
+              !snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
 
