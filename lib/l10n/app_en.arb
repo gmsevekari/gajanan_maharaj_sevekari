@@ -428,5 +428,6 @@
   "unsubscribingProgress": "Removing notification subscriptions...",
   "exportSuffixAllocated": " - Adhyay Allocation",
   "exportSuffixOngoing": " - Current Status",
-  "exportSuffixCompleted": " Completed. Jai Gajanan 🙏🏻"
+  "exportSuffixCompleted": " Completed. Jai Gajanan 🙏🏻",
+  "exportToCalendar": "Export to Calendar"
 }

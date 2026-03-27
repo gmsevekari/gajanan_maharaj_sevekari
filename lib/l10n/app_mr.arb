@@ -428,5 +428,6 @@
   "unsubscribingProgress": "नोटिफिकेशन्स अनसबस्क्राइब करत आहे...",
   "exportSuffixAllocated": " - अध्याय वाटप",
   "exportSuffixOngoing": " - आत्ताचे स्टेटस",
-  "exportSuffixCompleted": " पूर्ण झाले. जय गजानन 🙏🏻"
+  "exportSuffixCompleted": " पूर्ण झाले. जय गजानन 🙏🏻",
+  "exportToCalendar": "कॅलेंडर एक्स्पोर्ट करा"
 }

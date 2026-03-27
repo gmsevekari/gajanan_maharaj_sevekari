@@ -1109,4 +1109,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get exportSuffixCompleted => ' पूर्ण झाले. जय गजानन 🙏🏻';
+
+  @override
+  String get exportToCalendar => 'कॅलेंडर एक्स्पोर्ट करा';
 }

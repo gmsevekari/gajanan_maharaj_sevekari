@@ -2179,6 +2179,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **' Completed. Jai Gajanan 🙏🏻'**
   String get exportSuffixCompleted;
+
+  /// No description provided for @exportToCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Export to Calendar'**
+  String get exportToCalendar;
 }
 
 class _AppLocalizationsDelegate

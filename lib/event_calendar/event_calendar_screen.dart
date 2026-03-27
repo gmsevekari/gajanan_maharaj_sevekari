@@ -3,15 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/utils/calendar_export_service.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
-enum EventType {
-  weeklyPooja,
-  specialEvent,
-  other,
-}
+enum EventType { weeklyPooja, specialEvent, other }
 
 // Event Model
 class Event {
@@ -81,7 +80,8 @@ class EventCalendarScreen extends StatefulWidget {
   _EventCalendarScreenState createState() => _EventCalendarScreenState();
 }
 
-class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerProviderStateMixin {
+class _EventCalendarScreenState extends State<EventCalendarScreen>
+    with TickerProviderStateMixin {
   TabController? _tabController;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   late DateTime _focusedDay;
@@ -118,39 +118,40 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
         .orderBy('start_time', descending: false)
         .snapshots()
         .listen((snapshot) {
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      final Map<DateTime, List<Event>> events = {};
-      final List<Event> allEvents = [];
-      final List<Event> specialEvents = [];
-      for (var doc in snapshot.docs) {
-        final event = Event.fromFirestore(doc);
-        if (event.start_time.toDate().isBefore(today)) continue;
-        allEvents.add(event);
-        if (event.event_type == EventType.specialEvent) {
-          specialEvents.add(event);
-        }
-        final date = event.start_time.toDate();
-        final day = DateTime.utc(date.year, date.month, date.day);
-        if (events[day] == null) {
-          events[day] = [];
-        }
-        events[day]!.add(event);
-      }
-      setState(() {
-        _events = events;
-        _allEvents = allEvents;
-        _filteredEvents = allEvents;
-        _specialEvents = specialEvents;
-      });
-    });
+          final now = DateTime.now();
+          final today = DateTime(now.year, now.month, now.day);
+          final Map<DateTime, List<Event>> events = {};
+          final List<Event> allEvents = [];
+          final List<Event> specialEvents = [];
+          for (var doc in snapshot.docs) {
+            final event = Event.fromFirestore(doc);
+            if (event.start_time.toDate().isBefore(today)) continue;
+            allEvents.add(event);
+            if (event.event_type == EventType.specialEvent) {
+              specialEvents.add(event);
+            }
+            final date = event.start_time.toDate();
+            final day = DateTime.utc(date.year, date.month, date.day);
+            if (events[day] == null) {
+              events[day] = [];
+            }
+            events[day]!.add(event);
+          }
+          setState(() {
+            _events = events;
+            _allEvents = allEvents;
+            _filteredEvents = allEvents;
+            _specialEvents = specialEvents;
+          });
+        });
   }
 
   void _filterEvents() {
     final query = _searchController.text.toLowerCase();
     setState(() {
       _filteredEvents = _allEvents.where((event) {
-        final title = event.title_mr.toLowerCase() + event.title_en.toLowerCase();
+        final title =
+            event.title_mr.toLowerCase() + event.title_en.toLowerCase();
         return title.contains(query);
       }).toList();
     });
@@ -205,9 +206,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
 
   Widget _buildGroupedListView(List<Event> events, {DateTime? selectedDate}) {
     if (events.isEmpty) {
-      return Center(
-        child: Text(AppLocalizations.of(context)!.eventOnDate),
-      );
+      return Center(child: Text(AppLocalizations.of(context)!.eventOnDate));
     }
 
     final groupedItems = _getGroupedEvents(events);
@@ -233,7 +232,8 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
           );
         } else {
           final event = item as Event;
-          final isSelected = selectedDate != null &&
+          final isSelected =
+              selectedDate != null &&
               isSameDay(event.start_time.toDate(), selectedDate);
           return _buildEventCard(event, isSelected: isSelected);
         }
@@ -248,19 +248,38 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            _tabController?.index == 0
-                ? localizations.calendarTitle
-                : _tabController?.index == 1
-                    ? localizations.specialEvents
-                    : localizations.allEventsList,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)
+          _tabController?.index == 0
+              ? localizations.calendarTitle
+              : _tabController?.index == 1
+              ? localizations.specialEvents
+              : localizations.allEventsList,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         backgroundColor: Colors.orange,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
+          ),
+          IconButton(
+            icon: Image.asset(
+              'resources/images/icon/Export_Calendar.png',
+              width: 24,
+              height: 24,
+            ),
+            tooltip: localizations.exportToCalendar,
+            onPressed: () => CalendarExportService.exportEventsToIcs(
+              _specialEvents,
+              "special_events",
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -290,9 +309,9 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
       ),
       floatingActionButton: _tabController?.index == 0
           ? FloatingActionButton(
-        onPressed: () => _tabController?.animateTo(2),
-        child: const Icon(Icons.list),
-      )
+              onPressed: () => _tabController?.animateTo(2),
+              child: const Icon(Icons.list),
+            )
           : null,
     );
   }
@@ -318,7 +337,9 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
             weekendTextStyle: TextStyle(color: Colors.orange.shade700),
           ),
           headerStyle: HeaderStyle(
-            formatButtonTextStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            formatButtonTextStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
             formatButtonDecoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(12.0),
@@ -336,9 +357,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
           },
         ),
         const SizedBox(height: 8.0),
-        Expanded(
-          child: _buildEventListForCalendar(),
-        ),
+        Expanded(child: _buildEventListForCalendar()),
       ],
     );
   }
@@ -359,9 +378,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
             ),
           ),
         ),
-        Expanded(
-          child: _buildGroupedListView(_filteredEvents),
-        ),
+        Expanded(child: _buildGroupedListView(_filteredEvents)),
       ],
     );
   }
@@ -371,10 +388,14 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
   }
 
   Widget _buildEventListForCalendar() {
-    final endDate = _selectedDay!.add(const Duration(days: 90)); // Show 3 months of upcoming events from selected day
+    final endDate = _selectedDay!.add(
+      const Duration(days: 90),
+    ); // Show 3 months of upcoming events from selected day
     final eventsToShow = _allEvents.where((event) {
       final eventDate = event.start_time.toDate();
-      return (eventDate.isAfter(_selectedDay!) || isSameDay(eventDate, _selectedDay)) && eventDate.isBefore(endDate);
+      return (eventDate.isAfter(_selectedDay!) ||
+              isSameDay(eventDate, _selectedDay)) &&
+          eventDate.isBefore(endDate);
     }).toList();
 
     return _buildGroupedListView(eventsToShow, selectedDate: _selectedDay);
@@ -385,22 +406,31 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
     final theme = Theme.of(context);
 
     final title = locale == 'mr' ? event.title_mr : event.title_en;
-    final location = (locale == 'mr' ? event.location_mr : event.location_en) ?? '';
-    final details = (locale == 'mr' ? event.details_mr : event.details_en) ?? '';
+    final location =
+        (locale == 'mr' ? event.location_mr : event.location_en) ?? '';
+    final details =
+        (locale == 'mr' ? event.details_mr : event.details_en) ?? '';
 
     final String startTime;
     final String? endTime;
 
     if (locale == 'mr') {
       startTime = _formatMarathiTime(event.start_time.toDate());
-      endTime = event.end_time != null ? _formatMarathiTime(event.end_time!.toDate()) : null;
+      endTime = event.end_time != null
+          ? _formatMarathiTime(event.end_time!.toDate())
+          : null;
     } else {
       final timeFormatter = DateFormat.jm(locale);
       startTime = timeFormatter.format(event.start_time.toDate());
-      endTime = event.end_time != null ? timeFormatter.format(event.end_time!.toDate()) : null;
+      endTime = event.end_time != null
+          ? timeFormatter.format(event.end_time!.toDate())
+          : null;
     }
 
-    final eventDateString = DateFormat('EEEE, d MMMM y', locale).format(event.start_time.toDate());
+    final eventDateString = DateFormat(
+      'EEEE, d MMMM y',
+      locale,
+    ).format(event.start_time.toDate());
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -408,13 +438,12 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
       color: isSelected
           ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
           : theme.cardTheme.color,
-      shape:
-          isSelected
-              ? RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: theme.colorScheme.primary, width: 2),
-              )
-              : theme.cardTheme.shape,
+      shape: isSelected
+          ? RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: theme.colorScheme.primary, width: 2),
+            )
+          : theme.cardTheme.shape,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -438,7 +467,11 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.access_time, size: 16, color: theme.colorScheme.primary),
+                Icon(
+                  Icons.access_time,
+                  size: 16,
+                  color: theme.colorScheme.primary,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   endTime != null ? '$startTime - $endTime' : startTime,
@@ -451,10 +484,9 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
             if (location.isNotEmpty) ...[
               const SizedBox(height: 8),
               InkWell(
-                onTap:
-                    event.address != null
-                        ? () => _launchMaps(event.address!)
-                        : null,
+                onTap: event.address != null
+                    ? () => _launchMaps(event.address!)
+                    : null,
                 child: Row(
                   children: [
                     Icon(
@@ -467,16 +499,14 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
                       child: Text(
                         location,
                         style: TextStyle(
-                          decoration:
-                              event.address != null
-                                  ? TextDecoration.underline
-                                  : TextDecoration.none,
-                          color:
-                              event.address != null
-                                  ? Colors.blue
-                                  : theme.colorScheme.onSurface.withValues(
-                                    alpha: 0.7,
-                                  ),
+                          decoration: event.address != null
+                              ? TextDecoration.underline
+                              : TextDecoration.none,
+                          color: event.address != null
+                              ? Colors.blue
+                              : theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.7,
+                                ),
                         ),
                       ),
                     ),
@@ -486,7 +516,9 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with TickerPr
             ],
             if (details.isNotEmpty) ...[
               const SizedBox(height: 12),
-              Divider(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+              Divider(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+              ),
               const SizedBox(height: 4),
               Text(
                 details,
