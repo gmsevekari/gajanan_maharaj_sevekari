@@ -289,10 +289,12 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: _sendManualPing,
+                    onPressed: null, // Disabled for now (Coming Soon)
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: Colors.white,
+                      disabledBackgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.12),
+                      disabledForegroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.38),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),

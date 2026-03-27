@@ -314,7 +314,7 @@
   "markAsRead": "Mark as Read",
   "readingCompleted": "Reading Completed",
   "submitReadingStatus": "Submit Status",
-  "manualPingLabel": "Send Reminder Notification",
+  "manualPingLabel": "Send Reminder Notification - Coming Soon",
   "statsParticipants": "Total Participants: {count}",
   "@statsParticipants": {
     "placeholders": {

@@ -314,7 +314,7 @@
   "markAsRead": "वाचले म्हणून मार्क करा",
   "readingCompleted": "वाचन पूर्ण झाले",
   "submitReadingStatus": "स्टेटस सबमिट करा",
-  "manualPingLabel": "रिमाईंडर नोटिफिकेशन पाठवा",
+  "manualPingLabel": "रिमाईंडर नोटिफिकेशन पाठवा - लवकरच येत आहे",
   "statsParticipants": "एकूण सदस्य: {count}",
   "@statsParticipants": {
     "placeholders": {

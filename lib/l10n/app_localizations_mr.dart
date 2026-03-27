@@ -819,7 +819,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get submitReadingStatus => 'स्टेटस सबमिट करा';
 
   @override
-  String get manualPingLabel => 'रिमाईंडर नोटिफिकेशन पाठवा';
+  String get manualPingLabel => 'रिमाईंडर नोटिफिकेशन पाठवा - लवकरच येत आहे';
 
   @override
   String statsParticipants(int count) {
