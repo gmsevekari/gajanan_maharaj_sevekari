@@ -26,7 +26,8 @@ platform :android do
       package_name: 'com.gajanan.maharaj.sevekari',
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       skip_upload_metadata: false,
-      skip_upload_images: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
       release_status: 'completed'
     )
     UI.success("🎉 Successfully uploaded build #{target_build} to Production!")
@@ -44,7 +45,8 @@ platform :android do
       package_name: 'com.gajanan.maharaj.sevekari',
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       skip_upload_metadata: false,
-      skip_upload_images: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
       release_status: 'completed'
     )
 
