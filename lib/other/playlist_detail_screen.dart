@@ -97,6 +97,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context);
+    final theme = Theme.of(context);
 
     return Consumer<PlaylistProvider>(
       builder: (context, playlistProvider, child) {
@@ -275,69 +276,78 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                 } catch (_) {}
                               }
 
-                              return ListTile(
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
+                              return Card(
+                                elevation: theme.cardTheme.elevation,
+                                color: theme.cardTheme.color,
+                                shape: theme.cardTheme.shape,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 8.0,
                                   vertical: 4.0,
                                 ),
-                                leading: ReorderableDragStartListener(
-                                  index: index,
-                                  child: const Icon(
-                                    Icons.drag_handle,
-                                    color: Colors.grey,
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                    vertical: 4.0,
                                   ),
-                                ),
-                                title: Text(
-                                  title,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                  leading: ReorderableDragStartListener(
+                                    index: index,
+                                    child: const Icon(
+                                      Icons.drag_handle,
+                                      color: Colors.grey,
+                                    ),
                                   ),
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.menu_book,
-                                        color: Colors.orange,
-                                      ),
-                                      onPressed: () => _playPlaylist(
-                                        context,
-                                        playlistProvider,
-                                        index,
-                                        autoPlay: false,
-                                      ),
+                                  title: Text(
+                                    title,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.play_circle_outline,
-                                        color: Colors.orange,
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.menu_book,
+                                          color: Colors.orange,
+                                        ),
+                                        onPressed: () => _playPlaylist(
+                                          context,
+                                          playlistProvider,
+                                          index,
+                                          autoPlay: false,
+                                        ),
                                       ),
-                                      onPressed: () => _playPlaylist(
-                                        context,
-                                        playlistProvider,
-                                        index,
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.play_circle_outline,
+                                          color: Colors.orange,
+                                        ),
+                                        onPressed: () => _playPlaylist(
+                                          context,
+                                          playlistProvider,
+                                          index,
+                                        ),
                                       ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.remove_circle_outline,
-                                        color: Colors.red,
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.remove_circle_outline,
+                                          color: Colors.red,
+                                        ),
+                                        tooltip: localizations.removeAarti,
+                                        onPressed: () {
+                                          playlistProvider.removeAarti(
+                                            playlist.id,
+                                            aartiId,
+                                          );
+                                        },
                                       ),
-                                      tooltip: localizations.removeAarti,
-                                      onPressed: () {
-                                        playlistProvider.removeAarti(
-                                          playlist.id,
-                                          aartiId,
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                onTap: () => _playPlaylist(
-                                  context,
-                                  playlistProvider,
-                                  index,
+                                    ],
+                                  ),
+                                  onTap: () => _playPlaylist(
+                                    context,
+                                    playlistProvider,
+                                    index,
+                                  ),
                                 ),
                               );
                             },

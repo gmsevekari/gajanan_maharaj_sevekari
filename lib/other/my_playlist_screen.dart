@@ -43,12 +43,12 @@ class MyPlaylistsScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final playlist = playlists[index];
               return Card(
+                elevation: theme.cardTheme.elevation,
+                color: theme.cardTheme.color,
+                shape: theme.cardTheme.shape,
                 margin: const EdgeInsets.symmetric(
                   horizontal: 8.0,
                   vertical: 4.0,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(
