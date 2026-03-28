@@ -1017,6 +1017,75 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notifications to remind you to read your assigned parayan adhyays';
 
   @override
+  String get favorites => 'Favorites';
+
+  @override
+  String get myFavorites => 'My Favorites';
+
+  @override
+  String get createPlaylist => 'Create Playlist';
+
+  @override
+  String get renamePlaylist => 'Rename Playlist';
+
+  @override
+  String get deletePlaylist => 'Delete Playlist';
+
+  @override
+  String get playlistName => 'Playlist Name';
+
+  @override
+  String get addAarti => 'Add';
+
+  @override
+  String get removeAarti => 'Remove';
+
+  @override
+  String get playAll => 'Play All';
+
+  @override
+  String get readAll => 'Read All';
+
+  @override
+  String get addToPlaylist => 'Add to Playlist';
+
+  @override
+  String get createNewPlaylist => 'Create New Playlist';
+
+  @override
+  String get playlistCreated => 'Playlist Created';
+
+  @override
+  String get playlistRenamed => 'Playlist Renamed';
+
+  @override
+  String get playlistDeleted => 'Playlist Deleted';
+
+  @override
+  String get playlistNameRequired => 'Playlist name is required';
+
+  @override
+  String get playlistNameMaxChars =>
+      'Playlist name must be under 50 characters';
+
+  @override
+  String get playlistAlreadyExists =>
+      'A playlist with this name already exists';
+
+  @override
+  String get addedToPlaylist => 'Added to Playlist';
+
+  @override
+  String get removedFromPlaylist => 'Removed from Playlist';
+
+  @override
+  String get defaultPlaylistCannotBeDeleted =>
+      'Default playlist cannot be deleted';
+
+  @override
+  String get myPlaylists => 'My Playlists';
+
+  @override
   String get editEnrollmentLabel => 'Edit Enrollment';
 
   @override

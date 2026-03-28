@@ -1018,6 +1018,74 @@ class AppLocalizationsMr extends AppLocalizations {
       'तुम्हाला नेमून दिलेले परायणाचे अध्याय वाचण्याची आठवण करून देणारे नोटिफिकेशन्स प्राप्त करा';
 
   @override
+  String get favorites => 'आवडते';
+
+  @override
+  String get myFavorites => 'माझे आवडते';
+
+  @override
+  String get createPlaylist => 'प्लेलिस्ट तयार करा';
+
+  @override
+  String get renamePlaylist => 'प्लेलिस्टचे नाव बदला';
+
+  @override
+  String get deletePlaylist => 'प्लेलिस्ट हटवा';
+
+  @override
+  String get playlistName => 'प्लेलिस्टचे नाव';
+
+  @override
+  String get addAarti => 'जोडा';
+
+  @override
+  String get removeAarti => 'हटवा';
+
+  @override
+  String get playAll => 'सर्व प्ले करा';
+
+  @override
+  String get readAll => 'सर्व वाचा';
+
+  @override
+  String get addToPlaylist => 'प्लेलिस्टमध्ये जोडा';
+
+  @override
+  String get createNewPlaylist => 'नवीन प्लेलिस्ट तयार करा';
+
+  @override
+  String get playlistCreated => 'प्लेलिस्ट तयार केली';
+
+  @override
+  String get playlistRenamed => 'प्लेलिस्टचे नाव बदलले';
+
+  @override
+  String get playlistDeleted => 'प्लेलिस्ट हटवली';
+
+  @override
+  String get playlistNameRequired => 'प्लेलिस्टचे नाव आवश्यक आहे';
+
+  @override
+  String get playlistNameMaxChars =>
+      'प्लेलिस्टचे नाव ५० अक्षरांपेक्षा कमी असावे';
+
+  @override
+  String get playlistAlreadyExists => 'या नावाची प्लेलिस्ट आधीच अस्तित्वात आहे';
+
+  @override
+  String get addedToPlaylist => 'प्लेलिस्टमध्ये जोडले';
+
+  @override
+  String get removedFromPlaylist => 'प्लेलिस्टमधून हटवले';
+
+  @override
+  String get defaultPlaylistCannotBeDeleted =>
+      'डिफॉल्ट प्लेलिस्ट हटवता येत नाही';
+
+  @override
+  String get myPlaylists => 'माझ्या प्लेलिस्ट';
+
+  @override
   String get editEnrollmentLabel => 'साईन-अप बदला';
 
   @override
@@ -1114,7 +1182,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get exportToCalendar => 'कॅलेंडर एक्स्पोर्ट करा';
 
   @override
-  String get shareParayanAction => 'या पारायणमध्ये सामील व्हा';
+  String get shareParayanAction => 'हे पारायण जॉईन करा';
 
   @override
   String get shareLink => 'लिंक';

@@ -183,6 +183,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         onTap: () => Navigator.pushNamed(context, Routes.calendar),
       ),
     );
+    cards.add(
+      _buildIconGridItem(
+        context: context,
+        title: localizations.favorites,
+        icon: Icons.favorite,
+        onTap: () => Navigator.pushNamed(context, Routes.myPlaylists),
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -746,6 +754,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     required String title,
     IconData? icon,
     String? imagePath,
+    Widget? customWidget,
     double? imageSize,
     required VoidCallback onTap,
   }) {
@@ -778,7 +787,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (imagePath != null)
+                  if (customWidget != null)
+                    customWidget
+                  else if (imagePath != null)
                     Image.asset(
                       imagePath,
                       height: size,

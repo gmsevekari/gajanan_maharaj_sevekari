@@ -80,6 +80,16 @@ class ParayanService {
     final eventDoc = _eventsRef.doc(eventId);
     final participantsRef = eventDoc.collection('participants');
 
+    // 1. Get current participant count OUTSIDE transaction if possible,
+    // or just use a query if the event doc has restricted WRITE permissions.
+    // We'll fetch all docs to count them accurately for allocation.
+    final querySnapshot = await participantsRef.get();
+    int currentTotal = 0;
+    for (var doc in querySnapshot.docs) {
+      final data = doc.data();
+      final members = data['members'] as Map<String, dynamic>? ?? {};
+      currentTotal += members.length;
+    }
     // 1. Get all existing members for this device to handle deletions
     final existingSnapshot = await participantsRef
         .where('deviceId', isEqualTo: deviceId)

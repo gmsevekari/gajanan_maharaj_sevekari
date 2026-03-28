@@ -256,7 +256,7 @@ class _ManualJapTabState extends State<ManualJapTab>
                                 return Positioned(
                                   top: topOffset,
                                   child: Opacity(
-                                    opacity: opacity as double,
+                                    opacity: opacity,
                                     child: SizedBox(
                                       width: 64,
                                       height: 95,

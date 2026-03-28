@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
@@ -66,36 +65,36 @@ class OtherScreen extends StatelessWidget {
                 spacing: 8.0,
                 runSpacing: 8.0,
                 alignment: WrapAlignment.center,
-                children: otherConfig.order.map((key) {
-                  final content = otherMap[key];
-                  if (content == null) return const SizedBox.shrink();
+                children: [
+                  ...otherConfig.order.map((key) {
+                    final content = otherMap[key];
+                    if (content == null) return const SizedBox.shrink();
 
-                  // Region check
-                  if (content.regions.isNotEmpty &&
-                      !content.regions.contains(deviceCountryCode)) {
-                    return const SizedBox
-                        .shrink(); // Do not build the card if region doesn't match
-                  }
+                    if (content.regions.isNotEmpty &&
+                        !content.regions.contains(deviceCountryCode)) {
+                      return const SizedBox.shrink();
+                    }
 
-                  final title = _getTitle(localizations, content.titleKey);
-                  final icon = _getIcon(key);
+                    final title = _getTitle(localizations, content.titleKey);
+                    final icon = _getIcon(key);
 
-                  return _buildOtherCard(context, theme, title, icon, () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ContentListScreen(
-                          deity: defaultDeity,
-                          title: title,
-                          contentType: ContentTypeExtension.fromString(
-                            content.contentType,
+                    return _buildOtherCard(context, theme, title, icon, () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ContentListScreen(
+                            deity: defaultDeity,
+                            title: title,
+                            contentType: ContentTypeExtension.fromString(
+                              content.contentType,
+                            ),
+                            content: content,
                           ),
-                          content: content,
                         ),
-                      ),
-                    );
-                  });
-                }).toList(),
+                      );
+                    });
+                  }),
+                ],
               ),
               const SizedBox(height: 100),
             ],

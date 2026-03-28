@@ -17,8 +17,9 @@ class DeityDashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
-    final String? deviceCountryCode =
-        View.of(context).platformDispatcher.locale.countryCode;
+    final String? deviceCountryCode = View.of(
+      context,
+    ).platformDispatcher.locale.countryCode;
 
     final deityName = locale == 'mr' ? deity.nameMr : deity.nameEn;
 
@@ -53,11 +54,8 @@ class DeityDashboardScreen extends StatelessWidget {
           context,
           localizations.donationsTitle,
           Icons.volunteer_activism_outlined,
-          () => Navigator.pushNamed(
-            context,
-            Routes.donations,
-            arguments: deity,
-          ),
+          () =>
+              Navigator.pushNamed(context, Routes.donations, arguments: deity),
         ),
       );
     }
@@ -71,11 +69,7 @@ class DeityDashboardScreen extends StatelessWidget {
           context,
           localizations.signupsTitle,
           Icons.assignment_ind_outlined,
-          () => Navigator.pushNamed(
-            context,
-            Routes.signups,
-            arguments: deity,
-          ),
+          () => Navigator.pushNamed(context, Routes.signups, arguments: deity),
         ),
       );
     }
@@ -86,8 +80,7 @@ class DeityDashboardScreen extends StatelessWidget {
           context,
           localizations.songTitle,
           Icons.library_music,
-          () =>
-              Navigator.pushNamed(context, Routes.songs, arguments: deity),
+          () => Navigator.pushNamed(context, Routes.songs, arguments: deity),
         ),
       );
     }
@@ -237,7 +230,7 @@ class DeityDashboardScreen extends StatelessWidget {
         contentType: ContentTypeExtension.fromString(
           (content as ContentContainer).contentType,
         ),
-        content: content as ContentContainer,
+        content: content,
       );
     }
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));

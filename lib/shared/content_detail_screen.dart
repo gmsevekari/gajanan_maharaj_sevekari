@@ -6,6 +6,8 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/shared/cross_platform_youtube_player.dart';
+import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/add_to_playlist_modal.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -173,6 +175,40 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
           ],
         ),
         actions: [
+          Consumer<PlaylistProvider>(
+            builder: (context, playlistProvider, child) {
+              final isFavorite = playlistProvider.isFavorite(widget.assetPath);
+              return IconButton(
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : null,
+                ),
+                onPressed: () async {
+                  final playlists = playlistProvider.playlists;
+                  if (playlists.length == 1) {
+                    final defaultPl = playlists.first;
+                    if (isFavorite) {
+                      await playlistProvider.removeAarti(defaultPl.id, widget.assetPath);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(localizations.removedFromPlaylist)),
+                        );
+                      }
+                    } else {
+                      await playlistProvider.addAarti(defaultPl.id, widget.assetPath);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(localizations.addedToPlaylist)),
+                        );
+                      }
+                    }
+                  } else {
+                    showAddToPlaylistModal(context, widget.assetPath);
+                  }
+                },
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
@@ -368,7 +404,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
                       width: double.infinity,
                       errorBuilder: (context, error, stackTrace) {
                         return Image.asset(
-                          'resources/images/gajanan_maharaj/default.jpg', // A generic default
+                          'resources/images/gajanan_maharaj/Gajanan_Maharaj.png', // A generic default
                           fit: BoxFit.cover, // Also apply fit to the error image
                           width: double.infinity,
                         );
@@ -385,6 +421,11 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
                           videoId: videoId,
                           autoPlay: widget.autoPlay,
                           onLaunchYoutube: () => _launchYoutube(videoId),
+                          onEnded: () {
+                            if (widget.currentIndex < widget.contentList.length - 1) {
+                              _navigateToItem(widget.currentIndex + 1);
+                            }
+                          },
                         ))
                   else
                     Card(

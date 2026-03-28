@@ -168,7 +168,7 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<ParayanType>(
-                    value: _selectedType,
+                    initialValue: _selectedType,
                     decoration: InputDecoration(
                       labelText: localizations.parayanTypeLabel,
                     ),

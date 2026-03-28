@@ -46,9 +46,9 @@ class AppConfigProvider extends ChangeNotifier {
     String query,
     String localeCode,
   ) async {
-    if (_appConfig == null || query.trim().isEmpty) return [];
+    if (_appConfig == null) return [];
 
-    final lowerQuery = query.toLowerCase();
+    final lowerQuery = query.trim().toLowerCase();
     final List<SearchResult> results = [];
 
     // Helper function to search within a ContentContainer (NityopasanaContent or AartiCategoryConfig)
@@ -75,7 +75,8 @@ class AppConfigProvider extends ChangeNotifier {
           final contentEn = data['content_en'] as String? ?? '';
           final contentMr = data['content_mr'] as String? ?? '';
 
-          if (titleEn.toLowerCase().contains(lowerQuery) ||
+          if (lowerQuery.isEmpty ||
+              titleEn.toLowerCase().contains(lowerQuery) ||
               titleMr.toLowerCase().contains(lowerQuery) ||
               contentEn.toLowerCase().contains(lowerQuery) ||
               contentMr.toLowerCase().contains(lowerQuery)) {
@@ -146,7 +147,8 @@ class AppConfigProvider extends ChangeNotifier {
           final contentEn = data['content_en'] as String? ?? '';
           final contentMr = data['content_mr'] as String? ?? '';
 
-          if (titleEn.toLowerCase().contains(lowerQuery) ||
+          if (lowerQuery.isEmpty ||
+              titleEn.toLowerCase().contains(lowerQuery) ||
               titleMr.toLowerCase().contains(lowerQuery) ||
               contentEn.toLowerCase().contains(lowerQuery) ||
               contentMr.toLowerCase().contains(lowerQuery)) {
