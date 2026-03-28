@@ -420,7 +420,7 @@
   "addedToPlaylist": "Added to Playlist",
   "removedFromPlaylist": "Removed from Playlist",
   "defaultPlaylistCannotBeDeleted": "Default playlist cannot be deleted",
-  "myPlaylists": "My Playlists"
+  "myPlaylists": "My Playlists",
   "editEnrollmentLabel": "Edit Enrollment",
   "updateEnrollmentLabel": "Update Enrollment",
   "filterAll": "All",
