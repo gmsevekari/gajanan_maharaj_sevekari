@@ -12,9 +12,8 @@ abstract class ContentContainer {
 
 class AppConfig {
   final List<DeityConfig> deities;
-  final OtherConfig other;
 
-  AppConfig({required this.deities, required this.other});
+  AppConfig({required this.deities});
 
   factory AppConfig.fromJson(Map<String, dynamic> json) {
     return AppConfig(
@@ -23,70 +22,7 @@ class AppConfig {
               ?.map((d) => DeityConfig.fromJson(d))
               .toList() ??
           [],
-      other: json.containsKey('other')
-          ? OtherConfig.fromJson(json['other'])
-          : OtherConfig(
-              order: [],
-              sundayPrarthana: NityopasanaContent(
-                titleKey: '',
-                contentType: '',
-                regions: [],
-                icon: '',
-                textResourceDirectory: '',
-                imageResourceDirectory: '',
-                files: [],
-              ),
-              otherAartis: NityopasanaContent(
-                titleKey: '',
-                contentType: '',
-                regions: [],
-                icon: '',
-                textResourceDirectory: '',
-                imageResourceDirectory: '',
-                files: [],
-              ),
-              otherStotras: NityopasanaContent(
-                titleKey: '',
-                contentType: '',
-                regions: [],
-                icon: '',
-                textResourceDirectory: '',
-                imageResourceDirectory: '',
-                files: [],
-              ),
-            ),
     );
-  }
-}
-
-class OtherConfig {
-  final List<String> order;
-  final NityopasanaContent sundayPrarthana;
-  final NityopasanaContent otherAartis;
-  final NityopasanaContent otherStotras;
-
-  OtherConfig({
-    required this.order,
-    required this.sundayPrarthana,
-    required this.otherAartis,
-    required this.otherStotras,
-  });
-
-  factory OtherConfig.fromJson(Map<String, dynamic> json) {
-    return OtherConfig(
-      order: List<String>.from(json['order'] ?? []),
-      sundayPrarthana: NityopasanaContent.fromJson(
-        json['sunday_prarthana'] ?? {},
-      ),
-      otherAartis: NityopasanaContent.fromJson(json['other_aartis'] ?? {}),
-      otherStotras: NityopasanaContent.fromJson(json['other_stotras'] ?? {}),
-    );
-  }
-
-  static Future<OtherConfig> fromFile(String path) async {
-    final String response = await rootBundle.loadString(path);
-    final data = await json.decode(response);
-    return OtherConfig.fromJson(data);
   }
 }
 

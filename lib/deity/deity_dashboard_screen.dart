@@ -30,6 +30,13 @@ class DeityDashboardScreen extends StatelessWidget {
       final content = _getContent(deity.nityopasana, id);
       if (content == null) continue;
 
+      // Check regions if applicable (for NityopasanaContent)
+      if (content is NityopasanaContent &&
+          content.regions.isNotEmpty &&
+          !content.regions.contains(deviceCountryCode)) {
+        continue;
+      }
+
       featureCards.add(
         _buildGridItem(
           context,
@@ -196,6 +203,10 @@ class DeityDashboardScreen extends StatelessWidget {
         return localizations.aartiTitle;
       case 'namavaliTitle':
         return localizations.namavaliTitle;
+      case 'otherAartis':
+        return localizations.otherAartis;
+      case 'otherStotras':
+        return localizations.otherStotras;
       default:
         return '';
     }

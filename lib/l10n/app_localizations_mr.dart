@@ -412,9 +412,6 @@ class AppLocalizationsMr extends AppLocalizations {
   String get otherTitle => 'इतर';
 
   @override
-  String get sundayPrarthanaTitle => 'रविवारची प्रार्थना';
-
-  @override
   String get guruGeeta => 'गुरु गीता';
 
   @override

@@ -99,8 +99,7 @@ flutter:
     - resources/texts/about/
     - resources/texts/disclaimer/
     - resources/config/
-    - resources/images/other/sunday_prarthana/
-    - resources/texts/other/sunday_prarthana/
+    - resources/images/other/
     - resources/images/other/other_aartis/
     - resources/texts/other/other_aartis/
     - resources/images/other/other_stotras/

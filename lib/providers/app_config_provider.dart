@@ -16,17 +16,10 @@ class AppConfigProvider extends ChangeNotifier {
     );
     final appConfigData = json.decode(appConfigResponse);
 
-    // Load the other config file
-    final String otherResponse = await rootBundle.loadString(
-      appConfigData['other_config'],
-    );
-    final otherData = json.decode(otherResponse);
-    final otherConfig = OtherConfig.fromJson(otherData);
-
     // Load all deity configurations in parallel
     final List<Future<DeityConfig>> futureDeities =
         (appConfigData['deities'] as List).map((d) async {
-          final deityConfigPath = d['configFile']; // Corrected key
+          final deityConfigPath = d['configFile'];
           final String deityResponse = await rootBundle.loadString(
             deityConfigPath,
           );
@@ -37,7 +30,7 @@ class AppConfigProvider extends ChangeNotifier {
     final loadedDeities = await Future.wait(futureDeities);
 
     // Create the final AppConfig object
-    _appConfig = AppConfig(deities: loadedDeities, other: otherConfig);
+    _appConfig = AppConfig(deities: loadedDeities);
 
     notifyListeners();
   }
@@ -166,29 +159,6 @@ class AppConfigProvider extends ChangeNotifier {
           }
         } catch (e) {
           // ignore
-        }
-      }
-    }
-
-    // Search in Other section
-    if (_appConfig!.deities.isNotEmpty) {
-      final defaultDeity = _appConfig!.deities.first;
-      final otherConfig = _appConfig!.other;
-
-      final otherMap = {
-        'sunday_prarthana': otherConfig.sundayPrarthana,
-        'other_aartis': otherConfig.otherAartis,
-        'other_stotras': otherConfig.otherStotras,
-      };
-
-      for (var key in otherConfig.order) {
-        final content = otherMap[key];
-        if (content != null) {
-          await searchInContainer(
-            defaultDeity,
-            content,
-            ContentTypeExtension.fromString(content.contentType),
-          );
         }
       }
     }

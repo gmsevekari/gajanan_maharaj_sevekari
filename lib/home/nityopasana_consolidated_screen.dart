@@ -33,15 +33,6 @@ class NityopasanaConsolidatedScreen extends StatelessWidget {
       ),
     );
 
-    cards.add(
-      _buildIconGridItem(
-        context: context,
-        title: localizations.otherTitle,
-        icon: Icons.temple_hindu,
-        onTap: () => Navigator.pushNamed(context, Routes.other),
-      ),
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.nityopasanaTitle),

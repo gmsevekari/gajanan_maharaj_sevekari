@@ -1,145 +1,108 @@
 {
-  "order": [
-    "sunday_prarthana",
-    "other_aartis",
-    "other_stotras"
-  ],
-  "sunday_prarthana": {
-    "title_key": "sundayPrarthanaTitle",
-    "icon": "",
-    "contentType": "stotra",
-    "regions": [
-      "US",
-      "IN",
-      "CA"
+  "id": "other",
+  "name_en": "Other",
+  "name_mr": "इतर",
+  "imagePath": "resources/images/other/other.png",
+  "about_file": "",
+  "about_title_key": "",
+  "nityopasana": {
+    "order": [
+      "aartis",
+      "stotras"
     ],
-    "textResourceDirectory": "resources/texts/other/sunday_prarthana",
-    "imageResourceDirectory": "resources/images/other/sunday_prarthana",
-    "files": [
-      {
-        "file": "guru_geeta.json",
-        "image": "guru_geeta.png"
-      },
-      {
-        "file": "datta_majala.json",
-        "image": "datta_majala.png"
-      },
-      {
-        "file": "karuna_tripadi.json",
-        "image": "karuna_tripadi.png"
-      },
-      {
-        "file": "gajanan_maharaj_bavanni.json",
-        "image": "gajanan_maharaj_bavanni.png",
-        "textResourceDirectory": "resources/texts/gajanan_maharaj/stotras",
-        "imageResourceDirectory": "resources/images/gajanan_maharaj/stotras"
-      },
-      {
-        "file": "siddha_mangal.json",
-        "image": "siddha_mangal.png"
-      },
-      {
-        "file": "ghor_kashtodharan.json",
-        "image": "ghor_kashtodharan.png"
-      },
-      {
-        "file": "datta_stuti.json",
-        "image": "datta_stuti.png"
-      },
-      {
-        "file": "namjap.json",
-        "image": "namjap.png"
-      }
-    ]
-  },
-  "other_aartis": {
-    "title_key": "otherAartis",
-    "icon": "",
-    "contentType": "aarti",
-    "textResourceDirectory": "resources/texts/other/other_aartis",
-    "imageResourceDirectory": "resources/images/other/other_aartis",
-    "files": [
-      {
-        "file": "devi_aarti.json",
-        "image": "devi_aarti.png"
-      },
-      {
-        "file": "datta_maharaj_aarti.json",
-        "image": "datta_maharaj_aarti.png"
-      },
-      {
-        "file": "shankar_aarti.json",
-        "image": "shankar_aarti.png"
-      },
-      {
-        "file": "vitthal_aarti.json",
-        "image": "vitthal_aarti.png"
-      },
-      {
-        "file": "khandoba_aarti.json",
-        "image": "khandoba_aarti.png"
-      },
-      {
-        "file": "sai_baba_aarti.json",
-        "image": "sai_baba_aarti.png"
-      },
-      {
-        "file": "dnyaneshwar_maharaj_aarti.json",
-        "image": "dnyaneshwar_maharaj_aarti.png"
-      },
-      {
-        "file": "tukaram_maharaj_aarti.json",
-        "image": "tukaram_maharaj_aarti.png"
-      },
-      {
-        "file": "karpur_aarti.json",
-        "image": "karpur_aarti.png"
-      },
-      {
-        "file": "prarthana_ghalin_lotangan.json",
-        "image": "prarthana_ghalin_lotangan.png"
-      },
-      {
-        "file": "mantrapushpanjali.json",
-        "image": "mantrapushpanjali.png"
-      }
-    ]
-  },
-  "other_stotras": {
-    "title_key": "otherStotras",
-    "icon": "",
-    "contentType": "stotra",
-    "textResourceDirectory": "resources/texts/other/other_stotras",
-    "imageResourceDirectory": "resources/images/other/other_stotras",
-    "files": [
-      {
-        "file": "gajanan_maharaj_vitthal_rakhumai_gayatri.json",
-        "image": "gajanan_maharaj_vitthal_rakhumai_gayatri.png"
-      },
-      {
-        "file": "shree_vishnu_sahastranam.json",
-        "image": "shree_vishnu_sahastranam.png"
-      },
-      {
-        "file": "purush_sukta.json",
-        "image": "purush_sukta.png"
-      },
-      {
-        "file": "shri_sukta.json",
-        "image": "shri_sukta.png"
-      },
-      {
-        "file": "pasaydan.json",
-        "image": "pasaydan.png"
-      },
-      {
-        "file": "madhurashtak.json",
-        "image": "madhurashtak.png"
-      },
-      {
-        "file": "pandurang_ashtak.json",
-        "image": "pandurang_ashtak.png"
-      }
-    ]
+    "aartis": {
+      "title_key": "otherAartis",
+      "icon": "library_music_outlined",
+      "contentType": "aarti",
+      "textResourceDirectory": "resources/texts/other/other_aartis",
+      "imageResourceDirectory": "resources/images/other/other_aartis",
+      "files": [
+        {
+          "file": "gajanan_maharaj_aarti.json",
+          "image": "gajanan_maharaj_aarti.png"
+        },
+        {
+          "file": "devi_aarti.json",
+          "image": "devi_aarti.png"
+        },
+        {
+          "file": "datta_maharaj_aarti.json",
+          "image": "datta_maharaj_aarti.png"
+        },
+        {
+          "file": "shankar_aarti.json",
+          "image": "shankar_aarti.png"
+        },
+        {
+          "file": "vitthal_aarti.json",
+          "image": "vitthal_aarti.png"
+        },
+        {
+          "file": "khandoba_aarti.json",
+          "image": "khandoba_aarti.png"
+        },
+        {
+          "file": "sai_baba_aarti.json",
+          "image": "sai_baba_aarti.png"
+        },
+        {
+          "file": "dnyaneshwar_maharaj_aarti.json",
+          "image": "dnyaneshwar_maharaj_aarti.png"
+        },
+        {
+          "file": "tukaram_maharaj_aarti.json",
+          "image": "tukaram_maharaj_aarti.png"
+        },
+        {
+          "file": "karpur_aarti.json",
+          "image": "karpur_aarti.png"
+        },
+        {
+          "file": "prarthana_ghalin_lotangan.json",
+          "image": "prarthana_ghalin_lotangan.png"
+        },
+        {
+          "file": "mantrapushpanjali.json",
+          "image": "mantrapushpanjali.png"
+        }
+      ]
+    },
+    "stotras": {
+      "title_key": "otherStotras",
+      "icon": "queue_music",
+      "contentType": "stotra",
+      "textResourceDirectory": "resources/texts/other/other_stotras",
+      "imageResourceDirectory": "resources/images/other/other_stotras",
+      "files": [
+        {
+          "file": "gajanan_maharaj_vitthal_rakhumai_gayatri.json",
+          "image": "gajanan_maharaj_vitthal_rakhumai_gayatri.png"
+        },
+        {
+          "file": "shree_vishnu_sahastranam.json",
+          "image": "shree_vishnu_sahastranam.png"
+        },
+        {
+          "file": "purush_sukta.json",
+          "image": "purush_sukta.png"
+        },
+        {
+          "file": "shri_sukta.json",
+          "image": "shri_sukta.png"
+        },
+        {
+          "file": "pasaydan.json",
+          "image": "pasaydan.png"
+        },
+        {
+          "file": "madhurashtak.json",
+          "image": "madhurashtak.png"
+        },
+        {
+          "file": "pandurang_ashtak.json",
+          "image": "pandurang_ashtak.png"
+        }
+      ]
+    }
   }
 }

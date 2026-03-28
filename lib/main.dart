@@ -8,7 +8,6 @@ import 'package:gajanan_maharaj_sevekari/aarti/aarti_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/donations/donations_screen.dart';
 import 'package:gajanan_maharaj_sevekari/event_calendar/event_calendar_screen.dart';
-import 'package:gajanan_maharaj_sevekari/other/other_screen.dart';
 import 'package:gajanan_maharaj_sevekari/firebase_options.dart';
 import 'package:gajanan_maharaj_sevekari/gallery/gallery_screen.dart';
 import 'package:gajanan_maharaj_sevekari/home/home_screen.dart';
@@ -284,10 +283,6 @@ class _MyAppState extends State<MyApp> {
                   case Routes.signups:
                     return MaterialPageRoute(
                       builder: (context) => SignupsScreen(deity: deity!),
-                    );
-                  case Routes.other:
-                    return MaterialPageRoute(
-                      builder: (context) => const OtherScreen(),
                     );
                   case Routes.socialMedia:
                     return MaterialPageRoute(

@@ -878,12 +878,6 @@ abstract class AppLocalizations {
   /// **'Other'**
   String get otherTitle;
 
-  /// No description provided for @sundayPrarthanaTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Sunday Prarthana'**
-  String get sundayPrarthanaTitle;
-
   /// No description provided for @guruGeeta.
   ///
   /// In en, this message translates to:

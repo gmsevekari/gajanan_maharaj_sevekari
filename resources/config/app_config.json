@@ -23,7 +23,10 @@
     {
       "id": "hanuman",
       "configFile": "resources/config/hanuman.json"
+    },
+    {
+      "id": "other",
+      "configFile": "resources/config/other.json"
     }
-  ],
-  "other_config": "resources/config/other.json"
+  ]
 }
