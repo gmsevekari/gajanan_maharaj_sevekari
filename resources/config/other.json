@@ -101,6 +101,10 @@
         {
           "file": "pandurang_ashtak.json",
           "image": "pandurang_ashtak.png"
+        },
+        {
+          "file": "vitthal_rakhumai_naamjap.json",
+          "image": "vitthal_rakhumai_naamjap.png"
         }
       ]
     }
