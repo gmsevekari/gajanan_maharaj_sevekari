@@ -225,44 +225,6 @@ class _MyAppState extends State<MyApp> {
               AppTheme.darkTheme.textTheme,
             );
 
-        return MaterialApp(
-          navigatorKey: NavigatorService.navigatorKey,
-          scaffoldMessengerKey: NavigatorService.scaffoldMessengerKey,
-          onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
-          theme: AppTheme.lightTheme.copyWith(textTheme: lightTextTheme),
-          darkTheme: AppTheme.darkTheme.copyWith(textTheme: darkTextTheme),
-          themeMode: themeProvider.themeMode,
-          locale: localeProvider.locale,
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          initialRoute: Routes.splash,
-          routes: {
-            Routes.splash: (context) => const SplashScreen(),
-            Routes.home: (context) => const HomeScreen(),
-            Routes.calendar: (context) => const EventCalendarScreen(),
-            Routes.gallery: (context) => const GalleryScreen(),
-            Routes.settings: (context) => const SettingsScreen(),
-            Routes.sankalp: (context) => const SankalpScreen(),
-            Routes.naamjap: (context) => const NaamjapScreen(),
-            Routes.adminLogin: (context) => const AdminLoginScreen(),
-            Routes.adminDashboard: (context) => const AdminDashboardScreen(),
-            Routes.adminTempleNotifications: (context) =>
-                const AdminTempleNotificationsScreen(),
-            Routes.adminParayanCoordination: (context) =>
-                ParayanCoordinationDashboard(),
-            Routes.adminCreateParayan: (context) => const CreateParayanScreen(),
-            Routes.userNotifications: (context) =>
-                const UserNotificationsScreen(),
-            Routes.parayanList: (context) => ParayanListScreen(),
-            Routes.nityopasanaConsolidated: (context) =>
-                const NityopasanaConsolidatedScreen(),
-            Routes.myPlaylists: (context) => const MyPlaylistsScreen(),
-            Routes.playlistDetail: (context) => const PlaylistDetailScreen(),
-          },
-          onGenerateRoute: (settings) {
-            final DeityConfig? deity = settings.arguments is DeityConfig
-                ? settings.arguments as DeityConfig
-                : null;
             return MaterialApp(
               navigatorKey: NavigatorService.navigatorKey,
               scaffoldMessengerKey: NavigatorService.scaffoldMessengerKey,
@@ -297,6 +259,9 @@ class _MyAppState extends State<MyApp> {
                 Routes.parayanList: (context) => ParayanListScreen(),
                 Routes.nityopasanaConsolidated: (context) =>
                     const NityopasanaConsolidatedScreen(),
+                Routes.myPlaylists: (context) => const MyPlaylistsScreen(),
+                Routes.playlistDetail: (context) =>
+                    const PlaylistDetailScreen(),
               },
               onGenerateRoute: (settings) {
                 final DeityConfig? deity = settings.arguments is DeityConfig
