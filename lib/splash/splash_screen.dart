@@ -25,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
       final pendingDeepLink = DeepLinkManager.consumePendingRoute();
       if (pendingDeepLink != null) {
         debugPrint(
-          '[DeepLinkManager] SplashScreen: Navigating to pending deep link: ${pendingDeepLink['route']}',
+          '[DeepLinkManager] SplashScreen: Resolving deep link: ${pendingDeepLink['route']}',
         );
         Navigator.of(context).pushReplacementNamed(Routes.home);
         Navigator.of(context).pushNamed(
@@ -39,14 +39,15 @@ class _SplashScreenState extends State<SplashScreen> {
       final pendingRoute = NotificationManager.consumePendingRoute();
       if (pendingRoute != null) {
         debugPrint(
-          '[FCM] SplashScreen: Navigating to pending route: $pendingRoute',
+          '[FCM] SplashScreen: Resolving push notification: $pendingRoute',
         );
         Navigator.of(context).pushReplacementNamed(Routes.home);
         Navigator.of(context).pushNamed(pendingRoute);
-      } else {
-        // 3. Fallback to Home
-        Navigator.of(context).pushReplacementNamed(Routes.home);
+        return;
       }
+
+      // 3. Fallback to Home
+      Navigator.of(context).pushReplacementNamed(Routes.home);
     });
   }
 

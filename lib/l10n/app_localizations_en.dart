@@ -1110,4 +1110,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportToCalendar => 'Export to Calendar';
+
+  @override
+  String get shareParayanAction => 'Join this Parayan';
+
+  @override
+  String get shareLink => 'Link';
 }

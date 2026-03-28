@@ -14,6 +14,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.33491188906-4rm2d4tbgiqmhk0cf1vbvqpak7is0oie</string>
+				<string>gmsevekari</string>
 			</array>
 		</dict>
 	</array>
@@ -93,6 +94,6 @@
 		<string>remote-notification</string>
 	</array>
 	<key>FlutterDeepLinkingEnabled</key>
-	<true/>
+	<false/>
 </dict>
 </plist>

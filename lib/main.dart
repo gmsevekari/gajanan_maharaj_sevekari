@@ -126,23 +126,52 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _handleDeepLink(Uri uri) {
-    debugPrint('Deep Link Received: $uri');
-    debugPrint('Deep Link Path: ${uri.path}');
+    // 0. Deduplicate links (prevents Android cold-boot double-triggers)
+    if (!DeepLinkManager.shouldHandle(uri)) return;
 
-    if (uri.path.startsWith('/parayan/')) {
-      final segments = uri.pathSegments;
-      if (segments.length >= 2 && segments[0] == 'parayan') {
-        final id = segments[1];
-        debugPrint('Navigating to Parayan: $id');
-        DeepLinkManager.setPendingRoute(Routes.parayanDetail, {'id': id});
-        _safeNavigate(Routes.parayanDetail, {'id': id});
+    debugPrint('Deep Link Received: $uri');
+    String? id;
+
+    // 1. Handle Custom Scheme: gmsevekari://parayan/ID or gmsevekari:///parayan/ID
+    if (uri.scheme == 'gmsevekari') {
+      if (uri.host == 'parayan' && uri.pathSegments.isNotEmpty) {
+        id = uri.pathSegments.first;
+      } else if (uri.pathSegments.length >= 2 &&
+          uri.pathSegments[0] == 'parayan') {
+        id = uri.pathSegments[1];
       }
-    } else if (uri.path == '/parayan_detail') {
-      final id = uri.queryParameters['id'];
-      if (id != null) {
-        debugPrint('Navigating to Parayan (legacy): $id');
-        DeepLinkManager.setPendingRoute(Routes.parayanDetail, {'id': id});
+    }
+    // 2. Handle Web Links: https://gajananmaharajsevekari.org/parayan/ID
+    else if (uri.pathSegments.length >= 2 && uri.pathSegments[0] == 'parayan') {
+      id = uri.pathSegments[1];
+    }
+    // 3. Handle Legacy Query Parameters: /parayan_detail?id=ID
+    else if (uri.path == '/parayan_detail' ||
+        uri.path.endsWith('/parayan_detail')) {
+      id = uri.queryParameters['id'];
+    }
+
+    if (id != null) {
+      debugPrint('Deep Link: Navigating to Parayan ID: $id');
+      DeepLinkManager.setPendingRoute(Routes.parayanDetail, {'id': id});
+
+      // ONLY navigate directly if the app is already past the Splash screen.
+      // During startup, SplashScreen will consume the result from consumePendingRoute().
+      final navState = NavigatorService.navigatorKey.currentState;
+      bool isAtSplash = true;
+      navState?.popUntil((route) {
+        if (route.settings.name != Routes.splash) {
+          isAtSplash = false;
+        }
+        return true;
+      });
+
+      if (navState != null && !isAtSplash) {
         _safeNavigate(Routes.parayanDetail, {'id': id});
+      } else {
+        debugPrint(
+          '[DeepLinkManager] App is starting. Deferring navigation to SplashScreen.',
+        );
       }
     }
   }

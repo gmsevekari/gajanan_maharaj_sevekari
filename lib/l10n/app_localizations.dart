@@ -2185,6 +2185,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export to Calendar'**
   String get exportToCalendar;
+
+  /// No description provided for @shareParayanAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Join this Parayan'**
+  String get shareParayanAction;
+
+  /// No description provided for @shareLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Link'**
+  String get shareLink;
 }
 
 class _AppLocalizationsDelegate

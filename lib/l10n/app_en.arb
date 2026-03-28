@@ -429,5 +429,7 @@
   "exportSuffixAllocated": " - Adhyay Allocation",
   "exportSuffixOngoing": " - Current Status",
   "exportSuffixCompleted": " Completed. Jai Gajanan 🙏🏻",
-  "exportToCalendar": "Export to Calendar"
+  "exportToCalendar": "Export to Calendar",
+  "shareParayanAction": "Join this Parayan",
+  "shareLink": "Link"
 }

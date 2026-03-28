@@ -293,8 +293,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.12),
-                      disabledForegroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.38),
+                      disabledBackgroundColor: theme.colorScheme.onSurface
+                          .withValues(alpha: 0.12),
+                      disabledForegroundColor: theme.colorScheme.onSurface
+                          .withValues(alpha: 0.38),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -310,8 +312,15 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: () {
+                          final isMarathi =
+                              Localizations.localeOf(context).languageCode ==
+                              'mr';
+                          final title = isMarathi
+                              ? event.titleMr
+                              : event.titleEn;
+
                           final shareText =
-                              'Join this Parayan: ${event.titleEn}\n\nLink: https://gajananmaharajsevekari.org/parayan/${event.id}';
+                              '${l10n.shareParayanAction}: $title\n\n${l10n.shareLink}: https://gajananmaharajsevekari.org/parayan/${event.id}';
                           Share.share(shareText);
                         },
                         style: ElevatedButton.styleFrom(
