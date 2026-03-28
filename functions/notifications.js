@@ -142,7 +142,7 @@ exports.sendParayanReminders = onSchedule("0 * * * *", async (event) => {
         body,
         timestamp: nowSeattle.toISO(),
         expires_at: admin.firestore.Timestamp.fromDate(
-          nowSeattle.plus({ days: 30 }).toJSDate(),
+          nowSeattle.plus({ days: 2 }).toJSDate(),
         ),
         type: "PARAYAN_REMINDER",
         eventId: doc.id,
