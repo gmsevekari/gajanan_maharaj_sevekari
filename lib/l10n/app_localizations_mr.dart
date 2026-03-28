@@ -1114,7 +1114,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get exportToCalendar => 'कॅलेंडर एक्स्पोर्ट करा';
 
   @override
-  String get shareParayanAction => 'या पारायणमध्ये सामील व्हा';
+  String get shareParayanAction => 'हे पारायण जॉईन करा';
 
   @override
   String get shareLink => 'लिंक';

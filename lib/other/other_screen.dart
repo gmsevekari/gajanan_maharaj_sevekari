@@ -5,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
+import 'package:gajanan_maharaj_sevekari/shared/widgets/region_gate.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 
@@ -18,9 +19,6 @@ class OtherScreen extends StatelessWidget {
     final appConfig = Provider.of<AppConfigProvider>(context).appConfig!;
     final otherConfig = appConfig.other;
     final defaultDeity = appConfig.deities.first;
-    final String? deviceCountryCode = View.of(
-      context,
-    ).platformDispatcher.locale.countryCode;
 
     final otherMap = {
       'sunday_prarthana': otherConfig.sundayPrarthana,
@@ -70,31 +68,27 @@ class OtherScreen extends StatelessWidget {
                   final content = otherMap[key];
                   if (content == null) return const SizedBox.shrink();
 
-                  // Region check
-                  if (content.regions.isNotEmpty &&
-                      !content.regions.contains(deviceCountryCode)) {
-                    return const SizedBox
-                        .shrink(); // Do not build the card if region doesn't match
-                  }
-
                   final title = _getTitle(localizations, content.titleKey);
                   final icon = _getIcon(key);
 
-                  return _buildOtherCard(context, theme, title, icon, () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ContentListScreen(
-                          deity: defaultDeity,
-                          title: title,
-                          contentType: ContentTypeExtension.fromString(
-                            content.contentType,
+                  return RegionGate(
+                    allowedRegions: content.regions,
+                    child: _buildOtherCard(context, theme, title, icon, () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ContentListScreen(
+                            deity: defaultDeity,
+                            title: title,
+                            contentType: ContentTypeExtension.fromString(
+                              content.contentType,
+                            ),
+                            content: content,
                           ),
-                          content: content,
                         ),
-                      ),
-                    );
-                  });
+                      );
+                    }),
+                  );
                 }).toList(),
               ),
               const SizedBox(height: 100),

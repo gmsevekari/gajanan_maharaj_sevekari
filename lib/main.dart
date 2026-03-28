@@ -42,6 +42,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/navigator_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/deeplink_manager.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
+import 'package:gajanan_maharaj_sevekari/providers/region_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:app_links/app_links.dart';
@@ -66,12 +67,14 @@ void main() async {
   final localeProvider = LocaleProvider();
   final fontProvider = FontProvider();
   final appConfigProvider = AppConfigProvider();
+  final regionProvider = RegionProvider();
 
   await Future.wait([
     themeProvider.loadTheme(),
     localeProvider.loadLocale(),
     fontProvider.loadFonts(),
     appConfigProvider.loadAppConfig(),
+    regionProvider.initialize(),
   ]);
 
   runApp(
@@ -81,6 +84,7 @@ void main() async {
         ChangeNotifierProvider.value(value: localeProvider),
         ChangeNotifierProvider.value(value: fontProvider),
         ChangeNotifierProvider.value(value: appConfigProvider),
+        ChangeNotifierProvider.value(value: regionProvider),
       ],
       child: const MyApp(),
     ),

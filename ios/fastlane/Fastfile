@@ -64,7 +64,8 @@ platform :ios do
       automatic_release: true,
       run_precheck_before_submit: false,
       precheck_include_in_app_purchases: false,
-      skip_screenshots: true
+      overwrite_screenshots: true,
+      skip_screenshots: false
     )
     UI.success("🎉 Pushed to App Store!")
   end

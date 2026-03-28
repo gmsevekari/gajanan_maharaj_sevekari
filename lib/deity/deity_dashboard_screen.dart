@@ -7,6 +7,8 @@ import 'package:gajanan_maharaj_sevekari/aarti/aarti_screen.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/shared/widgets/region_gate.dart';
+import 'package:gajanan_maharaj_sevekari/utils/region_manager.dart';
 
 class DeityDashboardScreen extends StatelessWidget {
   final DeityConfig deity;
@@ -17,8 +19,6 @@ class DeityDashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
-    final String? deviceCountryCode =
-        View.of(context).platformDispatcher.locale.countryCode;
 
     final deityName = locale == 'mr' ? deity.nameMr : deity.nameEn;
 
@@ -45,36 +45,35 @@ class DeityDashboardScreen extends StatelessWidget {
     }
 
     // Only show Donations card if the donation info exists and the region matches
-    if (deity.donationInfo != null &&
-        (deity.donationInfo!.regions.isEmpty ||
-            deity.donationInfo!.regions.contains(deviceCountryCode))) {
+    if (deity.donationInfo != null) {
       featureCards.add(
-        _buildGridItem(
-          context,
-          localizations.donationsTitle,
-          Icons.volunteer_activism_outlined,
-          () => Navigator.pushNamed(
+        RegionGate(
+          allowedRegions: deity.donationInfo!.regions,
+          child: _buildGridItem(
             context,
-            Routes.donations,
-            arguments: deity,
+            localizations.donationsTitle,
+            Icons.volunteer_activism_outlined,
+            () => Navigator.pushNamed(
+              context,
+              Routes.donations,
+              arguments: deity,
+            ),
           ),
         ),
       );
     }
 
     // Only show Signups card if the signup info exists and the region matches
-    if (deity.signupInfo != null &&
-        (deity.signupInfo!.regions.isEmpty ||
-            deity.signupInfo!.regions.contains(deviceCountryCode))) {
+    if (deity.signupInfo != null) {
       featureCards.add(
-        _buildGridItem(
-          context,
-          localizations.signupsTitle,
-          Icons.assignment_ind_outlined,
-          () => Navigator.pushNamed(
+        RegionGate(
+          allowedRegions: deity.signupInfo!.regions,
+          child: _buildGridItem(
             context,
-            Routes.signups,
-            arguments: deity,
+            localizations.signupsTitle,
+            Icons.assignment_ind_outlined,
+            () =>
+                Navigator.pushNamed(context, Routes.signups, arguments: deity),
           ),
         ),
       );
@@ -86,8 +85,7 @@ class DeityDashboardScreen extends StatelessWidget {
           context,
           localizations.songTitle,
           Icons.library_music,
-          () =>
-              Navigator.pushNamed(context, Routes.songs, arguments: deity),
+          () => Navigator.pushNamed(context, Routes.songs, arguments: deity),
         ),
       );
     }

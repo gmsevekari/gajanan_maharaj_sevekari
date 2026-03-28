@@ -95,5 +95,7 @@
 	</array>
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app requires location access to restrict certain features to specific regions.</string>
 </dict>
 </plist>

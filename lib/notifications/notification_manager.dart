@@ -8,6 +8,7 @@ import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/utils/region_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 @pragma('vm:entry-point')
@@ -143,16 +144,17 @@ class NotificationManager {
     );
     if (isAuthorized && !kIsWeb) {
       // 1. Temple Notifications (US Only)
-      if (isUSRegion()) {
+      final isInUS = await RegionManager.isPhysicallyInUS();
+      if (isInUS) {
         debugPrint(
-          'NotificationManager: US Region detected. Subscribing to topic: ${NotificationConstants.templeNotificationsTopic}',
+          'NotificationManager: Strict US Region detected. Subscribing to topic: ${NotificationConstants.templeNotificationsTopic}',
         );
         await FirebaseMessaging.instance.subscribeToTopic(
           NotificationConstants.templeNotificationsTopic,
         );
       } else {
         debugPrint(
-          'NotificationManager: Non-US Region (${WidgetsBinding.instance.platformDispatcher.locale.countryCode}). Skipping Temple Notifications topic.',
+          'NotificationManager: Strictly outside US Region. Skipping Temple Notifications topic.',
         );
         await FirebaseMessaging.instance.unsubscribeFromTopic(
           NotificationConstants.templeNotificationsTopic,
@@ -350,16 +352,17 @@ class NotificationManager {
           if (!isIosSimulator) {
             try {
               // 1. Temple Notifications (US Only)
-              if (isUSRegion()) {
+              final isInUS = await RegionManager.isPhysicallyInUS();
+              if (isInUS) {
                 debugPrint(
-                  'NotificationManager: US Region detected during setup. Subscribing to ${NotificationConstants.templeNotificationsTopic}',
+                  'NotificationManager: Strict US Region detected during setup. Subscribing to ${NotificationConstants.templeNotificationsTopic}',
                 );
                 await messaging.subscribeToTopic(
                   NotificationConstants.templeNotificationsTopic,
                 );
               } else {
                 debugPrint(
-                  'NotificationManager: Non-US region detected during setup. Skipping ${NotificationConstants.templeNotificationsTopic}',
+                  'NotificationManager: Strictly outside US region during setup. Skipping ${NotificationConstants.templeNotificationsTopic}',
                 );
               }
 
@@ -378,19 +381,6 @@ class NotificationManager {
       }
     } finally {
       await prefs.setBool(_firstRunKey, false);
-    }
-  }
-
-  /// Helper to check if the device region is set to US.
-  static bool isUSRegion() {
-    try {
-      final countryCode =
-          WidgetsBinding.instance.platformDispatcher.locale.countryCode;
-      debugPrint('NotificationManager: Detected Country Code: $countryCode');
-      return countryCode?.toUpperCase() == 'US';
-    } catch (e) {
-      debugPrint('NotificationManager: Error detecting region: $e');
-      return false; // Default to false if we can't detect
     }
   }
 }
