@@ -1013,6 +1013,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get playAll => 'सर्व प्ले करा';
 
   @override
+  String get readAll => 'सर्व वाचा';
+
+  @override
   String get addToPlaylist => 'प्लेलिस्टमध्ये जोडा';
 
   @override

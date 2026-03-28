@@ -1014,6 +1014,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playAll => 'Play All';
 
   @override
+  String get readAll => 'Read All';
+
+  @override
   String get addToPlaylist => 'Add to Playlist';
 
   @override

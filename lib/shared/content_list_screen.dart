@@ -6,6 +6,9 @@ import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/add_to_playlist_modal.dart';
+import 'package:provider/provider.dart';
 
 class ContentListScreen extends StatefulWidget {
   final DeityConfig deity;
@@ -145,6 +148,42 @@ class _ContentListScreenState extends State<ContentListScreen> {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        Consumer<PlaylistProvider>(
+                          builder: (context, playlistProvider, child) {
+                            final assetPath = item['assetPath']!;
+                            final isFavorite = playlistProvider.isFavorite(assetPath);
+                            
+                            return IconButton(
+                              icon: Icon(
+                                isFavorite ? Icons.favorite : Icons.favorite_border,
+                                color: theme.colorScheme.primary,
+                              ),
+                              onPressed: () async {
+                                final playlists = playlistProvider.playlists;
+                                if (playlists.length == 1) {
+                                  final defaultPl = playlists.first;
+                                  if (isFavorite) {
+                                    await playlistProvider.removeAarti(defaultPl.id, assetPath);
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(localizations.removedFromPlaylist)),
+                                      );
+                                    }
+                                  } else {
+                                    await playlistProvider.addAarti(defaultPl.id, assetPath);
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(localizations.addedToPlaylist)),
+                                      );
+                                    }
+                                  }
+                                } else {
+                                  showAddToPlaylistModal(context, assetPath);
+                                }
+                              },
+                            );
+                          },
+                        ),
                         if (item['youtube_video_id']!.isNotEmpty)
                           IconButton(
                             icon: const Icon(Icons.play_circle_outline),

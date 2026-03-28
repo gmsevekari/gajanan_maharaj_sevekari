@@ -188,7 +188,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         context: context,
         title: localizations.favorites,
         icon: Icons.favorite,
-        imageSize: 100.0,
         onTap: () => Navigator.pushNamed(context, Routes.myPlaylists),
       ),
     );
@@ -755,6 +754,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     required String title,
     IconData? icon,
     String? imagePath,
+    Widget? customWidget,
     double? imageSize,
     required VoidCallback onTap,
   }) {
@@ -787,7 +787,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (imagePath != null)
+                  if (customWidget != null)
+                    customWidget
+                  else if (imagePath != null)
                     Image.asset(
                       imagePath,
                       height: size,

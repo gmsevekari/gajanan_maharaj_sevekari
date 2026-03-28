@@ -13,6 +13,7 @@ class PlaylistPlaybackScreen extends StatefulWidget {
   final List<Map<String, String>> contentList;
   final int initialIndex;
   final String playlistName;
+  final bool autoPlay;
 
   const PlaylistPlaybackScreen({
     super.key,
@@ -20,6 +21,7 @@ class PlaylistPlaybackScreen extends StatefulWidget {
     required this.contentList,
     required this.initialIndex,
     required this.playlistName,
+    this.autoPlay = true,
   });
 
   @override
@@ -84,11 +86,6 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
     final localizations = AppLocalizations.of(context)!;
     final fontProvider = Provider.of<FontProvider>(context);
 
-    // Responsive layout assumption: If it's phone portrait, we'll try our best 
-    // or let it scroll horizontally, but since 3-pane is requested explicitly, 
-    // we'll enforce the row structure. Best displayed in Chrome/Tablet.
-    // If screen gets too small, flex deals with proportions.
-    
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.playlistName} Playback'),
@@ -103,25 +100,74 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
           ),
         ],
       ),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            flex: 2,
-            child: _buildListPane(theme, locale),
-          ),
-          const VerticalDivider(width: 1),
-          Expanded(
-            flex: 3,
-            child: _buildTextPane(fontProvider, locale),
-          ),
-          const VerticalDivider(width: 1),
-          Expanded(
-            flex: 3,
-            child: _buildYoutubePane(theme, locale, localizations),
-          ),
-        ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth >= 800) {
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: _buildListPane(theme, locale),
+                ),
+                const VerticalDivider(width: 1),
+                Expanded(
+                  flex: 3,
+                  child: _buildTextPane(fontProvider, locale),
+                ),
+                const VerticalDivider(width: 1),
+                Expanded(
+                  flex: 3,
+                  child: _buildYoutubePane(theme, locale, localizations),
+                ),
+              ],
+            );
+          } else {
+            return _buildMobileLayout(theme, locale, localizations, fontProvider);
+          }
+        },
       ),
+    );
+  }
+
+  Widget _buildMobileLayout(ThemeData theme, Locale locale, AppLocalizations localizations, FontProvider fontProvider) {
+    return Column(
+      children: [
+        _buildYoutubePane(theme, locale, localizations, isMobile: true),
+        Expanded(
+          child: DefaultTabController(
+            length: 2,
+            initialIndex: widget.autoPlay ? 0 : 1,
+            child: Column(
+              children: [
+                TabBar(
+                  labelColor: theme.colorScheme.primary,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: theme.colorScheme.primary,
+                  tabs: [
+                    Tab(
+                      icon: const Icon(Icons.queue_music),
+                      text: 'Playlist',
+                    ),
+                    Tab(
+                      icon: const Icon(Icons.lyrics),
+                      text: 'Lyrics',
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _buildListPane(theme, locale),
+                      _buildTextPane(fontProvider, locale),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -214,72 +260,82 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
     );
   }
 
-  Widget _buildYoutubePane(ThemeData theme, Locale locale, AppLocalizations localizations) {
+  Widget _buildYoutubePane(ThemeData theme, Locale locale, AppLocalizations localizations, {bool isMobile = false}) {
     if (_isLoadingContent) {
       return const Center(child: CircularProgressIndicator());
     }
     final videoId = _currentContentData?['youtube_video_id'] as String?;
     final title = _currentContentData?['title_${locale.languageCode}'] ?? _currentContentData?['title_en'] ?? 'Aarti';
 
-    return Container(
-      color: theme.colorScheme.surface,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            if (videoId != null && videoId.isNotEmpty)
-              Card(
-                elevation: 4.0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                clipBehavior: Clip.antiAlias,
-                child: CrossPlatformYoutubePlayer(
-                  key: ValueKey(videoId), // Ensure player rebuilds when video changes
-                  videoId: videoId,
-                  autoPlay: true,
-                  onEnded: _playNext,
-                )
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (widget.autoPlay) ...[
+          if (videoId != null && videoId.isNotEmpty)
+            Card(
+              elevation: 4.0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+              clipBehavior: Clip.antiAlias,
+              child: CrossPlatformYoutubePlayer(
+                key: ValueKey(videoId), // Ensure player rebuilds when video changes
+                videoId: videoId,
+                autoPlay: widget.autoPlay,
+                onEnded: _playNext,
               )
-            else
-              Card(
-                elevation: 4.0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                child: const SizedBox(
-                  height: 200,
-                  child: Center(child: Text('Video unavailable')),
-                ),
-              ),
-            const SizedBox(height: 24),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: theme.colorScheme.secondary,
-                fontWeight: FontWeight.bold,
+            )
+          else
+            Card(
+              elevation: 4.0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+              child: const AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Center(child: Text('Video unavailable')),
               ),
             ),
-            const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.skip_previous, size: 48),
-                  color: _currentIndex > 0 ? Colors.orange : Colors.grey,
-                  tooltip: 'Previous Aarti',
-                  onPressed: _currentIndex > 0 ? () => _playIndex(_currentIndex - 1) : null,
-                ),
-                const SizedBox(width: 48),
-                IconButton(
-                  icon: const Icon(Icons.skip_next, size: 48),
-                  color: _currentIndex < widget.contentList.length - 1 ? Colors.orange : Colors.grey,
-                  tooltip: 'Next Aarti',
-                  onPressed: _currentIndex < widget.contentList.length - 1 ? _playNext : null,
-                ),
-              ],
+          const SizedBox(height: 16),
+        ],
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: theme.colorScheme.secondary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.skip_previous, size: 48),
+              color: _currentIndex > 0 ? Colors.orange : Colors.grey,
+              tooltip: 'Previous Aarti',
+              onPressed: _currentIndex > 0 ? () => _playIndex(_currentIndex - 1) : null,
+            ),
+            const SizedBox(width: 48),
+            IconButton(
+              icon: const Icon(Icons.skip_next, size: 48),
+              color: _currentIndex < widget.contentList.length - 1 ? Colors.orange : Colors.grey,
+              tooltip: 'Next Aarti',
+              onPressed: _currentIndex < widget.contentList.length - 1 ? _playNext : null,
             ),
           ],
         ),
-      ),
+      ],
+    );
+
+    return Container(
+      color: theme.colorScheme.surface,
+      child: isMobile 
+        ? Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: content,
+          )
+        : SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: content,
+          ),
     );
   }
 }

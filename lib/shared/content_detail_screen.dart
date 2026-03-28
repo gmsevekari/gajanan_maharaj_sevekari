@@ -175,21 +175,40 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
           ],
         ),
         actions: [
-          if (widget.contentType == ContentType.aarti)
-            Consumer<PlaylistProvider>(
-              builder: (context, playlistProvider, child) {
-                final isFavorite = playlistProvider.isFavorite(widget.assetPath);
-                return IconButton(
-                  icon: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? Colors.red : null,
-                  ),
-                  onPressed: () {
+          Consumer<PlaylistProvider>(
+            builder: (context, playlistProvider, child) {
+              final isFavorite = playlistProvider.isFavorite(widget.assetPath);
+              return IconButton(
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : null,
+                ),
+                onPressed: () async {
+                  final playlists = playlistProvider.playlists;
+                  if (playlists.length == 1) {
+                    final defaultPl = playlists.first;
+                    if (isFavorite) {
+                      await playlistProvider.removeAarti(defaultPl.id, widget.assetPath);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(localizations.removedFromPlaylist)),
+                        );
+                      }
+                    } else {
+                      await playlistProvider.addAarti(defaultPl.id, widget.assetPath);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(localizations.addedToPlaylist)),
+                        );
+                      }
+                    }
+                  } else {
                     showAddToPlaylistModal(context, widget.assetPath);
-                  },
-                );
-              },
-            ),
+                  }
+                },
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),

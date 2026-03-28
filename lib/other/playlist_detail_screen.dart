@@ -25,7 +25,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
     playlistId = ModalRoute.of(context)!.settings.arguments as String;
   }
 
-  Future<void> _playPlaylist(BuildContext context, PlaylistProvider playlistProvider, int startIndex) async {
+  Future<void> _playPlaylist(BuildContext context, PlaylistProvider playlistProvider, int startIndex, {bool autoPlay = true}) async {
     final playlist = playlistProvider.playlists.firstWhere(
       (p) => p.id == playlistId, 
       orElse: () => playlistProvider.playlists.first,
@@ -66,6 +66,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
           contentList: contentList,
           initialIndex: startIndex,
           playlistName: playlist.isDefault ? "My Favorites" : playlist.name,
+          autoPlay: autoPlay,
         ),
       ),
     );
@@ -113,6 +114,12 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
               ),
               if (playlist.aartiIds.isNotEmpty)
                 IconButton(
+                  icon: const Icon(Icons.menu_book),
+                  tooltip: localizations.readAll,
+                  onPressed: () => _playPlaylist(context, playlistProvider, 0, autoPlay: false),
+                ),
+              if (playlist.aartiIds.isNotEmpty)
+                IconButton(
                   icon: const Icon(Icons.play_circle_fill),
                   tooltip: localizations.playAll,
                   onPressed: () => _playPlaylist(context, playlistProvider, 0),
@@ -151,17 +158,32 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          icon: const Icon(Icons.play_arrow),
-                          label: Text(localizations.playAll),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12.0),
-                            textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              icon: const Icon(Icons.play_arrow),
+                              label: Text(localizations.playAll),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              onPressed: () => _playPlaylist(context, playlistProvider, 0),
+                            ),
                           ),
-                          onPressed: () => _playPlaylist(context, playlistProvider, 0),
-                        ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              icon: const Icon(Icons.menu_book),
+                              label: Text(localizations.readAll),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              onPressed: () => _playPlaylist(context, playlistProvider, 0, autoPlay: false),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Expanded(
@@ -189,25 +211,29 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
       
                               return ListTile(
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                                leading: ReorderableDragStartListener(
-                                  index: index,
-                                  child: const Icon(Icons.drag_handle, color: Colors.grey),
+                                  leading: ReorderableDragStartListener(
+                                    index: index,
+                                    child: const Icon(Icons.drag_handle, color: Colors.grey),
+                                  ),
+                                  title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.menu_book, color: Colors.orange),
+                                  onPressed: () => _playPlaylist(context, playlistProvider, index, autoPlay: false),
                                 ),
-                                title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.play_circle_outline, color: Colors.orange),
-                                onPressed: () => _playPlaylist(context, playlistProvider, index),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                                tooltip: localizations.removeAarti,
-                                onPressed: () {
-                                  playlistProvider.removeAarti(playlist.id, aartiId);
-                                },
-                              ),
+                                IconButton(
+                                  icon: const Icon(Icons.play_circle_outline, color: Colors.orange),
+                                  onPressed: () => _playPlaylist(context, playlistProvider, index),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                                  tooltip: localizations.removeAarti,
+                                  onPressed: () {
+                                    playlistProvider.removeAarti(playlist.id, aartiId);
+                                  },
+                                ),
                             ],
                           ),
                           onTap: () => _playPlaylist(context, playlistProvider, index),

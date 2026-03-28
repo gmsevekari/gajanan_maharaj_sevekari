@@ -57,10 +57,23 @@ class AddToPlaylistModal extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.add),
-                label: Text(localizations.createNewPlaylist),
-                onPressed: () => _showCreatePlaylistDialog(context, playlistProvider, localizations),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.add),
+                      label: Text(localizations.createNewPlaylist),
+                      onPressed: () => _showCreatePlaylistDialog(context, playlistProvider, localizations),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Confirm'),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

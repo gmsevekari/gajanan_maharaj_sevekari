@@ -398,6 +398,7 @@
   "addAarti": "Add",
   "removeAarti": "Remove",
   "playAll": "Play All",
+  "readAll": "Read All",
   "addToPlaylist": "Add to Playlist",
   "createNewPlaylist": "Create New Playlist",
   "playlistCreated": "Playlist Created",

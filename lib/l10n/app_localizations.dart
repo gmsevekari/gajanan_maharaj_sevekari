@@ -1994,6 +1994,12 @@ abstract class AppLocalizations {
   /// **'Play All'**
   String get playAll;
 
+  /// No description provided for @readAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Read All'**
+  String get readAll;
+
   /// No description provided for @addToPlaylist.
   ///
   /// In en, this message translates to:
