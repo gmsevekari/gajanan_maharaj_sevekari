@@ -21,10 +21,14 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
   List<String> _hiddenNotificationIds = [];
   List<String> _readNotificationIds = [];
   bool _isLoading = true;
+  late final String _retentionTimestamp;
 
   @override
   void initState() {
     super.initState();
+    _retentionTimestamp = DateTime.now()
+        .subtract(const Duration(days: 30))
+        .toIso8601String();
     _loadAndMarkRead();
   }
 
@@ -143,12 +147,7 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
             .collection('notifications')
-            .where(
-              'timestamp',
-              isGreaterThanOrEqualTo: DateTime.now()
-                  .subtract(const Duration(days: 30))
-                  .toIso8601String(),
-            )
+            .where('timestamp', isGreaterThanOrEqualTo: _retentionTimestamp)
             .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
@@ -156,7 +155,8 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
             return Center(child: Text(localizations.noResultsFound));
           }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState == ConnectionState.waiting &&
+              !snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -299,7 +299,7 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
       final timestampStr = data['timestamp'] as String?;
       if (timestampStr == null) continue;
 
-      final date = DateTime.parse(timestampStr);
+      final date = DateTime.parse(timestampStr).toLocal();
       final notificationDate = DateTime(date.year, date.month, date.day);
 
       final locale = Localizations.localeOf(context).toString();
@@ -354,7 +354,7 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
     String timeStr = '';
     if (timestampStr != null) {
       try {
-        final timestamp = DateTime.parse(timestampStr);
+        final timestamp = DateTime.parse(timestampStr).toLocal();
         timeStr = DateFormat.jm().format(timestamp);
       } catch (e) {
         timeStr = '';
@@ -374,10 +374,9 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         elevation: theme.cardTheme.elevation,
-        color:
-            isRead
-                ? theme.cardTheme.color?.withValues(alpha: 0.6)
-                : theme.cardTheme.color,
+        color: isRead
+            ? theme.cardTheme.color?.withValues(alpha: 0.6)
+            : theme.cardTheme.color,
         shape: theme.cardTheme.shape,
         child: Opacity(
           opacity: isRead ? 0.7 : 1.0,
@@ -396,8 +395,9 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
                           Text(
                             title,
                             style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight:
-                                  isRead ? FontWeight.w500 : FontWeight.bold,
+                              fontWeight: isRead
+                                  ? FontWeight.w500
+                                  : FontWeight.bold,
                               color: theme.colorScheme.primary,
                             ),
                           ),

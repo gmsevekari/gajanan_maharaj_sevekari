@@ -4,7 +4,9 @@
     "details": [
       {
         "appID": "6RCJF8XAM3.com.gajanan.maharaj.sevekari",
-        "paths": ["/parayan/*"]
+        "paths": [
+          "/parayan/*"
+        ]
       }
     ]
   }

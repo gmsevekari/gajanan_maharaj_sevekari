@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
+import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'dart:io';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
+import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
 
 class ParayanSignupScreen extends StatefulWidget {
   final ParayanEvent event;
+  final ParayanHousehold? existingEnrollment;
 
-  const ParayanSignupScreen({super.key, required this.event});
+  const ParayanSignupScreen({
+    super.key,
+    required this.event,
+    this.existingEnrollment,
+  });
 
   @override
   State<ParayanSignupScreen> createState() => _ParayanSignupScreenState();
@@ -25,22 +30,60 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
   final List<TextEditingController> _nameControllers = [
     TextEditingController(),
   ];
-  final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-
+  String _selectedCountryCode = '+1';
   bool _isLoading = false;
+  String? _loadingMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.existingEnrollment != null) {
+      final household = widget.existingEnrollment!;
+      _nameControllers.clear();
+      for (var member in household.members.values) {
+        _nameControllers.add(TextEditingController(text: member.name));
+      }
+      if (_nameControllers.isEmpty) {
+        _nameControllers.add(TextEditingController());
+      }
+
+      // Attempt to split country code from phone
+      var rawPhone = household.phone;
+      final countryCodes = ['+91', '+1', '+44', '+61', '+971'];
+      for (var code in countryCodes) {
+        if (rawPhone.startsWith(code)) {
+          _selectedCountryCode = code;
+          rawPhone = rawPhone.substring(code.length).trim();
+          break;
+        }
+      }
+      _phoneController.text = rawPhone;
+    }
+  }
 
   @override
   void dispose() {
     for (var controller in _nameControllers) {
       controller.dispose();
     }
-    _emailController.dispose();
     _phoneController.dispose();
     super.dispose();
   }
 
   void _addNameField() {
+    final localizations = AppLocalizations.of(context);
+    if (_nameControllers.length >= 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            localizations?.maxMembersError ??
+                "Maximum 5 members allowed per household",
+          ),
+        ),
+      );
+      return;
+    }
     setState(() {
       _nameControllers.add(TextEditingController());
     });
@@ -59,24 +102,18 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
     final formState = _formKey.currentState;
     if (formState == null || !formState.validate()) return;
 
+    final localizations = AppLocalizations.of(context);
+    final isEditMode = widget.existingEnrollment != null;
+
     setState(() {
       _isLoading = true;
+      _loadingMessage = isEditMode
+          ? localizations?.updatingSignupProgress
+          : localizations?.joiningSignupProgress;
     });
 
     try {
-      final deviceInfo = DeviceInfoPlugin();
-      String? deviceId;
-      if (Platform.isAndroid) {
-        final androidInfo = await deviceInfo.androidInfo;
-        deviceId = androidInfo.id;
-      } else if (Platform.isIOS) {
-        final iosInfo = await deviceInfo.iosInfo;
-        deviceId = iosInfo.identifierForVendor;
-      }
-
-      if (deviceId == null) {
-        throw Exception("Could not determine device ID");
-      }
+      final deviceId = await UniqueIdService.getUniqueId();
 
       final names = _nameControllers
           .map((c) => c.text.trim())
@@ -92,44 +129,115 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
         type: widget.event.type,
         deviceId: deviceId,
         names: names,
-        email: _emailController.text,
-        phone: _phoneController.text,
+        phone: '$_selectedCountryCode ${_phoneController.text.trim()}',
       );
 
-      // Subscribe to topics if parayan reminders are enabled
+      // Subscribe to topics
+      if (localizations != null) {
+        setState(() {
+          _loadingMessage = localizations.subscribingProgress;
+        });
+      }
+
       final prefs = await SharedPreferences.getInstance();
       final parayanRemindersEnabled =
           prefs.getBool(NotificationConstants.parayanRemindersPrefKey) ?? true;
       if (parayanRemindersEnabled) {
-        final messaging = FirebaseMessaging.instance;
+        final List<String> topics = [];
         if (widget.event.type == ParayanType.oneDay ||
             widget.event.type == ParayanType.guruPushya) {
-          final topic = NotificationConstants.getParayanReminderTopic(
-            widget.event.id,
-            1,
+          topics.add(
+            NotificationConstants.getParayanReminderTopic(widget.event.id, 1),
           );
-          await messaging.subscribeToTopic(topic);
         } else {
-          for (int i = 1; i <= 3; i++) {
-            final topic = NotificationConstants.getParayanReminderTopic(
-              widget.event.id,
-              i,
-            );
-            await messaging.subscribeToTopic(topic);
-          }
+          topics.add(
+            NotificationConstants.getParayanReminderTopic(widget.event.id, 1),
+          );
+          topics.add(
+            NotificationConstants.getParayanReminderTopic(widget.event.id, 2),
+          );
+          topics.add(
+            NotificationConstants.getParayanReminderTopic(widget.event.id, 3),
+          );
         }
+        await NotificationServiceHelper.addPendingSubscriptions(topics);
       }
 
       if (!mounted) return;
 
       // Navigate to confirmation
       Navigator.pop(context, true);
-      final localizations = AppLocalizations.of(context);
+
       if (localizations != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(localizations.parayanJoinedSuccess)),
+          SnackBar(
+            content: Text(
+              isEditMode
+                  ? localizations.parayanUpdatedSuccess
+                  : localizations.parayanJoinedSuccess,
+            ),
+          ),
         );
       }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+  Future<void> _deleteSignup() async {
+    final localizations = AppLocalizations.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          localizations?.deleteSignupConfirmTitle ?? "Delete Signup?",
+        ),
+        content: Text(
+          localizations?.deleteSignupConfirmMessage ??
+              "Are you sure you want to delete your registration?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(localizations?.cancel ?? "Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text(localizations?.deleteSignupLabel ?? "Delete"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() {
+      _isLoading = true;
+      _loadingMessage = localizations?.deletingSignupProgress;
+    });
+
+    try {
+      final deviceId = await UniqueIdService.getUniqueId();
+      await _parayanService.deleteEnrollment(widget.event.id, deviceId);
+
+      if (localizations != null) {
+        setState(() {
+          _loadingMessage = localizations.unsubscribingProgress;
+        });
+      }
+
+      // Unsubscribe from topics
+      await NotificationServiceHelper.unsubscribeFromEventTopics(
+        widget.event.id,
+      );
+
+      if (!mounted) return;
+      Navigator.pop(context, {'deleted': true});
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -153,10 +261,29 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
 
     final isMarathi = localizations.localeName == 'mr';
 
+    final isEditMode = widget.existingEnrollment != null;
+
     return Scaffold(
-      appBar: AppBar(title: Text(localizations.joinParayanLabel)),
+      appBar: AppBar(
+        title: Text(
+          isEditMode
+              ? localizations.editEnrollmentLabel
+              : localizations.joinParayanLabel,
+        ),
+      ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  if (_loadingMessage != null) ...[
+                    const SizedBox(height: 16),
+                    Text(_loadingMessage!, style: theme.textTheme.bodyMedium),
+                  ],
+                ],
+              ),
+            )
           : Form(
               key: _formKey,
               child: ListView(
@@ -184,17 +311,18 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                   Row(
                     children: [
                       Text(
-                        isMarathi ? "कुटुंबातील सदस्य" : "Household Members",
+                        localizations.householdMembersLabel,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const Spacer(),
-                      TextButton.icon(
-                        onPressed: _addNameField,
-                        icon: const Icon(Icons.add),
-                        label: Text(isMarathi ? "जोडा" : "Add"),
-                      ),
+                      if (_nameControllers.length < 5)
+                        TextButton.icon(
+                          onPressed: _addNameField,
+                          icon: const Icon(Icons.add_circle_outline),
+                          label: Text(localizations.addLabel),
+                        ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -203,6 +331,12 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                   ..._nameControllers.asMap().entries.map((entry) {
                     final index = entry.key;
                     final controller = entry.value;
+                    final isExistingMember =
+                        widget.existingEnrollment != null &&
+                        index < widget.existingEnrollment!.members.length;
+
+                    final canEditExisting = widget.event.status == 'enrolling';
+
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12.0),
                       child: Row(
@@ -211,17 +345,55 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                           Expanded(
                             child: TextFormField(
                               controller: controller,
+                              enabled: !isExistingMember || canEditExisting,
                               decoration: InputDecoration(
                                 labelText: "${localizations.name} ${index + 1}",
-                                icon: const Icon(Icons.person),
+                                icon: Icon(
+                                  Icons.person,
+                                  color: (isExistingMember && !canEditExisting)
+                                      ? theme.hintColor
+                                      : theme.colorScheme.primary,
+                                ),
+                                filled: isExistingMember && !canEditExisting,
+                                fillColor:
+                                    (isExistingMember && !canEditExisting)
+                                    ? theme.disabledColor.withValues(
+                                        alpha: 0.05,
+                                      )
+                                    : null,
                               ),
-                              validator: (value) =>
-                                  value == null || value.isEmpty
-                                  ? localizations.parayanNameRequired
+                              style: (isExistingMember && !canEditExisting)
+                                  ? TextStyle(color: theme.hintColor)
                                   : null,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return localizations.parayanNameRequired;
+                                }
+                                if (value.startsWith(' ')) {
+                                  return "Name cannot start with a space";
+                                }
+                                final nameRegex = RegExp(
+                                  r'^[a-zA-Z0-9\u0900-\u097F\s]+$',
+                                );
+                                if (!nameRegex.hasMatch(value)) {
+                                  return localizations.nameAlphabetRegexError;
+                                }
+                                // Duplicate name check within household
+                                final otherNames = _nameControllers
+                                    .where((c) => c != controller)
+                                    .map((c) => c.text.trim().toLowerCase())
+                                    .toList();
+                                if (otherNames.contains(
+                                  value.trim().toLowerCase(),
+                                )) {
+                                  return localizations.duplicateNameError;
+                                }
+                                return null;
+                              },
                             ),
                           ),
-                          if (_nameControllers.length > 1)
+                          if (_nameControllers.length > 1 &&
+                              (!isExistingMember || canEditExisting))
                             IconButton(
                               icon: const Icon(
                                 Icons.remove_circle_outline,
@@ -239,34 +411,36 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                   Divider(color: Colors.grey.withValues(alpha: 0.2)),
                   const SizedBox(height: 24),
 
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      labelText: "Email",
-                      icon: const Icon(Icons.email),
-                      hintText: "e.g. seva@example.com",
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return localizations.emailRequired;
-                      }
-                      final emailRegex = RegExp(
-                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                      );
-                      if (!emailRegex.hasMatch(value.trim())) {
-                        return localizations.invalidEmail;
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   TextFormField(
                     controller: _phoneController,
                     decoration: InputDecoration(
-                      labelText: isMarathi ? "फोन नंबर" : "Phone Number",
+                      labelText: localizations.phoneNumberLabel,
                       icon: const Icon(Icons.phone),
                       hintText: isMarathi ? "१०-अंकी नंबर" : "10-digit number",
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _selectedCountryCode,
+                            items: ['+91', '+1', '+44', '+61', '+971'].map((
+                              String value,
+                            ) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  _selectedCountryCode = newValue;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
                     ),
                     keyboardType: TextInputType.phone,
                     validator: (value) {
@@ -288,8 +462,35 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: Text(localizations.joinParayanLabel),
+                    child: Text(
+                      isEditMode
+                          ? localizations.updateEnrollmentLabel
+                          : localizations.joinParayanLabel,
+                    ),
                   ),
+                  if (isEditMode) ...[
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: Alignment.center,
+                      child: ElevatedButton(
+                        onPressed: widget.event.status == 'enrolling'
+                            ? _deleteSignup
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                          side: const BorderSide(color: Colors.red),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 32,
+                          ),
+                        ),
+                        child: Text(
+                          localizations.deleteSignupLabel,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

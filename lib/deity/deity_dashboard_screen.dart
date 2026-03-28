@@ -186,6 +186,8 @@ class DeityDashboardScreen extends StatelessWidget {
     switch (key) {
       case 'granthTitle':
         return localizations.granthTitle;
+      case 'guruCharitraTitle':
+        return localizations.guruCharitraTitle;
       case 'stotraTitle':
         return localizations.stotraTitle;
       case 'bhajanTitle':

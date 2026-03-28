@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
@@ -109,6 +110,15 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
       );
 
       await _parayanService.createEvent(event);
+      await AdminAuditService.logAction(
+        action: 'CREATE_PARAYAN_EVENT',
+        details: {
+          'event_id': event.id,
+          'title': event.titleEn,
+          'type': event.type.toString(),
+          'start_date': event.startDate.toIso8601String(),
+        },
+      );
       if (!mounted) return;
       Navigator.pop(context);
     } catch (e) {

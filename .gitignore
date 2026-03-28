@@ -66,4 +66,5 @@ ios/vendor/
 ios/*.mobileprovision
 ios/fastlane/Preview.html
 /ios/fastlane/report.xml
+ios/fastlane/screenshots/
 /android/fastlane/report.xml

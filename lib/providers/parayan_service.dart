@@ -3,8 +3,11 @@ import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
+import 'package:flutter/foundation.dart';
 
 class ParayanService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -19,6 +22,16 @@ class ParayanService {
   // Update status of a Parayan Event
   Future<void> updateEventStatus(String eventId, String newStatus) async {
     await _eventsRef.doc(eventId).update({'status': newStatus});
+
+    // If status changed to allocated, perform batch adhyay allocation
+    if (newStatus == 'allocated') {
+      await allocateAdhyays(eventId);
+    } else if (newStatus == 'completed') {
+      // Unsubscribe the current (admin) device as well
+      if (!kIsWeb) {
+        await NotificationServiceHelper.unsubscribeFromEventTopics(eventId);
+      }
+    }
   }
 
   // Get a single Parayan Event by ID
@@ -62,7 +75,6 @@ class ParayanService {
     required ParayanType type,
     required String deviceId,
     required List<String> names,
-    required String email,
     required String phone,
   }) async {
     final eventDoc = _eventsRef.doc(eventId);
@@ -78,52 +90,93 @@ class ParayanService {
       final members = data['members'] as Map<String, dynamic>? ?? {};
       currentTotal += members.length;
     }
+    // 1. Get all existing members for this device to handle deletions
+    final existingSnapshot = await participantsRef
+        .where('deviceId', isEqualTo: deviceId)
+        .get();
+    final Map<String, String> existingDocIdsByName = {
+      for (var doc in existingSnapshot.docs)
+        doc.data()['memberName'] ?? doc.data()['name'] ?? '': doc.id,
+    };
 
-    final Map<String, ParayanMember> membersMap = {};
+    final batch = _db.batch();
 
-    for (var name in names) {
-      List<int> assigned;
-      Map<String, bool> completions = {};
-
-      if (type == ParayanType.oneDay) {
-        final adhyay = (currentTotal % 21) + 1;
-        assigned = [adhyay];
-        completions["1"] = false;
-      } else {
-        final group = (currentTotal % 3) + 1;
-        final k = currentTotal ~/ 3;
-
-        int day1 = (group + (k * 3) - 1) % 21 + 1;
-        int day2 = (day1 + 3 - 1) % 21 + 1;
-        int day3 = (day1 + 6 - 1) % 21 + 1;
-
-        assigned = [day1, day2, day3];
-        completions = {"1": false, "2": false, "3": false};
+    // 2. Delete members that are no longer in the list
+    for (var entry in existingDocIdsByName.entries) {
+      if (!names.contains(entry.key)) {
+        batch.delete(participantsRef.doc(entry.value));
       }
-
-      membersMap[name] = ParayanMember(
-        name: name,
-        assignedAdhyays: assigned,
-        completions: completions,
-      );
-      currentTotal++;
     }
 
-    final household = ParayanHousehold(
-      deviceId: deviceId,
-      email: email,
-      phone: phone,
-      joinedAt: DateTime.now(),
-      members: membersMap,
-    );
+    // 3. Add or update remaining members
+    for (var name in names) {
+      final docId =
+          existingDocIdsByName[name] ??
+          "${deviceId}_${name.replaceAll(RegExp(r'\s+'), '_')}";
+      final memberDoc = await participantsRef.doc(docId).get();
 
-    // We only write to the participants subcollection document.
-    // This avoids the permission error on the main parayan_events document.
-    await participantsRef.doc(deviceId).set(household.toFirestore());
+      if (memberDoc.exists) {
+        // preserve existing (or update phone if changed)
+        batch.update(participantsRef.doc(docId), {'phone': phone});
+        continue;
+      }
+
+      final member = ParayanMember(
+        name: name,
+        assignedAdhyays: [],
+        completions: {},
+        joinedAt: DateTime.now(),
+        deviceId: deviceId,
+        phone: phone,
+      );
+
+      batch.set(participantsRef.doc(docId), member.toMap());
+    }
+
+    await batch.commit();
 
     // NOTE: We are skipping the eventDoc 'joinedParticipants' update here
     // because standard users likely don't have WRITE permission on the event doc.
     // Dashboard and Tabs calculate the count dynamically using getAllParticipants().
+  }
+
+  Future<ParayanHousehold?> getHousehold(
+    String eventId,
+    String deviceId, {
+    bool forceServer = false,
+  }) async {
+    final participantsRef = _eventsRef.doc(eventId).collection('participants');
+    final snapshot = await participantsRef
+        .where('deviceId', isEqualTo: deviceId)
+        .get(
+          GetOptions(
+            source: forceServer ? Source.server : Source.serverAndCache,
+          ),
+        );
+
+    if (snapshot.docs.isEmpty) return null;
+
+    final members = <String, ParayanMember>{};
+    String phone = '';
+    DateTime earliestJoin = DateTime.now();
+
+    for (var doc in snapshot.docs) {
+      final member = ParayanMember.fromMap('', doc.data(), deviceId: deviceId);
+      members[member.name] = member;
+      if (member.phone != null && member.phone!.isNotEmpty) {
+        phone = member.phone!;
+      }
+      if (member.joinedAt.isBefore(earliestJoin)) {
+        earliestJoin = member.joinedAt;
+      }
+    }
+
+    return ParayanHousehold(
+      deviceId: deviceId,
+      phone: phone,
+      joinedAt: earliestJoin,
+      members: members,
+    );
   }
 
   Future<void> updateMemberCompletion({
@@ -133,19 +186,24 @@ class ParayanService {
     required int dayIndex,
     required bool completed,
   }) async {
+    final docId = "${deviceId}_${memberName.replaceAll(RegExp(r'\s+'), '_')}";
     final docRef = _eventsRef
         .doc(eventId)
         .collection('participants')
-        .doc(deviceId);
-    await docRef.update({
-      'members.$memberName.completions.$dayIndex': completed,
-    });
+        .doc(docId);
+
+    await docRef.update({'completions.$dayIndex': completed});
 
     // Topic subscription logic for day-specific reminders
+    if (kIsWeb) return;
     try {
-      final updatedDoc = await docRef.get();
-      if (updatedDoc.exists) {
-        final household = ParayanHousehold.fromFirestore(updatedDoc);
+      // 1. Get all members for this device to check if everyone is done (Force latest from server)
+      final household = await getHousehold(
+        eventId,
+        deviceId,
+        forceServer: true,
+      );
+      if (household != null) {
         final allCompleted = household.members.values.every(
           (m) => m.completions[dayIndex.toString()] == true,
         );
@@ -154,9 +212,10 @@ class ParayanService {
           eventId,
           dayIndex,
         );
-        if (completed && allCompleted) {
+        if (allCompleted) {
           await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-        } else if (!completed) {
+          print('Unsubscribed from $topic - All family members completed.');
+        } else {
           final prefs = await SharedPreferences.getInstance();
           final remindersEnabled =
               prefs.getBool(NotificationConstants.parayanRemindersPrefKey) ??
@@ -179,14 +238,24 @@ class ParayanService {
     return _eventsRef
         .doc(eventId)
         .collection('participants')
-        .doc(deviceId)
+        .where('deviceId', isEqualTo: deviceId)
         .snapshots()
-        .map((doc) {
-          if (!doc.exists) return [];
-          final household = ParayanHousehold.fromFirestore(doc);
-          final members = household.members.values.toList();
-          // Sort members by their first assigned adhyay for consistent order
+        .map((snapshot) {
+          final members = snapshot.docs
+              .map(
+                (doc) => ParayanMember.fromMap(doc.data()['name'] ?? '', {
+                  ...doc.data(),
+                  'id': doc.id,
+                }),
+              )
+              .toList();
+
+          // Sort members for consistent order in MyAllocationTab
           members.sort((a, b) {
+            final aIdx = a.globalIndex ?? -1;
+            final bIdx = b.globalIndex ?? -1;
+            if (aIdx != -1 && bIdx != -1) return aIdx.compareTo(bIdx);
+
             final aFirst = a.assignedAdhyays.isNotEmpty
                 ? a.assignedAdhyays.first
                 : 0;
@@ -207,24 +276,27 @@ class ParayanService {
         .orderBy('joinedAt', descending: false)
         .snapshots()
         .map((snapshot) {
-          final List<ParayanMember> allMembers = [];
-          for (var doc in snapshot.docs) {
-            final household = ParayanHousehold.fromFirestore(doc);
-            final members = household.members.values.toList();
-            // Sort members within each household by adhyay
-            members.sort((a, b) {
-              final aFirst = a.assignedAdhyays.isNotEmpty
-                  ? a.assignedAdhyays.first
-                  : 0;
-              final bFirst = b.assignedAdhyays.isNotEmpty
-                  ? b.assignedAdhyays.first
-                  : 0;
-              return aFirst.compareTo(bFirst);
-            });
-            allMembers.addAll(members);
-          }
-          return allMembers;
+          return snapshot.docs
+              .map(
+                (doc) => ParayanMember.fromMap(doc.data()['name'] ?? '', {
+                  ...doc.data(),
+                  'id': doc.id,
+                }),
+              )
+              .toList();
         });
+  }
+
+  // Perform batch adhyay allocation for all participants
+  Future<void> allocateAdhyays(String eventId) async {
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable(
+        'allocateParayanAdhyays',
+      );
+      await callable.call({'eventId': eventId});
+    } catch (e) {
+      rethrow;
+    }
   }
 
   // Get all active enrollments for a specific device
@@ -238,18 +310,64 @@ class ParayanService {
     final List<Map<String, dynamic>> results = [];
 
     for (var doc in querySnapshot.docs) {
-      final participantDoc = await doc.reference
-          .collection('participants')
-          .doc(deviceId)
-          .get();
-      if (participantDoc.exists) {
+      final household = await getHousehold(doc.id, deviceId);
+      if (household != null) {
         results.add({
           'event': ParayanEvent.fromFirestore(doc),
-          'household': ParayanHousehold.fromFirestore(participantDoc),
+          'household': household,
         });
       }
     }
 
     return results;
+  }
+
+  // Get ALL enrollments for a specific device (including past ones)
+  Future<List<Map<String, dynamic>>> getAllMyEnrollments(
+    String deviceId,
+  ) async {
+    final querySnapshot = await _eventsRef.get();
+    final List<Map<String, dynamic>> results = [];
+
+    for (var doc in querySnapshot.docs) {
+      final household = await getHousehold(doc.id, deviceId);
+      if (household != null) {
+        results.add({
+          'event': ParayanEvent.fromFirestore(doc),
+          'household': household,
+        });
+      }
+    }
+    return results;
+  }
+
+  // Delete enrollment for a specific device (Delete ALL member docs)
+  Future<void> deleteEnrollment(String eventId, String deviceId) async {
+    final participantsRef = _eventsRef.doc(eventId).collection('participants');
+    final snapshot = await participantsRef
+        .where('deviceId', isEqualTo: deviceId)
+        .get();
+
+    final batch = _db.batch();
+    for (var doc in snapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+  }
+
+  // Admin: Add multiple participants manually (via Cloud Function)
+  // groups: List of { 'phone': String, 'names': List<String> }
+  Future<void> adminAddParticipants({
+    required String eventId,
+    required List<Map<String, dynamic>> groups,
+  }) async {
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable(
+        'adminAddParticipants',
+      );
+      await callable.call({'eventId': eventId, 'groups': groups});
+    } catch (e) {
+      rethrow;
+    }
   }
 }

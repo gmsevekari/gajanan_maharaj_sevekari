@@ -17,25 +17,39 @@ default_platform(:android)
 
 platform :android do
   desc "Deploy a new version to the Google Play Store Production Track"
-  lane :deploy do |options|
-    # 1. Access the build number passed from the terminal
-    # We use this primarily for logging/messaging in Android
+  lane :deploy_production do |options|
     target_build = options[:build_number]
+    UI.message("🚀 Preparing to upload build #{target_build} to Production")
 
-    UI.message("🚀 Fastlane is preparing to upload version code: #{target_build} to Production")
-
-    # 2. Upload to Google Play
-    # Fastlane will grab the .aab file that the Flutter command just created
     upload_to_play_store(
-      track: 'production', # Production track
+      track: 'production',
       package_name: 'com.gajanan.maharaj.sevekari',
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       skip_upload_metadata: false,
-      skip_upload_images: false,
-      # Optional: This ensures the build is 'completed' and not just a draft
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: 'completed'
+    )
+    UI.success("🎉 Successfully uploaded build #{target_build} to Production!")
+  end
+
+  desc "Deploy a new version to a specific track (beta/internal)"
+  lane :deploy_closed_testing do |options|
+    target_build = options[:build_number]
+    target_track = options[:track] || 'alpha'
+
+    UI.message("🚀 Preparing to upload build #{target_build} to #{target_track} track")
+
+    upload_to_play_store(
+      track: target_track,
+      package_name: 'com.gajanan.maharaj.sevekari',
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
+      skip_upload_metadata: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
       release_status: 'completed'
     )
 
-    UI.success("🎉 Successfully uploaded build #{target_build} to the Production track!")
+    UI.success("🎉 Successfully uploaded build #{target_build} to the #{target_track} track!")
   end
 end

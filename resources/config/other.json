@@ -127,6 +127,18 @@
       {
         "file": "shri_sukta.json",
         "image": "shri_sukta.png"
+      },
+      {
+        "file": "pasaydan.json",
+        "image": "pasaydan.png"
+      },
+      {
+        "file": "madhurashtak.json",
+        "image": "madhurashtak.png"
+      },
+      {
+        "file": "pandurang_ashtak.json",
+        "image": "pandurang_ashtak.png"
       }
     ]
   }

@@ -110,6 +110,12 @@ abstract class AppLocalizations {
   /// **'Gajanan Vijay Granth'**
   String get granthTitle;
 
+  /// No description provided for @guruCharitraTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shri Guru Charitra'**
+  String get guruCharitraTitle;
+
   /// No description provided for @stotraTitle.
   ///
   /// In en, this message translates to:
@@ -1547,14 +1553,62 @@ abstract class AppLocalizations {
   /// No description provided for @createParayanButton.
   ///
   /// In en, this message translates to:
-  /// **'Create Event'**
+  /// **'Create a new Parayan'**
   String get createParayanButton;
+
+  /// No description provided for @addParticipantLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Participant'**
+  String get addParticipantLabel;
+
+  /// No description provided for @nameAlphabetRegexError.
+  ///
+  /// In en, this message translates to:
+  /// **'Only letters, numbers, and spaces allowed'**
+  String get nameAlphabetRegexError;
 
   /// No description provided for @parayanJoinedSuccess.
   ///
   /// In en, this message translates to:
-  /// **'You have successfully signed up for the Parayan!'**
+  /// **'Joined Parayan successfully'**
   String get parayanJoinedSuccess;
+
+  /// No description provided for @parayanUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Enrollment updated successfully'**
+  String get parayanUpdatedSuccess;
+
+  /// No description provided for @addHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Another Family'**
+  String get addHousehold;
+
+  /// No description provided for @addParticipant.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Another Participant'**
+  String get addParticipant;
+
+  /// No description provided for @submitAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit All'**
+  String get submitAll;
+
+  /// No description provided for @householdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get householdLabel;
+
+  /// No description provided for @participantsAddedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Participants added successfully'**
+  String get participantsAddedSuccess;
 
   /// No description provided for @assignedAdhyaysLabel.
   ///
@@ -1583,7 +1637,7 @@ abstract class AppLocalizations {
   /// No description provided for @manualPingLabel.
   ///
   /// In en, this message translates to:
-  /// **'Send Manual Reminder Notification'**
+  /// **'Send Reminder Notification - Coming Soon'**
   String get manualPingLabel;
 
   /// No description provided for @statsParticipants.
@@ -1597,6 +1651,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join Parayan'**
   String get joinParayanLabel;
+
+  /// No description provided for @signedUpLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed Up'**
+  String get signedUpLabel;
 
   /// No description provided for @noActiveParayans.
   ///
@@ -2071,6 +2131,203 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'My Playlists'**
   String get myPlaylists;
+  /// No description provided for @editEnrollmentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Enrollment'**
+  String get editEnrollmentLabel;
+
+  /// No description provided for @updateEnrollmentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Enrollment'**
+  String get updateEnrollmentLabel;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get filterCompleted;
+
+  /// No description provided for @filterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get filterPending;
+
+  /// No description provided for @exportAllocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Status'**
+  String get exportAllocations;
+
+  /// No description provided for @exportingGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating group snapshots...'**
+  String get exportingGroups;
+
+  /// No description provided for @seattleGajananMaharajParivar.
+  ///
+  /// In en, this message translates to:
+  /// **'Seattle Gajanan Maharaj Parivar'**
+  String get seattleGajananMaharajParivar;
+
+  /// No description provided for @jaiGajanan.
+  ///
+  /// In en, this message translates to:
+  /// **'Jai Gajanan'**
+  String get jaiGajanan;
+
+  /// No description provided for @parayanParticipant.
+  ///
+  /// In en, this message translates to:
+  /// **'Participant'**
+  String get parayanParticipant;
+
+  /// No description provided for @adhyaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Adhyays'**
+  String get adhyaysLabel;
+
+  /// No description provided for @statusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusLabel;
+
+  /// No description provided for @shareParayan.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Parayan'**
+  String get shareParayan;
+
+  /// No description provided for @deleteSignupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Signup'**
+  String get deleteSignupLabel;
+
+  /// No description provided for @deleteSignupConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Signup?'**
+  String get deleteSignupConfirmTitle;
+
+  /// No description provided for @deleteSignupConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your registration will be deleted and all members of your household will be removed from this parayan. Are you sure you want to proceed?'**
+  String get deleteSignupConfirmMessage;
+
+  /// No description provided for @signupDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your signup has been deleted successfully.'**
+  String get signupDeletedSuccess;
+
+  /// No description provided for @duplicateNameError.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate name within a family'**
+  String get duplicateNameError;
+
+  /// No description provided for @maxMembersError.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum 5 members allowed per family'**
+  String get maxMembersError;
+
+  /// No description provided for @householdMembersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Members'**
+  String get householdMembersLabel;
+
+  /// No description provided for @addLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get addLabel;
+
+  /// No description provided for @phoneNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phoneNumberLabel;
+
+  /// No description provided for @joiningSignupProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining parayan...'**
+  String get joiningSignupProgress;
+
+  /// No description provided for @updatingSignupProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating your signup...'**
+  String get updatingSignupProgress;
+
+  /// No description provided for @deletingSignupProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting your signup...'**
+  String get deletingSignupProgress;
+
+  /// No description provided for @subscribingProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Setting up notifications...'**
+  String get subscribingProgress;
+
+  /// No description provided for @unsubscribingProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Removing notification subscriptions...'**
+  String get unsubscribingProgress;
+
+  /// No description provided for @exportSuffixAllocated.
+  ///
+  /// In en, this message translates to:
+  /// **' - Adhyay Allocation'**
+  String get exportSuffixAllocated;
+
+  /// No description provided for @exportSuffixOngoing.
+  ///
+  /// In en, this message translates to:
+  /// **' - Current Status'**
+  String get exportSuffixOngoing;
+
+  /// No description provided for @exportSuffixCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **' Completed. Jai Gajanan 🙏🏻'**
+  String get exportSuffixCompleted;
+
+  /// No description provided for @exportToCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Export to Calendar'**
+  String get exportToCalendar;
+
+  /// No description provided for @shareParayanAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Join this Parayan'**
+  String get shareParayanAction;
+
+  /// No description provided for @shareLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Link'**
+  String get shareLink;
 }
 
 class _AppLocalizationsDelegate

@@ -14,24 +14,15 @@ class FontProvider with ChangeNotifier {
 
   final Map<String, String> availableMarathiFonts = {
     'Noto Sans Devanagari': 'नोटो सान्स देवनागरी - जय गजानन',
-    'Hind': 'हिंद - जय गजानन',
-    'Kalam': 'कलम - जय गजानन',
     'Yantramanav': 'यंत्रमानव - जय गजानन',
-    'Laila': 'लैला - जय गजानन',
     'Martel': 'मार्टेल - जय गजानन',
-    'Khand': 'खंड - जय गजानन',
     'Amita': 'अमिता - जय गजानन',
-    'Akshar': 'अक्षर - जय गजानन',
-    'Rozha One': 'रोझा वन - जय गजानन',
-    'Amiko': 'अमिको - जय गजानन',
     'Gotu': 'गोटू - जय गजानन',
-    'Sarpanch': 'सरपंच - जय गजानन',
     'Sumana': 'सुमाना - जय गजानन',
-    'Tillana': 'तिल्लाना - जय गजानन',
-    'Ranga': 'रंगा - जय गजानन',
-    'Jaini': 'जैनी - जय गजानन',
-    'Teko': 'टेको - जय गजानन',
-    'Inknut Antiqua': 'इंकनट अँटीक्वा - जय गजानन'
+    'Inknut Antiqua': 'इंकनट अँटीक्वा - जय गजानन',
+    'Mukta': 'मुक्ता - जय गजानन',
+    'Pragati Narrow': 'प्रगती नॅरो - जय गजानन',
+    'Tiro Devanagari Sanskrit': 'टिरो देवनागरी - जय गजानन',    
   };
 
   final Map<String, String> availableEnglishFonts = {

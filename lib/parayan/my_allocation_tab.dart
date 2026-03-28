@@ -9,7 +9,11 @@ class MyAllocationTab extends StatefulWidget {
   final ParayanEvent event;
   final String deviceId;
 
-  const MyAllocationTab({super.key, required this.event, required this.deviceId});
+  const MyAllocationTab({
+    super.key,
+    required this.event,
+    required this.deviceId,
+  });
 
   @override
   State<MyAllocationTab> createState() => _MyAllocationTabState();
@@ -26,7 +30,10 @@ class _MyAllocationTabState extends State<MyAllocationTab>
   @override
   void initState() {
     super.initState();
-    _participantsStream = _parayanService.getAllParticipants(widget.event.id);
+    _participantsStream = _parayanService.getParticipantsByDevice(
+      widget.event.id,
+      widget.deviceId,
+    );
   }
 
   String _formatNumber(BuildContext context, int number, {bool pad = false}) {
@@ -56,16 +63,9 @@ class _MyAllocationTabState extends State<MyAllocationTab>
           return const Center(child: CircularProgressIndicator());
         }
 
-        final allParticipants = snapshot.data ?? [];
-        final participants = <MapEntry<int, ParayanMember>>[];
-        for (int i = 0; i < allParticipants.length; i++) {
-          if (allParticipants[i].deviceId == widget.deviceId) {
-            participants.add(MapEntry(i, allParticipants[i]));
-          }
-        }
+        final participants = snapshot.data ?? [];
 
         final isEnrolling = widget.event.status == 'enrolling';
-        final isAllocated = widget.event.status == 'allocated';
         final isOngoing = widget.event.status == 'ongoing';
 
         if (participants.isEmpty) {
@@ -96,7 +96,12 @@ class _MyAllocationTabState extends State<MyAllocationTab>
           );
         }
 
-        if (isEnrolling) {
+        final isAllocated = widget.event.status == 'allocated';
+        final hasAnyUnallocated = participants.any(
+          (p) => p.assignedAdhyays.isEmpty,
+        );
+
+        if (isEnrolling || (isAllocated && hasAnyUnallocated)) {
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -124,65 +129,83 @@ class _MyAllocationTabState extends State<MyAllocationTab>
           );
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: participants.length,
-          itemBuilder: (context, pIndex) {
-            final entry = participants[pIndex];
-            final globalIndex = entry.key;
-            final participant = entry.value;
+        return Builder(
+          builder: (context) {
+            final sortedParticipants = participants.toList()
+              ..sort(
+                (a, b) => (a.globalIndex ?? 0).compareTo(b.globalIndex ?? 0),
+              );
 
-            final int groupSize = (widget.event.type == ParayanType.threeDay) ? 7 : 21;
-            final int groupNumber = (globalIndex ~/ groupSize) + 1;
+            Widget buildParticipantCard(int pIndex) {
+              final participant = sortedParticipants[pIndex];
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (pIndex > 0) const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.person,
-                      size: 20,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${participant.name} (${localizations.groupLabel(groupNumber.toString())})',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+              final int groupSize = (widget.event.type == ParayanType.threeDay)
+                  ? 7
+                  : 21;
+              final int groupNumber =
+                  participant.groupNumber ??
+                  ((participant.globalIndex ?? 0) ~/ groupSize) + 1;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (pIndex > 0) const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.person,
+                        size: 20,
                         color: theme.colorScheme.primary,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ...participant.assignedAdhyays.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final adhyay = entry.value;
-                  final dayNum = index + 1;
-                  final isRead =
-                      participant.completions[dayNum.toString()] ?? false;
-
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: _buildAllocationItem(
-                      context,
-                      dayNum: dayNum,
-                      adhyay: adhyay,
-                      isRead: isRead,
-                      isOngoing: isOngoing,
-                      theme: theme,
-                      onComplete: () => _parayanService.updateMemberCompletion(
-                        eventId: widget.event.id,
-                        deviceId: widget.deviceId,
-                        memberName: participant.name,
-                        dayIndex: dayNum,
-                        completed: true,
+                      const SizedBox(width: 8),
+                      Text(
+                        '${participant.name} (${localizations.groupLabel(groupNumber.toString())})',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ...participant.assignedAdhyays.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final adhyay = entry.value;
+                    final dayNum = index + 1;
+                    final isRead =
+                        participant.completions[dayNum.toString()] ?? false;
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: _buildAllocationItem(
+                        context,
+                        dayNum: dayNum,
+                        adhyay: adhyay,
+                        isRead: isRead,
+                        isOngoing: isOngoing,
+                        theme: theme,
+                        onComplete: () =>
+                            _parayanService.updateMemberCompletion(
+                              eventId: widget.event.id,
+                              deviceId: widget.deviceId,
+                              memberName: participant.name,
+                              dayIndex: dayNum,
+                              completed: true,
+                            ),
+                      ),
+                    );
+                  }),
+                ],
+              );
+            }
+
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                ...List.generate(
+                  sortedParticipants.length,
+                  (pIndex) => buildParticipantCard(pIndex),
+                ),
               ],
             );
           },
@@ -221,7 +244,9 @@ class _MyAllocationTabState extends State<MyAllocationTab>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: isRead ? Colors.green : theme.colorScheme.primary.withValues(alpha: 0.1),
+                color: isRead
+                    ? Colors.green
+                    : theme.colorScheme.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: isRead ? Colors.green : theme.colorScheme.primary,
@@ -229,55 +254,69 @@ class _MyAllocationTabState extends State<MyAllocationTab>
                 ),
               ),
               alignment: Alignment.center,
-              child: Text(
-                _formatNumber(context, dayNum),
-                style: TextStyle(
-                  color: isRead
-                      ? Colors.white
-                      : theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Icon(
+                Icons.menu_book,
+                size: 20,
+                color: isRead ? Colors.white : theme.colorScheme.primary,
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "${localizations.day} ${_formatNumber(context, dayNum)}",
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: theme.colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "${localizations.adhyay} ${_formatNumber(context, adhyay)}",
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                  ),
-                ],
+              child: Text(
+                "${localizations.day} ${_formatNumber(context, dayNum)} - ${localizations.adhyay} ${_formatNumber(context, adhyay)}",
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             if (isRead)
               const Icon(Icons.check_circle, color: Colors.green)
             else if (isOngoing)
+              Builder(
+                builder: (context) {
+                  final now = DateTime.now();
+                  final today = DateTime(now.year, now.month, now.day);
+                  final start = widget.event.startDate;
+                  final startDate = DateTime(
+                    start.year,
+                    start.month,
+                    start.day,
+                  );
+                  final currentDayOfEvent =
+                      today.difference(startDate).inDays + 1;
+
+                  final canSubmit = dayNum <= currentDayOfEvent;
+
+                  return ElevatedButton(
+                    onPressed: canSubmit
+                        ? () => _showCompletionDialog(context, onComplete)
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: canSubmit
+                          ? theme.colorScheme.primary
+                          : Colors.grey.withValues(alpha: 0.1),
+                      foregroundColor: canSubmit ? Colors.white : Colors.grey,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text(localizations.submitLabel),
+                  );
+                },
+              )
+            else
               ElevatedButton(
-                onPressed: () => _showCompletionDialog(context, onComplete),
+                onPressed: null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
                 child: Text(localizations.submitLabel),
-              )
-            else
-              Icon(Icons.radio_button_unchecked, color: Colors.grey[600]),
+              ),
           ],
         ),
       ),
@@ -301,7 +340,8 @@ class _MyAllocationTabState extends State<MyAllocationTab>
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                    content: Text("Reading progress updated successfully!")),
+                  content: Text("Reading progress updated successfully!"),
+                ),
               );
             },
             child: const Text("Yes"),

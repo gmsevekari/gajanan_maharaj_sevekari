@@ -15,6 +15,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get granthTitle => 'Gajanan Vijay Granth';
 
   @override
+  String get guruCharitraTitle => 'Shri Guru Charitra';
+
+  @override
   String get stotraTitle => 'Stotra Collection';
 
   @override
@@ -772,11 +775,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reminderTimeLabel => 'Reminder Notification Time';
 
   @override
-  String get createParayanButton => 'Create Event';
+  String get createParayanButton => 'Create a new Parayan';
 
   @override
-  String get parayanJoinedSuccess =>
-      'You have successfully signed up for the Parayan!';
+  String get addParticipantLabel => 'Add Participant';
+
+  @override
+  String get nameAlphabetRegexError =>
+      'Only letters, numbers, and spaces allowed';
+
+  @override
+  String get parayanJoinedSuccess => 'Joined Parayan successfully';
+
+  @override
+  String get parayanUpdatedSuccess => 'Enrollment updated successfully';
+
+  @override
+  String get addHousehold => 'Add Another Family';
+
+  @override
+  String get addParticipant => 'Add Another Participant';
+
+  @override
+  String get submitAll => 'Submit All';
+
+  @override
+  String get householdLabel => 'Family';
+
+  @override
+  String get participantsAddedSuccess => 'Participants added successfully';
 
   @override
   String get assignedAdhyaysLabel => 'Your Assigned Adhyays';
@@ -791,7 +818,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get submitReadingStatus => 'Submit Status';
 
   @override
-  String get manualPingLabel => 'Send Manual Reminder Notification';
+  String get manualPingLabel => 'Send Reminder Notification - Coming Soon';
 
   @override
   String statsParticipants(int count) {
@@ -800,6 +827,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get joinParayanLabel => 'Join Parayan';
+
+  @override
+  String get signedUpLabel => 'Signed Up';
 
   @override
   String get noActiveParayans => 'No active parayans at the moment.';
@@ -1054,4 +1084,103 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myPlaylists => 'My Playlists';
+  String get editEnrollmentLabel => 'Edit Enrollment';
+
+  @override
+  String get updateEnrollmentLabel => 'Update Enrollment';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterCompleted => 'Completed';
+
+  @override
+  String get filterPending => 'Pending';
+
+  @override
+  String get exportAllocations => 'Export Status';
+
+  @override
+  String get exportingGroups => 'Generating group snapshots...';
+
+  @override
+  String get seattleGajananMaharajParivar => 'Seattle Gajanan Maharaj Parivar';
+
+  @override
+  String get jaiGajanan => 'Jai Gajanan';
+
+  @override
+  String get parayanParticipant => 'Participant';
+
+  @override
+  String get adhyaysLabel => 'Adhyays';
+
+  @override
+  String get statusLabel => 'Status';
+
+  @override
+  String get shareParayan => 'Share Parayan';
+
+  @override
+  String get deleteSignupLabel => 'Delete Signup';
+
+  @override
+  String get deleteSignupConfirmTitle => 'Delete Signup?';
+
+  @override
+  String get deleteSignupConfirmMessage =>
+      'Your registration will be deleted and all members of your household will be removed from this parayan. Are you sure you want to proceed?';
+
+  @override
+  String get signupDeletedSuccess =>
+      'Your signup has been deleted successfully.';
+
+  @override
+  String get duplicateNameError => 'Duplicate name within a family';
+
+  @override
+  String get maxMembersError => 'Maximum 5 members allowed per family';
+
+  @override
+  String get householdMembersLabel => 'Family Members';
+
+  @override
+  String get addLabel => 'Add';
+
+  @override
+  String get phoneNumberLabel => 'Phone Number';
+
+  @override
+  String get joiningSignupProgress => 'Joining parayan...';
+
+  @override
+  String get updatingSignupProgress => 'Updating your signup...';
+
+  @override
+  String get deletingSignupProgress => 'Deleting your signup...';
+
+  @override
+  String get subscribingProgress => 'Setting up notifications...';
+
+  @override
+  String get unsubscribingProgress => 'Removing notification subscriptions...';
+
+  @override
+  String get exportSuffixAllocated => ' - Adhyay Allocation';
+
+  @override
+  String get exportSuffixOngoing => ' - Current Status';
+
+  @override
+  String get exportSuffixCompleted => ' Completed. Jai Gajanan 🙏🏻';
+
+  @override
+  String get exportToCalendar => 'Export to Calendar';
+
+  @override
+  String get shareParayanAction => 'Join this Parayan';
+
+  @override
+  String get shareLink => 'Link';
 }

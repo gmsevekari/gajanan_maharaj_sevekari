@@ -5,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/utils/calendar_export_service.dart';
 import 'package:intl/intl.dart';
 
 class ParayanListScreen extends StatefulWidget {
@@ -14,14 +15,27 @@ class ParayanListScreen extends StatefulWidget {
   State<ParayanListScreen> createState() => _ParayanListScreenState();
 }
 
-class _ParayanListScreenState extends State<ParayanListScreen> {
+class _ParayanListScreenState extends State<ParayanListScreen>
+    with SingleTickerProviderStateMixin {
   final ParayanService _parayanService = ParayanService();
   late Stream<List<ParayanEvent>> _eventsStream;
+  late TabController _tabController;
+  List<ParayanEvent> _upcomingEvents = [];
 
   @override
   void initState() {
     super.initState();
     _eventsStream = _parayanService.getAllEvents();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {}); // Rebuild to update AppBar actions
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -32,76 +46,116 @@ class _ParayanListScreenState extends State<ParayanListScreen> {
     if (localizations == null) return const SizedBox.shrink();
     final locale = Localizations.localeOf(context).languageCode;
 
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            localizations.parayanListTitle,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          localizations.parayanListTitle,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
-          backgroundColor: Colors.orange,
-          iconTheme: const IconThemeData(color: Colors.white),
-          bottom: TabBar(
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            indicatorColor: Colors.white,
-            tabs: [
-              Tab(text: localizations.upcomingParayansTab),
-              Tab(text: localizations.completedParayansTab),
-            ],
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.home),
-              onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                context,
-                Routes.home,
-                (route) => false,
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () => Navigator.pushNamed(context, Routes.settings),
-            ),
+        ),
+        backgroundColor: Colors.orange,
+        iconTheme: const IconThemeData(color: Colors.white),
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicatorColor: Colors.white,
+          tabs: [
+            Tab(text: localizations.upcomingParayansTab),
+            Tab(text: localizations.completedParayansTab),
           ],
         ),
-        body: StreamBuilder<List<ParayanEvent>>(
-          stream: _eventsStream,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
+          ),
+          IconButton(
+            icon: Image.asset(
+              'resources/images/icon/Export_Calendar.png',
+              width: 24,
+              height: 24,
+            ),
+            tooltip: localizations.exportToCalendar,
+            onPressed: () => CalendarExportService.exportParayansToIcs(
+              _upcomingEvents,
+              "parayan_schedule",
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          ),
+        ],
+      ),
+      body: StreamBuilder<List<ParayanEvent>>(
+        stream: _eventsStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            final allEvents = snapshot.data ?? [];
-            final currentYear = DateTime.now().year;
+          final allEvents = snapshot.data ?? [];
+          final currentYear = DateTime.now().year;
 
-            final upcomingEvents = allEvents.where(
-              (e) => e.status != 'completed' && e.startDate.year == currentYear
-            ).toList();
+          _upcomingEvents =
+              allEvents
+                  .where(
+                    (e) =>
+                        e.status != 'completed' &&
+                        e.startDate.year == currentYear,
+                  )
+                  .toList()
+                ..sort((a, b) => a.startDate.compareTo(b.startDate));
 
-            final completedEvents = allEvents.where(
-              (e) => e.status == 'completed' && e.startDate.year == currentYear
-            ).toList();
+          final completedEvents =
+              allEvents
+                  .where(
+                    (e) =>
+                        e.status == 'completed' &&
+                        e.startDate.year == currentYear,
+                  )
+                  .toList()
+                ..sort((a, b) => b.startDate.compareTo(a.startDate));
 
-            return TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                _buildEventList(upcomingEvents, localizations, locale, theme, localizations.noActiveParayans),
-                _buildEventList(completedEvents, localizations, locale, theme, localizations.noCompletedParayans),
-              ],
-            );
-          },
-        ),
+          return TabBarView(
+            controller: _tabController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              _buildEventList(
+                _upcomingEvents,
+                localizations,
+                locale,
+                theme,
+                localizations.noActiveParayans,
+              ),
+              _buildEventList(
+                completedEvents,
+                localizations,
+                locale,
+                theme,
+                localizations.noCompletedParayans,
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
   Widget _buildEventList(
-      List<ParayanEvent> events, AppLocalizations localizations, String locale, ThemeData theme, String noDataText) {
+    List<ParayanEvent> events,
+    AppLocalizations localizations,
+    String locale,
+    ThemeData theme,
+    String noDataText,
+  ) {
     if (events.isEmpty) {
       return Center(
         child: Padding(
@@ -132,9 +186,7 @@ class _ParayanListScreenState extends State<ParayanListScreen> {
     // Group events by month/year
     final grouped = <String, List<ParayanEvent>>{};
     for (final event in events) {
-      final monthKey = DateFormat('MMMM yyyy', locale).format(
-        event.startDate,
-      );
+      final monthKey = DateFormat('MMMM yyyy', locale).format(event.startDate);
       grouped.putIfAbsent(monthKey, () => []).add(event);
     }
 
@@ -173,17 +225,16 @@ class _ParayanListScreenState extends State<ParayanListScreen> {
             event.type == ParayanType.guruPushya;
         final dateRange = isSingleDay
             ? (locale == 'mr'
-                ? DateFormat('d MMMM, yyyy', 'mr').format(event.startDate)
-                : DateFormat('MMMM d, yyyy').format(event.startDate))
+                  ? DateFormat('d MMMM, yyyy', 'mr').format(event.startDate)
+                  : DateFormat('MMMM d, yyyy').format(event.startDate))
             : (locale == 'mr'
-                ? "${DateFormat('d MMMM', 'mr').format(event.startDate)} - ${DateFormat('d MMMM, yyyy', 'mr').format(event.endDate)}"
-                : "${DateFormat('MMMM d').format(event.startDate)} - ${DateFormat('MMMM d, yyyy').format(event.endDate)}");
-        final typeLabel =
-            event.type == ParayanType.oneDay
-                ? localizations.oneDayParayan
-                : event.type == ParayanType.threeDay
-                ? localizations.threeDayParayan
-                : localizations.guruPushyaParayan;
+                  ? "${DateFormat('d MMMM', 'mr').format(event.startDate)} - ${DateFormat('d MMMM, yyyy', 'mr').format(event.endDate)}"
+                  : "${DateFormat('MMMM d').format(event.startDate)} - ${DateFormat('MMMM d, yyyy').format(event.endDate)}");
+        final typeLabel = event.type == ParayanType.oneDay
+            ? localizations.oneDayParayan
+            : event.type == ParayanType.threeDay
+            ? localizations.threeDayParayan
+            : localizations.guruPushyaParayan;
 
         return Card(
           elevation: theme.cardTheme.elevation,

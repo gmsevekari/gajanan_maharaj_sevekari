@@ -33,6 +33,10 @@
         {
           "file": "shriramraksha_stotra.json",
           "image": "shriramraksha_stotra.png"
+        },
+        {
+          "file": "manache_shlok.json",
+          "image": "manache_shlok.png"
         }
       ]
     }

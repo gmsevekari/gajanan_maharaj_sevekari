@@ -5,7 +5,7 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>GIDClientID</key>
-	<string>33491188906-f29nbfqmkb7m403957kh41v8vj918go6.apps.googleusercontent.com</string>
+	<string>33491188906-4rm2d4tbgiqmhk0cf1vbvqpak7is0oie.apps.googleusercontent.com</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -13,7 +13,8 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.33491188906-f29nbfqmkb7m403957kh41v8vj918go6</string>
+				<string>com.googleusercontent.apps.33491188906-4rm2d4tbgiqmhk0cf1vbvqpak7is0oie</string>
+				<string>gmsevekari</string>
 			</array>
 		</dict>
 	</array>
@@ -36,7 +37,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>10</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>https</string>
@@ -92,5 +93,7 @@
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 </dict>
 </plist>

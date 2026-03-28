@@ -287,6 +287,7 @@ class _CountingJapTabState extends State<CountingJapTab> {
             ),
             const SizedBox(height: 16),
             Container(
+              width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
                 color: theme.cardTheme.color ?? theme.cardColor,
@@ -298,6 +299,7 @@ class _CountingJapTabState extends State<CountingJapTab> {
                   : DropdownButtonHideUnderline(
                       child: DropdownButton<Map<String, dynamic>>(
                         value: _selectedChant,
+                        isExpanded: true,
                         alignment: Alignment.center,
                         icon: Icon(
                           Icons.keyboard_arrow_down,
@@ -325,6 +327,8 @@ class _CountingJapTabState extends State<CountingJapTab> {
                             alignment: Alignment.center,
                             child: Text(
                               title,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.bold,

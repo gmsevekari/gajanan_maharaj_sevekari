@@ -1,8 +1,9 @@
-import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_session_service.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -15,6 +16,17 @@ class AdminDashboardScreen extends StatefulWidget {
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  late final Stream<DocumentSnapshot> _adminStream;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = _auth.currentUser;
+    _adminStream = FirebaseFirestore.instance
+        .collection('admin_allowlist')
+        .doc(user?.email)
+        .snapshots();
+  }
 
   Future<void> _logout() async {
     AdminSessionService.clearSession();
@@ -114,36 +126,66 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ),
               const SizedBox(height: 16),
               Expanded(
-                child: ListView(
-                  children: [
-                    _buildModuleCard(
-                      context: context,
-                      title: localizations.templeNotificationsModuleTitle,
-                      subtitle: localizations.templeNotificationsModuleSubtitle,
-                      icon: Icons.notifications_active,
-                      color: theme.colorScheme.primary,
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          Routes.adminTempleNotifications,
-                        );
-                      },
-                    ),
-                    _buildModuleCard(
-                      context: context,
-                      title: localizations.parayanCoordinationModuleTitle,
-                      subtitle: localizations.parayanCoordinationModuleSubtitle,
-                      icon: Icons.event_note,
-                      color: Colors.orange[600]!,
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          Routes.adminParayanCoordination,
-                        );
-                      },
-                    ),
-                    // Future admin modules can be added here
-                  ],
+                child: StreamBuilder<DocumentSnapshot>(
+                  stream: _adminStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (!snapshot.hasData || !snapshot.data!.exists) {
+                      return Center(
+                        child: Text(
+                          localizations.accessDeniedNotAuthorized,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.error,
+                          ),
+                        ),
+                      );
+                    }
+
+                    final adminUser = AdminUser.fromFirestore(
+                      snapshot.data!.data() as Map<String, dynamic>,
+                      user?.email ?? '',
+                    );
+
+                    return ListView(
+                      children: [
+                        if (adminUser.hasRole('temple_admin'))
+                          _buildModuleCard(
+                            context: context,
+                            title: localizations.templeNotificationsModuleTitle,
+                            subtitle:
+                                localizations.templeNotificationsModuleSubtitle,
+                            icon: Icons.notifications_active,
+                            color: theme.colorScheme.primary,
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                Routes.adminTempleNotifications,
+                              );
+                            },
+                          ),
+                        if (adminUser.hasRole('parayan_coordinator'))
+                          _buildModuleCard(
+                            context: context,
+                            title: localizations.parayanCoordinationModuleTitle,
+                            subtitle:
+                                localizations.parayanCoordinationModuleSubtitle,
+                            icon: Icons.event_note,
+                            color: Colors.orange[600]!,
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                Routes.adminParayanCoordination,
+                              );
+                            },
+                          ),
+                        // Future admin modules can be added here
+                      ],
+                    );
+                  },
                 ),
               ),
             ],
