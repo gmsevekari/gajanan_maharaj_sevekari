@@ -74,7 +74,7 @@ class ParayanService {
     final querySnapshot = await participantsRef.get();
     int currentTotal = 0;
     for (var doc in querySnapshot.docs) {
-      final data = doc.data() as Map<String, dynamic>;
+      final data = doc.data();
       final members = data['members'] as Map<String, dynamic>? ?? {};
       currentTotal += members.length;
     }

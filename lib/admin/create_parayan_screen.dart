@@ -158,7 +158,7 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<ParayanType>(
-                    value: _selectedType,
+                    initialValue: _selectedType,
                     decoration: InputDecoration(
                       labelText: localizations.parayanTypeLabel,
                     ),
@@ -247,8 +247,10 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                           ),
                           if (_reminderTimes.length > 1)
                             IconButton(
-                              icon: const Icon(Icons.remove_circle_outline,
-                                  color: Colors.red),
+                              icon: const Icon(
+                                Icons.remove_circle_outline,
+                                color: Colors.red,
+                              ),
                               onPressed: () => _removeReminderTime(index),
                             ),
                         ],

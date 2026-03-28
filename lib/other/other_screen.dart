@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
@@ -73,7 +72,7 @@ class OtherScreen extends StatelessWidget {
 
                     if (content.regions.isNotEmpty &&
                         !content.regions.contains(deviceCountryCode)) {
-                      return const SizedBox.shrink(); 
+                      return const SizedBox.shrink();
                     }
 
                     final title = _getTitle(localizations, content.titleKey);
