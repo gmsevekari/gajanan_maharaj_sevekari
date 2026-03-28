@@ -11,11 +11,11 @@ class AddToPlaylistModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    
+
     return Consumer<PlaylistProvider>(
       builder: (context, playlistProvider, child) {
         final playlists = playlistProvider.playlists;
-        
+
         return Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
@@ -37,9 +37,13 @@ class AddToPlaylistModal extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final playlist = playlists[index];
                     final isAdded = playlist.aartiIds.contains(aartiId);
-                    
+
                     return CheckboxListTile(
-                      title: Text(playlist.isDefault ? localizations.myFavorites : playlist.name),
+                      title: Text(
+                        playlist.isDefault
+                            ? localizations.myFavorites
+                            : playlist.name,
+                      ),
                       value: isAdded,
                       onChanged: (bool? value) {
                         if (value == true) {
@@ -64,10 +68,15 @@ class AddToPlaylistModal extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Theme.of(context).colorScheme.primary,
                         shape: const StadiumBorder(),
+                        minimumSize: const Size.fromHeight(48),
                       ),
                       icon: const Icon(Icons.add),
                       label: Text(localizations.createNewPlaylist),
-                      onPressed: () => _showCreatePlaylistDialog(context, playlistProvider, localizations),
+                      onPressed: () => _showCreatePlaylistDialog(
+                        context,
+                        playlistProvider,
+                        localizations,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -75,11 +84,14 @@ class AddToPlaylistModal extends StatelessWidget {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onPrimary,
                         shape: const StadiumBorder(),
+                        minimumSize: const Size.fromHeight(48),
                       ),
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Confirm'),
+                      child: Text(localizations.confirm),
                     ),
                   ),
                 ],
@@ -91,53 +103,93 @@ class AddToPlaylistModal extends StatelessWidget {
     );
   }
 
-  void _showCreatePlaylistDialog(BuildContext context, PlaylistProvider provider, AppLocalizations localizations) {
+  void _showCreatePlaylistDialog(
+    BuildContext context,
+    PlaylistProvider provider,
+    AppLocalizations localizations,
+  ) {
     final controller = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(localizations.createNewPlaylist),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(hintText: localizations.playlistName),
-            autofocus: true,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(localizations.cancel),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                shape: const StadiumBorder(),
-              ),
-              onPressed: () async {
-                final name = controller.text.trim();
-                if (name.isNotEmpty) {
-                  try {
-                    await provider.createPlaylist(name);
-                    // Get newly created playlist (it's the last one)
-                    final newPlaylist = provider.playlists.last;
-                    await provider.addAarti(newPlaylist.id, aartiId);
-                    if (dialogContext.mounted) {
-                      Navigator.pop(dialogContext); // close dialog
-                    }
-                  } catch (e) {
-                     if (dialogContext.mounted) {
-                        ScaffoldMessenger.of(dialogContext).showSnackBar(
-                          SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
-                        );
-                     }
+        String? errorText;
+
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text(localizations.createNewPlaylist),
+              content: TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  labelText: localizations.playlistName,
+                  hintText: localizations.playlistName,
+                  border: const OutlineInputBorder(),
+                  errorText: errorText,
+                  errorMaxLines: 3,
+                ),
+                maxLength: 50,
+                autofocus: true,
+                onChanged: (_) {
+                  if (errorText != null) {
+                    setDialogState(() => errorText = null);
                   }
-                }
-              },
-              child: Text(localizations.createPlaylist),
-            ),
-          ],
+                },
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text(localizations.cancel),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    shape: const StadiumBorder(),
+                  ),
+                  onPressed: () async {
+                    final name = controller.text.trim();
+                    if (name.isEmpty) {
+                      setDialogState(
+                        () => errorText = localizations.playlistNameRequired,
+                      );
+                      return;
+                    }
+
+                    final nameRegex = RegExp(
+                      r'^[\p{L}0-9\u0966-\u096F ]+$',
+                      unicode: true,
+                    );
+                    if (!nameRegex.hasMatch(name)) {
+                      setDialogState(
+                        () =>
+                            errorText = localizations.playlistNameAlphanumeric,
+                      );
+                      return;
+                    }
+
+                    try {
+                      await provider.createPlaylist(name);
+                      // Get newly created playlist (it's the last one)
+                      final newPlaylist = provider.playlists.last;
+                      await provider.addAarti(newPlaylist.id, aartiId);
+                      if (dialogContext.mounted) {
+                        Navigator.pop(dialogContext); // close dialog
+                      }
+                    } catch (e) {
+                      setDialogState(
+                        () => errorText = e.toString().replaceAll(
+                          'Exception: ',
+                          '',
+                        ),
+                      );
+                    }
+                  },
+                  child: Text(localizations.createPlaylist),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -151,7 +203,9 @@ void showAddToPlaylistModal(BuildContext context, String aartiId) {
     backgroundColor: Colors.transparent,
     builder: (context) {
       return Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: AddToPlaylistModal(aartiId: aartiId),
       );
     },

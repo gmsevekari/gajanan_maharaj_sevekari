@@ -27,6 +27,15 @@ class NityopasanaConsolidatedScreen extends StatelessWidget {
     cards.add(
       _buildIconGridItem(
         context: context,
+        title: localizations.favorites,
+        imagePath: 'resources/images/icon/Favorites.png',
+        onTap: () => Navigator.pushNamed(context, Routes.myPlaylists),
+      ),
+    );
+
+    cards.add(
+      _buildIconGridItem(
+        context: context,
         title: localizations.otherTitle,
         icon: Icons.temple_hindu,
         onTap: () => Navigator.pushNamed(context, Routes.other),
@@ -134,7 +143,10 @@ class NityopasanaConsolidatedScreen extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 4,
+                    ),
                     child: Text(
                       name,
                       textAlign: TextAlign.center,

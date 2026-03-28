@@ -11,15 +11,29 @@ class MyPlaylistsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.myPlaylists),
+        title: Text(localizations.favorites),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          ),
+        ],
       ),
       body: Consumer<PlaylistProvider>(
         builder: (context, playlistProvider, child) {
           final playlists = playlistProvider.playlists;
-          
+
           if (playlists.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -29,40 +43,78 @@ class MyPlaylistsScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final playlist = playlists[index];
               return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 4.0,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
                   leading: CircleAvatar(
                     backgroundColor: theme.colorScheme.primaryContainer,
                     child: Icon(
                       playlist.isDefault ? Icons.favorite : Icons.queue_music,
-                      color: playlist.isDefault ? Colors.red : theme.colorScheme.primary,
+                      color: playlist.isDefault
+                          ? Colors.red
+                          : theme.colorScheme.primary,
                     ),
                   ),
                   title: Text(
-                    playlist.isDefault ? localizations.myFavorites : playlist.name,
+                    playlist.isDefault
+                        ? localizations.myFavorites
+                        : playlist.name,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text('${playlist.aartiIds.length} Aartis'),
-                  trailing: playlist.isDefault 
-                      ? null 
+                  subtitle: Row(
+                    children: [
+                      Icon(
+                        Icons.music_note,
+                        size: 16,
+                        color: theme.textTheme.bodySmall?.color,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _formatNumber(context, playlist.aartiIds.length),
+                        style: theme.textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                  trailing: playlist.isDefault
+                      ? null
                       : Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
                               icon: const Icon(Icons.edit, size: 20),
-                              onPressed: () => _showRenamePlaylistDialog(context, playlist.id, playlist.name),
+                              onPressed: () => _showRenamePlaylistDialog(
+                                context,
+                                playlist.id,
+                                playlist.name,
+                              ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.delete, size: 20, color: Colors.grey),
-                              onPressed: () => _deletePlaylist(context, playlist.id, playlistProvider, localizations),
+                              icon: const Icon(
+                                Icons.delete,
+                                size: 20,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () => _deletePlaylist(
+                                context,
+                                playlist.id,
+                                playlistProvider,
+                                localizations,
+                              ),
                             ),
                           ],
                         ),
                   onTap: () {
                     Navigator.pushNamed(
-                      context, 
+                      context,
                       Routes.playlistDetail,
                       arguments: playlist.id,
                     );
@@ -87,12 +139,13 @@ class MyPlaylistsScreen extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final controller = TextEditingController();
     bool isLoading = false;
+    String? errorText;
 
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (context, setDialogState) {
             return AlertDialog(
               title: Text(localizations.createNewPlaylist),
               content: TextField(
@@ -101,9 +154,16 @@ class MyPlaylistsScreen extends StatelessWidget {
                   labelText: localizations.playlistName,
                   hintText: localizations.playlistName,
                   border: const OutlineInputBorder(),
+                  errorText: errorText,
+                  errorMaxLines: 3,
                 ),
                 maxLength: 50,
                 autofocus: true,
+                onChanged: (_) {
+                  if (errorText != null) {
+                    setDialogState(() => errorText = null);
+                  }
+                },
               ),
               actions: [
                 TextButton(
@@ -116,64 +176,104 @@ class MyPlaylistsScreen extends StatelessWidget {
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     shape: const StadiumBorder(),
                   ),
-                  onPressed: isLoading ? null : () async {
-                    final name = controller.text.trim();
-                    if (name.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(localizations.playlistNameRequired)),
-                      );
-                      return;
-                    }
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          final name = controller.text.trim();
+                          if (name.isEmpty) {
+                            setDialogState(
+                              () => errorText =
+                                  localizations.playlistNameRequired,
+                            );
+                            return;
+                          }
 
-                    setState(() => isLoading = true);
-                    try {
-                      await Provider.of<PlaylistProvider>(context, listen: false).createPlaylist(name);
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(localizations.playlistCreated)),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
-                        );
-                      }
-                    } finally {
-                      setState(() => isLoading = false);
-                    }
-                  },
-                  child: isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : Text(localizations.createPlaylist),
+                          final nameRegex = RegExp(
+                            r'^[\p{L}0-9\u0966-\u096F ]+$',
+                            unicode: true,
+                          );
+                          if (!nameRegex.hasMatch(name)) {
+                            setDialogState(
+                              () => errorText =
+                                  localizations.playlistNameAlphanumeric,
+                            );
+                            return;
+                          }
+
+                          setDialogState(() => isLoading = true);
+                          try {
+                            await Provider.of<PlaylistProvider>(
+                              context,
+                              listen: false,
+                            ).createPlaylist(name);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(localizations.playlistCreated),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            setDialogState(
+                              () => errorText = e.toString().replaceAll(
+                                'Exception: ',
+                                '',
+                              ),
+                            );
+                          } finally {
+                            setDialogState(() => isLoading = false);
+                          }
+                        },
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(localizations.createPlaylist),
                 ),
               ],
             );
-          }
+          },
         );
       },
     );
   }
 
-  void _showRenamePlaylistDialog(BuildContext context, String playlistId, String currentName) {
+  void _showRenamePlaylistDialog(
+    BuildContext context,
+    String playlistId,
+    String currentName,
+  ) {
     final localizations = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: currentName);
     bool isLoading = false;
+    String? errorText;
 
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (context, setDialogState) {
             return AlertDialog(
               title: Text(localizations.renamePlaylist),
               content: TextField(
                 controller: controller,
                 decoration: InputDecoration(
                   labelText: localizations.playlistName,
+                  hintText: localizations.playlistName,
                   border: const OutlineInputBorder(),
+                  errorText: errorText,
+                  errorMaxLines: 3,
                 ),
                 maxLength: 50,
                 autofocus: true,
+                onChanged: (_) {
+                  if (errorText != null) {
+                    setDialogState(() => errorText = null);
+                  }
+                },
               ),
               actions: [
                 TextButton(
@@ -186,50 +286,82 @@ class MyPlaylistsScreen extends StatelessWidget {
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     shape: const StadiumBorder(),
                   ),
-                  onPressed: isLoading ? null : () async {
-                    final name = controller.text.trim();
-                    if (name.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(localizations.playlistNameRequired)),
-                      );
-                      return;
-                    }
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          final name = controller.text.trim();
+                          if (name.isEmpty) {
+                            setDialogState(
+                              () => errorText =
+                                  localizations.playlistNameRequired,
+                            );
+                            return;
+                          }
 
-                    setState(() => isLoading = true);
-                    try {
-                      await Provider.of<PlaylistProvider>(context, listen: false).renamePlaylist(playlistId, name);
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(localizations.playlistRenamed)),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
-                        );
-                      }
-                    } finally {
-                      setState(() => isLoading = false);
-                    }
-                  },
-                  child: isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : Text(localizations.renamePlaylist),
+                          final nameRegex = RegExp(
+                            r'^[\p{L}0-9\u0966-\u096F ]+$',
+                            unicode: true,
+                          );
+                          if (!nameRegex.hasMatch(name)) {
+                            setDialogState(
+                              () => errorText =
+                                  localizations.playlistNameAlphanumeric,
+                            );
+                            return;
+                          }
+
+                          setDialogState(() => isLoading = true);
+                          try {
+                            await Provider.of<PlaylistProvider>(
+                              context,
+                              listen: false,
+                            ).renamePlaylist(playlistId, name);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(localizations.playlistRenamed),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            setDialogState(
+                              () => errorText = e.toString().replaceAll(
+                                'Exception: ',
+                                '',
+                              ),
+                            );
+                          } finally {
+                            setDialogState(() => isLoading = false);
+                          }
+                        },
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(localizations.renamePlaylist),
                 ),
               ],
             );
-          }
+          },
         );
       },
     );
   }
 
-  void _deletePlaylist(BuildContext context, String id, PlaylistProvider provider, AppLocalizations localizations) async {
+  void _deletePlaylist(
+    BuildContext context,
+    String id,
+    PlaylistProvider provider,
+    AppLocalizations localizations,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(localizations.deletePlaylist),
-        content: const Text('Are you sure you want to delete this playlist?'),
+        content: Text(localizations.deletePlaylistConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -259,5 +391,18 @@ class MyPlaylistsScreen extends StatelessWidget {
         }
       }
     }
+  }
+
+  String _formatNumber(BuildContext context, int number) {
+    String numStr = number.toString();
+    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    if (!isMarathi) return numStr;
+
+    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const marathi = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+    for (int i = 0; i < english.length; i++) {
+      numStr = numStr.replaceAll(english[i], marathi[i]);
+    }
+    return numStr;
   }
 }

@@ -1018,28 +1018,28 @@ class AppLocalizationsMr extends AppLocalizations {
       'तुम्हाला नेमून दिलेले परायणाचे अध्याय वाचण्याची आठवण करून देणारे नोटिफिकेशन्स प्राप्त करा';
 
   @override
-  String get favorites => 'आवडते';
+  String get favorites => 'फेव्हरेट्स';
 
   @override
-  String get myFavorites => 'माझे आवडते';
+  String get myFavorites => 'माझे फेव्हरेट्स';
 
   @override
-  String get createPlaylist => 'प्लेलिस्ट तयार करा';
+  String get createPlaylist => 'नवीन लिस्ट तयार करा';
 
   @override
-  String get renamePlaylist => 'प्लेलिस्टचे नाव बदला';
+  String get renamePlaylist => 'लिस्टचे नाव बदला';
 
   @override
-  String get deletePlaylist => 'प्लेलिस्ट हटवा';
+  String get deletePlaylist => 'लिस्ट डिलीट करा';
 
   @override
-  String get playlistName => 'प्लेलिस्टचे नाव';
+  String get playlistName => 'लिस्टचे नाव';
 
   @override
-  String get addAarti => 'जोडा';
+  String get addAarti => 'ॲड करा';
 
   @override
-  String get removeAarti => 'हटवा';
+  String get removeAarti => 'डिलीट करा';
 
   @override
   String get playAll => 'सर्व प्ले करा';
@@ -1048,42 +1048,42 @@ class AppLocalizationsMr extends AppLocalizations {
   String get readAll => 'सर्व वाचा';
 
   @override
-  String get addToPlaylist => 'प्लेलिस्टमध्ये जोडा';
+  String get addToPlaylist => 'लिस्टमध्ये ॲड करा';
 
   @override
-  String get createNewPlaylist => 'नवीन प्लेलिस्ट तयार करा';
+  String get createNewPlaylist => 'नवीन लिस्ट तयार करा';
 
   @override
-  String get playlistCreated => 'प्लेलिस्ट तयार केली';
+  String get playlistCreated => 'लिस्ट तयार केली';
 
   @override
-  String get playlistRenamed => 'प्लेलिस्टचे नाव बदलले';
+  String get playlistRenamed => 'लिस्टचे नाव बदलले';
 
   @override
-  String get playlistDeleted => 'प्लेलिस्ट हटवली';
+  String get playlistDeleted => 'लिस्ट डिलीट केली';
 
   @override
-  String get playlistNameRequired => 'प्लेलिस्टचे नाव आवश्यक आहे';
+  String get playlistNameRequired => 'लिस्टचे नाव आवश्यक आहे';
 
   @override
-  String get playlistNameMaxChars =>
-      'प्लेलिस्टचे नाव ५० अक्षरांपेक्षा कमी असावे';
+  String get playlistNameMaxChars => 'लिस्टचे नाव ५० अक्षरांपेक्षा कमी असावे';
 
   @override
-  String get playlistAlreadyExists => 'या नावाची प्लेलिस्ट आधीच अस्तित्वात आहे';
+  String get playlistNameAlphanumeric =>
+      'लिस्टच्या नावात फक्त अक्षरे, अंक आणि स्पेस असावेत';
 
   @override
-  String get addedToPlaylist => 'प्लेलिस्टमध्ये जोडले';
+  String get playlistAlreadyExists => 'या नावाची लिस्ट आधीच अस्तित्वात आहे';
 
   @override
-  String get removedFromPlaylist => 'प्लेलिस्टमधून हटवले';
+  String get addedToPlaylist => 'लिस्टमध्ये ॲड केले';
+
+  @override
+  String get removedFromPlaylist => 'लिस्ट मधून डिलीट केले';
 
   @override
   String get defaultPlaylistCannotBeDeleted =>
-      'डिफॉल्ट प्लेलिस्ट हटवता येत नाही';
-
-  @override
-  String get myPlaylists => 'माझ्या प्लेलिस्ट';
+      'डिफॉल्ट लिस्ट डिलीट करता येत नाही';
 
   @override
   String get editEnrollmentLabel => 'साईन-अप बदला';
@@ -1164,7 +1164,13 @@ class AppLocalizationsMr extends AppLocalizations {
   String get deletingSignupProgress => 'तुमचे साईन-अप डिलीट करत आहे...';
 
   @override
+  String get confirm => 'कन्फर्म करा';
+
+  @override
   String get subscribingProgress => 'नोटिफिकेशन्स सबस्क्राइब करत आहे...';
+
+  @override
+  String get nothingHereYet => 'येथे अद्याप काहीही नाही आहे';
 
   @override
   String get unsubscribingProgress => 'नोटिफिकेशन्स अनसबस्क्राइब करत आहे...';
@@ -1186,4 +1192,8 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get shareLink => 'लिंक';
+
+  @override
+  String get deletePlaylistConfirm =>
+      'तुम्ही खात्रीने ही लिस्ट डिलीट करू इच्छिता?';
 }

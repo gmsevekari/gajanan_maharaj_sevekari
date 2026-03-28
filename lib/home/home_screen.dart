@@ -183,14 +183,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         onTap: () => Navigator.pushNamed(context, Routes.calendar),
       ),
     );
-    cards.add(
-      _buildIconGridItem(
-        context: context,
-        title: localizations.favorites,
-        icon: Icons.favorite,
-        onTap: () => Navigator.pushNamed(context, Routes.myPlaylists),
-      ),
-    );
 
     return Scaffold(
       appBar: AppBar(

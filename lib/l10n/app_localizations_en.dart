@@ -1023,16 +1023,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myFavorites => 'My Favorites';
 
   @override
-  String get createPlaylist => 'Create Playlist';
+  String get createPlaylist => 'Create List';
 
   @override
-  String get renamePlaylist => 'Rename Playlist';
+  String get renamePlaylist => 'Rename List';
 
   @override
-  String get deletePlaylist => 'Delete Playlist';
+  String get deletePlaylist => 'Delete List';
 
   @override
-  String get playlistName => 'Playlist Name';
+  String get playlistName => 'List Name';
 
   @override
   String get addAarti => 'Add';
@@ -1047,43 +1047,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get readAll => 'Read All';
 
   @override
-  String get addToPlaylist => 'Add to Playlist';
+  String get addToPlaylist => 'Add to List';
 
   @override
-  String get createNewPlaylist => 'Create New Playlist';
+  String get createNewPlaylist => 'Create New List';
 
   @override
-  String get playlistCreated => 'Playlist Created';
+  String get playlistCreated => 'List Created';
 
   @override
-  String get playlistRenamed => 'Playlist Renamed';
+  String get playlistRenamed => 'List Renamed';
 
   @override
-  String get playlistDeleted => 'Playlist Deleted';
+  String get playlistDeleted => 'List Deleted';
 
   @override
-  String get playlistNameRequired => 'Playlist name is required';
+  String get playlistNameRequired => 'List name is required';
 
   @override
-  String get playlistNameMaxChars =>
-      'Playlist name must be under 50 characters';
+  String get playlistNameMaxChars => 'List name must be under 50 characters';
 
   @override
-  String get playlistAlreadyExists =>
-      'A playlist with this name already exists';
+  String get playlistNameAlphanumeric =>
+      'List name must be alphanumeric with spaces only';
 
   @override
-  String get addedToPlaylist => 'Added to Playlist';
+  String get playlistAlreadyExists => 'A list with this name already exists';
 
   @override
-  String get removedFromPlaylist => 'Removed from Playlist';
+  String get addedToPlaylist => 'Added to List';
 
   @override
-  String get defaultPlaylistCannotBeDeleted =>
-      'Default playlist cannot be deleted';
+  String get removedFromPlaylist => 'Removed from List';
 
   @override
-  String get myPlaylists => 'My Playlists';
+  String get defaultPlaylistCannotBeDeleted => 'Default list cannot be deleted';
 
   @override
   String get editEnrollmentLabel => 'Edit Enrollment';
@@ -1163,7 +1161,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deletingSignupProgress => 'Deleting your signup...';
 
   @override
+  String get confirm => 'Confirm';
+
+  @override
   String get subscribingProgress => 'Setting up notifications...';
+
+  @override
+  String get nothingHereYet => 'Nothing here yet';
 
   @override
   String get unsubscribingProgress => 'Removing notification subscriptions...';
@@ -1185,4 +1189,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareLink => 'Link';
+
+  @override
+  String get deletePlaylistConfirm =>
+      'Are you sure you want to delete this list?';
 }

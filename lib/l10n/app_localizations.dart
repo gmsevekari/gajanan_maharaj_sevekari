@@ -2015,25 +2015,25 @@ abstract class AppLocalizations {
   /// No description provided for @createPlaylist.
   ///
   /// In en, this message translates to:
-  /// **'Create Playlist'**
+  /// **'Create List'**
   String get createPlaylist;
 
   /// No description provided for @renamePlaylist.
   ///
   /// In en, this message translates to:
-  /// **'Rename Playlist'**
+  /// **'Rename List'**
   String get renamePlaylist;
 
   /// No description provided for @deletePlaylist.
   ///
   /// In en, this message translates to:
-  /// **'Delete Playlist'**
+  /// **'Delete List'**
   String get deletePlaylist;
 
   /// No description provided for @playlistName.
   ///
   /// In en, this message translates to:
-  /// **'Playlist Name'**
+  /// **'List Name'**
   String get playlistName;
 
   /// No description provided for @addAarti.
@@ -2063,74 +2063,74 @@ abstract class AppLocalizations {
   /// No description provided for @addToPlaylist.
   ///
   /// In en, this message translates to:
-  /// **'Add to Playlist'**
+  /// **'Add to List'**
   String get addToPlaylist;
 
   /// No description provided for @createNewPlaylist.
   ///
   /// In en, this message translates to:
-  /// **'Create New Playlist'**
+  /// **'Create New List'**
   String get createNewPlaylist;
 
   /// No description provided for @playlistCreated.
   ///
   /// In en, this message translates to:
-  /// **'Playlist Created'**
+  /// **'List Created'**
   String get playlistCreated;
 
   /// No description provided for @playlistRenamed.
   ///
   /// In en, this message translates to:
-  /// **'Playlist Renamed'**
+  /// **'List Renamed'**
   String get playlistRenamed;
 
   /// No description provided for @playlistDeleted.
   ///
   /// In en, this message translates to:
-  /// **'Playlist Deleted'**
+  /// **'List Deleted'**
   String get playlistDeleted;
 
   /// No description provided for @playlistNameRequired.
   ///
   /// In en, this message translates to:
-  /// **'Playlist name is required'**
+  /// **'List name is required'**
   String get playlistNameRequired;
 
   /// No description provided for @playlistNameMaxChars.
   ///
   /// In en, this message translates to:
-  /// **'Playlist name must be under 50 characters'**
+  /// **'List name must be under 50 characters'**
   String get playlistNameMaxChars;
+
+  /// No description provided for @playlistNameAlphanumeric.
+  ///
+  /// In en, this message translates to:
+  /// **'List name must be alphanumeric with spaces only'**
+  String get playlistNameAlphanumeric;
 
   /// No description provided for @playlistAlreadyExists.
   ///
   /// In en, this message translates to:
-  /// **'A playlist with this name already exists'**
+  /// **'A list with this name already exists'**
   String get playlistAlreadyExists;
 
   /// No description provided for @addedToPlaylist.
   ///
   /// In en, this message translates to:
-  /// **'Added to Playlist'**
+  /// **'Added to List'**
   String get addedToPlaylist;
 
   /// No description provided for @removedFromPlaylist.
   ///
   /// In en, this message translates to:
-  /// **'Removed from Playlist'**
+  /// **'Removed from List'**
   String get removedFromPlaylist;
 
   /// No description provided for @defaultPlaylistCannotBeDeleted.
   ///
   /// In en, this message translates to:
-  /// **'Default playlist cannot be deleted'**
+  /// **'Default list cannot be deleted'**
   String get defaultPlaylistCannotBeDeleted;
-
-  /// No description provided for @myPlaylists.
-  ///
-  /// In en, this message translates to:
-  /// **'My Playlists'**
-  String get myPlaylists;
 
   /// No description provided for @editEnrollmentLabel.
   ///
@@ -2282,11 +2282,23 @@ abstract class AppLocalizations {
   /// **'Deleting your signup...'**
   String get deletingSignupProgress;
 
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
   /// No description provided for @subscribingProgress.
   ///
   /// In en, this message translates to:
   /// **'Setting up notifications...'**
   String get subscribingProgress;
+
+  /// No description provided for @nothingHereYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet'**
+  String get nothingHereYet;
 
   /// No description provided for @unsubscribingProgress.
   ///
@@ -2329,6 +2341,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Link'**
   String get shareLink;
+
+  /// No description provided for @deletePlaylistConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this list?'**
+  String get deletePlaylistConfirm;
 }
 
 class _AppLocalizationsDelegate
