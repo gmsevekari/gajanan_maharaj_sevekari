@@ -1084,6 +1084,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myPlaylists => 'My Playlists';
+
+  @override
   String get editEnrollmentLabel => 'Edit Enrollment';
 
   @override

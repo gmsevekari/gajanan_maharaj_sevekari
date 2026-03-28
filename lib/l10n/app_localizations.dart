@@ -2131,6 +2131,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'My Playlists'**
   String get myPlaylists;
+
   /// No description provided for @editEnrollmentLabel.
   ///
   /// In en, this message translates to:
