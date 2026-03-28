@@ -141,6 +141,11 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                       ElevatedButton.icon(
                         icon: const Icon(Icons.add),
                         label: Text(localizations.addAarti),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                          shape: const StadiumBorder(),
+                        ),
                         onPressed: () {
                           showSearch(
                             context: context,
@@ -167,6 +172,9 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                                 textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                                shape: const StadiumBorder(),
                               ),
                               onPressed: () => _playPlaylist(context, playlistProvider, 0),
                             ),
@@ -179,6 +187,9 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                                 textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                                shape: const StadiumBorder(),
                               ),
                               onPressed: () => _playPlaylist(context, playlistProvider, 0, autoPlay: false),
                             ),

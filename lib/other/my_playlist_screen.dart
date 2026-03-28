@@ -77,6 +77,8 @@ class MyPlaylistsScreen extends StatelessWidget {
         onPressed: () => _showCreatePlaylistDialog(context),
         icon: const Icon(Icons.add),
         label: Text(localizations.createPlaylist),
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
       ),
     );
   }
@@ -109,6 +111,11 @@ class MyPlaylistsScreen extends StatelessWidget {
                   child: Text(localizations.cancel),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    shape: const StadiumBorder(),
+                  ),
                   onPressed: isLoading ? null : () async {
                     final name = controller.text.trim();
                     if (name.isEmpty) {
@@ -174,6 +181,11 @@ class MyPlaylistsScreen extends StatelessWidget {
                   child: Text(localizations.cancel),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    shape: const StadiumBorder(),
+                  ),
                   onPressed: isLoading ? null : () async {
                     final name = controller.text.trim();
                     if (name.isEmpty) {

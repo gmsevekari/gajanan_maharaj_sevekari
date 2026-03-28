@@ -61,6 +61,10 @@ class AddToPlaylistModal extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Theme.of(context).colorScheme.primary,
+                        shape: const StadiumBorder(),
+                      ),
                       icon: const Icon(Icons.add),
                       label: Text(localizations.createNewPlaylist),
                       onPressed: () => _showCreatePlaylistDialog(context, playlistProvider, localizations),
@@ -69,6 +73,11 @@ class AddToPlaylistModal extends StatelessWidget {
                   const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                        shape: const StadiumBorder(),
+                      ),
                       onPressed: () => Navigator.pop(context),
                       child: const Text('Confirm'),
                     ),
@@ -101,6 +110,11 @@ class AddToPlaylistModal extends StatelessWidget {
               child: Text(localizations.cancel),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                shape: const StadiumBorder(),
+              ),
               onPressed: () async {
                 final name = controller.text.trim();
                 if (name.isNotEmpty) {
