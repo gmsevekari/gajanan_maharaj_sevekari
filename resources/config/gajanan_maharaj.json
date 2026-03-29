@@ -275,14 +275,6 @@
       "imageResourceDirectory": "resources/images/gajanan_maharaj/namavali"
     }
   },
-  "donation_info": {
-    "qr_code_light": "resources/images/gajanan_maharaj/qr_code/Zelle_QR_Code_Light.png",
-    "qr_code_dark": "resources/images/gajanan_maharaj/qr_code/Zelle_QR_Code_Dark.png",
-    "zelle_url": "https://tinyurl.com/Sea-GM-Zelle-Pay",
-    "regions": [
-      "US"
-    ]
-  },
   "social_media_links": [
     {
       "platform": "facebook",
