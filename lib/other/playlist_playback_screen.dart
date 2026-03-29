@@ -8,12 +8,14 @@ import 'package:gajanan_maharaj_sevekari/shared/cross_platform_youtube_player.da
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 
+enum PlaybackMode { reading, video }
+
 class PlaylistPlaybackScreen extends StatefulWidget {
   final DeityConfig deity;
   final List<Map<String, String>> contentList;
   final int initialIndex;
   final String playlistName;
-  final bool autoPlay;
+  final PlaybackMode mode;
 
   const PlaylistPlaybackScreen({
     super.key,
@@ -21,7 +23,7 @@ class PlaylistPlaybackScreen extends StatefulWidget {
     required this.contentList,
     required this.initialIndex,
     required this.playlistName,
-    this.autoPlay = true,
+    required this.mode,
   });
 
   @override
@@ -86,9 +88,45 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
     final localizations = AppLocalizations.of(context)!;
     final fontProvider = Provider.of<FontProvider>(context);
 
+    final currentItem = widget.contentList[_currentIndex];
+    final currentTitle = locale.languageCode == 'mr'
+        ? (currentItem['title_mr'] ?? '')
+        : (currentItem['title_en'] ?? '');
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.playlistName} Playback'),
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Row(
+          children: [
+            if (_currentIndex > 0)
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios, size: 20),
+                onPressed: () => _playIndex(_currentIndex - 1),
+              )
+            else
+              const SizedBox(width: 48),
+            Expanded(
+              child: Text(
+                currentTitle,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
+            if (_currentIndex < widget.contentList.length - 1)
+              IconButton(
+                icon: const Icon(Icons.arrow_forward_ios, size: 20),
+                onPressed: () => _playIndex(_currentIndex + 1),
+              )
+            else
+              const SizedBox(width: 48),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -103,6 +141,14 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth >= 800) {
+            if (widget.mode == PlaybackMode.reading) {
+              return Center(
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: _buildTextPane(fontProvider, locale),
+                ),
+              );
+            }
             return Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -131,32 +177,43 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
   }
 
   Widget _buildMobileLayout(ThemeData theme, Locale locale, AppLocalizations localizations, FontProvider fontProvider) {
+    // If in Reading Mode, skip the Tabs and just show the text content
+    if (widget.mode == PlaybackMode.reading) {
+      return Column(
+        children: [
+          Expanded(child: _buildTextPane(fontProvider, locale)),
+        ],
+      );
+    }
+
+    // In Video Mode, show the player and the Playlist/Lyrics tabs
     return Column(
       children: [
         _buildYoutubePane(theme, locale, localizations, isMobile: true),
         Expanded(
           child: DefaultTabController(
             length: 2,
-            initialIndex: widget.autoPlay ? 0 : 1,
+            initialIndex: 0,
             child: Column(
               children: [
                 TabBar(
                   labelColor: theme.colorScheme.primary,
                   unselectedLabelColor: Colors.grey,
                   indicatorColor: theme.colorScheme.primary,
-                  tabs: [
+                  tabs: const [
                     Tab(
-                      icon: const Icon(Icons.queue_music),
+                      icon: Icon(Icons.queue_music),
                       text: 'Playlist',
                     ),
                     Tab(
-                      icon: const Icon(Icons.lyrics),
+                      icon: Icon(Icons.lyrics),
                       text: 'Lyrics',
                     ),
                   ],
                 ),
                 Expanded(
                   child: TabBarView(
+                    physics: const NeverScrollableScrollPhysics(),
                     children: [
                       _buildListPane(theme, locale),
                       _buildTextPane(fontProvider, locale),
@@ -215,20 +272,36 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
     final langCode = locale.languageCode;
     final text = _currentContentData!['content_$langCode'] ?? _currentContentData!['content_en'] ?? '';
 
-    return Container(
-      color: Colors.white,
-      child: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-            child: Center(
-              child: Text(
-                text,
-                textAlign: TextAlign.center,
-                style: fontProvider.marathiTextStyle.copyWith(fontSize: _fontSize, height: 1.6),
+    return GestureDetector(
+      onHorizontalDragEnd: (details) {
+        // Sensitivity for swipes
+        const int sensitivity = 8;
+        if (details.primaryVelocity! > sensitivity) {
+          // Swipe Right (Go to previous item)
+          if (_currentIndex > 0) {
+            _playIndex(_currentIndex - 1);
+          }
+        } else if (details.primaryVelocity! < -sensitivity) {
+          // Swipe Left (Go to next item)
+          if (_currentIndex < widget.contentList.length - 1) {
+            _playIndex(_currentIndex + 1);
+          }
+        }
+      },
+      child: Container(
+        color: Colors.white,
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+              child: Center(
+                child: Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  style: fontProvider.marathiTextStyle.copyWith(fontSize: _fontSize, height: 1.6),
+                ),
               ),
             ),
-          ),
           Positioned(
             bottom: 16,
             right: 16,
@@ -257,8 +330,9 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildYoutubePane(ThemeData theme, Locale locale, AppLocalizations localizations, {bool isMobile = false}) {
     if (_isLoadingContent) {
@@ -271,7 +345,7 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (widget.autoPlay) ...[
+        if (widget.mode == PlaybackMode.video) ...[
           if (videoId != null && videoId.isNotEmpty)
             Card(
               elevation: 4.0,
@@ -280,7 +354,7 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
               child: CrossPlatformYoutubePlayer(
                 key: ValueKey(videoId), // Ensure player rebuilds when video changes
                 videoId: videoId,
-                autoPlay: widget.autoPlay,
+                autoPlay: true,
                 onEnded: _playNext,
               )
             )
@@ -295,33 +369,7 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
             ),
           const SizedBox(height: 16),
         ],
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.colorScheme.secondary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
         const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.skip_previous, size: 48),
-              color: _currentIndex > 0 ? Colors.orange : Colors.grey,
-              tooltip: 'Previous Aarti',
-              onPressed: _currentIndex > 0 ? () => _playIndex(_currentIndex - 1) : null,
-            ),
-            const SizedBox(width: 48),
-            IconButton(
-              icon: const Icon(Icons.skip_next, size: 48),
-              color: _currentIndex < widget.contentList.length - 1 ? Colors.orange : Colors.grey,
-              tooltip: 'Next Aarti',
-              onPressed: _currentIndex < widget.contentList.length - 1 ? _playNext : null,
-            ),
-          ],
-        ),
       ],
     );
 

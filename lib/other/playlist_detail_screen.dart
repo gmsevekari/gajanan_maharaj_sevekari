@@ -30,7 +30,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
     BuildContext context,
     PlaylistProvider playlistProvider,
     int startIndex, {
-    bool autoPlay = true,
+    PlaybackMode mode = PlaybackMode.video,
   }) async {
     final playlist = playlistProvider.playlists.firstWhere(
       (p) => p.id == playlistId,
@@ -75,7 +75,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
           contentList: contentList,
           initialIndex: startIndex,
           playlistName: playlist.isDefault ? "My Favorites" : playlist.name,
-          autoPlay: autoPlay,
+          mode: mode,
         ),
       ),
     );
@@ -183,66 +183,6 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                 )
               : Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              icon: const Icon(Icons.play_arrow),
-                              label: Text(localizations.playAll),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12.0,
-                                ),
-                                textStyle: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.primary,
-                                foregroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.onPrimary,
-                                shape: const StadiumBorder(),
-                              ),
-                              onPressed: () =>
-                                  _playPlaylist(context, playlistProvider, 0),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              icon: const Icon(Icons.menu_book),
-                              label: Text(localizations.readAll),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12.0,
-                                ),
-                                textStyle: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.primary,
-                                foregroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.onPrimary,
-                                shape: const StadiumBorder(),
-                              ),
-                              onPressed: () => _playPlaylist(
-                                context,
-                                playlistProvider,
-                                0,
-                                autoPlay: false,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                     Expanded(
                       child: ReorderableListView.builder(
                         buildDefaultDragHandles: false,
@@ -307,18 +247,6 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                     children: [
                                       IconButton(
                                         icon: const Icon(
-                                          Icons.menu_book,
-                                          color: Colors.orange,
-                                        ),
-                                        onPressed: () => _playPlaylist(
-                                          context,
-                                          playlistProvider,
-                                          index,
-                                          autoPlay: false,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(
                                           Icons.play_circle_outline,
                                           color: Colors.orange,
                                         ),
@@ -347,6 +275,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                     context,
                                     playlistProvider,
                                     index,
+                                    mode: PlaybackMode.reading,
                                   ),
                                 ),
                               );
