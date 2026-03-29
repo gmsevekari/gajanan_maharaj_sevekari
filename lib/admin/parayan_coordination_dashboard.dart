@@ -175,8 +175,11 @@ class _ParayanCoordinationDashboardState
               SliverToBoxAdapter(
                 child: Center(
                   child: ElevatedButton(
-                    onPressed: null,
+                    onPressed: () =>
+                        Navigator.pushNamed(context, Routes.adminCreateParayan),
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 32,
                         vertical: 16,

@@ -741,22 +741,52 @@ class AppLocalizationsMr extends AppLocalizations {
       'नवीन पारायण तयार करा आणि मॅनेज करा';
 
   @override
-  String get createParayanTitle => 'पारायण तयार करा - लवकरच येत आहे';
+  String get createParayanTitle => 'पारायण तयार करा';
 
   @override
-  String get parayanNameLabel => 'पारायणाचे नाव';
+  String get englishDetailsHeader => 'इंग्रजी तपशील (English Details)';
 
   @override
-  String get parayanNameHint => 'उदा., प्रकट दिन पारायण';
+  String get marathiDetailsHeader => 'मराठी तपशील (Marathi Details)';
 
   @override
-  String get parayanNameRequired => 'कृपया नाव लिहा';
+  String get parayanNameLabel => 'पारायणाचे नाव (इंग्रजी)';
 
   @override
-  String get parayanDescriptionLabel => 'वर्णन';
+  String get parayanNameHint => 'उदा., Prakat Din Parayan';
 
   @override
-  String get parayanDescriptionHint => 'पारायणाचे थोडक्यात वर्णन करा';
+  String get parayanNameRequired => 'कृपया इंग्रजी नाव लिहा';
+
+  @override
+  String get parayanNameMrLabel => 'पारायणाचे नाव (मराठी)';
+
+  @override
+  String get parayanNameMrHint => 'उदा., प्रकट दिन पारायण';
+
+  @override
+  String get parayanNameMrRequired => 'कृपया मराठी नाव लिहा';
+
+  @override
+  String get parayanDescriptionLabel => 'वर्णन (इंग्रजी)';
+
+  @override
+  String get parayanDescriptionHint =>
+      '1-Day Parayan of Gajanan Vijay Granth on the auspicious occasion of Prakat Din';
+
+  @override
+  String get parayanDescriptionMrLabel => 'वर्णन (मराठी)';
+
+  @override
+  String get parayanDescriptionMrHint =>
+      'प्रकट दिनाच्या शुभ प्रसंगी गजानन विजय ग्रंथाचे 1-दिवसीय पारायण';
+
+  @override
+  String get parayanDateLabel => 'पारायण दिनांक';
+
+  @override
+  String get remindersFixedLabel =>
+      'रिमाइंडर या वेळेत पाठवले जातील: दुपारी १:००, ४:०० आणि संध्याकाळी ७:००';
 
   @override
   String get parayanTypeLabel => 'पारायण प्रकार';
@@ -983,6 +1013,9 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get statusUpdateSuccess => 'स्टेटस यशस्वीरित्या अपडेट केले';
+
+  @override
+  String get successLabel => 'यशस्वी';
 
   @override
   String get closeLabel => 'बंद करा';

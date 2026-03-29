@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
+import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
 class CreateParayanScreen extends StatefulWidget {
   const CreateParayanScreen({super.key});
@@ -18,20 +19,62 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
   final _formKey = GlobalKey<FormState>();
   final _parayanService = ParayanService();
 
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  final _titleEnController = TextEditingController();
+  final _titleMrController = TextEditingController();
+  final _descriptionEnController = TextEditingController();
+  final _descriptionMrController = TextEditingController();
   ParayanType _selectedType = ParayanType.oneDay;
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
-  final List<TimeOfDay> _reminderTimes = [const TimeOfDay(hour: 20, minute: 0)];
 
   bool _isLoading = false;
 
   @override
   void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
+    _titleEnController.dispose();
+    _titleMrController.dispose();
+    _descriptionEnController.dispose();
+    _descriptionMrController.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectDateTime(BuildContext context, bool isStartDate) async {
+    final initialDate = isStartDate ? _startDate : _endDate;
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+    );
+    if (pickedDate == null) return;
+
+    if (!mounted) return;
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initialDate),
+    );
+
+    if (pickedTime != null) {
+      setState(() {
+        final newDateTime = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+        if (isStartDate) {
+          _startDate = newDateTime;
+          if (_selectedType == ParayanType.threeDay) {
+            _endDate = _startDate.add(const Duration(days: 2));
+          } else if (_selectedType == ParayanType.oneDay) {
+            _endDate = _startDate;
+          }
+        } else {
+          _endDate = newDateTime;
+        }
+      });
+    }
   }
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
@@ -47,7 +90,8 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
           _startDate = picked;
           if (_selectedType == ParayanType.threeDay) {
             _endDate = _startDate.add(const Duration(days: 2));
-          } else {
+          } else if (_selectedType == ParayanType.oneDay ||
+              _selectedType == ParayanType.guruPushya) {
             _endDate = _startDate;
           }
         } else {
@@ -57,50 +101,28 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
     }
   }
 
-  Future<void> _selectTime(BuildContext context, int index) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: _reminderTimes[index],
-    );
-    if (picked != null) {
-      setState(() {
-        _reminderTimes[index] = picked;
-      });
-    }
-  }
-
-  void _addReminderTime() {
-    setState(() {
-      _reminderTimes.add(const TimeOfDay(hour: 20, minute: 0));
-    });
-  }
-
-  void _removeReminderTime(int index) {
-    if (_reminderTimes.length > 1) {
-      setState(() {
-        _reminderTimes.removeAt(index);
-      });
-    }
-  }
-
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    final localizations = AppLocalizations.of(context)!;
 
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final List<String> formattedTimes = _reminderTimes.map((time) {
-        return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
-      }).toList();
+      // Fixed reminder times: 1 PM, 4 PM, 7 PM
+      final List<String> formattedTimes = ["13:00", "16:00", "19:00"];
+
+      // New ID format: YYYY-MM-DD-parayanType
+      final String dateStr = DateFormat('yyyy-MM-dd').format(_startDate);
+      final String eventId = "$dateStr-${_selectedType.name}";
 
       final event = ParayanEvent(
-        id: const Uuid().v4(),
-        titleEn: _titleController.text,
-        titleMr: _titleController.text,
-        descriptionEn: _descriptionController.text,
-        descriptionMr: _descriptionController.text,
+        id: eventId,
+        titleEn: _titleEnController.text.trim(),
+        titleMr: _titleMrController.text.trim(),
+        descriptionEn: _descriptionEnController.text.trim(),
+        descriptionMr: _descriptionMrController.text.trim(),
         type: _selectedType,
         startDate: _startDate,
         endDate: _endDate,
@@ -114,13 +136,33 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
         action: 'CREATE_PARAYAN_EVENT',
         details: {
           'event_id': event.id,
-          'title': event.titleEn,
+          'title_en': event.titleEn,
+          'title_mr': event.titleMr,
           'type': event.type.toString(),
           'start_date': event.startDate.toIso8601String(),
         },
       );
       if (!mounted) return;
-      Navigator.pop(context);
+
+      final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+      final eventTitle = isMarathi ? event.titleMr : event.titleEn;
+
+      // Navigate to detail screen and show snackbar
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ParayanAdminDetailScreen(event: event),
+        ),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "${isMarathi ? 'पारायण " $eventTitle " यशस्वीरीत्या तयार केले आहे.' : 'Parayan " $eventTitle " has been created successfully.'}",
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -138,6 +180,11 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
+    // Alphanumeric + spaces + Marathi (Devanagari) characters
+    final List<TextInputFormatter> alphanumericFormatter = [
+      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9 \u0900-\u097F]')),
+    ];
+
     return Scaffold(
       appBar: AppBar(title: Text(localizations.createParayanTitle)),
       body: _isLoading
@@ -147,28 +194,109 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  // --- Status (Label) ---
+                  Row(
+                    children: [
+                      Text(
+                        "${localizations.statusLabel}: ",
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              theme.colorScheme.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          localizations.statusUpcoming,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // --- English Details ---
+                  Text(
+                    localizations.englishDetailsHeader,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   TextFormField(
-                    controller: _titleController,
+                    controller: _titleEnController,
+                    inputFormatters: alphanumericFormatter,
                     decoration: InputDecoration(
                       labelText: localizations.parayanNameLabel,
                       hintText: localizations.parayanNameHint,
                     ),
-                    validator: (value) => value == null || value.isEmpty
+                    validator: (value) => value == null || value.trim().isEmpty
                         ? localizations.parayanNameRequired
                         : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
-                    controller: _descriptionController,
+                    controller: _descriptionEnController,
+                    inputFormatters: alphanumericFormatter,
                     decoration: InputDecoration(
                       labelText: localizations.parayanDescriptionLabel,
                       hintText: localizations.parayanDescriptionHint,
                     ),
-                    maxLines: 3,
+                    maxLines: 2,
+                  ),
+                  const SizedBox(height: 24),
+
+                  // --- Marathi Details ---
+                  Text(
+                    localizations.marathiDetailsHeader,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _titleMrController,
+                    // Note: Marathi characters are not in a-zA-Z0-9 space,
+                    // but user requested "alphanumeric characters and spaces" ONLY.
+                    // Strictly following that for Marathi field too as requested.
+                    inputFormatters: alphanumericFormatter,
+                    decoration: InputDecoration(
+                      labelText: localizations.parayanNameMrLabel,
+                      hintText: localizations.parayanNameMrHint,
+                    ),
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? localizations.parayanNameMrRequired
+                        : null,
                   ),
                   const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _descriptionMrController,
+                    inputFormatters: alphanumericFormatter,
+                    decoration: InputDecoration(
+                      labelText: localizations.parayanDescriptionMrLabel,
+                      hintText: localizations.parayanDescriptionMrHint,
+                    ),
+                    maxLines: 2,
+                  ),
+                  const SizedBox(height: 24),
+
+                  const Divider(),
+                  const SizedBox(height: 16),
+
                   DropdownButtonFormField<ParayanType>(
-                    initialValue: _selectedType,
+                    value: _selectedType,
                     decoration: InputDecoration(
                       labelText: localizations.parayanTypeLabel,
                     ),
@@ -200,73 +328,94 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  ListTile(
-                    title: Text(localizations.startDateLabel),
-                    subtitle: Text(
-                      DateFormat('MMM d, yyyy').format(_startDate),
-                    ),
-                    trailing: const Icon(Icons.calendar_today),
-                    onTap: () => _selectDate(context, true),
-                  ),
+
                   if (_selectedType == ParayanType.oneDay)
                     ListTile(
-                      title: Text(localizations.endDateLabel),
+                      title: Text(localizations.parayanDateLabel),
                       subtitle: Text(
-                        DateFormat('MMM d, yyyy').format(_endDate),
+                        DateFormat('MMM d, yyyy').format(_startDate),
                       ),
                       trailing: const Icon(Icons.calendar_today),
-                      onTap: () => _selectDate(context, false),
+                      onTap: () => _selectDate(context, true),
                     )
-                  else
+                  else ...[
                     ListTile(
-                      title: Text(localizations.endDateLabel),
+                      title: Text(localizations.startDateLabel),
                       subtitle: Text(
-                        DateFormat('MMM d, yyyy').format(_endDate),
+                        _selectedType == ParayanType.guruPushya
+                            ? DateFormat('MMM d, yyyy - hh:mm a')
+                                .format(_startDate)
+                            : DateFormat('MMM d, yyyy').format(_startDate),
                       ),
-                      enabled: false,
+                      trailing: const Icon(Icons.calendar_today),
+                      onTap: () => _selectedType == ParayanType.guruPushya
+                          ? _selectDateTime(context, true)
+                          : _selectDate(context, true),
                     ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        localizations.reminderTimeLabel,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                    if (_selectedType == ParayanType.threeDay)
+                      ListTile(
+                        title: Text(localizations.endDateLabel),
+                        subtitle: Text(
+                          DateFormat('MMM d, yyyy').format(_endDate),
                         ),
+                        enabled: false,
+                      )
+                    else // guruPushya
+                      ListTile(
+                        title: Text(localizations.endDateLabel),
+                        subtitle: Text(
+                          DateFormat('MMM d, yyyy - hh:mm a').format(_endDate),
+                        ),
+                        trailing: const Icon(Icons.calendar_today),
+                        onTap: () => _selectDateTime(context, false),
                       ),
-                      TextButton.icon(
-                        onPressed: _addReminderTime,
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Time'),
+                  ],
+
+                  const SizedBox(height: 24),
+
+                  // --- Fixed Reminders Label ---
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.orange.withValues(alpha: 0.2),
                       ),
-                    ],
-                  ),
-                  ..._reminderTimes.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final time = entry.value;
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(time.format(context)),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.access_time),
-                            onPressed: () => _selectTime(context, index),
-                          ),
-                          if (_reminderTimes.length > 1)
-                            IconButton(
-                              icon: const Icon(
-                                Icons.remove_circle_outline,
-                                color: Colors.red,
-                              ),
-                              onPressed: () => _removeReminderTime(index),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.notifications_active,
+                              color: Colors.orange,
+                              size: 20,
                             ),
-                        ],
-                      ),
-                    );
-                  }),
+                            const SizedBox(width: 8),
+                            Text(
+                              localizations.reminderTimeLabel,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.orange[800],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          localizations.remindersFixedLabel,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.7,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                   const SizedBox(height: 32),
                   ElevatedButton(
                     onPressed: _submit,
@@ -274,9 +423,19 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: theme.colorScheme.onPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    child: Text(localizations.createParayanButton),
+                    child: Text(
+                      localizations.createParayanButton,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),

@@ -1487,13 +1487,25 @@ abstract class AppLocalizations {
   /// No description provided for @createParayanTitle.
   ///
   /// In en, this message translates to:
-  /// **'Create Parayan - Coming Soon'**
+  /// **'Create Parayan'**
   String get createParayanTitle;
+
+  /// No description provided for @englishDetailsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'English Details'**
+  String get englishDetailsHeader;
+
+  /// No description provided for @marathiDetailsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Marathi Details'**
+  String get marathiDetailsHeader;
 
   /// No description provided for @parayanNameLabel.
   ///
   /// In en, this message translates to:
-  /// **'Parayan Name'**
+  /// **'Parayan Name (English)'**
   String get parayanNameLabel;
 
   /// No description provided for @parayanNameHint.
@@ -1508,17 +1520,59 @@ abstract class AppLocalizations {
   /// **'Please enter a name'**
   String get parayanNameRequired;
 
+  /// No description provided for @parayanNameMrLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan Name (Marathi)'**
+  String get parayanNameMrLabel;
+
+  /// No description provided for @parayanNameMrHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., प्रकट दिन पारायण'**
+  String get parayanNameMrHint;
+
+  /// No description provided for @parayanNameMrRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a Marathi name'**
+  String get parayanNameMrRequired;
+
   /// No description provided for @parayanDescriptionLabel.
   ///
   /// In en, this message translates to:
-  /// **'Description'**
+  /// **'Description (English)'**
   String get parayanDescriptionLabel;
 
   /// No description provided for @parayanDescriptionHint.
   ///
   /// In en, this message translates to:
-  /// **'Briefly describe the parayan'**
+  /// **'1-Day Parayan of Gajanan Vijay Granth on the auspicious occasion of Prakat Din'**
   String get parayanDescriptionHint;
+
+  /// No description provided for @parayanDescriptionMrLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (Marathi)'**
+  String get parayanDescriptionMrLabel;
+
+  /// No description provided for @parayanDescriptionMrHint.
+  ///
+  /// In en, this message translates to:
+  /// **'प्रकट दिनाच्या शुभ प्रसंगी गजानन विजय ग्रंथाचे 1-दिवसीय पारायण'**
+  String get parayanDescriptionMrHint;
+
+  /// No description provided for @parayanDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan Date'**
+  String get parayanDateLabel;
+
+  /// No description provided for @remindersFixedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders will be sent at: 1:00 PM, 4:00 PM, and 7:00 PM'**
+  String get remindersFixedLabel;
 
   /// No description provided for @parayanTypeLabel.
   ///
@@ -1939,6 +1993,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Status updated successfully'**
   String get statusUpdateSuccess;
+
+  /// No description provided for @successLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get successLabel;
 
   /// No description provided for @closeLabel.
   ///

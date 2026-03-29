@@ -205,8 +205,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                   ),
                   icon: const Icon(Icons.group_add),
                   label: Text(localizations.addParticipantLabel),
-                  backgroundColor: theme.primaryColor,
-                  foregroundColor: Colors.white,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
                 )
               : null,
         );
@@ -292,7 +292,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     onPressed: null, // Disabled for now (Coming Soon)
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: Colors.white,
+                      foregroundColor: theme.colorScheme.onPrimary,
                       disabledBackgroundColor: theme.colorScheme.onSurface
                           .withValues(alpha: 0.12),
                       disabledForegroundColor: theme.colorScheme.onSurface
@@ -325,7 +325,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.colorScheme.primary,
-                          foregroundColor: Colors.white,
+                          foregroundColor: theme.colorScheme.onPrimary,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -343,7 +343,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                             : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.colorScheme.primary,
-                          foregroundColor: Colors.white,
+                          foregroundColor: theme.colorScheme.onPrimary,
                           disabledBackgroundColor: Colors.grey.shade200,
                           disabledForegroundColor: Colors.grey.shade400,
                           padding: const EdgeInsets.symmetric(vertical: 12),

@@ -742,10 +742,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get parayanCoordinationModuleSubtitle => 'Create and manage parayans';
 
   @override
-  String get createParayanTitle => 'Create Parayan - Coming Soon';
+  String get createParayanTitle => 'Create Parayan';
 
   @override
-  String get parayanNameLabel => 'Parayan Name';
+  String get englishDetailsHeader => 'English Details';
+
+  @override
+  String get marathiDetailsHeader => 'Marathi Details';
+
+  @override
+  String get parayanNameLabel => 'Parayan Name (English)';
 
   @override
   String get parayanNameHint => 'e.g., Prakat Din Parayan';
@@ -754,10 +760,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get parayanNameRequired => 'Please enter a name';
 
   @override
-  String get parayanDescriptionLabel => 'Description';
+  String get parayanNameMrLabel => 'Parayan Name (Marathi)';
 
   @override
-  String get parayanDescriptionHint => 'Briefly describe the parayan';
+  String get parayanNameMrHint => 'e.g., प्रकट दिन पारायण';
+
+  @override
+  String get parayanNameMrRequired => 'Please enter a Marathi name';
+
+  @override
+  String get parayanDescriptionLabel => 'Description (English)';
+
+  @override
+  String get parayanDescriptionHint =>
+      '1-Day Parayan of Gajanan Vijay Granth on the auspicious occasion of Prakat Din';
+
+  @override
+  String get parayanDescriptionMrLabel => 'Description (Marathi)';
+
+  @override
+  String get parayanDescriptionMrHint =>
+      'प्रकट दिनाच्या शुभ प्रसंगी गजानन विजय ग्रंथाचे 1-दिवसीय पारायण';
+
+  @override
+  String get parayanDateLabel => 'Parayan Date';
+
+  @override
+  String get remindersFixedLabel =>
+      'Reminders will be sent at: 1:00 PM, 4:00 PM, and 7:00 PM';
 
   @override
   String get parayanTypeLabel => 'Parayan Type';
@@ -982,6 +1012,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusUpdateSuccess => 'Status updated successfully';
+
+  @override
+  String get successLabel => 'Success';
 
   @override
   String get closeLabel => 'Close';
