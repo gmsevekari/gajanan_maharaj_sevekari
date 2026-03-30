@@ -181,21 +181,17 @@ class ParayanService {
 
   Future<void> updateMemberCompletion({
     required String eventId,
-    required String deviceId,
-    required String memberName,
+    required String memberId,
     required int dayIndex,
     required bool completed,
+    String? deviceId,
   }) async {
-    final docId = "${deviceId}_${memberName.replaceAll(RegExp(r'\s+'), '_')}";
-    final docRef = _eventsRef
-        .doc(eventId)
-        .collection('participants')
-        .doc(docId);
+    final docRef = _eventsRef.doc(eventId).collection('participants').doc(memberId);
 
     await docRef.update({'completions.$dayIndex': completed});
 
     // Topic subscription logic for day-specific reminders
-    if (kIsWeb) return;
+    if (kIsWeb || deviceId == null) return;
     try {
       // 1. Get all members for this device to check if everyone is done (Force latest from server)
       final household = await getHousehold(

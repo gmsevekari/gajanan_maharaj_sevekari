@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ParayanMember {
+  final String? id;
   final String name;
   final List<int> assignedAdhyays;
   final Map<String, bool> completions;
@@ -11,6 +12,7 @@ class ParayanMember {
   final int? groupNumber;
 
   const ParayanMember({
+    this.id,
     required this.name,
     required this.assignedAdhyays,
     required this.completions,
@@ -41,6 +43,7 @@ class ParayanMember {
     }
 
     return ParayanMember(
+      id: data['id'],
       name: data['memberName'] ?? data['name'] ?? name,
       assignedAdhyays: List<int>.from(data['assignedAdhyays'] ?? []),
       completions: completions,
@@ -54,6 +57,7 @@ class ParayanMember {
 
   Map<String, dynamic> toMap() {
     return {
+      if (id != null) 'id': id,
       'memberName': name,
       'name': name, // backward compatibility
       'assignedAdhyays': assignedAdhyays,

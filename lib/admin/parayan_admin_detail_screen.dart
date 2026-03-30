@@ -1019,8 +1019,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                               try {
                                 await _parayanService.updateMemberCompletion(
                                   eventId: event.id,
-                                  deviceId: member.deviceId!,
-                                  memberName: member.name,
+                                  memberId: member.id!,
                                   dayIndex: idx,
                                   completed: val,
                                 );
