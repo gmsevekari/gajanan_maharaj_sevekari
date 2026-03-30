@@ -668,12 +668,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         event.type == ParayanType.oneDay ||
         event.type == ParayanType.guruPushya;
     final dateRange = isSingleDay
-        ? (locale == 'mr'
-              ? DateFormat('d MMMM, yyyy', 'mr').format(event.startDate)
-              : DateFormat('MMM d, yyyy').format(event.startDate))
+        ? DateFormat.yMMMMEEEEd(locale).format(event.startDate)
         : (locale == 'mr'
-              ? "${DateFormat('d MMMM', 'mr').format(event.startDate)} - ${DateFormat('d MMMM, yyyy', 'mr').format(event.endDate)}"
-              : "${DateFormat('MMM d').format(event.startDate)} - ${DateFormat('MMM d, yyyy').format(event.endDate)}");
+              ? "${DateFormat('E, d MMMM', 'mr').format(event.startDate)} - ${DateFormat('E, d MMMM, yyyy', 'mr').format(event.endDate)}"
+              : "${DateFormat.MMMEd().format(event.startDate)} - ${DateFormat.yMMMEd().format(event.endDate)}");
 
     return InkWell(
       onTap: () {
