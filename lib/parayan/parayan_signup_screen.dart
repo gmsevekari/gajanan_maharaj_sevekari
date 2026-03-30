@@ -373,7 +373,8 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                                   return "Name cannot start with a space";
                                 }
                                 final nameRegex = RegExp(
-                                  r'^[a-zA-Z0-9\u0900-\u097F\s]+$',
+                                  r'^[\p{L}\p{M}\p{Nd}\s]+$',
+                                  unicode: true,
                                 );
                                 if (!nameRegex.hasMatch(value)) {
                                   return localizations.nameAlphabetRegexError;

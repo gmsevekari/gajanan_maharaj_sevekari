@@ -189,7 +189,7 @@ class MyPlaylistsScreen extends StatelessWidget {
                           }
 
                           final nameRegex = RegExp(
-                            r'^[\p{L}0-9\u0966-\u096F ]+$',
+                            r'^[\p{L}\p{M}\p{Nd}\s]+$',
                             unicode: true,
                           );
                           if (!nameRegex.hasMatch(name)) {
