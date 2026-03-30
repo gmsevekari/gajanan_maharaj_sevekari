@@ -207,6 +207,8 @@ class DeityDashboardScreen extends StatelessWidget {
         return localizations.otherAartis;
       case 'otherStotras':
         return localizations.otherStotras;
+      case 'otherBhajans':
+        return localizations.otherBhajans;
       default:
         return '';
     }

@@ -104,6 +104,8 @@ flutter:
     - resources/texts/other/other_aartis/
     - resources/images/other/other_stotras/
     - resources/texts/other/other_stotras/
+    - resources/images/other/other_bhajans/
+    - resources/texts/other/other_bhajans/
     - resources/images/icon/
     - resources/images/gajanan_maharaj/
     - resources/texts/gajanan_maharaj/about/

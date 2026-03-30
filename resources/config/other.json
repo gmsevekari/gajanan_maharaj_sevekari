@@ -8,7 +8,8 @@
   "nityopasana": {
     "order": [
       "aartis",
-      "stotras"
+      "stotras",
+      "bhajans"
     ],
     "aartis": {
       "title_key": "otherAartis",
@@ -105,6 +106,19 @@
         {
           "file": "vitthal_rakhumai_naamjap.json",
           "image": "vitthal_rakhumai_naamjap.png"
+        }
+      ]
+    },
+    "bhajans": {
+      "title_key": "otherBhajans",
+      "icon": "lyrics_outlined",
+      "contentType": "bhajan",
+      "textResourceDirectory": "resources/texts/other/other_bhajans",
+      "imageResourceDirectory": "resources/images/other/other_bhajans",
+      "files": [
+        {
+          "file": "chandan_chawal.json",
+          "image": "chandan_chawal.png"
         }
       ]
     }

@@ -338,6 +338,12 @@ abstract class AppLocalizations {
   /// **'Other Stotras'**
   String get otherStotras;
 
+  /// No description provided for @otherBhajans.
+  ///
+  /// In en, this message translates to:
+  /// **'Other Bhajans'**
+  String get otherBhajans;
+
   /// No description provided for @ganapatiAarti.
   ///
   /// In en, this message translates to:

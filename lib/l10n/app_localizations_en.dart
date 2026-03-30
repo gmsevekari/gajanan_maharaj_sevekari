@@ -129,6 +129,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get otherStotras => 'Other Stotras';
 
   @override
+  String get otherBhajans => 'Other Bhajans';
+
+  @override
   String get ganapatiAarti => 'Ganapati Aarti';
 
   @override
