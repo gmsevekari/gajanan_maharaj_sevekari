@@ -1,1 +1,10 @@
-Updated home page to display both weekly pooja and special events.
+1. Added Naamjap feature that lets users
+    a. listen to the naamjap for specified amount of time
+    b. listen to the naamjap for specified number of malas
+    c. track naamjap malas manually
+
+2. Added Parayan feature that enables
+    a. admins to conduct the parayan online using the app
+    b. users to join the parayan and update their progress
+
+3. Added new Bhajans for Gajanan Maharaj and Shankar
