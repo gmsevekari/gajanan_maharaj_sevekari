@@ -4,6 +4,9 @@ import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
+import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
+import 'package:provider/provider.dart';
 
 class MyAllocationTab extends StatefulWidget {
   final ParayanEvent event;
@@ -184,7 +187,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
                         isRead: isRead,
                         isOngoing: isOngoing,
                         theme: theme,
-                          onComplete: () =>
+                        onComplete: () =>
                             _parayanService.updateMemberCompletion(
                               eventId: widget.event.id,
                               memberId: participant.id!,
@@ -224,6 +227,57 @@ class _MyAllocationTabState extends State<MyAllocationTab>
     required VoidCallback onComplete,
   }) {
     final localizations = AppLocalizations.of(context)!;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final start = widget.event.startDate;
+    final startDate = DateTime(start.year, start.month, start.day);
+    final currentDayOfEvent = today.difference(startDate).inDays + 1;
+
+    // Buttons are enabled if already read, or if it's ongoing and the day has arrived.
+    final canInteract = isRead || (isOngoing && dayNum <= currentDayOfEvent);
+
+    void handleReadTap() {
+      final configProvider = Provider.of<AppConfigProvider>(
+        context,
+        listen: false,
+      );
+      final appConfig = configProvider.appConfig;
+      if (appConfig == null || appConfig.deities.isEmpty) return;
+      final deity = appConfig.deities.firstWhere(
+        (d) => d.id == 'gajanan_maharaj',
+        orElse: () => appConfig.deities.first,
+      );
+
+      final List<Map<String, String>> contentList = List.generate(21, (index) {
+        final adhyayNum = index + 1;
+        return {
+          'title_en': 'Adhyay $adhyayNum',
+          'title_mr': 'अध्याय ${_formatNumber(context, adhyayNum)}',
+          'assetPath':
+              'resources/texts/gajanan_maharaj/granth/adhyay_$adhyayNum.json',
+          'imagePath':
+              'resources/images/gajanan_maharaj/granth/adhyay_$adhyayNum.png',
+          'youtube_video_id': '', // Optional, the view will load it from JSON
+        };
+      });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ContentDetailScreen(
+            deity: deity,
+            contentType: ContentType.granth,
+            contentList: contentList,
+            currentIndex: adhyay - 1,
+            assetPath:
+                'resources/texts/gajanan_maharaj/granth/adhyay_$adhyay.json',
+            imagePath:
+                'resources/images/gajanan_maharaj/granth/adhyay_$adhyay.png',
+          ),
+        ),
+      );
+    }
 
     return Card(
       margin: EdgeInsets.zero,
@@ -270,46 +324,33 @@ class _MyAllocationTabState extends State<MyAllocationTab>
                 ),
               ),
             ),
+            ElevatedButton(
+              onPressed: canInteract ? handleReadTap : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: canInteract
+                    ? theme.colorScheme.primary
+                    : Colors.grey.withValues(alpha: 0.1),
+                foregroundColor: canInteract ? Colors.white : Colors.grey,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: Text(localizations.read),
+            ),
+            const SizedBox(width: 8),
             if (isRead)
               const Icon(Icons.check_circle, color: Colors.green)
-            else if (isOngoing)
-              Builder(
-                builder: (context) {
-                  final now = DateTime.now();
-                  final today = DateTime(now.year, now.month, now.day);
-                  final start = widget.event.startDate;
-                  final startDate = DateTime(
-                    start.year,
-                    start.month,
-                    start.day,
-                  );
-                  final currentDayOfEvent =
-                      today.difference(startDate).inDays + 1;
-
-                  final canSubmit = dayNum <= currentDayOfEvent;
-
-                  return ElevatedButton(
-                    onPressed: canSubmit
-                        ? () => _showCompletionDialog(context, onComplete)
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: canSubmit
-                          ? theme.colorScheme.primary
-                          : Colors.grey.withValues(alpha: 0.1),
-                      foregroundColor: canSubmit ? Colors.white : Colors.grey,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    child: Text(localizations.submitLabel),
-                  );
-                },
-              )
             else
               ElevatedButton(
-                onPressed: null,
+                onPressed: canInteract
+                    ? () => _showCompletionDialog(context, onComplete)
+                    : null,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: canInteract
+                      ? theme.colorScheme.primary
+                      : Colors.grey.withValues(alpha: 0.1),
+                  foregroundColor: canInteract ? Colors.white : Colors.grey,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
