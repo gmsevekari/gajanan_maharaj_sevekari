@@ -10,6 +10,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class NamavaliScreen extends StatefulWidget {
   final DeityConfig deity;
@@ -20,7 +21,8 @@ class NamavaliScreen extends StatefulWidget {
   State<NamavaliScreen> createState() => _NamavaliScreenState();
 }
 
-class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProviderStateMixin {
+class _NamavaliScreenState extends State<NamavaliScreen>
+    with SingleTickerProviderStateMixin {
   late Future<Map<String, dynamic>> _namavaliFuture;
   double _fontSize = 18.0;
   TabController? _tabController;
@@ -47,7 +49,9 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
   }
 
   Future<Map<String, dynamic>> _loadNamavali() async {
-    final String response = await rootBundle.loadString('resources/texts/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali!.file}');
+    final String response = await rootBundle.loadString(
+      'resources/texts/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali!.file}',
+    );
     final data = await json.decode(response);
     return data;
   }
@@ -75,7 +79,11 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -86,45 +94,49 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(
+              vertical: 8.0,
+              horizontal: 16.0,
+            ),
             child: _buildSegmentedControl(context, localizations),
           ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              physics: const NeverScrollableScrollPhysics(), // Disable swipe gesture
-              children: [
-                _buildReadTab(context),
-                _buildListenTab(context),
-              ],
+              physics:
+                  const NeverScrollableScrollPhysics(), // Disable swipe gesture
+              children: [_buildReadTab(context), _buildListenTab(context)],
             ),
           ),
         ],
       ),
       floatingActionButton: _currentIndex == 0
           ? Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            heroTag: 'add',
-            mini: true,
-            onPressed: () => _changeFontSize(2.0),
-            child: const Icon(Icons.add, size: 20),
-          ),
-          const SizedBox(height: 8),
-          FloatingActionButton(
-            heroTag: 'remove',
-            mini: true,
-            onPressed: () => _changeFontSize(-2.0),
-            child: const Icon(Icons.remove, size: 20),
-          ),
-        ],
-      )
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  heroTag: 'add',
+                  mini: true,
+                  onPressed: () => _changeFontSize(2.0),
+                  child: const Icon(Icons.add, size: 20),
+                ),
+                const SizedBox(height: 8),
+                FloatingActionButton(
+                  heroTag: 'remove',
+                  mini: true,
+                  onPressed: () => _changeFontSize(-2.0),
+                  child: const Icon(Icons.remove, size: 20),
+                ),
+              ],
+            )
           : null,
     );
   }
 
-  Widget _buildSegmentedControl(BuildContext context, AppLocalizations localizations) {
+  Widget _buildSegmentedControl(
+    BuildContext context,
+    AppLocalizations localizations,
+  ) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[200],
@@ -142,6 +154,7 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
 
   Widget _buildSegment(BuildContext context, String text, int index) {
     bool isSelected = _currentIndex == index;
+    final theme = Theme.of(context);
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -150,10 +163,14 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12.0),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.orange : Colors.transparent,
+            color: isSelected
+                ? theme.appColors.primarySwatch
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(25.0),
             border: Border.all(
-              color: isSelected ? Colors.orange : Colors.grey[200]!,
+              color: isSelected
+                  ? theme.appColors.primarySwatch
+                  : Colors.grey[200]!,
               width: 1.5,
             ),
           ),
@@ -205,11 +222,19 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
           final data = snapshot.data!;
           final names = data['names'] as List<dynamic>? ?? [];
           final textStyle = isMarathi(locale)
-              ? fontProvider.marathiTextStyle.copyWith(fontSize: _fontSize, height: 1.6)
-              : fontProvider.englishTextStyle.copyWith(fontSize: _fontSize, height: 1.6);
+              ? fontProvider.marathiTextStyle.copyWith(
+                  fontSize: _fontSize,
+                  height: 1.6,
+                )
+              : fontProvider.englishTextStyle.copyWith(
+                  fontSize: _fontSize,
+                  height: 1.6,
+                );
 
           return ListView.separated(
-            padding: const EdgeInsets.only(bottom: 120), // Padding for FloatingActionButtons
+            padding: const EdgeInsets.only(
+              bottom: 120,
+            ), // Padding for FloatingActionButtons
             itemCount: names.length + 1, // Add 1 for the footer
             separatorBuilder: (context, index) => const Divider(height: 1),
             itemBuilder: (context, index) {
@@ -219,11 +244,19 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      Image.asset('resources/images/logo/App_Logo.png', height: 50, width: 50),
+                      Image.asset(
+                        'resources/images/logo/App_Logo.png',
+                        height: 50,
+                        width: 50,
+                      ),
                       const SizedBox(height: 8),
                       Text(
                         localizations.namavaliFooter,
-                        style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: theme.colorScheme.secondary),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                          color: theme.colorScheme.secondary,
+                        ),
                       ),
                     ],
                   ),
@@ -231,20 +264,19 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
               }
 
               final nameData = names[index];
-              final name = isMarathi(locale) ? nameData['name_mr'] : nameData['name_en'];
+              final name = isMarathi(locale)
+                  ? nameData['name_mr']
+                  : nameData['name_en'];
 
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.orange[100],
+                  backgroundColor: theme.appColors.primarySwatch[100],
                   child: Text(
                     '${index + 1}',
-                    style: TextStyle(color: Colors.orange[800]),
+                    style: TextStyle(color: theme.appColors.primarySwatch[800]),
                   ),
                 ),
-                title: Text(
-                  name,
-                  style: textStyle,
-                ),
+                title: Text(name, style: textStyle),
               );
             },
           );
@@ -260,134 +292,155 @@ class _NamavaliScreenState extends State<NamavaliScreen> with SingleTickerProvid
     final localizations = AppLocalizations.of(context)!;
 
     return FutureBuilder<Map<String, dynamic>>(
-        future: _namavaliFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final namavaliData = snapshot.data!;
-            final videoId = namavaliData['youtube_video_id'];
+      future: _namavaliFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          final namavaliData = snapshot.data!;
+          final videoId = namavaliData['youtube_video_id'];
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Card(
+                  elevation: theme.cardTheme.elevation,
+                  shape: theme.cardTheme.shape,
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.asset(
+                    'resources/images/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali!.image}',
+                    width: double.infinity,
+                    fit: BoxFit.cover, // Ensure the image covers the card area
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'resources/images/gajanan_maharaj/default.jpg',
+                        width: double.infinity,
+                        fit: BoxFit.cover, // Also apply fit to the error image
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+                if (videoId != null && videoId.isNotEmpty)
                   Card(
-                    elevation: theme.cardTheme.elevation,
-                    shape: theme.cardTheme.shape,
-                    clipBehavior: Clip.antiAlias,
-                    child: Image.asset(
-                      'resources/images/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali!.image}',
-                      width: double.infinity,
-                      fit: BoxFit.cover, // Ensure the image covers the card area
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          'resources/images/gajanan_maharaj/default.jpg',
-                          width: double.infinity,
-                          fit: BoxFit.cover, // Also apply fit to the error image
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  if (videoId != null && videoId.isNotEmpty)
-                    Card(
-                        elevation: 4.0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                        clipBehavior: Clip.antiAlias,
-                        child: CrossPlatformYoutubePlayer(
-                          videoId: videoId,
-                          onLaunchYoutube: () => _launchYoutube(videoId),
-                        ))
-                  else
-                    Card(
-                      elevation: 4.0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                      child: const SizedBox(
-                        height: 200,
-                        child: Center(child: Text('Video unavailable')),
-                      ),
-                    ),
-                  const SizedBox(height: 16),
-                  Text(
-                    localizations.namavaliListenTitle,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: theme.colorScheme.secondary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      const Expanded(child: Divider(thickness: 1)),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Icon(Icons.spa, color: Colors.orange[200]),
-                      ),
-                      const Expanded(child: Divider(thickness: 1)),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  if (videoId != null && videoId.isNotEmpty)
-                    Center(
-                      child: Column(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: IconButton(
-                              icon: Icon(Icons.share, color: theme.colorScheme.primary),
-                              onPressed: () {
-                                Share.share(
-                                    '${localizations.namavaliShareMessage}: https://www.youtube.com/watch?v=$videoId');
-                              },
-                              iconSize: 32.0,
-                              padding: const EdgeInsets.all(16.0),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(localizations.share, style: TextStyle(color: theme.colorScheme.primary)),
-                        ],
-                      ),
-                    ),
-                  const SizedBox(height: 32),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.1),
+                    elevation: 4.0,
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    clipBehavior: Clip.antiAlias,
+                    child: CrossPlatformYoutubePlayer(
+                      videoId: videoId,
+                      onLaunchYoutube: () => _launchYoutube(videoId),
+                    ),
+                  )
+                else
+                  Card(
+                    elevation: 4.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: const SizedBox(
+                      height: 200,
+                      child: Center(child: Text('Video unavailable')),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                Text(
+                  localizations.namavaliListenTitle,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: theme.colorScheme.secondary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    const Expanded(child: Divider(thickness: 1)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Icon(
+                        Icons.spa,
+                        color: theme.appColors.primarySwatch[200],
+                      ),
+                    ),
+                    const Expanded(child: Divider(thickness: 1)),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                if (videoId != null && videoId.isNotEmpty)
+                  Center(
+                    child: Column(
                       children: [
-                        Icon(Icons.wifi, color: theme.colorScheme.secondary),
-                        const SizedBox(width: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.share,
+                              color: theme.colorScheme.primary,
+                            ),
+                            onPressed: () {
+                              Share.share(
+                                '${localizations.namavaliShareMessage}: https://www.youtube.com/watch?v=$videoId',
+                              );
+                            },
+                            iconSize: 32.0,
+                            padding: const EdgeInsets.all(16.0),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
                         Text(
-                          localizations.internetRequired,
-                          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.secondary),
+                          localizations.share,
+                          style: TextStyle(color: theme.colorScheme.primary),
                         ),
                       ],
                     ),
-                  )
-                ],
-              ),
-            );
-          }
-          return const Center(child: Text('No data'));
-        });
+                  ),
+                const SizedBox(height: 32),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 12.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.appColors.primarySwatch.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.wifi, color: theme.colorScheme.secondary),
+                      const SizedBox(width: 8),
+                      Text(
+                        localizations.internetRequired,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.secondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        return const Center(child: Text('No data'));
+      },
+    );
   }
 
   bool isMarathi(Locale locale) => locale.languageCode == 'mr';

@@ -13,6 +13,7 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_settings/app_settings.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -211,7 +212,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 localizations.templeNotifications,
                 style: TextStyle(
                   color: canChangeSubscriptions
-                      ? Colors.orange[600]
+                      ? theme.appColors.primarySwatch[600]
                       : Colors.grey,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -251,7 +252,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 localizations.parayanReminders,
                 style: TextStyle(
                   color: canChangeSubscriptions
-                      ? Colors.orange[600]
+                      ? theme.appColors.primarySwatch[600]
                       : Colors.grey,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,

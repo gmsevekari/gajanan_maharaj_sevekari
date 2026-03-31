@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
@@ -130,7 +131,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
                   child: ListTile(
                     leading: widget.contentType == ContentType.granth
                         ? CircleAvatar(
-                            backgroundColor: Colors.orange[300],
+                            backgroundColor: theme.appColors.primarySwatch[300],
                             child: Text(
                               '${index + 1}',
                               style: const TextStyle(color: Colors.white),

@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class SignupsScreen extends StatelessWidget {
   final DeityConfig deity;
@@ -15,13 +16,24 @@ class SignupsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.signupsTitle, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: Colors.orange, // Ensure AppBar theme is consistent
+        title: Text(
+          localizations.signupsTitle,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor:
+            theme.appColors.primarySwatch, // Ensure AppBar theme is consistent
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -38,19 +50,29 @@ class SignupsScreen extends StatelessWidget {
               Text(
                 localizations.signupsDescription,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.primary),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
               ),
               const SizedBox(height: 16),
               if (deity.signupInfo!.links.isEmpty)
                 Center(child: Text('No signup links available yet.'))
               else
-                ...deity.signupInfo!.links.map((link) => SignupCard(
-                  platform: _getPlatformName(localizations, link.platformKey),
-                  description: _getDescriptionName(localizations, link.descriptionKey),
-                  icon: 'resources/images/${deity.id}/icon/${link.icon}',
-                  url: link.url,
-                  color: Color(int.parse(link.color.substring(1, 7), radix: 16) + 0xFF000000),
-                )),
+                ...deity.signupInfo!.links.map(
+                  (link) => SignupCard(
+                    platform: _getPlatformName(localizations, link.platformKey),
+                    description: _getDescriptionName(
+                      localizations,
+                      link.descriptionKey,
+                    ),
+                    icon: 'resources/images/${deity.id}/icon/${link.icon}',
+                    url: link.url,
+                    color: Color(
+                      int.parse(link.color.substring(1, 7), radix: 16) +
+                          0xFF000000,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -150,7 +172,11 @@ class SignupCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: theme.colorScheme.primary,
+                size: 16.0,
+              ),
             ],
           ),
         ),

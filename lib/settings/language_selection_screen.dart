@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class LanguageSelectionScreen extends StatelessWidget {
   const LanguageSelectionScreen({super.key});
@@ -17,7 +18,11 @@ class LanguageSelectionScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
         ],
       ),
@@ -48,18 +53,22 @@ class LanguageSelectionScreen extends StatelessWidget {
   }
 
   Widget _buildLanguageOption(
-      BuildContext context, String title, bool isSelected, VoidCallback onTap) {
+    BuildContext context,
+    String title,
+    bool isSelected,
+    VoidCallback onTap,
+  ) {
     final theme = Theme.of(context);
 
     Color cardColor;
     Color textColor;
 
     if (isSelected) {
-      cardColor = Colors.orange[200]!;
-      textColor = Colors.orange[800]!;
+      cardColor = theme.appColors.primarySwatch[200]!;
+      textColor = theme.appColors.primarySwatch[800]!;
     } else {
       cardColor = theme.cardTheme.color!;
-      textColor = Colors.orange[600]!;
+      textColor = theme.appColors.primarySwatch[600]!;
     }
 
     return Card(
@@ -67,13 +76,25 @@ class LanguageSelectionScreen extends StatelessWidget {
       color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: isSelected ? Colors.orange : Color(0xFFFF9800), width: 1),
+        side: BorderSide(
+          color: isSelected
+              ? theme.appColors.primarySwatch
+              : theme.appColors.primarySwatch,
+          width: 1,
+        ),
       ),
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: ListTile(
-        title: Text(title, style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
         trailing: isSelected
-            ? Icon(Icons.check, color: Colors.orange[600])
+            ? Icon(Icons.check, color: theme.appColors.primarySwatch[600])
             : null,
         onTap: onTap,
       ),

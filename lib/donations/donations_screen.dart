@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class DonationsScreen extends StatelessWidget {
   final DeityConfig deity;
@@ -23,7 +24,11 @@ class DonationsScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -40,21 +45,28 @@ class DonationsScreen extends StatelessWidget {
             Text(
               localizations.donationInstruction,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.orange).copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge
+                  ?.copyWith(color: theme.appColors.primarySwatch)
+                  .copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             // QR code image
-            Image.asset(
-              qrCodeImagePath,
-            ),
+            Image.asset(qrCodeImagePath),
             const SizedBox(height: 40),
             Card(
               elevation: theme.cardTheme.elevation,
               shape: theme.cardTheme.shape,
               color: theme.cardTheme.color,
-              margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+              margin: const EdgeInsets.symmetric(
+                vertical: 8.0,
+                horizontal: 8.0,
+              ),
               child: InkWell(
-                onTap: () => _launchZelle(context, localizations, deity.donationInfo!.zelleUrl),
+                onTap: () => _launchZelle(
+                  context,
+                  localizations,
+                  deity.donationInfo!.zelleUrl,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -64,10 +76,18 @@ class DonationsScreen extends StatelessWidget {
                         child: Text(
                           localizations.donateViaZelle,
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 16.0),
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0,
+                          ),
                         ),
                       ),
-                      Icon(Icons.arrow_forward_ios, color: theme.colorScheme.primary, size: 16.0),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: theme.colorScheme.primary,
+                        size: 16.0,
+                      ),
                     ],
                   ),
                 ),
@@ -79,13 +99,17 @@ class DonationsScreen extends StatelessWidget {
     );
   }
 
-  void _launchZelle(BuildContext context, AppLocalizations localizations, String zelleUrl) async {
+  void _launchZelle(
+    BuildContext context,
+    AppLocalizations localizations,
+    String zelleUrl,
+  ) async {
     if (await canLaunchUrl(Uri.parse(zelleUrl))) {
       await launchUrl(Uri.parse(zelleUrl));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(localizations.couldNotOpenZelle)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(localizations.couldNotOpenZelle)));
     }
   }
 }

@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/counting_jap_tab.dart'
 import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/time_based_jap_tab.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/manual_jap_tab.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class NaamjapScreen extends StatelessWidget {
   const NaamjapScreen({super.key});
@@ -18,7 +19,7 @@ class NaamjapScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Colors.orange,
+          backgroundColor: theme.appColors.primarySwatch,
           iconTheme: const IconThemeData(color: Colors.white),
           title: Text(
             localizations.naamjapTitle,
@@ -68,7 +69,7 @@ class NaamjapScreen extends StatelessWidget {
                     dividerColor: Colors.transparent,
                     indicator: BoxDecoration(
                       borderRadius: BorderRadius.circular(25.0),
-                      color: Colors.orange,
+                      color: theme.appColors.primarySwatch,
                     ),
                     tabs: [
                       Tab(

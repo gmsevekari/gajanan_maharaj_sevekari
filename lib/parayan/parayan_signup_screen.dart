@@ -8,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class ParayanSignupScreen extends StatefulWidget {
   final ParayanEvent event;
@@ -293,7 +294,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                     isMarathi ? widget.event.titleMr : widget.event.titleEn,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange[600],
+                      color: theme.appColors.primarySwatch[600],
                     ),
                   ),
                   const SizedBox(height: 8),

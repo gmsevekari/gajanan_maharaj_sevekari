@@ -5,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class CountingJapTab extends StatefulWidget {
   const CountingJapTab({super.key});
@@ -292,7 +293,10 @@ class _CountingJapTabState extends State<CountingJapTab> {
               decoration: BoxDecoration(
                 color: theme.cardTheme.color ?? theme.cardColor,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.orange, width: 2),
+                border: Border.all(
+                  color: theme.appColors.primarySwatch,
+                  width: 2,
+                ),
               ),
               child: _chants == null
                   ? const Center(child: CircularProgressIndicator())
@@ -354,7 +358,10 @@ class _CountingJapTabState extends State<CountingJapTab> {
                       ),
                       decoration: BoxDecoration(
                         color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(color: Colors.orange, width: 2),
+                        border: Border.all(
+                          color: theme.appColors.primarySwatch,
+                          width: 2,
+                        ),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -369,8 +376,8 @@ class _CountingJapTabState extends State<CountingJapTab> {
                         children: [
                           Text(
                             localizations.mala,
-                            style: const TextStyle(
-                              color: Colors.orange,
+                            style: TextStyle(
+                              color: theme.appColors.primarySwatch,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -386,8 +393,8 @@ class _CountingJapTabState extends State<CountingJapTab> {
                                       _completedMalas,
                                       pad: false,
                                     ),
-                              style: const TextStyle(
-                                color: Colors.orange,
+                              style: TextStyle(
+                                color: theme.appColors.primarySwatch,
                                 fontSize: 32,
                                 fontWeight: FontWeight.w900,
                               ),
@@ -406,7 +413,10 @@ class _CountingJapTabState extends State<CountingJapTab> {
                       ),
                       decoration: BoxDecoration(
                         color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(color: Colors.orange, width: 2),
+                        border: Border.all(
+                          color: theme.appColors.primarySwatch,
+                          width: 2,
+                        ),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -421,8 +431,8 @@ class _CountingJapTabState extends State<CountingJapTab> {
                         children: [
                           Text(
                             localizations.jap,
-                            style: const TextStyle(
-                              color: Colors.orange,
+                            style: TextStyle(
+                              color: theme.appColors.primarySwatch,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -432,8 +442,8 @@ class _CountingJapTabState extends State<CountingJapTab> {
                             fit: BoxFit.scaleDown,
                             child: Text(
                               '${_formatNumber(context, _currentCount)} / ${_formatNumber(context, _countsPerMala, pad: false)}',
-                              style: const TextStyle(
-                                color: Colors.orange,
+                              style: TextStyle(
+                                color: theme.appColors.primarySwatch,
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
                               ),
@@ -453,7 +463,7 @@ class _CountingJapTabState extends State<CountingJapTab> {
               localizations.selectMalaCount,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.orange[600],
+                color: theme.appColors.primarySwatch[600],
               ),
             ),
             Container(
@@ -461,7 +471,7 @@ class _CountingJapTabState extends State<CountingJapTab> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.orange,
+                color: theme.appColors.primarySwatch,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -534,7 +544,10 @@ class _CountingJapTabState extends State<CountingJapTab> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(color: Colors.orange, width: 2),
+                        border: Border.all(
+                          color: theme.appColors.primarySwatch,
+                          width: 2,
+                        ),
                       ),
                       child: const Icon(
                         Icons.stop,
@@ -576,7 +589,11 @@ class _CountingJapTabState extends State<CountingJapTab> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.graphic_eq, color: Colors.orange, size: 16),
+                Icon(
+                  Icons.graphic_eq,
+                  color: theme.appColors.primarySwatch,
+                  size: 16,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -584,7 +601,7 @@ class _CountingJapTabState extends State<CountingJapTab> {
                         ? localizations.keepPhoneUnlocked
                         : localizations.audioJapWillStart,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.orange.shade300,
+                      color: theme.appColors.primarySwatch.shade300,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -609,11 +626,11 @@ class _CountingJapTabState extends State<CountingJapTab> {
     Color textColor;
 
     if (isSelected) {
-      cardColor = Colors.orange[200]!;
-      textColor = Colors.orange[800]!;
+      cardColor = theme.appColors.primarySwatch[200]!;
+      textColor = theme.appColors.primarySwatch[800]!;
     } else {
       cardColor = theme.cardTheme.color ?? theme.cardColor;
-      textColor = Colors.orange[600]!;
+      textColor = theme.appColors.primarySwatch[600]!;
     }
 
     return Card(
@@ -622,7 +639,9 @@ class _CountingJapTabState extends State<CountingJapTab> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
         side: BorderSide(
-          color: isSelected ? Colors.orange : const Color(0xFFFF9800),
+          color: isSelected
+              ? theme.appColors.primarySwatch
+              : theme.appColors.primarySwatch,
           width: 1,
         ),
       ),
@@ -667,12 +686,14 @@ class _CountingJapTabState extends State<CountingJapTab> {
     return Card(
       elevation: theme.cardTheme.elevation ?? 1,
       color: isSelected
-          ? Colors.orange[200]!
+          ? theme.appColors.primarySwatch[200]!
           : theme.cardTheme.color ?? theme.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
         side: BorderSide(
-          color: isSelected ? Colors.orange : theme.colorScheme.outlineVariant,
+          color: isSelected
+              ? theme.appColors.primarySwatch
+              : theme.colorScheme.outlineVariant,
           width: 1,
         ),
       ),
@@ -686,7 +707,7 @@ class _CountingJapTabState extends State<CountingJapTab> {
               child: CustomPaint(
                 painter: DashedRectPainter(
                   color: isSelected
-                      ? Colors.orange
+                      ? theme.appColors.primarySwatch
                       : theme.colorScheme.outlineVariant,
                   strokeWidth: 2,
                   gap: 5,
@@ -731,7 +752,9 @@ class _CountingJapTabState extends State<CountingJapTab> {
                     Icons.edit,
                     size: 16,
                     color: isSelected
-                        ? Colors.orange[800]!.withValues(alpha: 0.6)
+                        ? theme.appColors.primarySwatch[800]!.withValues(
+                            alpha: 0.6,
+                          )
                         : Colors.grey.withValues(alpha: 0.6),
                   ),
                 ),

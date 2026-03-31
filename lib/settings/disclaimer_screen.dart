@@ -22,7 +22,9 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
   }
 
   Future<Map<String, dynamic>> _loadDisclaimer() async {
-    final String response = await rootBundle.loadString('resources/texts/disclaimer/disclaimer.json');
+    final String response = await rootBundle.loadString(
+      'resources/texts/disclaimer/disclaimer.json',
+    );
     final data = await json.decode(response);
     return data;
   }
@@ -39,7 +41,11 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
         ],
       ),
@@ -54,8 +60,12 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
           }
           final disclaimerData = snapshot.data ?? {};
           final isMarathi = locale.languageCode == 'mr';
-          final title = isMarathi ? disclaimerData['title_mr'] : disclaimerData['title_en'];
-          final content = isMarathi ? disclaimerData['content_mr'] : disclaimerData['content_en'];
+          final title = isMarathi
+              ? disclaimerData['title_mr']
+              : disclaimerData['title_en'];
+          final content = isMarathi
+              ? disclaimerData['content_mr']
+              : disclaimerData['content_en'];
 
           return SingleChildScrollView(
             child: Padding(
@@ -71,13 +81,13 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                     children: [
                       Text(
                         title ?? '',
-                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
                       const SizedBox(height: 16),
-                      Text(
-                        content ?? '',
-                        style: theme.textTheme.bodyLarge,
-                      ),
+                      Text(content ?? '', style: theme.textTheme.bodyLarge),
                     ],
                   ),
                 ),

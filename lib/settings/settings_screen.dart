@@ -10,6 +10,7 @@ import 'package:gajanan_maharaj_sevekari/settings/theme_selection_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -124,7 +125,7 @@ class SettingsScreen extends StatelessWidget {
         title: Text(
           title,
           style: TextStyle(
-            color: Colors.orange[600],
+            color: theme.appColors.primarySwatch[600],
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -159,7 +160,7 @@ class SettingsScreen extends StatelessWidget {
         title: Text(
           localizations.contactUs,
           style: TextStyle(
-            color: Colors.orange[600],
+            color: theme.appColors.primarySwatch[600],
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -195,7 +196,7 @@ class SettingsScreen extends StatelessWidget {
         title: Text(
           localizations.adminAccess,
           style: TextStyle(
-            color: Colors.orange[600],
+            color: theme.appColors.primarySwatch[600],
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),

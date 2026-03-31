@@ -7,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/aarti/aarti_screen.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class DeityDashboardScreen extends StatelessWidget {
   final DeityConfig deity;
@@ -309,7 +310,7 @@ class DeityDashboardScreen extends StatelessWidget {
                     title,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.orange[600],
+                      color: theme.appColors.primarySwatch[600],
                       fontWeight: FontWeight.bold,
                     ),
                   ),

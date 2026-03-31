@@ -7,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:intl/intl.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class CreateParayanScreen extends StatefulWidget {
   const CreateParayanScreen({super.key});
@@ -377,10 +378,10 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.orange.withValues(alpha: 0.05),
+                      color: theme.appColors.primarySwatch.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.orange.withValues(alpha: 0.2),
+                        color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
                       ),
                     ),
                     child: Column(
@@ -388,9 +389,9 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                       children: [
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.notifications_active,
-                              color: Colors.orange,
+                              color: theme.appColors.primarySwatch,
                               size: 20,
                             ),
                             const SizedBox(width: 8),
@@ -398,7 +399,7 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                               localizations.reminderTimeLabel,
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.orange[800],
+                                color: theme.appColors.primarySwatch[800],
                               ),
                             ),
                           ],

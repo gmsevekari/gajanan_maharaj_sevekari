@@ -9,7 +9,8 @@ class LocaleProvider with ChangeNotifier {
 
   Future<void> loadLocale() async {
     final prefs = await SharedPreferences.getInstance();
-    final localeCode = prefs.getString(_localePrefKey) ?? 'mr'; // Default to Marathi
+    final localeCode =
+        prefs.getString(_localePrefKey) ?? 'mr'; // Default to Marathi
     _locale = Locale(localeCode);
     notifyListeners();
   }

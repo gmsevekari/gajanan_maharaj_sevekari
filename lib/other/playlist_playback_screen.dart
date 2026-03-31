@@ -7,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/shared/cross_platform_youtube_player.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 enum PlaybackMode { reading, video }
 
@@ -130,7 +131,11 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -152,15 +157,9 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
             return Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
-                  flex: 2,
-                  child: _buildListPane(theme, locale),
-                ),
+                Expanded(flex: 2, child: _buildListPane(theme, locale)),
                 const VerticalDivider(width: 1),
-                Expanded(
-                  flex: 3,
-                  child: _buildTextPane(fontProvider, locale),
-                ),
+                Expanded(flex: 3, child: _buildTextPane(fontProvider, locale)),
                 const VerticalDivider(width: 1),
                 Expanded(
                   flex: 3,
@@ -169,20 +168,28 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
               ],
             );
           } else {
-            return _buildMobileLayout(theme, locale, localizations, fontProvider);
+            return _buildMobileLayout(
+              theme,
+              locale,
+              localizations,
+              fontProvider,
+            );
           }
         },
       ),
     );
   }
 
-  Widget _buildMobileLayout(ThemeData theme, Locale locale, AppLocalizations localizations, FontProvider fontProvider) {
+  Widget _buildMobileLayout(
+    ThemeData theme,
+    Locale locale,
+    AppLocalizations localizations,
+    FontProvider fontProvider,
+  ) {
     // If in Reading Mode, skip the Tabs and just show the text content
     if (widget.mode == PlaybackMode.reading) {
       return Column(
-        children: [
-          Expanded(child: _buildTextPane(fontProvider, locale)),
-        ],
+        children: [Expanded(child: _buildTextPane(fontProvider, locale))],
       );
     }
 
@@ -201,14 +208,8 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
                   unselectedLabelColor: Colors.grey,
                   indicatorColor: theme.colorScheme.primary,
                   tabs: const [
-                    Tab(
-                      icon: Icon(Icons.queue_music),
-                      text: 'Playlist',
-                    ),
-                    Tab(
-                      icon: Icon(Icons.lyrics),
-                      text: 'Lyrics',
-                    ),
+                    Tab(icon: Icon(Icons.queue_music), text: 'Playlist'),
+                    Tab(icon: Icon(Icons.lyrics), text: 'Lyrics'),
                   ],
                 ),
                 Expanded(
@@ -236,22 +237,29 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {
           final item = widget.contentList[index];
-          final title = locale.languageCode == 'mr' ? item['title_mr'] : item['title_en'];
+          final title = locale.languageCode == 'mr'
+              ? item['title_mr']
+              : item['title_en'];
           final isPlaying = index == _currentIndex;
 
           return ListTile(
             selected: isPlaying,
-            selectedTileColor: Colors.orange.withValues(alpha: 0.15),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            selectedTileColor: theme.appColors.primarySwatch.withValues(
+              alpha: 0.15,
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 4.0,
+            ),
             leading: Icon(
               isPlaying ? Icons.play_circle_fill : Icons.queue_music,
-              color: isPlaying ? Colors.orange : Colors.grey,
+              color: isPlaying ? theme.appColors.primarySwatch : Colors.grey,
             ),
             title: Text(
               title!,
               style: TextStyle(
                 fontWeight: isPlaying ? FontWeight.bold : FontWeight.normal,
-                color: isPlaying ? Colors.orange[900] : null,
+                color: isPlaying ? theme.appColors.primarySwatch[900] : null,
               ),
             ),
             onTap: () => _playIndex(index),
@@ -270,7 +278,10 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
     }
 
     final langCode = locale.languageCode;
-    final text = _currentContentData!['content_$langCode'] ?? _currentContentData!['content_en'] ?? '';
+    final text =
+        _currentContentData!['content_$langCode'] ??
+        _currentContentData!['content_en'] ??
+        '';
 
     return GestureDetector(
       onHorizontalDragEnd: (details) {
@@ -293,53 +304,71 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
         child: Stack(
           children: [
             SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 24.0,
+              ),
               child: Center(
                 child: Text(
                   text,
                   textAlign: TextAlign.center,
-                  style: fontProvider.marathiTextStyle.copyWith(fontSize: _fontSize, height: 1.6),
+                  style: fontProvider.marathiTextStyle.copyWith(
+                    fontSize: _fontSize,
+                    height: 1.6,
+                  ),
                 ),
               ),
             ),
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FloatingActionButton(
-                  heroTag: 'addSizePlayback',
-                  mini: true,
-                  backgroundColor: Colors.orange.withValues(alpha: 0.8),
-                  foregroundColor: Colors.white,
-                  onPressed: () => _changeFontSize(2.0),
-                  child: const Icon(Icons.add),
-                ),
-                const SizedBox(height: 8),
-                FloatingActionButton(
-                  heroTag: 'reduceSizePlayback',
-                  mini: true,
-                  backgroundColor: Colors.orange.withValues(alpha: 0.8),
-                  foregroundColor: Colors.white,
-                  onPressed: () => _changeFontSize(-2.0),
-                  child: const Icon(Icons.remove),
-                ),
-              ],
+            Positioned(
+              bottom: 16,
+              right: 16,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  FloatingActionButton(
+                    heroTag: 'addSizePlayback',
+                    mini: true,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).appColors.primarySwatch.withValues(alpha: 0.8),
+                    foregroundColor: Colors.white,
+                    onPressed: () => _changeFontSize(2.0),
+                    child: const Icon(Icons.add),
+                  ),
+                  const SizedBox(height: 8),
+                  FloatingActionButton(
+                    heroTag: 'reduceSizePlayback',
+                    mini: true,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).appColors.primarySwatch.withValues(alpha: 0.8),
+                    foregroundColor: Colors.white,
+                    onPressed: () => _changeFontSize(-2.0),
+                    child: const Icon(Icons.remove),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-  Widget _buildYoutubePane(ThemeData theme, Locale locale, AppLocalizations localizations, {bool isMobile = false}) {
+  Widget _buildYoutubePane(
+    ThemeData theme,
+    Locale locale,
+    AppLocalizations localizations, {
+    bool isMobile = false,
+  }) {
     if (_isLoadingContent) {
       return const Center(child: CircularProgressIndicator());
     }
     final videoId = _currentContentData?['youtube_video_id'] as String?;
-    final title = _currentContentData?['title_${locale.languageCode}'] ?? _currentContentData?['title_en'] ?? 'Aarti';
+    final title =
+        _currentContentData?['title_${locale.languageCode}'] ??
+        _currentContentData?['title_en'] ??
+        'Aarti';
 
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -349,19 +378,25 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
           if (videoId != null && videoId.isNotEmpty)
             Card(
               elevation: 4.0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
               clipBehavior: Clip.antiAlias,
               child: CrossPlatformYoutubePlayer(
-                key: ValueKey(videoId), // Ensure player rebuilds when video changes
+                key: ValueKey(
+                  videoId,
+                ), // Ensure player rebuilds when video changes
                 videoId: videoId,
                 autoPlay: true,
                 onEnded: _playNext,
-              )
+              ),
             )
           else
             Card(
               elevation: 4.0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
               child: const AspectRatio(
                 aspectRatio: 16 / 9,
                 child: Center(child: Text('Video unavailable')),
@@ -375,15 +410,12 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
 
     return Container(
       color: theme.colorScheme.surface,
-      child: isMobile 
-        ? Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: content,
-          )
-        : SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: content,
-          ),
+      child: isMobile
+          ? Padding(padding: const EdgeInsets.all(16.0), child: content)
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: content,
+            ),
     );
   }
 }

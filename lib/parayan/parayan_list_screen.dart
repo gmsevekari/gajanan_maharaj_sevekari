@@ -7,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/calendar_export_service.dart';
 import 'package:intl/intl.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class ParayanListScreen extends StatefulWidget {
   const ParayanListScreen({super.key});
@@ -55,7 +56,7 @@ class _ParayanListScreenState extends State<ParayanListScreen>
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.orange,
+        backgroundColor: theme.appColors.primarySwatch,
         iconTheme: const IconThemeData(color: Colors.white),
         bottom: TabBar(
           controller: _tabController,
@@ -166,7 +167,7 @@ class _ParayanListScreenState extends State<ParayanListScreen>
               Icon(
                 Icons.menu_book_outlined,
                 size: 80,
-                color: Colors.orange.withValues(alpha: 0.2),
+                color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
               ),
               const SizedBox(height: 24),
               Text(

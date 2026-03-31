@@ -42,6 +42,9 @@ class AppTheme {
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
     ),
+    extensions: const <ThemeExtension<dynamic>>[
+      AppColors(primarySwatch: Colors.orange),
+    ],
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -85,5 +88,36 @@ class AppTheme {
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
     ),
+    extensions: const <ThemeExtension<dynamic>>[
+      AppColors(primarySwatch: Colors.orange),
+    ],
   );
+}
+
+class AppColors extends ThemeExtension<AppColors> {
+  final MaterialColor primarySwatch;
+
+  const AppColors({required this.primarySwatch});
+
+  @override
+  AppColors copyWith({MaterialColor? primarySwatch}) {
+    return AppColors(
+      primarySwatch: primarySwatch ?? this.primarySwatch,
+    );
+  }
+
+  @override
+  AppColors lerp(ThemeExtension<AppColors>? other, double t) {
+    if (other is! AppColors) {
+      return this;
+    }
+    // Snap to the other swatch cleanly
+    return AppColors(
+      primarySwatch: t < 0.5 ? primarySwatch : other.primarySwatch,
+    );
+  }
+}
+
+extension AppColorsExtension on ThemeData {
+  AppColors get appColors => extension<AppColors>() ?? const AppColors(primarySwatch: Colors.orange);
 }

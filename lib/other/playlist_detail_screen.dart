@@ -8,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari/other/playlist_playback_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/playlist_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
   const PlaylistDetailScreen({super.key});
@@ -246,9 +247,9 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       IconButton(
-                                        icon: const Icon(
+                                        icon: Icon(
                                           Icons.play_circle_outline,
-                                          color: Colors.orange,
+                                          color: theme.appColors.primarySwatch,
                                         ),
                                         onPressed: () => _playPlaylist(
                                           context,

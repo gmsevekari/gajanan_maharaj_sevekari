@@ -17,6 +17,7 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/home/nityopasana_consolidated_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 import '../deity/deity_dashboard_screen.dart';
 
@@ -141,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final appConfigProvider = Provider.of<AppConfigProvider>(context);
+    final theme = Theme.of(context);
 
     if (localizations == null) return const SizedBox.shrink();
 
@@ -299,19 +301,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.spa, color: Colors.orange[300], size: 20),
+                  Icon(
+                    Icons.spa,
+                    color: theme.appColors.primarySwatch[300],
+                    size: 20,
+                  ),
                   const SizedBox(width: 12),
                   Text(
                     localizations.gajananChant,
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange[600],
+                      color: theme.appColors.primarySwatch[600],
                       letterSpacing: 1.2,
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Icon(Icons.spa, color: Colors.orange[300], size: 20),
+                  Icon(
+                    Icons.spa,
+                    color: theme.appColors.primarySwatch[300],
+                    size: 20,
+                  ),
                 ],
               ),
             ),
@@ -346,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         color: theme.cardTheme.color,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
-          side: BorderSide(color: Color(0xFFFF9800), width: 1),
+          side: BorderSide(color: theme.appColors.primarySwatch, width: 1),
         ),
         child: InkWell(
           onTap: _launchAppStore,
@@ -377,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       Text(
                         localizations.downloadAppTitle,
                         style: TextStyle(
-                          color: Colors.orange[600],
+                          color: theme.appColors.primarySwatch[600],
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -385,7 +395,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       Text(
                         localizations.downloadAppSubtitle,
                         style: TextStyle(
-                          color: Colors.orange[600],
+                          color: theme.appColors.primarySwatch[600],
                           fontSize: 12,
                         ),
                       ),
@@ -470,7 +480,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     Text(
                       localizations.eventOnDate,
                       style: TextStyle(
-                        color: Colors.orange[600],
+                        color: theme.appColors.primarySwatch[600],
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -491,11 +501,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             textAlign: TextAlign.center,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: Colors.orange[600],
+              color: theme.appColors.primarySwatch[600],
             ),
           ),
           const SizedBox(height: 4.0),
-          Divider(color: Colors.orange.withValues(alpha: 0.2), height: 8.0),
+          Divider(
+            color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
+            height: 8.0,
+          ),
         ];
 
         if (weeklyPoojaDoc != null) {
@@ -504,7 +517,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               context,
               weeklyPoojaDoc,
               Icons.event_repeat,
-              Colors.orange,
+              theme.appColors.primarySwatch,
               localizations.weeklyPooja,
               theme,
             ),
@@ -513,7 +526,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
         if (weeklyPoojaDoc != null && specialEventDoc != null) {
           children.add(
-            Divider(color: Colors.orange.withValues(alpha: 0.2), height: 8.0),
+            Divider(
+              color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
+              height: 8.0,
+            ),
           );
         }
 
@@ -523,7 +539,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               context,
               specialEventDoc,
               Icons.celebration,
-              Colors.orange,
+              theme.appColors.primarySwatch,
               localizations.specialEvents,
               theme,
             ),
@@ -533,7 +549,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (parayanEvent != null) {
           if (weeklyPoojaDoc != null || specialEventDoc != null) {
             children.add(
-              Divider(color: Colors.orange.withValues(alpha: 0.2), height: 8.0),
+              Divider(
+                color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
+                height: 8.0,
+              ),
             );
           }
           children.add(
@@ -620,13 +639,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     eventTitle,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange[600],
+                      color: theme.appColors.primarySwatch[600],
                     ),
                   ),
                   const SizedBox(height: 2.0),
                   Text(
                     eventDateString,
-                    style: TextStyle(color: Colors.orange[600], fontSize: 13.0),
+                    style: TextStyle(
+                      color: theme.appColors.primarySwatch[600],
+                      fontSize: 13.0,
+                    ),
                   ),
                 ],
               ),
@@ -689,10 +711,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             Container(
               padding: const EdgeInsets.all(12.0),
               decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.1),
+                color: theme.appColors.primarySwatch.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.menu_book, color: Colors.orange),
+              child: Icon(
+                Icons.menu_book,
+                color: theme.appColors.primarySwatch,
+              ),
             ),
             const SizedBox(width: 16.0),
             Expanded(
@@ -703,13 +728,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     title,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange[600],
+                      color: theme.appColors.primarySwatch[600],
                     ),
                   ),
                   const SizedBox(height: 2.0),
                   Text(
                     dateRange,
-                    style: TextStyle(color: Colors.orange[600], fontSize: 13.0),
+                    style: TextStyle(
+                      color: theme.appColors.primarySwatch[600],
+                      fontSize: 13.0,
+                    ),
                   ),
                 ],
               ),
@@ -721,7 +749,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 vertical: 4.0,
               ),
               decoration: BoxDecoration(
-                color: Colors.orange,
+                color: theme.appColors.primarySwatch,
                 borderRadius: BorderRadius.circular(6.0),
               ),
               child: Text(
@@ -801,7 +829,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.orange[600],
+                        color: theme.appColors.primarySwatch[600],
                         fontWeight: FontWeight.bold,
                       ),
                     ),

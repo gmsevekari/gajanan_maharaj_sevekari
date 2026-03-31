@@ -14,6 +14,7 @@ import 'dart:io';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_add_participants_screen.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 enum _ParticipantFilter { all, completed, pending }
 
@@ -1253,6 +1254,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   }) {
     final date = dateString;
 
+    final theme = Theme.of(context);
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -1260,7 +1262,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: Colors.orange, width: 2),
+          border: Border.all(color: theme.appColors.primarySwatch, width: 2),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1281,10 +1283,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     children: [
                       Text(
                         l10n.seattleGajananMaharajParivar,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.orange,
+                          color: theme.appColors.primarySwatch,
                         ),
                       ),
                       Text(
@@ -1299,7 +1301,11 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 ),
               ],
             ),
-            const Divider(height: 32, thickness: 1.5, color: Colors.orange),
+            Divider(
+              height: 32,
+              thickness: 1.5,
+              color: theme.appColors.primarySwatch,
+            ),
 
             // Group Number
             if (event.status != 'upcoming' && event.status != 'enrolling')
@@ -1310,17 +1316,17 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.1),
+                    color: theme.appColors.primarySwatch.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     l10n.groupLabel(
                       _formatNumberInternal(groupNumber, isMarathi),
                     ),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange,
+                      color: theme.appColors.primarySwatch,
                     ),
                   ),
                 ),
@@ -1722,6 +1728,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       final members = batchGroups[gi].value;
       final isLastGroup = gi == batchGroups.length - 1;
 
+      final theme = Theme.of(context);
       // ── Full-width group separator row ──
       if (event.status != 'upcoming' && event.status != 'enrolling')
         rows.add(
@@ -1730,16 +1737,16 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(vertical: 5),
             decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.12),
+              color: theme.appColors.primarySwatch.withValues(alpha: 0.12),
               border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
             ),
             child: Text(
               l10n.groupLabel(_formatNumberInternal(groupNumber, isMarathi)),
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
-                color: Colors.orange,
+                color: theme.appColors.primarySwatch,
               ),
             ),
           ),
@@ -1770,6 +1777,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       }
     }
 
+    final theme = Theme.of(context);
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -1777,7 +1785,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: Colors.orange, width: 2),
+          border: Border.all(color: theme.appColors.primarySwatch, width: 2),
         ),
         child: OverflowBox(
           minHeight: 0,
@@ -1802,10 +1810,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                       children: [
                         Text(
                           l10n.seattleGajananMaharajParivar,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Colors.orange,
+                            color: theme.appColors.primarySwatch,
                           ),
                         ),
                         Text(
@@ -1820,7 +1828,11 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                   ),
                 ],
               ),
-              const Divider(height: 20, thickness: 1.5, color: Colors.orange),
+              Divider(
+                height: 20,
+                thickness: 1.5,
+                color: theme.appColors.primarySwatch,
+              ),
 
               // Unified grid with outer border
               Container(

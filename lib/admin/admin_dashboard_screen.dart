@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_session_service.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -106,7 +107,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               user?.email ?? localizations.unknownAdmin,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.orange[600],
+                                color: theme.appColors.primarySwatch[600],
                               ),
                             ),
                           ],
@@ -121,7 +122,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 localizations.adminModules,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.orange[600],
+                  color: theme.appColors.primarySwatch[600],
                 ),
               ),
               const SizedBox(height: 16),
@@ -174,7 +175,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             subtitle:
                                 localizations.parayanCoordinationModuleSubtitle,
                             icon: Icons.event_note,
-                            color: Colors.orange[600]!,
+                            color: theme.appColors.primarySwatch[600]!,
                             onTap: () {
                               Navigator.pushNamed(
                                 context,
@@ -233,7 +234,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       title,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.orange[600],
+                        color: theme.appColors.primarySwatch[600],
                       ),
                     ),
                     const SizedBox(height: 4),

@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class TimeBasedJapTab extends StatefulWidget {
   const TimeBasedJapTab({super.key});
@@ -358,7 +359,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
               decoration: BoxDecoration(
                 color: theme.cardTheme.color ?? theme.cardColor,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.orange, width: 2),
+                border: Border.all(color: theme.appColors.primarySwatch, width: 2),
               ),
               child: _chants == null
                   ? const Center(child: CircularProgressIndicator())
@@ -417,7 +418,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                 ),
                 decoration: BoxDecoration(
                   color: theme.cardTheme.color ?? theme.cardColor,
-                  border: Border.all(color: Colors.orange, width: 2),
+                  border: Border.all(color: theme.appColors.primarySwatch, width: 2),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -434,8 +435,8 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                   children: [
                     Text(
                       localizations.jap,
-                      style: const TextStyle(
-                        color: Colors.orange,
+                      style: TextStyle(
+                        color: theme.appColors.primarySwatch,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -445,8 +446,8 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                       fit: BoxFit.scaleDown,
                       child: Text(
                         _formatNumber(context, _currentCount, pad: false),
-                        style: const TextStyle(
-                          color: Colors.orange,
+                        style: TextStyle(
+                          color: theme.appColors.primarySwatch,
                           fontSize: 36,
                           fontWeight: FontWeight.w900,
                         ),
@@ -463,7 +464,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
               localizations.duration,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.orange[600],
+                color: theme.appColors.primarySwatch[600],
               ),
             ),
             Container(
@@ -471,7 +472,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.orange,
+                color: theme.appColors.primarySwatch,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -486,7 +487,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                 decoration: BoxDecoration(
                   color: theme.cardTheme.color ?? theme.cardColor,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.orange, width: 2),
+                  border: Border.all(color: theme.appColors.primarySwatch, width: 2),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
@@ -511,12 +512,12 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.edit, size: 16, color: Colors.orange[300]),
+                          Icon(Icons.edit, size: 16, color: theme.appColors.primarySwatch[300]),
                           const SizedBox(width: 4),
                           Text(
                             localizations.tapToEdit,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: Colors.orange[300],
+                              color: theme.appColors.primarySwatch[300],
                             ),
                           ),
                         ],
@@ -525,7 +526,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                       Text(
                         localizations.timeRemaining,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          color: Colors.orange[300],
+                          color: theme.appColors.primarySwatch[300],
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -533,7 +534,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                         _formatTime(context, _remainingSeconds),
                         style: theme.textTheme.displayMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.orange,
+                          color: theme.appColors.primarySwatch,
                           fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
@@ -563,7 +564,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(color: Colors.orange, width: 2),
+                        border: Border.all(color: theme.appColors.primarySwatch, width: 2),
                       ),
                       child: const Icon(
                         Icons.stop,
@@ -603,7 +604,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.graphic_eq, color: Colors.orange, size: 16),
+                Icon(Icons.graphic_eq, color: theme.appColors.primarySwatch, size: 16),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -611,7 +612,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                         ? localizations.keepPhoneUnlocked
                         : localizations.audioJapWillStart,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.orange.shade300,
+                      color: theme.appColors.primarySwatch.shade300,
                     ),
                     textAlign: TextAlign.center,
                   ),

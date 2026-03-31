@@ -9,6 +9,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 enum EventType { weeklyPooja, specialEvent, other }
 
@@ -244,6 +245,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -253,12 +255,12 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
               : _tabController?.index == 1
               ? localizations.specialEvents
               : localizations.allEventsList,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.orange,
+        backgroundColor: theme.appColors.primarySwatch,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
@@ -334,7 +336,9 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
           },
           eventLoader: _getEventsForDay,
           calendarStyle: CalendarStyle(
-            weekendTextStyle: TextStyle(color: Colors.orange.shade700),
+            weekendTextStyle: TextStyle(
+              color: Theme.of(context).appColors.primarySwatch.shade700,
+            ),
           ),
           headerStyle: HeaderStyle(
             formatButtonTextStyle: TextStyle(

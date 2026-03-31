@@ -22,7 +22,9 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
   }
 
   Future<Map<String, dynamic>> _loadAboutApp() async {
-    final String response = await rootBundle.loadString('resources/texts/about/about_app.json');
+    final String response = await rootBundle.loadString(
+      'resources/texts/about/about_app.json',
+    );
     final data = await json.decode(response);
     return data;
   }
@@ -39,7 +41,11 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
         ],
       ),
@@ -61,27 +67,42 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
                 children: [
                   _buildSectionCard(
                     context,
-                    title: isMarathi ? aboutData['mission_title_mr'] : aboutData['mission_title_en'],
+                    title: isMarathi
+                        ? aboutData['mission_title_mr']
+                        : aboutData['mission_title_en'],
                     content: Text(
-                      isMarathi ? aboutData['mission_content_mr'] : aboutData['mission_content_en'],
+                      isMarathi
+                          ? aboutData['mission_content_mr']
+                          : aboutData['mission_content_en'],
                       style: theme.textTheme.bodyLarge,
                     ),
                   ),
                   const SizedBox(height: 16),
                   _buildSectionCard(
                     context,
-                    title: isMarathi ? aboutData['features_title_mr'] : aboutData['features_title_en'],
+                    title: isMarathi
+                        ? aboutData['features_title_mr']
+                        : aboutData['features_title_en'],
                     content: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: _buildBulletPoints(context, isMarathi ? aboutData['features_content_mr'] : aboutData['features_content_en']),
+                      children: _buildBulletPoints(
+                        context,
+                        isMarathi
+                            ? aboutData['features_content_mr']
+                            : aboutData['features_content_en'],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
                   _buildSectionCard(
                     context,
-                    title: isMarathi ? aboutData['service_title_mr'] : aboutData['service_title_en'],
+                    title: isMarathi
+                        ? aboutData['service_title_mr']
+                        : aboutData['service_title_en'],
                     content: Text(
-                      isMarathi ? aboutData['service_content_mr'] : aboutData['service_content_en'],
+                      isMarathi
+                          ? aboutData['service_content_mr']
+                          : aboutData['service_content_en'],
                       style: theme.textTheme.bodyLarge,
                     ),
                   ),
@@ -96,7 +117,11 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
     );
   }
 
-  Widget _buildSectionCard(BuildContext context, {required String title, required Widget content}) {
+  Widget _buildSectionCard(
+    BuildContext context, {
+    required String title,
+    required Widget content,
+  }) {
     final theme = Theme.of(context);
     return Card(
       shape: theme.cardTheme.shape,
@@ -109,7 +134,10 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
           children: [
             Text(
               title,
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
             ),
             const SizedBox(height: 16),
             content,
@@ -127,10 +155,13 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('• ', style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.primary)),
-            Expanded(
-              child: Text(point, style: theme.textTheme.bodyLarge),
+            Text(
+              '• ',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
             ),
+            Expanded(child: Text(point, style: theme.textTheme.bodyLarge)),
           ],
         ),
       );

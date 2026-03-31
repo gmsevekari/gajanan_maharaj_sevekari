@@ -5,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/deity/deity_dashboard_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:provider/provider.dart';
 
 class NityopasanaConsolidatedScreen extends StatelessWidget {
@@ -145,7 +146,7 @@ class NityopasanaConsolidatedScreen extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.orange[600],
+                        color: theme.appColors.primarySwatch[600],
                       ),
                     ),
                   ),
@@ -207,7 +208,7 @@ class NityopasanaConsolidatedScreen extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.orange[600],
+                        color: theme.appColors.primarySwatch[600],
                         fontWeight: FontWeight.bold,
                       ),
                     ),

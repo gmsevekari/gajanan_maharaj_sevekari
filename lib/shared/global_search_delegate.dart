@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/models/search_result.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class GlobalSearchDelegate extends SearchDelegate {
   final String hintText;
@@ -16,7 +17,7 @@ class GlobalSearchDelegate extends SearchDelegate {
     final theme = Theme.of(context);
     return theme.copyWith(
       appBarTheme: theme.appBarTheme.copyWith(
-        backgroundColor: Colors.orange,
+        backgroundColor: theme.appColors.primarySwatch,
         iconTheme: const IconThemeData(color: Colors.white),
         actionsIconTheme: const IconThemeData(color: Colors.white),
       ),

@@ -12,6 +12,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 enum ContentType { granth, aarti, bhajan, stotra, namavali, song }
 
@@ -133,6 +134,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -261,7 +263,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
           FloatingActionButton(
             heroTag: 'add',
             mini: true,
-            backgroundColor: Colors.orange.withAlpha(179),
+            backgroundColor: theme.appColors.primarySwatch.withAlpha(179),
             foregroundColor: Colors.white,
             onPressed: () => _changeFontSize(2.0),
             child: const Icon(Icons.add, size: 20),
@@ -270,7 +272,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
           FloatingActionButton(
             heroTag: 'remove',
             mini: true,
-            backgroundColor: Colors.orange.withAlpha(179),
+            backgroundColor: theme.appColors.primarySwatch.withAlpha(179),
             foregroundColor: Colors.white,
             onPressed: () => _changeFontSize(-2.0),
             child: const Icon(Icons.remove, size: 20),
@@ -301,6 +303,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
 
   Widget _buildSegment(BuildContext context, String text, int index) {
     bool isSelected = _currentIndex == index;
+    final theme = Theme.of(context);
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -309,7 +312,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.orange : Colors.white,
+            color: isSelected ? theme.appColors.primarySwatch : Colors.white,
             borderRadius: BorderRadius.circular(25.0),
           ),
           padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -445,7 +448,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
                     ),
                   ),
                   const SizedBox(height: 24),
-                  _buildDecorativeDivider(),
+                  _buildDecorativeDivider(context),
                   const SizedBox(height: 24),
                   if (videoId != null && videoId.isNotEmpty)
                     Center(
@@ -483,7 +486,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.1),
+                      color: theme.appColors.primarySwatch.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: Row(
@@ -507,16 +510,17 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
         });
   }
 
-  Widget _buildDecorativeDivider() {
+  Widget _buildDecorativeDivider(BuildContext context) {
+    final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(height: 1, width: 50, color: Colors.orange[200]),
+        Container(height: 1, width: 50, color: theme.appColors.primarySwatch[200]),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Icon(Icons.music_note, color: Colors.orange[400]),
+          child: Icon(Icons.music_note, color: theme.appColors.primarySwatch[400]),
         ),
-        Container(height: 1, width: 50, color: Colors.orange[200]),
+        Container(height: 1, width: 50, color: theme.appColors.primarySwatch[200]),
       ],
     );
   }

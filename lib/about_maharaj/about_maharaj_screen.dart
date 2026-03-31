@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class AboutMaharajScreen extends StatefulWidget {
   final DeityConfig deity;
@@ -19,7 +20,8 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
   @override
   void initState() {
     super.initState();
-    final path = 'resources/texts/${widget.deity.id}/about/${widget.deity.aboutFile}';
+    final path =
+        'resources/texts/${widget.deity.id}/about/${widget.deity.aboutFile}';
     _aboutDeityFuture = AboutDeity.fromFile(path);
   }
 
@@ -38,13 +40,23 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(localizations.aboutMaharajTitle, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: Colors.orange,
+        title: Text(
+          localizations.aboutMaharajTitle,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: theme.appColors.primarySwatch,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -65,19 +77,32 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
               child: Column(
                 children: [
-                  _buildTopSection(context, about, widget.deity.imagePath, locale),
+                  _buildTopSection(
+                    context,
+                    about,
+                    widget.deity.imagePath,
+                    locale,
+                  ),
                   const SizedBox(height: 24),
-                  ...about.sections.map((section) => _buildExpansionCard(
-                        context,
-                        icon: _getIconForSection(section.titleEn),
-                        title: locale == 'mr' ? section.titleMr : section.titleEn,
-                        content: locale == 'mr' ? section.contentMr : section.contentEn,
-                      )),
+                  ...about.sections.map(
+                    (section) => _buildExpansionCard(
+                      context,
+                      icon: _getIconForSection(section.titleEn),
+                      title: locale == 'mr' ? section.titleMr : section.titleEn,
+                      content: locale == 'mr'
+                          ? section.contentMr
+                          : section.contentEn,
+                    ),
+                  ),
                   const SizedBox(height: 32),
                   Text(
                     locale == 'mr' ? about.footerQuoteMr : about.footerQuoteEn,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: theme.colorScheme.secondary),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic,
+                      color: theme.colorScheme.secondary,
+                    ),
                   ),
                 ],
               ),
@@ -93,7 +118,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
           FloatingActionButton(
             heroTag: 'add',
             mini: true,
-            backgroundColor: Colors.orange.withAlpha(179),
+            backgroundColor: theme.appColors.primarySwatch.withAlpha(179),
             foregroundColor: Colors.white,
             onPressed: () => _changeFontSize(2.0),
             child: const Icon(Icons.add, size: 20),
@@ -102,7 +127,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
           FloatingActionButton(
             heroTag: 'remove',
             mini: true,
-            backgroundColor: Colors.orange.withAlpha(179),
+            backgroundColor: theme.appColors.primarySwatch.withAlpha(179),
             foregroundColor: Colors.white,
             onPressed: () => _changeFontSize(-2.0),
             child: const Icon(Icons.remove, size: 20),
@@ -112,7 +137,12 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
     );
   }
 
-  Widget _buildTopSection(BuildContext context, AboutDeity about, String imagePath, String locale) {
+  Widget _buildTopSection(
+    BuildContext context,
+    AboutDeity about,
+    String imagePath,
+    String locale,
+  ) {
     final theme = Theme.of(context);
 
     return Column(
@@ -120,7 +150,10 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
         Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.orange.shade300, width: 3),
+            border: Border.all(
+              color: theme.appColors.primarySwatch.shade300,
+              width: 3,
+            ),
           ),
           child: ClipOval(
             child: Image.asset(
@@ -135,35 +168,50 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
         const SizedBox(height: 16),
         Text(
           locale == 'mr' ? about.titleMr : about.titleEn,
-          style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.primary,
+          ),
         ),
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.location_on, color: theme.colorScheme.secondary, size: 20),
+            Icon(
+              Icons.location_on,
+              color: theme.colorScheme.secondary,
+              size: 20,
+            ),
             const SizedBox(width: 4),
             Text(
               locale == 'mr' ? about.locationMr : about.locationEn,
-              style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.secondary),
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.colorScheme.secondary,
+              ),
             ),
           ],
         ),
         const SizedBox(height: 4),
         Text(
           locale == 'mr' ? about.pragatDinMr : about.pragatDinEn,
-          style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.secondary),
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: theme.colorScheme.secondary,
+          ),
         ),
         const SizedBox(height: 24),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
           decoration: BoxDecoration(
-            color: Colors.orange,
+            color: theme.appColors.primarySwatch,
             borderRadius: BorderRadius.circular(30),
           ),
           child: Text(
             locale == 'mr' ? about.chantMr : about.chantEn,
-            style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],
@@ -185,7 +233,12 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
     }
   }
 
-  Widget _buildExpansionCard(BuildContext context, {required IconData icon, required String title, required String content}) {
+  Widget _buildExpansionCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String content,
+  }) {
     final theme = Theme.of(context);
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -195,8 +248,15 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
       child: Theme(
         data: theme.copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          leading: Icon(icon, color: Colors.orange[600]),
-          title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.orange[800])),
+          leading: Icon(icon, color: theme.appColors.primarySwatch[600]),
+          title: Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: theme.appColors.primarySwatch[800],
+            ),
+          ),
           iconColor: theme.iconTheme.color,
           collapsedIconColor: theme.iconTheme.color,
           childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -204,7 +264,9 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             Text(
               content,
               textAlign: TextAlign.justify,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: _fontSize, height: 1.5),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(fontSize: _fontSize, height: 1.5),
             ),
           ],
         ),

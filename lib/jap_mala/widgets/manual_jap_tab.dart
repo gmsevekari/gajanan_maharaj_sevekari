@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class ManualJapTab extends StatefulWidget {
   const ManualJapTab({super.key});
@@ -119,7 +120,7 @@ class _ManualJapTabState extends State<ManualJapTab>
                       ),
                       decoration: BoxDecoration(
                         color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(color: Colors.orange, width: 2),
+                        border: Border.all(color: theme.appColors.primarySwatch, width: 2),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -134,8 +135,8 @@ class _ManualJapTabState extends State<ManualJapTab>
                         children: [
                           Text(
                             localizations.mala,
-                            style: const TextStyle(
-                              color: Colors.orange,
+                            style: TextStyle(
+                              color: theme.appColors.primarySwatch,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -145,8 +146,8 @@ class _ManualJapTabState extends State<ManualJapTab>
                             fit: BoxFit.scaleDown,
                             child: Text(
                               _formatNumber(context, _completedMalas),
-                              style: const TextStyle(
-                                color: Colors.orange,
+                              style: TextStyle(
+                                color: theme.appColors.primarySwatch,
                                 fontSize: 32,
                                 fontWeight: FontWeight.w900,
                               ),
@@ -165,7 +166,7 @@ class _ManualJapTabState extends State<ManualJapTab>
                       ),
                       decoration: BoxDecoration(
                         color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(color: Colors.orange, width: 2),
+                        border: Border.all(color: theme.appColors.primarySwatch, width: 2),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -180,8 +181,8 @@ class _ManualJapTabState extends State<ManualJapTab>
                         children: [
                           Text(
                             localizations.jap,
-                            style: const TextStyle(
-                              color: Colors.orange,
+                            style: TextStyle(
+                              color: theme.appColors.primarySwatch,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -191,8 +192,8 @@ class _ManualJapTabState extends State<ManualJapTab>
                             fit: BoxFit.scaleDown,
                             child: Text(
                               '${_formatNumber(context, _currentCount)} / ${_formatNumber(context, _countsPerMala, pad: false)}',
-                              style: const TextStyle(
-                                color: Colors.orange,
+                              style: TextStyle(
+                                color: theme.appColors.primarySwatch,
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
                               ),
@@ -272,9 +273,9 @@ class _ManualJapTabState extends State<ManualJapTab>
                                             child: CustomPaint(
                                               painter: MalaThreadPainter(
                                                 primaryColor:
-                                                    Colors.orange.shade800,
+                                                    theme.appColors.primarySwatch.shade800,
                                                 secondaryColor:
-                                                    Colors.orange.shade400,
+                                                    theme.appColors.primarySwatch.shade400,
                                               ),
                                             ),
                                           ),
@@ -367,15 +368,15 @@ class _ManualJapTabState extends State<ManualJapTab>
       onPressed: onTap,
       style: ElevatedButton.styleFrom(
         fixedSize: const Size(56, 56),
-        shape: const CircleBorder(
-          side: BorderSide(color: Colors.orange, width: 2),
+        shape: CircleBorder(
+          side: BorderSide(color: theme.appColors.primarySwatch, width: 2),
         ),
         backgroundColor: theme.cardTheme.color ?? theme.cardColor,
-        foregroundColor: Colors.orange,
+        foregroundColor: theme.appColors.primarySwatch,
         padding: EdgeInsets.zero,
         elevation: 4, // Matches the '+' button style
       ),
-      child: Icon(icon, color: Colors.orange, size: 28),
+      child: Icon(icon, color: theme.appColors.primarySwatch, size: 28),
     );
   }
 }

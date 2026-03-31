@@ -9,8 +9,10 @@ class FontProvider with ChangeNotifier {
   String get marathiFontFamily => _defaultMarathiFontFamily;
   String get englishFontFamily => _defaultEnglishFontFamily;
 
-  TextStyle get marathiTextStyle => GoogleFonts.getFont(_defaultMarathiFontFamily);
-  TextStyle get englishTextStyle => GoogleFonts.getFont(_defaultEnglishFontFamily);
+  TextStyle get marathiTextStyle =>
+      GoogleFonts.getFont(_defaultMarathiFontFamily);
+  TextStyle get englishTextStyle =>
+      GoogleFonts.getFont(_defaultEnglishFontFamily);
 
   final Map<String, String> availableMarathiFonts = {
     'Noto Sans Devanagari': 'नोटो सान्स देवनागरी - जय गजानन',
@@ -31,7 +33,7 @@ class FontProvider with ChangeNotifier {
     'Sour Gummy': 'Sour Gummy - Jay Gajanan',
     'Story Script': 'Story Script - Jay Gajanan',
     'Macondo': 'Macondo - Jay Gajanan',
-    'Quintessential': 'Quintessential - Jay Gajanan'
+    'Quintessential': 'Quintessential - Jay Gajanan',
   };
 
   FontProvider() {
@@ -60,8 +62,10 @@ class FontProvider with ChangeNotifier {
 
   Future<void> loadFonts() async {
     final prefs = await SharedPreferences.getInstance();
-    _defaultMarathiFontFamily = prefs.getString('marathiFontFamily') ?? _defaultMarathiFontFamily;
-    _defaultEnglishFontFamily = prefs.getString('englishFontFamily') ?? _defaultEnglishFontFamily;
+    _defaultMarathiFontFamily =
+        prefs.getString('marathiFontFamily') ?? _defaultMarathiFontFamily;
+    _defaultEnglishFontFamily =
+        prefs.getString('englishFontFamily') ?? _defaultEnglishFontFamily;
     notifyListeners();
   }
 }

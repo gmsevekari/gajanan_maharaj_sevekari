@@ -16,6 +16,7 @@ import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
 import 'dart:async';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class ParayanDetailScreen extends StatefulWidget {
   final ParayanEvent? event;
@@ -190,7 +191,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.orange,
+        backgroundColor: theme.appColors.primarySwatch,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
