@@ -439,9 +439,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: theme.cardTheme.elevation,
-      color: isSelected
-          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.15)
-          : theme.cardTheme.color,
+      color: isSelected ? theme.colorScheme.primary : theme.cardTheme.color,
       shape: isSelected
           ? RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -457,7 +455,9 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
               eventDateString,
               style: theme.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: theme.appColors.secondaryText,
+                color: isSelected
+                    ? theme.colorScheme.onPrimary.withValues(alpha: 0.8)
+                    : theme.appColors.secondaryText,
               ),
             ),
             const SizedBox(height: 8),
@@ -465,7 +465,10 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
               title,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
+                color:
+                    isSelected
+                        ? theme.colorScheme.onPrimary
+                        : theme.colorScheme.primary,
               ),
             ),
             const SizedBox(height: 8),
@@ -474,13 +477,19 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
                 Icon(
                   Icons.access_time,
                   size: 16,
-                  color: theme.colorScheme.primary,
+                  color:
+                      isSelected
+                          ? theme.colorScheme.onPrimary
+                          : theme.colorScheme.primary,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   endTime != null ? '$startTime - $endTime' : startTime,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.appColors.secondaryText,
+                    color:
+                        isSelected
+                            ? theme.colorScheme.onPrimary
+                            : theme.appColors.secondaryText,
                   ),
                 ),
               ],
@@ -488,27 +497,35 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
             if (location.isNotEmpty) ...[
               const SizedBox(height: 8),
               InkWell(
-                onTap: event.address != null
-                    ? () => _launchMaps(event.address!)
-                    : null,
+                onTap:
+                    event.address != null
+                        ? () => _launchMaps(event.address!)
+                        : null,
                 child: Row(
                   children: [
                     Icon(
                       Icons.location_on,
                       size: 16,
-                      color: theme.colorScheme.primary,
+                      color:
+                          isSelected
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.primary,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         location,
                         style: TextStyle(
-                          decoration: event.address != null
-                              ? TextDecoration.underline
-                              : TextDecoration.none,
-                          color: event.address != null
-                              ? theme.colorScheme.primary
-                              : theme.appColors.secondaryText,
+                          decoration:
+                              event.address != null
+                                  ? TextDecoration.underline
+                                  : TextDecoration.none,
+                          color:
+                              isSelected
+                                  ? theme.colorScheme.onPrimary
+                                  : (event.address != null
+                                      ? theme.colorScheme.primary
+                                      : theme.appColors.secondaryText),
                         ),
                       ),
                     ),
@@ -519,13 +536,19 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
             if (details.isNotEmpty) ...[
               const SizedBox(height: 12),
               Divider(
-                color: theme.appColors.divider,
+                color:
+                    isSelected
+                        ? theme.colorScheme.onPrimary.withValues(alpha: 0.3)
+                        : theme.appColors.divider,
               ),
               const SizedBox(height: 4),
               Text(
                 details,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.appColors.secondaryText,
+                  color:
+                      isSelected
+                          ? theme.colorScheme.onPrimary
+                          : theme.appColors.secondaryText,
                 ),
               ),
             ],
