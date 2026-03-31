@@ -20,21 +20,24 @@ class PlaylistSearchDelegate extends SearchDelegate {
     return theme.copyWith(
       appBarTheme: theme.appBarTheme.copyWith(
         backgroundColor: theme.appColors.primarySwatch,
-        iconTheme: const IconThemeData(color: Colors.white),
-        actionsIconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
+        actionsIconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
-        hintStyle: TextStyle(color: Colors.white70, fontSize: 18),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: TextStyle(
+          color: theme.appColors.onPrimarySubtle,
+          fontSize: 18,
+        ),
         border: InputBorder.none,
       ),
       textTheme: theme.textTheme.copyWith(
-        titleLarge: const TextStyle(
-          color: Colors.white,
+        titleLarge: TextStyle(
+          color: theme.colorScheme.onPrimary,
           fontSize: 18,
         ), // Search input text
       ),
-      textSelectionTheme: const TextSelectionThemeData(
-        cursorColor: Colors.white,
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: theme.colorScheme.onPrimary,
       ),
     );
   }
@@ -78,7 +81,10 @@ class PlaylistSearchDelegate extends SearchDelegate {
   }
 
   Widget _buildSearchResults(BuildContext context) {
-    final appConfigProvider = Provider.of<AppConfigProvider>(context, listen: false);
+    final appConfigProvider = Provider.of<AppConfigProvider>(
+      context,
+      listen: false,
+    );
     final locale = Localizations.localeOf(context).languageCode;
     final localizations = AppLocalizations.of(context)!;
 
@@ -99,8 +105,14 @@ class PlaylistSearchDelegate extends SearchDelegate {
         }
 
         // Filter only aartis and stotras
-        final results = snapshot.data!.where((r) => r.contentType == ContentType.aarti || r.contentType == ContentType.stotra).toList();
-        
+        final results = snapshot.data!
+            .where(
+              (r) =>
+                  r.contentType == ContentType.aarti ||
+                  r.contentType == ContentType.stotra,
+            )
+            .toList();
+
         if (results.isEmpty) {
           return Center(
             child: Text(
@@ -119,10 +131,15 @@ class PlaylistSearchDelegate extends SearchDelegate {
               itemBuilder: (context, index) {
                 final result = results[index];
                 final title = locale == 'mr' ? result.titleMr : result.titleEn;
-                final deityName = locale == 'mr' ? result.deity.nameMr : result.deity.nameEn;
-                
-                final aartiId = result.textResourcePath; 
-                final isAdded = playlistProvider.isAddedToPlaylist(playlistId, aartiId);
+                final deityName = locale == 'mr'
+                    ? result.deity.nameMr
+                    : result.deity.nameEn;
+
+                final aartiId = result.textResourcePath;
+                final isAdded = playlistProvider.isAddedToPlaylist(
+                  playlistId,
+                  aartiId,
+                );
 
                 return Card(
                   elevation: theme.cardTheme.elevation,
@@ -144,7 +161,9 @@ class PlaylistSearchDelegate extends SearchDelegate {
                     subtitle: Text(deityName),
                     trailing: Icon(
                       isAdded ? Icons.check_circle : Icons.add_circle_outline,
-                      color: isAdded ? Colors.green : theme.colorScheme.primary,
+                      color: isAdded
+                          ? theme.appColors.success
+                          : theme.colorScheme.primary,
                       size: 28.0,
                     ),
                     onTap: () {
@@ -158,7 +177,7 @@ class PlaylistSearchDelegate extends SearchDelegate {
                 );
               },
             );
-          }
+          },
         );
       },
     );

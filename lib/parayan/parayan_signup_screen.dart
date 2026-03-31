@@ -190,6 +190,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
 
   Future<void> _deleteSignup() async {
     final localizations = AppLocalizations.of(context);
+    final theme = Theme.of(context);
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -208,7 +209,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: theme.appColors.error),
             child: Text(localizations?.deleteSignupLabel ?? "Delete"),
           ),
         ],
@@ -397,9 +398,9 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                           if (_nameControllers.length > 1 &&
                               (!isExistingMember || canEditExisting))
                             IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.remove_circle_outline,
-                                color: Colors.red,
+                                color: theme.appColors.error,
                               ),
                               onPressed: () => _removeNameField(index),
                               padding: const EdgeInsets.only(top: 12),
@@ -410,7 +411,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                   }),
 
                   const SizedBox(height: 24),
-                  Divider(color: Colors.grey.withValues(alpha: 0.2)),
+                  Divider(color: theme.appColors.divider.withValues(alpha: 0.2)),
                   const SizedBox(height: 24),
 
                   const SizedBox(height: 24),
@@ -479,8 +480,8 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                             ? _deleteSignup
                             : null,
                         style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.red,
-                          side: const BorderSide(color: Colors.red),
+                          foregroundColor: theme.appColors.error,
+                          side: BorderSide(color: theme.appColors.error),
                           padding: const EdgeInsets.symmetric(
                             vertical: 16,
                             horizontal: 32,

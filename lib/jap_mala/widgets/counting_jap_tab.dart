@@ -365,7 +365,7 @@ class _CountingJapTabState extends State<CountingJapTab> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -420,7 +420,7 @@ class _CountingJapTabState extends State<CountingJapTab> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -549,9 +549,9 @@ class _CountingJapTabState extends State<CountingJapTab> {
                           width: 2,
                         ),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.stop,
-                        color: Colors.red,
+                        color: theme.appColors.error,
                         size: 30,
                       ),
                     ),
@@ -723,17 +723,17 @@ class _CountingJapTabState extends State<CountingJapTab> {
                       number,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey,
+                        color: theme.appColors.secondaryText,
                       ),
                     )
                   else
-                    const Icon(Icons.add, color: Colors.grey, size: 20),
+                    Icon(Icons.add, color: theme.appColors.secondaryText, size: 20),
                   const SizedBox(width: 4),
                   Flexible(
                     child: Text(
                       subtitle,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        color: Colors.grey,
+                        color: theme.appColors.secondaryText,
                         fontWeight: FontWeight.w500,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -755,7 +755,7 @@ class _CountingJapTabState extends State<CountingJapTab> {
                         ? theme.appColors.primarySwatch[800]!.withValues(
                             alpha: 0.6,
                           )
-                        : Colors.grey.withValues(alpha: 0.6),
+                        : theme.appColors.secondaryText.withValues(alpha: 0.6),
                   ),
                 ),
               ),

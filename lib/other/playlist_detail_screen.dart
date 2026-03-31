@@ -145,28 +145,24 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.queue_music,
                         size: 64,
-                        color: Colors.grey,
+                        color: theme.appColors.secondaryText,
                       ),
                       const SizedBox(height: 16),
                       Text(
                         localizations.nothingHereYet,
                         style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(color: Colors.grey[600]),
+                            ?.copyWith(color: theme.appColors.secondaryText),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.add),
                         label: Text(localizations.addAarti),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(
-                            context,
-                          ).colorScheme.primary,
-                          foregroundColor: Theme.of(
-                            context,
-                          ).colorScheme.onPrimary,
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: theme.colorScheme.onPrimary,
                           shape: const StadiumBorder(),
                         ),
                         onPressed: () {
@@ -232,15 +228,16 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                   ),
                                   leading: ReorderableDragStartListener(
                                     index: index,
-                                    child: const Icon(
+                                    child: Icon(
                                       Icons.drag_handle,
-                                      color: Colors.grey,
+                                      color: theme.appColors.secondaryText,
                                     ),
                                   ),
                                   title: Text(
                                     title,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontWeight: FontWeight.bold,
+                                      color: theme.colorScheme.onSurface,
                                     ),
                                   ),
                                   trailing: Row(
@@ -258,9 +255,9 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                                         ),
                                       ),
                                       IconButton(
-                                        icon: const Icon(
-                                          Icons.remove_circle_outline,
-                                          color: Colors.red,
+                                        icon: Icon(
+                                          Icons.delete,
+                                          color: theme.appColors.error,
                                         ),
                                         tooltip: localizations.removeAarti,
                                         onPressed: () {

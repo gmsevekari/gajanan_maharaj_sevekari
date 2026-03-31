@@ -18,21 +18,24 @@ class GlobalSearchDelegate extends SearchDelegate {
     return theme.copyWith(
       appBarTheme: theme.appBarTheme.copyWith(
         backgroundColor: theme.appColors.primarySwatch,
-        iconTheme: const IconThemeData(color: Colors.white),
-        actionsIconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
+        actionsIconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
-        hintStyle: TextStyle(color: Colors.white70, fontSize: 18),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: TextStyle(
+          color: theme.appColors.onPrimarySubtle,
+          fontSize: 18,
+        ),
         border: InputBorder.none,
       ),
       textTheme: theme.textTheme.copyWith(
-        titleLarge: const TextStyle(
-          color: Colors.white,
+        titleLarge: TextStyle(
+          color: theme.colorScheme.onPrimary,
           fontSize: 18,
         ), // Search input text
       ),
-      textSelectionTheme: const TextSelectionThemeData(
-        cursorColor: Colors.white,
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: theme.colorScheme.onPrimary,
       ),
     );
   }

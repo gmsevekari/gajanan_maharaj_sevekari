@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
@@ -8,6 +11,7 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
@@ -281,7 +285,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               l10n.quickActionsLabel.toUpperCase(),
               style: theme.textTheme.labelSmall?.copyWith(
                 letterSpacing: 1.2,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                color: theme.appColors.secondaryText,
               ),
             ),
             const SizedBox(height: 12),
@@ -294,10 +298,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: theme.colorScheme.onPrimary,
-                      disabledBackgroundColor: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.12),
-                      disabledForegroundColor: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.38),
+                      disabledBackgroundColor:
+                          theme.appColors.disabledBackground,
+                      disabledForegroundColor: theme.appColors.disabledText,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -345,8 +348,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.colorScheme.primary,
                           foregroundColor: theme.colorScheme.onPrimary,
-                          disabledBackgroundColor: Colors.grey.shade200,
-                          disabledForegroundColor: Colors.grey.shade400,
+                          disabledBackgroundColor:
+                              theme.appColors.disabledBackground,
+                          disabledForegroundColor: theme.appColors.disabledText,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -488,7 +492,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           l10n.remindersStatusLabel.toUpperCase(),
           style: theme.textTheme.labelSmall?.copyWith(
             letterSpacing: 1.2,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            color: theme.appColors.secondaryText,
           ),
         ),
         const SizedBox(height: 12),
@@ -518,9 +522,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                             ? toMarathiNumerals(dateStr)
                             : dateStr,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(
-                            alpha: 0.5,
-                          ),
+                          color: theme.appColors.secondaryText,
                         ),
                       ),
                     ],
@@ -537,9 +539,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     final statusText = isSent
                         ? l10n.reminderSentStatus
                         : l10n.reminderPendingStatus;
+                    final theme = Theme.of(context);
                     final statusColor = isSent
-                        ? Colors.green
-                        : theme.colorScheme.onSurface.withValues(alpha: 0.5);
+                        ? theme.appColors.success
+                        : theme.appColors.secondaryText;
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -555,10 +558,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                           Row(
                             children: [
                               if (isSent)
-                                const Icon(
+                                Icon(
                                   Icons.check_circle,
                                   size: 14,
-                                  color: Colors.green,
+                                  color: theme.appColors.success,
                                 ),
                               const SizedBox(width: 4),
                               Text(
@@ -601,7 +604,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               padding: const EdgeInsets.all(24.0),
               child: Text(
                 'Error: ${snapshot.error}',
-                style: const TextStyle(color: Colors.red),
+                style: TextStyle(color: theme.colorScheme.error),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -771,9 +774,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                                           ),
                                       leading: CircleAvatar(
                                         backgroundColor: isUpToDate
-                                            ? Colors.green.withValues(
-                                                alpha: 0.15,
-                                              )
+                                            ? theme.appColors.success
+                                                  .withValues(alpha: 0.15)
                                             : theme
                                                   .colorScheme
                                                   .primaryContainer,
@@ -782,7 +784,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                                               ? Icons.check_circle
                                               : Icons.person_outline,
                                           color: isUpToDate
-                                              ? Colors.green
+                                              ? theme.appColors.success
                                               : theme.colorScheme.primary,
                                         ),
                                       ),
@@ -821,7 +823,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                                                         "${_formatNumber(context, adhyay)}${isLast ? '' : ', '}",
                                                     style: TextStyle(
                                                       color: isDone
-                                                          ? Colors.green
+                                                          ? theme
+                                                                .appColors
+                                                                .success
                                                           : null,
                                                       fontWeight: isDone
                                                           ? FontWeight.bold
@@ -928,6 +932,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     ParayanEvent event,
     int groupNumber,
   ) {
+    final theme = Theme.of(context);
     showDialog(
       context: context,
       builder: (context) {
@@ -947,7 +952,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         leading: const Icon(Icons.phone),
                         title: Text(member.phone!),
                         trailing: IconButton(
-                          icon: const Icon(Icons.message, color: Colors.green),
+                          icon: Icon(
+                            Icons.message,
+                            color: theme.appColors.success,
+                          ),
                           onPressed: () async {
                             final number = member.phone!.replaceAll(
                               RegExp(r"[^\d+]"),
@@ -1261,7 +1269,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         width: 400, // Fixed width for consistent export look
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.appColors.surface,
           border: Border.all(color: theme.appColors.primarySwatch, width: 2),
         ),
         child: Column(
@@ -1351,10 +1359,12 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                   2: FlexColumnWidth(1.2),
                   3: FlexColumnWidth(1.2),
                 },
-                border: TableBorder.all(color: Colors.grey.shade300),
+                border: TableBorder.all(color: theme.colorScheme.outline),
                 children: [
                   TableRow(
-                    decoration: BoxDecoration(color: Colors.grey.shade100),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerLow,
+                    ),
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -1428,8 +1438,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                                       ? FontWeight.bold
                                       : FontWeight.normal,
                                   color: isDone
-                                      ? Colors.green.shade700
-                                      : Colors.grey.shade600,
+                                      ? theme.appColors.success
+                                      : theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -1438,7 +1448,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                               Icon(
                                 Icons.check,
                                 size: 12,
-                                color: Colors.green.shade700,
+                                color: theme.appColors.success,
                               ),
                             ],
                           ],
@@ -1472,19 +1482,22 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                   1: FlexColumnWidth(1.2),
                   2: FlexColumnWidth(1),
                 },
-                border: TableBorder.all(color: Colors.grey.shade300),
+                border: TableBorder.all(color: theme.colorScheme.outline),
                 children: [
                   TableRow(
-                    decoration: BoxDecoration(color: Colors.grey.shade100),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerLow,
+                    ),
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           l10n.parayanParticipant,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -1493,9 +1506,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         child: Text(
                           l10n.adhyaysLabel,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -1504,9 +1518,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         child: Text(
                           l10n.statusLabel,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -1520,7 +1535,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                           child: Text(
                             p.name,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 13),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: theme.colorScheme.onSurface,
+                            ),
                           ),
                         ),
                         Padding(
@@ -1529,10 +1547,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                             p.assignedAdhyays
                                 .map((a) => _formatNumberInternal(a, isMarathi))
                                 .join(', '),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                         ),
@@ -1545,8 +1563,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                               color: p.isFullyCompleted
-                                  ? Colors.green.shade700
-                                  : Colors.grey.shade600,
+                                  ? theme.appColors.success
+                                  : theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -1562,10 +1580,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             Center(
               child: Text(
                 l10n.jaiGajanan,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF9B3746), // Maroon color from theme
+                  color: theme.appColors.brandAccent, // Maroon color from theme
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -1587,6 +1605,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     required String title,
     required String dateString,
   }) {
+    final theme = Theme.of(context);
     // Fixed column widths — total 380px matches inner container (420 - 20*2)
     const double nameColW = 152.0;
     const double dayColW = 76.0;
@@ -1614,10 +1633,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           color: background,
           border: Border(
             right: rightBorder
-                ? BorderSide(color: Colors.grey.shade300)
+                ? BorderSide(color: theme.appColors.divider)
                 : BorderSide.none,
             bottom: bottomBorder
-                ? BorderSide(color: Colors.grey.shade300)
+                ? BorderSide(color: theme.appColors.divider)
                 : BorderSide.none,
           ),
         ),
@@ -1651,12 +1670,12 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isDone ? FontWeight.bold : FontWeight.normal,
-                color: isDone ? Colors.green.shade700 : Colors.grey.shade600,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             if (isDone) ...[
               const SizedBox(width: 2),
-              Icon(Icons.check, size: 11, color: Colors.green.shade700),
+              Icon(Icons.check, size: 11, color: theme.appColors.success),
             ],
           ],
         ),
@@ -1675,47 +1694,51 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             cell(
               child: Text(
                 l10n.parayanParticipant,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
+                  color: theme.colorScheme.onPrimary,
                 ),
               ),
               width: nameColW,
-              background: Colors.grey.shade200,
+              background: theme.appColors.primarySwatch,
               alignment: Alignment.center,
             ),
             cell(
               child: Text(
                 dayHeader(0),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
+                  color: theme.colorScheme.onPrimary,
                 ),
               ),
               width: dayColW,
-              background: Colors.grey.shade200,
+              background: theme.appColors.primarySwatch,
             ),
             cell(
               child: Text(
                 dayHeader(1),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
+                  color: theme.colorScheme.onPrimary,
                 ),
               ),
               width: dayColW,
-              background: Colors.grey.shade200,
+              background: theme.appColors.primarySwatch,
             ),
             cell(
               child: Text(
                 dayHeader(2),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
+                  color: theme.colorScheme.onPrimary,
                 ),
               ),
               width: dayColW,
-              background: Colors.grey.shade200,
+              background: theme.appColors.primarySwatch,
               rightBorder: false,
             ),
           ],
@@ -1728,7 +1751,6 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       final members = batchGroups[gi].value;
       final isLastGroup = gi == batchGroups.length - 1;
 
-      final theme = Theme.of(context);
       // ── Full-width group separator row ──
       if (event.status != 'upcoming' && event.status != 'enrolling')
         rows.add(
@@ -1738,7 +1760,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             padding: const EdgeInsets.symmetric(vertical: 5),
             decoration: BoxDecoration(
               color: theme.appColors.primarySwatch.withValues(alpha: 0.12),
-              border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+              border: Border(
+                bottom: BorderSide(color: theme.appColors.divider),
+              ),
             ),
             child: Text(
               l10n.groupLabel(_formatNumberInternal(groupNumber, isMarathi)),
@@ -1762,7 +1786,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 cell(
-                  child: Text(p.name, style: const TextStyle(fontSize: 12)),
+                  child: Text(
+                    p.name,
+                    style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface),
+                  ),
                   width: nameColW,
                   alignment: Alignment.centerLeft,
                   bottomBorder: !isLastRow,
@@ -1777,14 +1804,13 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       }
     }
 
-    final theme = Theme.of(context);
     return Material(
       color: Colors.transparent,
       child: Container(
         width: 440,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.appColors.surface,
           border: Border.all(color: theme.appColors.primarySwatch, width: 2),
         ),
         child: OverflowBox(
@@ -1818,9 +1844,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         ),
                         Text(
                           title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -1837,7 +1864,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               // Unified grid with outer border
               Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
+                  border: Border.all(color: theme.appColors.divider),
                 ),
                 child: Column(mainAxisSize: MainAxisSize.min, children: rows),
               ),
@@ -1848,10 +1875,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               Center(
                 child: Text(
                   l10n.jaiGajanan,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF9B3746),
+                    color: theme.appColors.brandAccent,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
@@ -1892,7 +1919,7 @@ class _StatCard extends StatelessWidget {
               textAlign: TextAlign.center,
               style: theme.textTheme.labelSmall?.copyWith(
                 letterSpacing: 1.2,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                color: theme.appColors.secondaryText,
               ),
             ),
             const SizedBox(height: 12),
@@ -1910,7 +1937,7 @@ class _StatCard extends StatelessWidget {
                 subtext,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  color: theme.appColors.secondaryText,
                 ),
               ),
             ],
@@ -1949,7 +1976,7 @@ class _ProgressStatCard extends StatelessWidget {
               textAlign: TextAlign.center,
               style: theme.textTheme.labelSmall?.copyWith(
                 letterSpacing: 1.2,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                color: theme.appColors.secondaryText,
               ),
             ),
             const SizedBox(height: 12),
@@ -1986,7 +2013,7 @@ class _ProgressStatCard extends StatelessWidget {
               subtext,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                color: theme.appColors.secondaryText,
               ),
             ),
           ],

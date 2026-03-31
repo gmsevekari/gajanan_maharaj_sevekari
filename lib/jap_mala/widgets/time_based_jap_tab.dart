@@ -359,7 +359,10 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
               decoration: BoxDecoration(
                 color: theme.cardTheme.color ?? theme.cardColor,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: theme.appColors.primarySwatch, width: 2),
+                border: Border.all(
+                  color: theme.appColors.primarySwatch,
+                  width: 2,
+                ),
               ),
               child: _chants == null
                   ? const Center(child: CircularProgressIndicator())
@@ -418,11 +421,14 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                 ),
                 decoration: BoxDecoration(
                   color: theme.cardTheme.color ?? theme.cardColor,
-                  border: Border.all(color: theme.appColors.primarySwatch, width: 2),
+                  border: Border.all(
+                    color: theme.appColors.primarySwatch,
+                    width: 2,
+                  ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -487,10 +493,13 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                 decoration: BoxDecoration(
                   color: theme.cardTheme.color ?? theme.cardColor,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: theme.appColors.primarySwatch, width: 2),
+                  border: Border.all(
+                    color: theme.appColors.primarySwatch,
+                    width: 2,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -512,7 +521,11 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.edit, size: 16, color: theme.appColors.primarySwatch[300]),
+                          Icon(
+                            Icons.edit,
+                            size: 16,
+                            color: theme.appColors.primarySwatch[300],
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             localizations.tapToEdit,
@@ -564,11 +577,14 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(color: theme.appColors.primarySwatch, width: 2),
+                        border: Border.all(
+                          color: theme.appColors.primarySwatch,
+                          width: 2,
+                        ),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.stop,
-                        color: Colors.red,
+                        color: theme.appColors.error,
                         size: 30,
                       ),
                     ),
@@ -604,7 +620,11 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.graphic_eq, color: theme.appColors.primarySwatch, size: 16),
+                Icon(
+                  Icons.graphic_eq,
+                  color: theme.appColors.primarySwatch,
+                  size: 16,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(

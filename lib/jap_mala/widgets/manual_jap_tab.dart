@@ -124,7 +124,7 @@ class _ManualJapTabState extends State<ManualJapTab>
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -170,7 +170,7 @@ class _ManualJapTabState extends State<ManualJapTab>
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -276,6 +276,8 @@ class _ManualJapTabState extends State<ManualJapTab>
                                                     theme.appColors.primarySwatch.shade800,
                                                 secondaryColor:
                                                     theme.appColors.primarySwatch.shade400,
+                                                borderAlphaColor:
+                                                    theme.appColors.secondaryText.withValues(alpha: 0.3),
                                               ),
                                             ),
                                           ),
@@ -291,12 +293,11 @@ class _ManualJapTabState extends State<ManualJapTab>
                                                   return Container(
                                                     width: 48,
                                                     height: 48,
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                          color: Colors.brown,
-                                                          shape:
-                                                              BoxShape.circle,
-                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          theme.appColors.primarySwatch.shade800,
+                                                      shape: BoxShape.circle,
+                                                    ),
                                                   );
                                                 },
                                           ),
@@ -384,8 +385,13 @@ class _ManualJapTabState extends State<ManualJapTab>
 class MalaThreadPainter extends CustomPainter {
   final Color primaryColor;
   final Color secondaryColor;
+  final Color borderAlphaColor;
 
-  MalaThreadPainter({required this.primaryColor, required this.secondaryColor});
+  MalaThreadPainter({
+    required this.primaryColor,
+    required this.secondaryColor,
+    required this.borderAlphaColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -417,7 +423,7 @@ class MalaThreadPainter extends CustomPainter {
 
     // Add a slight dark border to give it depth
     final borderPaint = Paint()
-      ..color = Colors.black.withValues(alpha: 0.3)
+      ..color = borderAlphaColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.5;
     canvas.drawRRect(rrect, borderPaint);

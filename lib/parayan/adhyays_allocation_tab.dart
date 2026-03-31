@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class AdhyaysAllocationTab extends StatefulWidget {
   final ParayanEvent event;
@@ -89,7 +90,7 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                   decoration: BoxDecoration(
                     color:
                         theme.cardTheme.color?.withValues(alpha: 0.8) ??
-                        const Color(0xFF1E1E1E).withValues(alpha: 0.8),
+                        theme.colorScheme.surfaceContainer.withValues(alpha: 0.8),
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
                     ),
@@ -152,7 +153,7 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                   decoration: BoxDecoration(
                     color:
                         theme.cardTheme.color?.withValues(alpha: 0.3) ??
-                        const Color(0xFF1E1E1E).withValues(alpha: 0.3),
+                        theme.colorScheme.surfaceContainer.withValues(alpha: 0.3),
                     borderRadius: const BorderRadius.vertical(
                       bottom: Radius.circular(12),
                     ),
@@ -256,7 +257,7 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                                         final rowDecoration = BoxDecoration(
                                           color: isEven
                                               ? Colors.transparent
-                                              : theme.hintColor.withValues(
+                                              : theme.appColors.secondaryText.withValues(
                                                   alpha: 0.03,
                                                 ),
                                         );
@@ -424,14 +425,14 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: theme.hintColor.withValues(alpha: 0.05),
+        color: theme.appColors.secondaryText.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: theme.hintColor.withValues(alpha: 0.1)),
+        border: Border.all(color: theme.appColors.secondaryText.withValues(alpha: 0.1)),
       ),
       child: Text(
         locale == 'mr' ? "वाटप अद्याप झाले नाही" : "Not allocated",
         style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.hintColor,
+          color: theme.appColors.secondaryText,
           fontSize: 10,
           fontStyle: FontStyle.italic,
         ),
@@ -446,22 +447,45 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
     bool isRead = false,
   }) {
     if (adhyay == null) return const SizedBox.shrink();
-    return Container(
+
+    final circle = Container(
       width: 24,
       height: 24,
       decoration: BoxDecoration(
-        color: isRead ? Colors.green : theme.colorScheme.primary,
+        color: theme.colorScheme.primary.withValues(alpha: 0.1),
         shape: BoxShape.circle,
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       alignment: Alignment.center,
       child: Text(
         _formatNumber(context, adhyay),
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: theme.colorScheme.onSurface,
           fontSize: 11,
           fontWeight: FontWeight.bold,
         ),
       ),
+    );
+
+    if (!isRead) return circle;
+
+    return Stack(
+      alignment: Alignment.center,
+      clipBehavior: Clip.none,
+      children: [
+        circle,
+        Positioned(
+          right: -16, // Anchor checkmark to the right without shifting the circle
+          child: Icon(
+            Icons.check_circle,
+            color: theme.appColors.success,
+            size: 14,
+          ),
+        ),
+      ],
     );
   }
 }

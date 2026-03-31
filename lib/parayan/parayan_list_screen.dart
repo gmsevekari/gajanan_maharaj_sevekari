@@ -51,18 +51,18 @@ class _ParayanListScreenState extends State<ParayanListScreen>
       appBar: AppBar(
         title: Text(
           localizations.parayanListTitle,
-          style: const TextStyle(
-            color: Colors.white,
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: theme.colorScheme.onPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: theme.appColors.primarySwatch,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          indicatorColor: Colors.white,
+          labelColor: theme.colorScheme.onPrimary,
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
+          indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: localizations.upcomingParayansTab),
             Tab(text: localizations.completedParayansTab),
@@ -173,7 +173,7 @@ class _ParayanListScreenState extends State<ParayanListScreen>
               Text(
                 noDataText,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  color: Colors.grey,
+                  color: theme.appColors.secondaryText,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
@@ -278,9 +278,7 @@ class _ParayanListScreenState extends State<ParayanListScreen>
                       Text(
                         typeLabel,
                         style: TextStyle(
-                          color: theme.colorScheme.onSurface.withValues(
-                            alpha: 0.6,
-                          ),
+                          color: theme.appColors.secondaryText,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -300,9 +298,7 @@ class _ParayanListScreenState extends State<ParayanListScreen>
                       Text(
                         dateRange,
                         style: TextStyle(
-                          color: theme.colorScheme.onSurface.withValues(
-                            alpha: 0.6,
-                          ),
+                          color: theme.appColors.secondaryText,
                         ),
                       ),
                     ],

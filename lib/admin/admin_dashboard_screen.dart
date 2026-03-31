@@ -98,9 +98,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             Text(
                               localizations.loggedInAs,
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurface.withValues(
-                                  alpha: 0.6,
-                                ),
+                                color: theme.appColors.secondaryText,
                               ),
                             ),
                             Text(
@@ -241,9 +239,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     Text(
                       subtitle,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(
-                          alpha: 0.6,
-                        ),
+                        color: theme.appColors.secondaryText,
                       ),
                     ),
                   ],

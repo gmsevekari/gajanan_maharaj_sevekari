@@ -7,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/admin/admin_session_service.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -160,7 +161,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     localizations.adminSignInInstruction,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                      color: theme.appColors.secondaryText,
                     ),
                   ),
                   const SizedBox(height: 48),

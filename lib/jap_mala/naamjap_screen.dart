@@ -20,11 +20,11 @@ class NaamjapScreen extends StatelessWidget {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: theme.appColors.primarySwatch,
-          iconTheme: const IconThemeData(color: Colors.white),
+          iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
           title: Text(
             localizations.naamjapTitle,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: theme.colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -54,13 +54,13 @@ class NaamjapScreen extends StatelessWidget {
                 ),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: theme.appColors.surface,
                     borderRadius: BorderRadius.circular(25.0),
-                    border: Border.all(color: Colors.grey[300]!, width: 1.5),
+                    border: Border.all(color: theme.appColors.divider, width: 1.5),
                   ),
                   child: TabBar(
-                    labelColor: Colors.white,
-                    unselectedLabelColor: Colors.grey[600],
+                    labelColor: theme.colorScheme.onPrimary,
+                    unselectedLabelColor: theme.appColors.secondaryText,
                     labelStyle: const TextStyle(fontWeight: FontWeight.bold),
                     unselectedLabelStyle: const TextStyle(
                       fontWeight: FontWeight.normal,

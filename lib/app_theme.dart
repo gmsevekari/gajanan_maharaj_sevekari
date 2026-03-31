@@ -11,7 +11,12 @@ class AppTheme {
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.orange,
       primary: Colors.orange,
+      onPrimary: Colors.white,
       secondary: Colors.amber,
+      surface: Colors.white,
+      onSurface: Colors.black,
+      onSurfaceVariant: Colors.black54,
+      outline: Colors.grey[300],
       brightness: Brightness.light,
     ),
     cardTheme: CardThemeData(
@@ -20,7 +25,7 @@ class AppTheme {
       shadowColor: Colors.orange,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Color(0xFFFF9800), width: 1),
+        side: BorderSide(color: const Color(0xFFFF9800), width: 1),
       ),
     ),
     iconTheme: IconThemeData(color: Colors.orange[400]),
@@ -30,7 +35,7 @@ class AppTheme {
         foregroundColor: Colors.orange[600], // Lighter text/icon color
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
-          side: BorderSide(color: Color(0xFFFF9800), width: 1),
+          side: const BorderSide(color: Color(0xFFFF9800), width: 1),
         ),
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
         textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -42,8 +47,22 @@ class AppTheme {
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
     ),
-    extensions: const <ThemeExtension<dynamic>>[
-      AppColors(primarySwatch: Colors.orange),
+    extensions: <ThemeExtension<dynamic>>[
+      AppColors(
+        primarySwatch: Colors.orange,
+        success: Colors.green,
+        warning: Colors.orange,
+        error: Colors.red,
+        divider: Colors.grey.shade300,
+        tableHeader: Colors.grey.shade200,
+        disabledBackground: Colors.grey.shade200,
+        disabledText: Colors.grey.shade400,
+        secondaryText: Colors.grey.shade600,
+        surface: Colors.white,
+        surfaceSubtle: Colors.white10,
+        brandAccent: const Color(0xFF9B3746),
+        onPrimarySubtle: Colors.white70,
+      ),
     ],
   );
 
@@ -57,26 +76,30 @@ class AppTheme {
     colorScheme: ColorScheme.fromSeed(
       seedColor: Colors.orange,
       primary: Colors.orange,
+      onPrimary: Colors.white,
       secondary: Colors.amber,
+      onSurface: Colors.white,
+      onSurfaceVariant: Colors.white70,
+      outline: Colors.grey,
       brightness: Brightness.dark,
     ),
     cardTheme: CardThemeData(
       elevation: 4.0,
       color: const Color(0xFF0A0805),
-      shadowColor: Color(0xFFE65100),
+      shadowColor: const Color(0xFFE65100),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
-        side: BorderSide(color: Color(0xFFFF9800), width: 1),
+        side: const BorderSide(color: Color(0xFFFF9800), width: 1),
       ),
     ),
     iconTheme: IconThemeData(color: Colors.orange[400]),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFF0A0805),
+        backgroundColor: const Color(0xFF0A0805),
         foregroundColor: Colors.orange[600], // Lighter text/icon color
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
-          side: BorderSide(color: Color(0xFFFF9800), width: 1),
+          side: const BorderSide(color: Color(0xFFFF9800), width: 1),
         ),
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
         textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -88,21 +111,87 @@ class AppTheme {
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
     ),
-    extensions: const <ThemeExtension<dynamic>>[
-      AppColors(primarySwatch: Colors.orange),
+    extensions: <ThemeExtension<dynamic>>[
+      AppColors(
+        primarySwatch: Colors.orange,
+        success: Colors.greenAccent,
+        warning: Colors.orangeAccent,
+        error: Colors.redAccent,
+        divider: Colors.grey.shade700,
+        tableHeader: Colors.grey.shade900,
+        disabledBackground: Colors.grey.shade800,
+        disabledText: Colors.grey.shade400,
+        secondaryText: Colors.grey.shade400,
+        surface: const Color(0xFF0A0805),
+        surfaceSubtle: Colors.white10,
+        brandAccent: const Color(0xFF9B3746),
+        onPrimarySubtle: Colors.white70,
+      ),
     ],
   );
 }
 
 class AppColors extends ThemeExtension<AppColors> {
   final MaterialColor primarySwatch;
+  final Color success;
+  final Color warning;
+  final Color error;
+  final Color divider;
+  final Color tableHeader;
+  final Color disabledBackground;
+  final Color disabledText;
+  final Color secondaryText;
+  final Color surface;
+  final Color surfaceSubtle;
+  final Color brandAccent;
+  final Color onPrimarySubtle;
 
-  const AppColors({required this.primarySwatch});
+  const AppColors({
+    required this.primarySwatch,
+    required this.success,
+    required this.warning,
+    required this.error,
+    required this.divider,
+    required this.tableHeader,
+    required this.disabledBackground,
+    required this.disabledText,
+    required this.secondaryText,
+    required this.surface,
+    required this.surfaceSubtle,
+    required this.brandAccent,
+    required this.onPrimarySubtle,
+  });
 
   @override
-  AppColors copyWith({MaterialColor? primarySwatch}) {
+  AppColors copyWith({
+    MaterialColor? primarySwatch,
+    Color? success,
+    Color? warning,
+    Color? error,
+    Color? divider,
+    Color? tableHeader,
+    Color? disabledBackground,
+    Color? disabledText,
+    Color? secondaryText,
+    Color? surface,
+    Color? surfaceSubtle,
+    Color? brandAccent,
+    Color? onPrimarySubtle,
+  }) {
     return AppColors(
       primarySwatch: primarySwatch ?? this.primarySwatch,
+      success: success ?? this.success,
+      warning: warning ?? this.warning,
+      error: error ?? this.error,
+      divider: divider ?? this.divider,
+      tableHeader: tableHeader ?? this.tableHeader,
+      disabledBackground: disabledBackground ?? this.disabledBackground,
+      disabledText: disabledText ?? this.disabledText,
+      secondaryText: secondaryText ?? this.secondaryText,
+      surface: surface ?? this.surface,
+      surfaceSubtle: surfaceSubtle ?? this.surfaceSubtle,
+      brandAccent: brandAccent ?? this.brandAccent,
+      onPrimarySubtle: onPrimarySubtle ?? this.onPrimarySubtle,
     );
   }
 
@@ -111,13 +200,44 @@ class AppColors extends ThemeExtension<AppColors> {
     if (other is! AppColors) {
       return this;
     }
-    // Snap to the other swatch cleanly
     return AppColors(
       primarySwatch: t < 0.5 ? primarySwatch : other.primarySwatch,
+      success: Color.lerp(success, other.success, t)!,
+      warning: Color.lerp(warning, other.warning, t)!,
+      error: Color.lerp(error, other.error, t)!,
+      divider: Color.lerp(divider, other.divider, t)!,
+      tableHeader: Color.lerp(tableHeader, other.tableHeader, t)!,
+      disabledBackground: Color.lerp(
+        disabledBackground,
+        other.disabledBackground,
+        t,
+      )!,
+      disabledText: Color.lerp(disabledText, other.disabledText, t)!,
+      secondaryText: Color.lerp(secondaryText, other.secondaryText, t)!,
+      surface: Color.lerp(surface, other.surface, t)!,
+      surfaceSubtle: Color.lerp(surfaceSubtle, other.surfaceSubtle, t)!,
+      brandAccent: Color.lerp(brandAccent, other.brandAccent, t)!,
+      onPrimarySubtle: Color.lerp(onPrimarySubtle, other.onPrimarySubtle, t)!,
     );
   }
 }
 
 extension AppColorsExtension on ThemeData {
-  AppColors get appColors => extension<AppColors>() ?? const AppColors(primarySwatch: Colors.orange);
+  AppColors get appColors =>
+      extension<AppColors>() ??
+      const AppColors(
+        primarySwatch: Colors.orange,
+        success: Colors.green,
+        warning: Colors.orange,
+        error: Colors.red,
+        divider: Colors.grey,
+        tableHeader: Colors.grey,
+        disabledBackground: Colors.grey,
+        disabledText: Colors.grey,
+        secondaryText: Colors.grey,
+        surface: Colors.white,
+        surfaceSubtle: Colors.white10,
+        brandAccent: Color(0xFF9B3746),
+        onPrimarySubtle: Colors.white70,
+      );
 }

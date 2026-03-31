@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
@@ -152,8 +153,8 @@ class _ParayanAdminAddParticipantsScreenState
                             onPressed: _submit,
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size.fromHeight(50),
-                              backgroundColor: theme.primaryColor,
-                              foregroundColor: Colors.white,
+                              backgroundColor: theme.colorScheme.primary,
+                              foregroundColor: theme.colorScheme.onPrimary,
                             ),
                             child: Text(l10n.submitAll),
                           ),
@@ -181,14 +182,14 @@ class _ParayanAdminAddParticipantsScreenState
                                 '${l10n.householdLabel} ${index + 1}',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: theme.primaryColor,
+                                  color: theme.colorScheme.primary,
                                 ),
                               ),
                               if (_groups.length > 1)
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.delete_outline,
-                                    color: Colors.red,
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: theme.appColors.error,
                                   ),
                                   onPressed: () => _removeGroup(index),
                                 ),
@@ -280,9 +281,9 @@ class _ParayanAdminAddParticipantsScreenState
                                   ),
                                   if (group.nameControllers.length > 1)
                                     IconButton(
-                                      icon: const Icon(
+                                      icon: Icon(
                                         Icons.remove_circle_outline,
-                                        color: Colors.red,
+                                        color: theme.appColors.error,
                                       ),
                                       onPressed: () =>
                                           _removeName(index, nameIndex),
@@ -308,7 +309,7 @@ class _ParayanAdminAddParticipantsScreenState
           ),
           if (_isSubmitting)
             Container(
-              color: Colors.black54,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.54),
               child: Center(
                 child: Card(
                   elevation: 8,
@@ -348,7 +349,7 @@ class _ParayanAdminAddParticipantsScreenState
                         Text(
                           '$_totalParticipantsToSubmit total participants',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.grey,
+                            color: theme.appColors.secondaryText,
                           ),
                           textAlign: TextAlign.center,
                         ),

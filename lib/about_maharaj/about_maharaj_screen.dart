@@ -44,11 +44,11 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
           localizations.aboutMaharajTitle,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: theme.colorScheme.onPrimary,
           ),
         ),
         backgroundColor: theme.appColors.primarySwatch,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -119,7 +119,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             heroTag: 'add',
             mini: true,
             backgroundColor: theme.appColors.primarySwatch.withAlpha(179),
-            foregroundColor: Colors.white,
+            foregroundColor: theme.colorScheme.onPrimary,
             onPressed: () => _changeFontSize(2.0),
             child: const Icon(Icons.add, size: 20),
           ),
@@ -128,7 +128,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             heroTag: 'remove',
             mini: true,
             backgroundColor: theme.appColors.primarySwatch.withAlpha(179),
-            foregroundColor: Colors.white,
+            foregroundColor: theme.colorScheme.onPrimary,
             onPressed: () => _changeFontSize(-2.0),
             child: const Icon(Icons.remove, size: 20),
           ),

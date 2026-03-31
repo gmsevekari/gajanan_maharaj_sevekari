@@ -188,11 +188,11 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
               : (locale == 'mr' ? _event!.titleMr : _event!.titleEn),
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: theme.colorScheme.onPrimary,
           ),
         ),
         backgroundColor: theme.appColors.primarySwatch,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -253,11 +253,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                               localizations.dateLabel,
                                               style: theme.textTheme.bodySmall
                                                   ?.copyWith(
-                                                    color:
-                                                        theme.brightness ==
-                                                            Brightness.dark
-                                                        ? Colors.grey[400]
-                                                        : Colors.grey[700],
+                                                    color: theme.colorScheme.onSurfaceVariant,
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: isLandscape
                                                         ? 10
@@ -284,7 +280,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                       Container(
                                         width: 1,
                                         height: isLandscape ? 20 : 30,
-                                        color: Colors.grey[800],
+                                        color: theme.colorScheme.outline,
                                         margin: EdgeInsets.symmetric(
                                           horizontal: isLandscape ? 8 : 16,
                                         ),
@@ -299,11 +295,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                               localizations.typeLabel,
                                               style: theme.textTheme.bodySmall
                                                   ?.copyWith(
-                                                    color:
-                                                        theme.brightness ==
-                                                            Brightness.dark
-                                                        ? Colors.grey[400]
-                                                        : Colors.grey[700],
+                                                    color: theme.colorScheme.onSurfaceVariant,
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: isLandscape
                                                         ? 10
@@ -351,8 +343,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                           : _event!.descriptionEn,
                                       style: theme.textTheme.bodySmall
                                           ?.copyWith(
-                                            color: theme.colorScheme.onSurface
-                                                .withValues(alpha: 0.8),
+                                            color: theme.appColors.secondaryText,
                                             height: 1.4,
                                           ),
                                     ),
@@ -517,12 +508,12 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: isActionEnabled
-                                    ? theme.colorScheme.primary
-                                    : Colors.grey.withValues(alpha: 0.1),
-                                foregroundColor: isActionEnabled
-                                    ? Colors.white
-                                    : Colors.grey,
+                                  backgroundColor: isActionEnabled
+                                      ? theme.colorScheme.primary
+                                      : theme.appColors.disabledBackground,
+                                  foregroundColor: isActionEnabled
+                                      ? theme.colorScheme.onPrimary
+                                      : theme.appColors.disabledText,
                                 elevation: isActionEnabled ? 2 : 0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
@@ -545,7 +536,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                     key: ValueKey('tab_bar_$_isRegistered'),
                     controller: _tabController,
                     labelColor: theme.colorScheme.primary,
-                    unselectedLabelColor: Colors.grey,
+                    unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
                     indicatorColor: theme.colorScheme.primary,
                     indicatorWeight: 3,
                     tabs: [
@@ -607,9 +598,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                           ? theme.textTheme.labelSmall?.copyWith(fontSize: 9)
                           : theme.textTheme.labelSmall)
                       ?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(
-                          alpha: 0.8,
-                        ),
+                        color: theme.appColors.secondaryText,
                         fontStyle: FontStyle.italic,
                       ),
               maxLines: isLandscape ? 1 : null,

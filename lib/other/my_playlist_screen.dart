@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
@@ -60,7 +61,7 @@ class MyPlaylistsScreen extends StatelessWidget {
                     child: Icon(
                       playlist.isDefault ? Icons.favorite : Icons.queue_music,
                       color: playlist.isDefault
-                          ? Colors.red
+                          ? theme.appColors.error
                           : theme.colorScheme.primary,
                     ),
                   ),
@@ -98,10 +99,10 @@ class MyPlaylistsScreen extends StatelessWidget {
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.delete,
                                 size: 20,
-                                color: Colors.grey,
+                                color: theme.appColors.secondaryText,
                               ),
                               onPressed: () => _deletePlaylist(
                                 context,

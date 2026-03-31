@@ -205,7 +205,7 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
               children: [
                 TabBar(
                   labelColor: theme.colorScheme.primary,
-                  unselectedLabelColor: Colors.grey,
+                  unselectedLabelColor: theme.appColors.secondaryText,
                   indicatorColor: theme.colorScheme.primary,
                   tabs: const [
                     Tab(icon: Icon(Icons.queue_music), text: 'Playlist'),
@@ -253,7 +253,7 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
             ),
             leading: Icon(
               isPlaying ? Icons.play_circle_fill : Icons.queue_music,
-              color: isPlaying ? theme.appColors.primarySwatch : Colors.grey,
+              color: isPlaying ? theme.appColors.primarySwatch : theme.appColors.secondaryText,
             ),
             title: Text(
               title!,
@@ -277,6 +277,7 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
       return const Center(child: Text('No content available.'));
     }
 
+    final theme = Theme.of(context);
     final langCode = locale.languageCode;
     final text =
         _currentContentData!['content_$langCode'] ??
@@ -300,7 +301,7 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
         }
       },
       child: Container(
-        color: Colors.white,
+        color: theme.appColors.surface,
         child: Stack(
           children: [
             SingleChildScrollView(
@@ -331,7 +332,7 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
                     backgroundColor: Theme.of(
                       context,
                     ).appColors.primarySwatch.withValues(alpha: 0.8),
-                    foregroundColor: Colors.white,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     onPressed: () => _changeFontSize(2.0),
                     child: const Icon(Icons.add),
                   ),
@@ -339,10 +340,8 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
                   FloatingActionButton(
                     heroTag: 'reduceSizePlayback',
                     mini: true,
-                    backgroundColor: Theme.of(
-                      context,
-                    ).appColors.primarySwatch.withValues(alpha: 0.8),
-                    foregroundColor: Colors.white,
+                    backgroundColor: theme.appColors.primarySwatch.withValues(alpha: 0.8),
+                    foregroundColor: theme.colorScheme.onPrimary,
                     onPressed: () => _changeFontSize(-2.0),
                     child: const Icon(Icons.remove),
                   ),

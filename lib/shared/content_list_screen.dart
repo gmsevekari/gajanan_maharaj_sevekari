@@ -134,7 +134,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
                             backgroundColor: theme.appColors.primarySwatch[300],
                             child: Text(
                               '${index + 1}',
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: theme.colorScheme.onPrimary),
                             ),
                           )
                         : null,

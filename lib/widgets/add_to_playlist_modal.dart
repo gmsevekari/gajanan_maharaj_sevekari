@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class AddToPlaylistModal extends StatelessWidget {
   final String aartiId;
@@ -35,6 +36,7 @@ class AddToPlaylistModal extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: playlists.length,
                   itemBuilder: (context, index) {
+                    final theme = Theme.of(context);
                     final playlist = playlists[index];
                     final isAdded = playlist.aartiIds.contains(aartiId);
 
@@ -54,7 +56,9 @@ class AddToPlaylistModal extends StatelessWidget {
                       },
                       secondary: Icon(
                         playlist.isDefault ? Icons.favorite : Icons.queue_music,
-                        color: playlist.isDefault ? Colors.red : null,
+                        color: playlist.isDefault
+                            ? theme.appColors.error
+                            : null,
                       ),
                     );
                   },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
@@ -110,9 +111,7 @@ class _ParayanCoordinationDashboardState
                         Text(
                           localizations.noCompletedParayans,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(
-                              alpha: 0.5,
-                            ),
+                  color: theme.appColors.secondaryText,
                           ),
                         ),
                       const SizedBox(height: 32),
@@ -284,7 +283,7 @@ class _StatCard extends StatelessWidget {
               textAlign: TextAlign.center,
               style: theme.textTheme.labelSmall?.copyWith(
                 letterSpacing: 1.2,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                color: theme.appColors.secondaryText,
               ),
             ),
             const SizedBox(height: 8),
@@ -379,7 +378,7 @@ class _OngoingCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
                         value: progress,
-                        backgroundColor: theme.colorScheme.onSurface.withValues(
+                        backgroundColor: theme.appColors.divider.withValues(
                           alpha: 0.1,
                         ),
                         valueColor: AlwaysStoppedAnimation<Color>(
@@ -394,7 +393,7 @@ class _OngoingCard extends StatelessWidget {
               const SizedBox(width: 12),
               Icon(
                 Icons.chevron_right,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                color: theme.appColors.divider,
               ),
             ],
           ),
@@ -466,7 +465,7 @@ class _UpcomingCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  color: theme.appColors.secondaryText,
                 ),
               ),
               const SizedBox(height: 24),

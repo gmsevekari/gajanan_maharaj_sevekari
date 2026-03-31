@@ -207,10 +207,10 @@ class _AdminTempleNotificationsScreenState
                       ElevatedButton.icon(
                         onPressed: _sendNotification,
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: 16),
                           backgroundColor: theme.colorScheme.primary,
-                          foregroundColor: Colors.white,
-                          textStyle: const TextStyle(
+                          foregroundColor: theme.colorScheme.onPrimary,
+                          textStyle: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),

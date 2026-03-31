@@ -63,7 +63,8 @@ class ContentDetailScreen extends StatefulWidget {
   State<ContentDetailScreen> createState() => _ContentDetailScreenState();
 }
 
-class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTickerProviderStateMixin {
+class _ContentDetailScreenState extends State<ContentDetailScreen>
+    with SingleTickerProviderStateMixin {
   late Future<Map<String, dynamic>> _contentFuture;
   double _fontSize = 18.0;
   TabController? _tabController;
@@ -73,7 +74,11 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
   void initState() {
     super.initState();
     _contentFuture = _loadContent();
-    _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTabIndex);
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTabIndex,
+    );
     _currentIndex = widget.initialTabIndex;
     _tabController!.addListener(() {
       if (mounted && _tabController!.indexIsChanging) {
@@ -159,8 +164,14 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final item = snapshot.data!;
-                    final title = item['title_${locale.languageCode}'] ?? item['title_en']!;
-                    return Text(title, textAlign: TextAlign.center, maxLines: 2,);
+                    final title =
+                        item['title_${locale.languageCode}'] ??
+                        item['title_en']!;
+                    return Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                    );
                   } else {
                     return const Text(''); // Placeholder while loading
                   }
@@ -183,24 +194,34 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
               return IconButton(
                 icon: Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? Colors.red : null,
+                  color: isFavorite ? theme.colorScheme.error : null,
                 ),
                 onPressed: () async {
                   final playlists = playlistProvider.playlists;
                   if (playlists.length == 1) {
                     final defaultPl = playlists.first;
                     if (isFavorite) {
-                      await playlistProvider.removeAarti(defaultPl.id, widget.assetPath);
+                      await playlistProvider.removeAarti(
+                        defaultPl.id,
+                        widget.assetPath,
+                      );
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(localizations.removedFromPlaylist)),
+                          SnackBar(
+                            content: Text(localizations.removedFromPlaylist),
+                          ),
                         );
                       }
                     } else {
-                      await playlistProvider.addAarti(defaultPl.id, widget.assetPath);
+                      await playlistProvider.addAarti(
+                        defaultPl.id,
+                        widget.assetPath,
+                      );
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(localizations.addedToPlaylist)),
+                          SnackBar(
+                            content: Text(localizations.addedToPlaylist),
+                          ),
                         );
                       }
                     }
@@ -213,7 +234,11 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
           ),
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -224,7 +249,10 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(
+              vertical: 8.0,
+              horizontal: 16.0,
+            ),
             child: _buildSegmentedControl(context, localizations),
           ),
           Expanded(
@@ -258,38 +286,45 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
       ),
       floatingActionButton: _currentIndex == 0
           ? Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            heroTag: 'add',
-            mini: true,
-            backgroundColor: theme.appColors.primarySwatch.withAlpha(179),
-            foregroundColor: Colors.white,
-            onPressed: () => _changeFontSize(2.0),
-            child: const Icon(Icons.add, size: 20),
-          ),
-          const SizedBox(height: 8),
-          FloatingActionButton(
-            heroTag: 'remove',
-            mini: true,
-            backgroundColor: theme.appColors.primarySwatch.withAlpha(179),
-            foregroundColor: Colors.white,
-            onPressed: () => _changeFontSize(-2.0),
-            child: const Icon(Icons.remove, size: 20),
-          ),
-        ],
-      )
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  heroTag: 'add',
+                  mini: true,
+                  backgroundColor: theme.appColors.primarySwatch.withValues(
+                    alpha: 0.7,
+                  ),
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  onPressed: () => _changeFontSize(2.0),
+                  child: const Icon(Icons.add, size: 20),
+                ),
+                const SizedBox(height: 8),
+                FloatingActionButton(
+                  heroTag: 'remove',
+                  mini: true,
+                  backgroundColor: theme.appColors.primarySwatch.withValues(
+                    alpha: 0.7,
+                  ),
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  onPressed: () => _changeFontSize(-2.0),
+                  child: const Icon(Icons.remove, size: 20),
+                ),
+              ],
+            )
           : null,
     );
   }
 
   Widget _buildSegmentedControl(
-      BuildContext context, AppLocalizations localizations) {
+    BuildContext context,
+    AppLocalizations localizations,
+  ) {
+    final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(25.0),
-        border: Border.all(color: Colors.grey[300]!, width: 1.5),
+        border: Border.all(color: theme.colorScheme.outline, width: 1.5),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -302,7 +337,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
   }
 
   Widget _buildSegment(BuildContext context, String text, int index) {
-    bool isSelected = _currentIndex == index;
+    final isSelected = _currentIndex == index;
     final theme = Theme.of(context);
     return Expanded(
       child: GestureDetector(
@@ -312,7 +347,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
-            color: isSelected ? theme.appColors.primarySwatch : Colors.white,
+            color: isSelected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(25.0),
           ),
           padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -322,21 +359,27 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
               if (index == 0) // Read tab
                 Icon(
                   Icons.queue_music,
-                  color: isSelected ? Colors.white : Colors.grey[700],
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.colorScheme.onSurfaceVariant,
                   size: 20,
                 ),
               if (index == 0) const SizedBox(width: 8),
               if (index == 1) // Listen tab
                 Icon(
                   Icons.play_arrow,
-                  color: isSelected ? Colors.white : Colors.grey[700],
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.colorScheme.onSurfaceVariant,
                   size: 20,
                 ),
               if (index == 1) const SizedBox(width: 8),
               Text(
                 text,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.grey[800],
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.colorScheme.onSurface,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
@@ -367,7 +410,10 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
             child: Text(
               text,
               textAlign: TextAlign.center,
-              style: fontProvider.marathiTextStyle.copyWith(fontSize: _fontSize, height: 1.6),
+              style: fontProvider.marathiTextStyle.copyWith(
+                fontSize: _fontSize,
+                height: 1.6,
+              ),
             ),
           );
         } else {
@@ -377,137 +423,161 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
     );
   }
 
-  Widget _buildListenTab(BuildContext context, Locale locale, AppLocalizations localizations) {
+  Widget _buildListenTab(
+    BuildContext context,
+    Locale locale,
+    AppLocalizations localizations,
+  ) {
     final theme = Theme.of(context);
 
     return FutureBuilder<Map<String, dynamic>>(
-        future: _contentFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final data = snapshot.data!;
-            final videoId = data['youtube_video_id'];
-            final title = data['title_${locale.languageCode}'] ?? data['title_en']!;
+      future: _contentFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          final data = snapshot.data!;
+          final videoId = data['youtube_video_id'];
+          final title =
+              data['title_${locale.languageCode}'] ?? data['title_en']!;
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Card(
+                  elevation: theme.cardTheme.elevation,
+                  shape: theme.cardTheme.shape,
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.asset(
+                    widget.imagePath,
+                    fit: BoxFit.cover, // Ensures the image covers the card area
+                    width: double.infinity,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'resources/images/gajanan_maharaj/Gajanan_Maharaj.png', // A generic default
+                        fit: BoxFit.cover, // Also apply fit to the error image
+                        width: double.infinity,
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+                if (videoId != null && videoId.isNotEmpty)
                   Card(
-                    elevation: theme.cardTheme.elevation,
-                    shape: theme.cardTheme.shape,
-                    clipBehavior: Clip.antiAlias,
-                    child: Image.asset(
-                      widget.imagePath,
-                      fit: BoxFit.cover, // Ensures the image covers the card area
-                      width: double.infinity,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          'resources/images/gajanan_maharaj/Gajanan_Maharaj.png', // A generic default
-                          fit: BoxFit.cover, // Also apply fit to the error image
-                          width: double.infinity,
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  if (videoId != null && videoId.isNotEmpty)
-                    Card(
-                        elevation: 4.0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                        clipBehavior: Clip.antiAlias,
-                        child: CrossPlatformYoutubePlayer(
-                          videoId: videoId,
-                          autoPlay: widget.autoPlay,
-                          onLaunchYoutube: () => _launchYoutube(videoId),
-                          onEnded: () {
-                            if (widget.currentIndex < widget.contentList.length - 1) {
-                              _navigateToItem(widget.currentIndex + 1);
-                            }
-                          },
-                        ))
-                  else
-                    Card(
-                      elevation: 4.0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                      child: const SizedBox(
-                        height: 200,
-                        child: Center(child: Text('Video unavailable')),
-                      ),
-                    ),
-                  const SizedBox(height: 16),
-                  Text(
-                    title,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: theme.colorScheme.secondary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildDecorativeDivider(context),
-                  const SizedBox(height: 24),
-                  if (videoId != null && videoId.isNotEmpty)
-                    Center(
-                      child: Column(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: IconButton(
-                              icon: Icon(Icons.share, color: theme.colorScheme.primary),
-                              onPressed: () {
-                                Share.share(
-                                    'Check out this content: https://www.youtube.com/watch?v=$videoId');
-                              },
-                              iconSize: 32.0,
-                              padding: const EdgeInsets.all(16.0),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(localizations.share, style: TextStyle(color: theme.colorScheme.primary)),
-                        ],
-                      ),
-                    ),
-                  const SizedBox(height: 32),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                    decoration: BoxDecoration(
-                      color: theme.appColors.primarySwatch.withOpacity(0.1),
+                    elevation: 4.0,
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    clipBehavior: Clip.antiAlias,
+                    child: CrossPlatformYoutubePlayer(
+                      videoId: videoId,
+                      autoPlay: widget.autoPlay,
+                      onLaunchYoutube: () => _launchYoutube(videoId),
+                      onEnded: () {
+                        if (widget.currentIndex <
+                            widget.contentList.length - 1) {
+                          _navigateToItem(widget.currentIndex + 1);
+                        }
+                      },
+                    ),
+                  )
+                else
+                  Card(
+                    elevation: 4.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: const SizedBox(
+                      height: 200,
+                      child: Center(child: Text('Video unavailable')),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                Text(
+                  title,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: theme.colorScheme.secondary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                _buildDecorativeDivider(context),
+                const SizedBox(height: 24),
+                if (videoId != null && videoId.isNotEmpty)
+                  Center(
+                    child: Column(
                       children: [
-                        Icon(Icons.wifi, color: theme.colorScheme.secondary),
-                        const SizedBox(width: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surface,
+                            borderRadius: BorderRadius.circular(12.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: theme.appColors.surfaceSubtle,
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.share,
+                              color: theme.colorScheme.primary,
+                            ),
+                            onPressed: () {
+                              Share.share(
+                                'Check out this content: https://www.youtube.com/watch?v=$videoId',
+                              );
+                            },
+                            iconSize: 32.0,
+                            padding: const EdgeInsets.all(16.0),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
                         Text(
-                          localizations.internetRequired,
-                          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.secondary),
+                          localizations.share,
+                          style: TextStyle(color: theme.colorScheme.primary),
                         ),
                       ],
                     ),
-                  )
-                ],
-              ),
-            );
-          } else {
-            return const Center(child: Text('No data available'));
-          }
-        });
+                  ),
+                const SizedBox(height: 32),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 12.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.appColors.primarySwatch.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.wifi, color: theme.colorScheme.secondary),
+                      const SizedBox(width: 8),
+                      Text(
+                        localizations.internetRequired,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.secondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        } else {
+          return const Center(child: Text('No data available'));
+        }
+      },
+    );
   }
 
   Widget _buildDecorativeDivider(BuildContext context) {
@@ -515,12 +585,23 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> with SingleTi
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(height: 1, width: 50, color: theme.appColors.primarySwatch[200]),
+        Container(
+          height: 1,
+          width: 50,
+          color: theme.appColors.primarySwatch[200],
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Icon(Icons.music_note, color: theme.appColors.primarySwatch[400]),
+          child: Icon(
+            Icons.music_note,
+            color: theme.appColors.primarySwatch[400],
+          ),
         ),
-        Container(height: 1, width: 50, color: theme.appColors.primarySwatch[200]),
+        Container(
+          height: 1,
+          width: 50,
+          color: theme.appColors.primarySwatch[200],
+        ),
       ],
     );
   }

@@ -9,6 +9,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -267,6 +268,7 @@ class NotificationManager {
     SharedPreferences prefs,
   ) async {
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     final bool? shouldAllow = await showDialog<bool>(
       context: context,
@@ -297,7 +299,7 @@ class NotificationManager {
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
             TextButton(
-              style: TextButton.styleFrom(foregroundColor: Colors.grey[600]),
+              style: TextButton.styleFrom(foregroundColor: theme.appColors.secondaryText),
               child: Text(localizations.notificationDialogDeny),
               onPressed: () {
                 Navigator.of(dialogContext).pop(false);

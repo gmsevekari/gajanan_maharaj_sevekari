@@ -408,9 +408,7 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                         Text(
                           localizations.remindersFixedLabel,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(
-                              alpha: 0.7,
-                            ),
+                            color: theme.appColors.secondaryText,
                           ),
                         ),
                       ],

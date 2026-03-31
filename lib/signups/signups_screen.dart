@@ -20,12 +20,12 @@ class SignupsScreen extends StatelessWidget {
           localizations.signupsTitle,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: theme.colorScheme.onPrimary,
           ),
         ),
         backgroundColor:
             theme.appColors.primarySwatch, // Ensure AppBar theme is consistent
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),

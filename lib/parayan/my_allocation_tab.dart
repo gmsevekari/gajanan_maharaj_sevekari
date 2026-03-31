@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:provider/provider.dart';
 
 class MyAllocationTab extends StatefulWidget {
@@ -140,6 +141,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
               );
 
             Widget buildParticipantCard(int pIndex) {
+              final theme = Theme.of(context);
               final participant = sortedParticipants[pIndex];
 
               final int groupSize = (widget.event.type == ParayanType.threeDay)
@@ -281,11 +283,11 @@ class _MyAllocationTabState extends State<MyAllocationTab>
 
     return Card(
       margin: EdgeInsets.zero,
-      color: theme.cardTheme.color ?? const Color(0xFF1E1E1E),
+      color: theme.cardTheme.color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: isRead ? Colors.green.withValues(alpha: 0.5) : Colors.white10,
+          color: isRead ? theme.appColors.success.withValues(alpha: 0.5) : theme.appColors.divider,
           width: 1,
         ),
       ),
@@ -299,11 +301,11 @@ class _MyAllocationTabState extends State<MyAllocationTab>
               height: 40,
               decoration: BoxDecoration(
                 color: isRead
-                    ? Colors.green
+                    ? theme.appColors.success
                     : theme.colorScheme.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isRead ? Colors.green : theme.colorScheme.primary,
+                  color: isRead ? theme.appColors.success : theme.colorScheme.primary,
                   width: 2,
                 ),
               ),
@@ -311,7 +313,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
               child: Icon(
                 Icons.menu_book,
                 size: 20,
-                color: isRead ? Colors.white : theme.colorScheme.primary,
+                color: isRead ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
               ),
             ),
             const SizedBox(width: 16),
@@ -329,8 +331,8 @@ class _MyAllocationTabState extends State<MyAllocationTab>
               style: ElevatedButton.styleFrom(
                 backgroundColor: canInteract
                     ? theme.colorScheme.primary
-                    : Colors.grey.withValues(alpha: 0.1),
-                foregroundColor: canInteract ? Colors.white : Colors.grey,
+                    : theme.appColors.disabledBackground,
+                foregroundColor: canInteract ? theme.colorScheme.onPrimary : theme.appColors.disabledText,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -340,7 +342,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
             ),
             const SizedBox(width: 8),
             if (isRead)
-              const Icon(Icons.check_circle, color: Colors.green)
+              Icon(Icons.check_circle, color: theme.appColors.success)
             else
               ElevatedButton(
                 onPressed: canInteract
@@ -349,8 +351,8 @@ class _MyAllocationTabState extends State<MyAllocationTab>
                 style: ElevatedButton.styleFrom(
                   backgroundColor: canInteract
                       ? theme.colorScheme.primary
-                      : Colors.grey.withValues(alpha: 0.1),
-                  foregroundColor: canInteract ? Colors.white : Colors.grey,
+                      : theme.appColors.disabledBackground,
+                  foregroundColor: canInteract ? theme.colorScheme.onPrimary : theme.appColors.disabledText,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),

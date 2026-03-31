@@ -5,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/deeplink_manager.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -55,11 +56,11 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(
-        0xFFFFA500,
-      ), // Saffron/Orange Background from pubspec
+      backgroundColor:
+          theme.colorScheme.primary, // Saffron/Orange Background from theme
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -80,13 +81,13 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
                 const SizedBox(height: 24),
                 // The text you wanted to add
-                const Text(
+                Text(
                   'जय गजानन',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF9B3746),
+                    color: theme.appColors.brandAccent,
                   ),
                 ),
                 const SizedBox(height: 64), // Extra space for copyright
@@ -107,8 +108,8 @@ class _SplashScreenState extends State<SplashScreen> {
                       DateTime.now().year.toString(),
                     ),
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Color(0xFF9B3746),
+              style: TextStyle(
+                color: theme.appColors.brandAccent,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),

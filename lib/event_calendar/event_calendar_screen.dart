@@ -257,11 +257,11 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
               : localizations.allEventsList,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: theme.colorScheme.onPrimary,
           ),
         ),
         backgroundColor: theme.appColors.primarySwatch,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -290,9 +290,9 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          indicatorColor: Colors.white,
+          labelColor: theme.colorScheme.onPrimary,
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
+          indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: localizations.calendarTitle),
             Tab(text: localizations.specialEvents),
@@ -337,7 +337,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
           eventLoader: _getEventsForDay,
           calendarStyle: CalendarStyle(
             weekendTextStyle: TextStyle(
-              color: Theme.of(context).appColors.primarySwatch.shade700,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           headerStyle: HeaderStyle(
@@ -440,7 +440,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: theme.cardTheme.elevation,
       color: isSelected
-          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
+          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.15)
           : theme.cardTheme.color,
       shape: isSelected
           ? RoundedRectangleBorder(
@@ -457,7 +457,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
               eventDateString,
               style: theme.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                color: theme.appColors.secondaryText,
               ),
             ),
             const SizedBox(height: 8),
@@ -480,7 +480,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
                 Text(
                   endTime != null ? '$startTime - $endTime' : startTime,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                    color: theme.appColors.secondaryText,
                   ),
                 ),
               ],
@@ -507,10 +507,8 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
                               ? TextDecoration.underline
                               : TextDecoration.none,
                           color: event.address != null
-                              ? Colors.blue
-                              : theme.colorScheme.onSurface.withValues(
-                                  alpha: 0.7,
-                                ),
+                              ? theme.colorScheme.primary
+                              : theme.appColors.secondaryText,
                         ),
                       ),
                     ),
@@ -521,13 +519,13 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
             if (details.isNotEmpty) ...[
               const SizedBox(height: 12),
               Divider(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                color: theme.appColors.divider,
               ),
               const SizedBox(height: 4),
               Text(
                 details,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                  color: theme.appColors.secondaryText,
                 ),
               ),
             ],

@@ -137,9 +137,10 @@ class _NamavaliScreenState extends State<NamavaliScreen>
     BuildContext context,
     AppLocalizations localizations,
   ) {
+    final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: theme.appColors.tableHeader,
         borderRadius: BorderRadius.circular(25.0),
       ),
       child: Row(
@@ -170,7 +171,7 @@ class _NamavaliScreenState extends State<NamavaliScreen>
             border: Border.all(
               color: isSelected
                   ? theme.appColors.primarySwatch
-                  : Colors.grey[200]!,
+                  : theme.appColors.tableHeader,
               width: 1.5,
             ),
           ),
@@ -180,21 +181,21 @@ class _NamavaliScreenState extends State<NamavaliScreen>
               if (index == 0) // Read tab
                 Icon(
                   Icons.format_list_numbered,
-                  color: isSelected ? Colors.white : Colors.grey[600],
+                  color: isSelected ? theme.colorScheme.onPrimary : theme.appColors.secondaryText,
                   size: 20,
                 ),
               if (index == 0) const SizedBox(width: 8),
               if (index == 1) // Listen tab
                 Icon(
                   Icons.play_arrow,
-                  color: isSelected ? Colors.white : Colors.grey[600],
+                  color: isSelected ? theme.colorScheme.onPrimary : theme.appColors.secondaryText,
                   size: 20,
                 ),
               if (index == 1) const SizedBox(width: 8),
               Text(
                 text,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.grey[800],
+                  color: isSelected ? theme.colorScheme.onPrimary : theme.appColors.disabledText,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
@@ -377,11 +378,11 @@ class _NamavaliScreenState extends State<NamavaliScreen>
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: theme.cardTheme.color ?? theme.cardColor,
                             borderRadius: BorderRadius.circular(12.0),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
+                                color: theme.appColors.divider.withValues(alpha: 0.3),
                                 spreadRadius: 1,
                                 blurRadius: 5,
                                 offset: const Offset(0, 3),
