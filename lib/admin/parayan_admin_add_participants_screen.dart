@@ -25,6 +25,9 @@ class _ParayanAdminAddParticipantsScreenState
   final List<_GroupData> _groups = [_GroupData()];
   final ParayanService _parayanService = ParayanService();
   bool _isSubmitting = false;
+  int _totalHouseholdsToSubmit = 0;
+  int _completedHouseholds = 0;
+  int _totalParticipantsToSubmit = 0;
 
   void _addGroup() {
     setState(() {
@@ -71,10 +74,23 @@ class _ParayanAdminAddParticipantsScreenState
         };
       }).toList();
 
-      await _parayanService.adminAddParticipants(
-        eventId: widget.event.id,
-        groups: groupsToUpload,
-      );
+      setState(() {
+        _completedHouseholds = 0;
+        _totalHouseholdsToSubmit = groupsToUpload.length;
+        _totalParticipantsToSubmit = groupsToUpload.fold(
+          0,
+          (sum, g) => sum + (g['names'] as List).length,
+        );
+      });
+
+      for (var group in groupsToUpload) {
+        await _parayanService.adminAddParticipants(
+          eventId: widget.event.id,
+          groups: [group],
+        );
+        _completedHouseholds++;
+        if (mounted) setState(() {});
+      }
 
       if (mounted) {
         Navigator.pop(context, true);
@@ -111,9 +127,11 @@ class _ParayanAdminAddParticipantsScreenState
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.addParticipantLabel)),
-      body: _isSubmitting
-          ? const Center(child: CircularProgressIndicator())
-          : Form(
+      body: Stack(
+        children: [
+          IgnorePointer(
+            ignoring: _isSubmitting,
+            child: Form(
               key: _formKey,
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
@@ -287,6 +305,61 @@ class _ParayanAdminAddParticipantsScreenState
                 },
               ),
             ),
+          ),
+          if (_isSubmitting)
+            Container(
+              color: Colors.black54,
+              child: Center(
+                child: Card(
+                  elevation: 8,
+                  margin: const EdgeInsets.symmetric(horizontal: 32),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(
+                          value: _totalHouseholdsToSubmit > 0
+                              ? _completedHouseholds / _totalHouseholdsToSubmit
+                              : null,
+                          backgroundColor: theme.colorScheme.primary.withValues(
+                            alpha: 0.1,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          l10n.progressLabel,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '$_completedHouseholds / $_totalHouseholdsToSubmit ${l10n.householdLabel}',
+                          style: theme.textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '$_totalParticipantsToSubmit total participants',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: Colors.grey,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
