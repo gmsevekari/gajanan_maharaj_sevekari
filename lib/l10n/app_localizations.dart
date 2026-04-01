@@ -302,6 +302,42 @@ abstract class AppLocalizations {
   /// **'Indigo'**
   String get themeIndigo;
 
+  /// No description provided for @themeTulsi.
+  ///
+  /// In en, this message translates to:
+  /// **'Tulsi Green'**
+  String get themeTulsi;
+
+  /// No description provided for @themeKumkum.
+  ///
+  /// In en, this message translates to:
+  /// **'Red'**
+  String get themeKumkum;
+
+  /// No description provided for @themeLotus.
+  ///
+  /// In en, this message translates to:
+  /// **'Lotus Pink'**
+  String get themeLotus;
+
+  /// No description provided for @themePeacock.
+  ///
+  /// In en, this message translates to:
+  /// **'Peacock Blue'**
+  String get themePeacock;
+
+  /// No description provided for @themeCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get themeCustom;
+
+  /// No description provided for @customColorPicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Your Color'**
+  String get customColorPicker;
+
   /// No description provided for @english.
   ///
   /// In en, this message translates to:

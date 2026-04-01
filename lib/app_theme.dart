@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 
-enum ThemePreset { saffron, maroon, sandalwood, indigo }
+enum ThemePreset {
+  saffron,
+  maroon,
+  sandalwood,
+  indigo,
+  tulsi,
+  kumkum,
+  lotus,
+  peacock,
+  custom,
+}
 
 class AppTheme {
   // ─────────────────────────────────────────────────────────────────────────
@@ -142,7 +152,11 @@ class AppTheme {
   // THEME FACTORY — returns the original themes for saffron, creates
   // structurally identical copies with swapped colors for other presets.
   // ─────────────────────────────────────────────────────────────────────────
-  static ThemeData getTheme(ThemePreset preset, bool isDark) {
+  static ThemeData getTheme(
+    ThemePreset preset,
+    bool isDark, {
+    Color? customColor,
+  }) {
     if (preset == ThemePreset.saffron) {
       return isDark ? darkTheme : lightTheme;
     }
@@ -171,7 +185,7 @@ class AppTheme {
         lightCardBorder = primary;
         lightIconColor = const Color(0xFFB14A5B);
         lightButtonFg = const Color(0xFF7D2C39);
-        darkCardColor = const Color(0xFF0A0805);
+        darkCardColor = const Color(0xFF140A0C);
         darkShadowColor = const Color(0xFF5D1D27);
         darkCardBorder = primary;
         darkIconColor = const Color(0xFFB14A5B);
@@ -185,7 +199,7 @@ class AppTheme {
         lightCardBorder = primary;
         lightIconColor = const Color(0xFFC98B52);
         lightButtonFg = const Color(0xFF9A5F2A);
-        darkCardColor = const Color(0xFF0A0805);
+        darkCardColor = const Color(0xFF120D08);
         darkShadowColor = const Color(0xFF6E451F);
         darkCardBorder = primary;
         darkIconColor = const Color(0xFFC98B52);
@@ -199,11 +213,83 @@ class AppTheme {
         lightCardBorder = primary;
         lightIconColor = const Color(0xFF5C6BC0);
         lightButtonFg = const Color(0xFF303F9F);
-        darkCardColor = const Color(0xFF0A0805);
+        darkCardColor = const Color(0xFF0A0B14);
         darkShadowColor = const Color(0xFF26316D);
         darkCardBorder = primary;
         darkIconColor = const Color(0xFF5C6BC0);
         darkButtonFg = const Color(0xFF7986CB);
+        break;
+      case ThemePreset.tulsi:
+        primary = const Color(0xFF2E7D32);
+        secondary = const Color(0xFFFFD54F);
+        swatch = _createMaterialColor(primary);
+        lightCardColor = const Color(0xFFE8F5E9);
+        lightCardBorder = primary;
+        lightIconColor = const Color(0xFF43A047);
+        lightButtonFg = const Color(0xFF1B5E20);
+        darkCardColor = const Color(0xFF0A1A0D);
+        darkShadowColor = const Color(0xFF1B5E20);
+        darkCardBorder = primary;
+        darkIconColor = const Color(0xFF66BB6A);
+        darkButtonFg = const Color(0xFF81C784);
+        break;
+      case ThemePreset.kumkum:
+        primary = const Color(0xFFE53935);
+        secondary = const Color(0xFFFFD700);
+        swatch = _createMaterialColor(primary);
+        lightCardColor = const Color(0xFFFFEBEE);
+        lightCardBorder = primary;
+        lightIconColor = const Color(0xFFEF5350);
+        lightButtonFg = const Color(0xFFC62828);
+        darkCardColor = const Color(0xFF1A0808);
+        darkShadowColor = const Color(0xFF8E1A1A);
+        darkCardBorder = primary;
+        darkIconColor = const Color(0xFFEF5350);
+        darkButtonFg = const Color(0xFFEF9A9A);
+        break;
+      case ThemePreset.lotus:
+        primary = const Color(0xFFE91E90);
+        secondary = const Color(0xFFCE93D8);
+        swatch = _createMaterialColor(primary);
+        lightCardColor = const Color(0xFFFCE4EC);
+        lightCardBorder = primary;
+        lightIconColor = const Color(0xFFEC407A);
+        lightButtonFg = const Color(0xFFC2185B);
+        darkCardColor = const Color(0xFF1A0812);
+        darkShadowColor = const Color(0xFF880E4F);
+        darkCardBorder = primary;
+        darkIconColor = const Color(0xFFF06292);
+        darkButtonFg = const Color(0xFFF48FB1);
+        break;
+      case ThemePreset.peacock:
+        primary = const Color(0xFF00897B);
+        secondary = const Color(0xFF4DD0E1);
+        swatch = _createMaterialColor(primary);
+        lightCardColor = const Color(0xFFE0F2F1);
+        lightCardBorder = primary;
+        lightIconColor = const Color(0xFF26A69A);
+        lightButtonFg = const Color(0xFF00695C);
+        darkCardColor = const Color(0xFF071512);
+        darkShadowColor = const Color(0xFF004D40);
+        darkCardBorder = primary;
+        darkIconColor = const Color(0xFF4DB6AC);
+        darkButtonFg = const Color(0xFF80CBC4);
+        break;
+      case ThemePreset.custom:
+        if (customColor == null) return isDark ? darkTheme : lightTheme;
+        final derived = _deriveThemeColors(customColor);
+        primary = customColor;
+        secondary = derived['secondary']!;
+        swatch = _createMaterialColor(primary);
+        lightCardColor = derived['lightCardColor']!;
+        lightCardBorder = primary;
+        lightIconColor = derived['lightIconColor']!;
+        lightButtonFg = derived['lightButtonFg']!;
+        darkCardColor = derived['darkCardColor']!;
+        darkShadowColor = derived['darkShadowColor']!;
+        darkCardBorder = primary;
+        darkIconColor = derived['darkIconColor']!;
+        darkButtonFg = derived['darkButtonFg']!;
         break;
       default:
         return isDark ? darkTheme : lightTheme;
@@ -355,6 +441,38 @@ class AppTheme {
         ],
       );
     }
+  }
+
+  /// Algorithmically derives all theme color variants from a single [baseColor]
+  /// using HSL transformations. Used by the custom theme preset.
+  static Map<String, Color> _deriveThemeColors(Color baseColor) {
+    final hsl = HSLColor.fromColor(baseColor);
+
+    return {
+      // Secondary: analogous hue (+60°), vibrant
+      'secondary': hsl
+          .withHue((hsl.hue + 60) % 360)
+          .withSaturation(0.7)
+          .withLightness(0.55)
+          .toColor(),
+
+      // Light mode
+      'lightCardColor': hsl.withSaturation(0.18).withLightness(0.95).toColor(),
+      'lightIconColor': hsl
+          .withSaturation((hsl.saturation * 0.85).clamp(0.3, 0.8))
+          .withLightness(0.50)
+          .toColor(),
+      'lightButtonFg': hsl
+          .withSaturation((hsl.saturation * 0.9).clamp(0.3, 0.8))
+          .withLightness(0.28)
+          .toColor(),
+
+      // Dark mode — tinted backgrounds instead of flat black
+      'darkCardColor': hsl.withSaturation(0.30).withLightness(0.06).toColor(),
+      'darkShadowColor': hsl.withSaturation(0.50).withLightness(0.18).toColor(),
+      'darkIconColor': hsl.withSaturation(0.50).withLightness(0.55).toColor(),
+      'darkButtonFg': hsl.withSaturation(0.40).withLightness(0.72).toColor(),
+    };
   }
 
   static MaterialColor _createMaterialColor(Color color) {

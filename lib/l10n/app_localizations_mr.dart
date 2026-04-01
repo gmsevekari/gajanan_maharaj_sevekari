@@ -111,6 +111,24 @@ class AppLocalizationsMr extends AppLocalizations {
   String get themeIndigo => 'निळा';
 
   @override
+  String get themeTulsi => 'तुळस हिरवा';
+
+  @override
+  String get themeKumkum => 'लाल';
+
+  @override
+  String get themeLotus => 'कमळ गुलाबी';
+
+  @override
+  String get themePeacock => 'मोर निळा';
+
+  @override
+  String get themeCustom => 'कस्टम';
+
+  @override
+  String get customColorPicker => 'तुमचा रंग निवडा';
+
+  @override
   String get english => 'इंग्रजी';
 
   @override

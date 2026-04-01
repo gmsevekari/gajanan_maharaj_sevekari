@@ -111,6 +111,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeIndigo => 'Indigo';
 
   @override
+  String get themeTulsi => 'Tulsi Green';
+
+  @override
+  String get themeKumkum => 'Red';
+
+  @override
+  String get themeLotus => 'Lotus Pink';
+
+  @override
+  String get themePeacock => 'Peacock Blue';
+
+  @override
+  String get themeCustom => 'Custom';
+
+  @override
+  String get customColorPicker => 'Pick Your Color';
+
+  @override
   String get english => 'English';
 
   @override

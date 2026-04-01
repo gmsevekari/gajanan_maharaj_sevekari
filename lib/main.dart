@@ -217,11 +217,19 @@ class _MyAppState extends State<MyApp> {
 
             final lightTextTheme = GoogleFonts.getTextTheme(
               fontFamily,
-              AppTheme.getTheme(themeProvider.themePreset, false).textTheme,
+              AppTheme.getTheme(
+                themeProvider.themePreset,
+                false,
+                customColor: themeProvider.customColor,
+              ).textTheme,
             );
             final darkTextTheme = GoogleFonts.getTextTheme(
               fontFamily,
-              AppTheme.getTheme(themeProvider.themePreset, true).textTheme,
+              AppTheme.getTheme(
+                themeProvider.themePreset,
+                true,
+                customColor: themeProvider.customColor,
+              ).textTheme,
             );
 
             return MaterialApp(
@@ -232,10 +240,12 @@ class _MyAppState extends State<MyApp> {
               theme: AppTheme.getTheme(
                 themeProvider.themePreset,
                 false,
+                customColor: themeProvider.customColor,
               ).copyWith(textTheme: lightTextTheme),
               darkTheme: AppTheme.getTheme(
                 themeProvider.themePreset,
                 true,
+                customColor: themeProvider.customColor,
               ).copyWith(textTheme: darkTextTheme),
               themeMode: themeProvider.themeMode,
               locale: localeProvider.locale,
