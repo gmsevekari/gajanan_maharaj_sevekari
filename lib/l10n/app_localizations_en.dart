@@ -96,6 +96,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get systemTheme => 'System Theme';
 
   @override
+  String get colorPalette => 'Color Palette';
+
+  @override
+  String get themeSaffron => 'Saffron';
+
+  @override
+  String get themeMaroon => 'Maroon';
+
+  @override
+  String get themeSandalwood => 'Sandalwood';
+
+  @override
+  String get themeIndigo => 'Indigo';
+
+  @override
   String get english => 'English';
 
   @override

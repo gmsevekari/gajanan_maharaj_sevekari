@@ -217,11 +217,11 @@ class _MyAppState extends State<MyApp> {
 
             final lightTextTheme = GoogleFonts.getTextTheme(
               fontFamily,
-              AppTheme.lightTheme.textTheme,
+              AppTheme.getTheme(themeProvider.themePreset, false).textTheme,
             );
             final darkTextTheme = GoogleFonts.getTextTheme(
               fontFamily,
-              AppTheme.darkTheme.textTheme,
+              AppTheme.getTheme(themeProvider.themePreset, true).textTheme,
             );
 
             return MaterialApp(
@@ -229,8 +229,14 @@ class _MyAppState extends State<MyApp> {
               scaffoldMessengerKey: NavigatorService.scaffoldMessengerKey,
               onGenerateTitle: (context) =>
                   AppLocalizations.of(context)!.appName,
-              theme: AppTheme.lightTheme.copyWith(textTheme: lightTextTheme),
-              darkTheme: AppTheme.darkTheme.copyWith(textTheme: darkTextTheme),
+              theme: AppTheme.getTheme(
+                themeProvider.themePreset,
+                false,
+              ).copyWith(textTheme: lightTextTheme),
+              darkTheme: AppTheme.getTheme(
+                themeProvider.themePreset,
+                true,
+              ).copyWith(textTheme: darkTextTheme),
               themeMode: themeProvider.themeMode,
               locale: localeProvider.locale,
               supportedLocales: AppLocalizations.supportedLocales,

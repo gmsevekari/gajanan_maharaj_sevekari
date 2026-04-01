@@ -96,6 +96,21 @@ class AppLocalizationsMr extends AppLocalizations {
   String get systemTheme => 'सिस्टम थीम';
 
   @override
+  String get colorPalette => 'रंग पॅलेट';
+
+  @override
+  String get themeSaffron => 'केशरी';
+
+  @override
+  String get themeMaroon => 'मरून';
+
+  @override
+  String get themeSandalwood => 'चंदन';
+
+  @override
+  String get themeIndigo => 'निळा';
+
+  @override
   String get english => 'इंग्रजी';
 
   @override

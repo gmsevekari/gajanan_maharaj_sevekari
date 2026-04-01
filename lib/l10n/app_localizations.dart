@@ -272,6 +272,36 @@ abstract class AppLocalizations {
   /// **'System Theme'**
   String get systemTheme;
 
+  /// No description provided for @colorPalette.
+  ///
+  /// In en, this message translates to:
+  /// **'Color Palette'**
+  String get colorPalette;
+
+  /// No description provided for @themeSaffron.
+  ///
+  /// In en, this message translates to:
+  /// **'Saffron'**
+  String get themeSaffron;
+
+  /// No description provided for @themeMaroon.
+  ///
+  /// In en, this message translates to:
+  /// **'Maroon'**
+  String get themeMaroon;
+
+  /// No description provided for @themeSandalwood.
+  ///
+  /// In en, this message translates to:
+  /// **'Sandalwood'**
+  String get themeSandalwood;
+
+  /// No description provided for @themeIndigo.
+  ///
+  /// In en, this message translates to:
+  /// **'Indigo'**
+  String get themeIndigo;
+
   /// No description provided for @english.
   ///
   /// In en, this message translates to:
