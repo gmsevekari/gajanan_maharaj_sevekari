@@ -99,7 +99,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get colorPalette => 'रंग पॅलेट';
 
   @override
-  String get themeSaffron => 'केशरी';
+  String get themeSaffron => 'भगवा';
 
   @override
   String get themeMaroon => 'मरून';
