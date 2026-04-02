@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
@@ -11,14 +10,12 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
-import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_add_participants_screen.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 enum _ParticipantFilter { all, completed, pending }
 
@@ -75,12 +72,12 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     return _formatNumberInternal(number, isMarathi);
   }
 
-  Future<void> _sendManualPing() async {
-    // TODO: Implement Firestore update to trigger manual ping Cloud Function
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context)!.manualPingLabel)),
-    );
-  }
+  // Future<void> _sendManualPing() async {
+  //   // TODO: Implement Firestore update to trigger manual ping Cloud Function
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(content: Text(AppLocalizations.of(context)!.manualPingLabel)),
+  //   );
+  // }
 
   Future<void> _updateStatus(String? newStatus) async {
     if (newStatus == null || newStatus == widget.event.status) return;
@@ -1144,6 +1141,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       // Batch groups: 1 group per file for 1-day (easy sharing), 3 groups per file for 3-day.
       final int batchSize = (event.type == ParayanType.threeDay) ? 3 : 1;
       final int totalBatches = (totalGroups / batchSize).ceil();
+      final exportTheme = Theme.of(context);
+      if (!context.mounted) return;
 
       for (int batch = 0; batch < totalBatches; batch++) {
         final int startGroup = batch * batchSize + 1;
@@ -1174,6 +1173,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             isMarathi: isMarathi,
             title: title,
             dateString: dateString,
+            theme: exportTheme,
           );
         } else {
           final List<Widget> batchCards = [];
@@ -1200,28 +1200,48 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 isMarathi: isMarathi,
                 title: title,
                 dateString: dateString,
+                theme: exportTheme,
               ),
             );
           }
           if (batchCards.isEmpty) continue;
-          batchWidget = Material(
-            color: Colors.transparent,
-            child: OverflowBox(
-              minHeight: 0,
-              maxHeight: double.infinity,
-              alignment: Alignment.topCenter,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: batchCards,
-              ),
-            ),
+          batchWidget = Column(
+            mainAxisSize: MainAxisSize.min,
+            children: batchCards,
           );
         }
 
+        final wrappedWidget = MediaQuery(
+          data: MediaQueryData(
+            size: const Size(420, 2500),
+            devicePixelRatio: 2.0,
+          ),
+          child: Directionality(
+            textDirection: ui.TextDirection.ltr,
+            child: Theme(
+              data: exportTheme,
+              child: UnconstrainedBox(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  width: 420,
+                  color: exportTheme.appColors.surface,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      batchWidget,
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
         final imageBytes = await _screenshotController.captureFromWidget(
-          batchWidget,
-          delay: const Duration(milliseconds: 100),
+          wrappedWidget,
           pixelRatio: 2.0,
+          delay: const Duration(milliseconds: 250),
         );
 
         final String startFormatted = _formatNumberInternal(
@@ -1239,7 +1259,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       if (context.mounted) Navigator.of(context).pop(); // Close loading dialog
 
       if (files.isNotEmpty) {
-        await Share.shareXFiles(files, text: shareText);
+        await SharePlus.instance.share(ShareParams(files: files, text: shareText));
       }
     } catch (e) {
       if (context.mounted) {
@@ -1259,18 +1279,16 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     required bool isMarathi,
     required String title,
     required String dateString,
+    required ThemeData theme,
   }) {
     final date = dateString;
-
-    final theme = Theme.of(context);
     return Material(
       color: Colors.transparent,
       child: Container(
         width: 420, // Slightly wider to accommodate serial number column
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
         decoration: BoxDecoration(
           color: theme.appColors.surface,
-          border: Border.all(color: theme.appColors.primarySwatch, width: 2),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1299,9 +1317,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                       ),
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                     ],
@@ -1310,7 +1329,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               ],
             ),
             Divider(
-              height: 32,
+              height: 24,
               thickness: 1.5,
               color: theme.appColors.primarySwatch,
             ),
@@ -1384,7 +1403,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     ),
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4.0,
+                          vertical: 4.0,
+                        ),
                         child: Text(
                           l10n.parayanParticipant,
                           textAlign: TextAlign.center,
@@ -1395,7 +1417,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4.0,
+                          vertical: 4.0,
+                        ),
                         child: Text(
                           l10n.day1Label,
                           textAlign: TextAlign.center,
@@ -1406,7 +1431,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4.0,
+                          vertical: 4.0,
+                        ),
                         child: Text(
                           l10n.day2Label,
                           textAlign: TextAlign.center,
@@ -1417,7 +1445,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4.0,
+                          vertical: 4.0,
+                        ),
                         child: Text(
                           l10n.day3Label,
                           textAlign: TextAlign.center,
@@ -1476,11 +1507,17 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     return TableRow(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4.0,
+                            vertical: 4.0,
+                          ),
                           child: Text(
                             p.name,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 13),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: theme.colorScheme.onSurface,
+                            ),
                           ),
                         ),
                         dayCell(1),
@@ -1508,7 +1545,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     ),
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4.0,
+                          vertical: 4.0,
+                        ),
                         child: Text(
                           '#',
                           textAlign: TextAlign.center,
@@ -1520,7 +1560,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4.0,
+                          vertical: 4.0,
+                        ),
                         child: Text(
                           l10n.parayanParticipant,
                           textAlign: TextAlign.center,
@@ -1532,7 +1575,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4.0,
+                          vertical: 4.0,
+                        ),
                         child: Text(
                           l10n.adhyaysLabel,
                           textAlign: TextAlign.center,
@@ -1544,7 +1590,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4.0,
+                          vertical: 4.0,
+                        ),
                         child: Text(
                           l10n.statusLabel,
                           textAlign: TextAlign.center,
@@ -1561,7 +1610,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     (entry) => TableRow(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4.0,
+                            vertical: 4.0,
+                          ),
                           child: Text(
                             _formatNumberInternal(entry.key + 1, isMarathi),
                             textAlign: TextAlign.center,
@@ -1572,7 +1624,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4.0,
+                            vertical: 4.0,
+                          ),
                           child: Text(
                             entry.value.name,
                             textAlign: TextAlign.center,
@@ -1583,7 +1638,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4.0,
+                            vertical: 4.0,
+                          ),
                           child: Text(
                             entry.value.assignedAdhyays
                                 .map((a) => _formatNumberInternal(a, isMarathi))
@@ -1597,7 +1655,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4.0,
+                            vertical: 4.0,
+                          ),
                           child: Text(
                             entry.value.isFullyCompleted ? "Done" : "Pending",
                             textAlign: TextAlign.center,
@@ -1647,9 +1708,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     required bool isMarathi,
     required String title,
     required String dateString,
+    required ThemeData theme,
   }) {
-    final theme = Theme.of(context);
-    // Fixed column widths — total 380px matches inner container (420 - 20*2)
+    // Fixed column widths — total 380px matches inner container (420 - 16*2)
     const double nameColW = 152.0;
     const double dayColW = 76.0;
 
@@ -1683,7 +1744,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 : BorderSide.none,
           ),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         child: child,
       );
     }
@@ -1795,12 +1856,12 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       final isLastGroup = gi == batchGroups.length - 1;
 
       // ── Full-width group separator row ──
-      if (event.status != 'upcoming' && event.status != 'enrolling')
+      if (event.status != 'upcoming' && event.status != 'enrolling') {
         rows.add(
           Container(
             width: nameColW + dayColW * 3,
             alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(vertical: 5),
+            padding: const EdgeInsets.symmetric(vertical: 3),
             decoration: BoxDecoration(
               color: theme.appColors.primarySwatch.withValues(alpha: 0.12),
               border: Border(
@@ -1818,6 +1879,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             ),
           ),
         );
+      }
 
       // ── Participant rows ──
       for (int pi = 0; pi < members.length; pi++) {
@@ -1853,20 +1915,15 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     return Material(
       color: Colors.transparent,
       child: Container(
-        width: 440,
-        padding: const EdgeInsets.all(20),
+        width: 420,
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
         decoration: BoxDecoration(
           color: theme.appColors.surface,
-          border: Border.all(color: theme.appColors.primarySwatch, width: 2),
         ),
-        child: OverflowBox(
-          minHeight: 0,
-          maxHeight: double.infinity,
-          alignment: Alignment.topCenter,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
               // Shared header
               Row(
                 children: [
@@ -1902,7 +1959,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 ],
               ),
               Divider(
-                height: 20,
+                height: 16,
                 thickness: 1.5,
                 color: theme.appColors.primarySwatch,
               ),
@@ -1932,7 +1989,6 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             ],
           ),
         ),
-      ),
     );
   }
 }
