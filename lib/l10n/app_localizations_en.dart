@@ -1192,15 +1192,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteSignupLabel => 'Delete Signup';
 
   @override
+  String get signupDeletedSuccess =>
+      'Your signup has been deleted successfully.';
+
+  @override
   String get deleteSignupConfirmTitle => 'Delete Signup?';
 
   @override
   String get deleteSignupConfirmMessage =>
       'Your registration will be deleted and all members of your household will be removed from this parayan. Are you sure you want to proceed?';
-
-  @override
-  String get signupDeletedSuccess =>
-      'Your signup has been deleted successfully.';
 
   @override
   String get duplicateNameError => 'Duplicate name within a family';
@@ -1259,4 +1259,27 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deletePlaylistConfirm =>
       'Are you sure you want to delete this list?';
+
+  @override
+  String get updateAvailableTitle => 'Update Available';
+
+  @override
+  String get forcedUpdateMessage =>
+      'A mandatory update is required to continue using the app. Please update to the latest version.';
+
+  @override
+  String get recommendedUpdateMessage =>
+      'A new version of the app is available with improvements and bug fixes. Would you like to update now?';
+
+  @override
+  String get latestVersionLabel => 'Latest Version';
+
+  @override
+  String get currentVersionLabel => 'Current Version';
+
+  @override
+  String get updateNow => 'Update Now';
+
+  @override
+  String get updateLater => 'Later';
 }

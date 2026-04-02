@@ -3,23 +3,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/event_calendar/event_calendar_screen.dart';
-import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
-import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
-import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
-import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
-import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
-import 'package:gajanan_maharaj_sevekari/home/nityopasana_consolidated_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
-
-import '../deity/deity_dashboard_screen.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
+import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/shared/update_dialog.dart';
+import 'package:gajanan_maharaj_sevekari/utils/update_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,9 +33,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _upcomingEventsFuture = _fetchUpcomingEvents();
     _loadUnreadStatus();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && !kIsWeb) {
-        NotificationManager.requestPermissions(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+
+      // 1. Notification Permissions
+      if (!kIsWeb) {
+        await NotificationManager.requestPermissions(context);
+      }
+
+      if (!mounted) return;
+
+      // 2. App Update Check (Both Forced and Recommended)
+      if (!kIsWeb && mounted) {
+        final updateResult = await UpdateService().checkForUpdate();
+        if (updateResult.type != UpdateType.none && mounted) {
+          UpdateDialog.show(context, updateResult);
+        }
       }
     });
   }
@@ -141,7 +149,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    final appConfigProvider = Provider.of<AppConfigProvider>(context);
     final theme = Theme.of(context);
 
     if (localizations == null) return const SizedBox.shrink();

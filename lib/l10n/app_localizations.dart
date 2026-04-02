@@ -2342,6 +2342,12 @@ abstract class AppLocalizations {
   /// **'Delete Signup'**
   String get deleteSignupLabel;
 
+  /// No description provided for @signupDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your signup has been deleted successfully.'**
+  String get signupDeletedSuccess;
+
   /// No description provided for @deleteSignupConfirmTitle.
   ///
   /// In en, this message translates to:
@@ -2353,12 +2359,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your registration will be deleted and all members of your household will be removed from this parayan. Are you sure you want to proceed?'**
   String get deleteSignupConfirmMessage;
-
-  /// No description provided for @signupDeletedSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Your signup has been deleted successfully.'**
-  String get signupDeletedSuccess;
 
   /// No description provided for @duplicateNameError.
   ///
@@ -2473,6 +2473,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete this list?'**
   String get deletePlaylistConfirm;
+
+  /// No description provided for @updateAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Available'**
+  String get updateAvailableTitle;
+
+  /// No description provided for @forcedUpdateMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A mandatory update is required to continue using the app. Please update to the latest version.'**
+  String get forcedUpdateMessage;
+
+  /// No description provided for @recommendedUpdateMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of the app is available with improvements and bug fixes. Would you like to update now?'**
+  String get recommendedUpdateMessage;
+
+  /// No description provided for @latestVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Version'**
+  String get latestVersionLabel;
+
+  /// No description provided for @currentVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Version'**
+  String get currentVersionLabel;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Now'**
+  String get updateNow;
+
+  /// No description provided for @updateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get updateLater;
 }
 
 class _AppLocalizationsDelegate

@@ -456,9 +456,9 @@
   "statusLabel": "Status",
   "shareParayan": "Share Parayan",
   "deleteSignupLabel": "Delete Signup",
+  "signupDeletedSuccess": "Your signup has been deleted successfully.",
   "deleteSignupConfirmTitle": "Delete Signup?",
   "deleteSignupConfirmMessage": "Your registration will be deleted and all members of your household will be removed from this parayan. Are you sure you want to proceed?",
-  "signupDeletedSuccess": "Your signup has been deleted successfully.",
   "duplicateNameError": "Duplicate name within a family",
   "maxMembersError": "Maximum 5 members allowed per family",
   "householdMembersLabel": "Family Members",
@@ -477,5 +477,12 @@
   "exportToCalendar": "Export to Calendar",
   "shareParayanAction": "Join this Parayan",
   "shareLink": "Link",
-  "deletePlaylistConfirm": "Are you sure you want to delete this list?"
+  "deletePlaylistConfirm": "Are you sure you want to delete this list?",
+  "updateAvailableTitle": "Update Available",
+  "forcedUpdateMessage": "A mandatory update is required to continue using the app. Please update to the latest version.",
+  "recommendedUpdateMessage": "A new version of the app is available with improvements and bug fixes. Would you like to update now?",
+  "latestVersionLabel": "Latest Version",
+  "currentVersionLabel": "Current Version",
+  "updateNow": "Update Now",
+  "updateLater": "Later"
 }

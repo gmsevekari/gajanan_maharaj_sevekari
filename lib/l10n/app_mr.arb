@@ -477,5 +477,12 @@
   "exportToCalendar": "कॅलेंडर एक्स्पोर्ट करा",
   "shareParayanAction": "हे पारायण जॉईन करा",
   "shareLink": "लिंक",
-  "deletePlaylistConfirm": "तुम्ही खात्रीने ही लिस्ट डिलीट करू इच्छिता?"
+  "deletePlaylistConfirm": "तुम्ही खात्रीने ही लिस्ट डिलीट करू इच्छिता?",
+  "updateAvailableTitle": "अपडेट उपलब्ध",
+  "forcedUpdateMessage": "अ‍ॅप वापरण्यासाठी अपडेट करणे आवश्यक आहे. कृपया अ‍ॅप अपडेट करा.",
+  "recommendedUpdateMessage": "अ‍ॅपचे नवीन व्हर्जन उपलब्ध आहे. तुम्ही आता अपडेट करू इच्छिता का?",
+  "latestVersionLabel": "नवीन व्हर्जन",
+  "currentVersionLabel": "आत्ताचे व्हर्जन",
+  "updateNow": "आता अपडेट करा",
+  "updateLater": "नंतर"
 }

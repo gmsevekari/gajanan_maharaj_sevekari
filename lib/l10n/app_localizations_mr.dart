@@ -1194,15 +1194,15 @@ class AppLocalizationsMr extends AppLocalizations {
   String get deleteSignupLabel => 'साईन-अप डिलीट करा';
 
   @override
+  String get signupDeletedSuccess =>
+      'तुमचे साईन-अप यशस्वीरित्या डिलीट केले आहे.';
+
+  @override
   String get deleteSignupConfirmTitle => 'साईन-अप डिलीट करा?';
 
   @override
   String get deleteSignupConfirmMessage =>
       'तुमचे साईन-अप डिलीट केले जाईल. तुम्ही खात्रीने तुमचे साईन-अप डिलीट करू इच्छिता?';
-
-  @override
-  String get signupDeletedSuccess =>
-      'तुमचे साईन-अप यशस्वीरित्या डिलीट केले आहे.';
 
   @override
   String get duplicateNameError => 'हे नाव आधीच वापरले आहे';
@@ -1262,4 +1262,27 @@ class AppLocalizationsMr extends AppLocalizations {
   @override
   String get deletePlaylistConfirm =>
       'तुम्ही खात्रीने ही लिस्ट डिलीट करू इच्छिता?';
+
+  @override
+  String get updateAvailableTitle => 'अपडेट उपलब्ध';
+
+  @override
+  String get forcedUpdateMessage =>
+      'अ‍ॅप वापरण्यासाठी अपडेट करणे आवश्यक आहे. कृपया अ‍ॅप अपडेट करा.';
+
+  @override
+  String get recommendedUpdateMessage =>
+      'अ‍ॅपचे नवीन व्हर्जन उपलब्ध आहे. तुम्ही आता अपडेट करू इच्छिता का?';
+
+  @override
+  String get latestVersionLabel => 'नवीन व्हर्जन';
+
+  @override
+  String get currentVersionLabel => 'आत्ताचे व्हर्जन';
+
+  @override
+  String get updateNow => 'आता अपडेट करा';
+
+  @override
+  String get updateLater => 'नंतर';
 }

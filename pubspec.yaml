@@ -66,6 +66,7 @@ dependencies:
   android_id: ^0.5.1
   flutter_secure_storage: ^10.0.0
   flutter_file_dialog: ^3.0.1
+  pub_semver: ^2.1.4
   
 dev_dependencies:
   flutter_test:
