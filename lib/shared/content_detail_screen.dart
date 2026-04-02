@@ -69,6 +69,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
   double _fontSize = 18.0;
   TabController? _tabController;
   int _currentIndex = 0;
+  double _readTabProgress = 0.0;
+  double _listenTabProgress = 0.0;
 
   @override
   void initState() {
@@ -248,6 +250,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
       ),
       body: Column(
         children: [
+          _buildReadingProgressIndicator(context),
           Padding(
             padding: const EdgeInsets.symmetric(
               vertical: 8.0,
@@ -312,6 +315,32 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
               ],
             )
           : null,
+    );
+  }
+
+  Widget _buildReadingProgressIndicator(BuildContext context) {
+    final theme = Theme.of(context);
+    final double progress =
+        _currentIndex == 0 ? _readTabProgress : _listenTabProgress;
+
+    return Container(
+      height: 3.0,
+      width: double.infinity,
+      color: theme.colorScheme.primary.withValues(alpha: 0.05),
+      alignment: Alignment.centerLeft,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        width: MediaQuery.of(context).size.width * progress.clamp(0.0, 1.0),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primary,
+          gradient: LinearGradient(
+            colors: [
+              theme.colorScheme.primary.withValues(alpha: 0.8),
+              theme.colorScheme.primary,
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -405,14 +434,26 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
           final langCode = locale.languageCode;
           final text = data['content_$langCode'] ?? data['content_en']!;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: fontProvider.marathiTextStyle.copyWith(
-                fontSize: _fontSize,
-                height: 1.6,
+          return NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              if (notification is ScrollUpdateNotification) {
+                setState(() {
+                  _readTabProgress =
+                      notification.metrics.pixels /
+                      notification.metrics.maxScrollExtent;
+                });
+              }
+              return false;
+            },
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
+              child: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: fontProvider.marathiTextStyle.copyWith(
+                  fontSize: _fontSize,
+                  height: 1.6,
+                ),
               ),
             ),
           );
@@ -443,134 +484,154 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
           final title =
               data['title_${locale.languageCode}'] ?? data['title_en']!;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Card(
-                  elevation: theme.cardTheme.elevation,
-                  shape: theme.cardTheme.shape,
-                  clipBehavior: Clip.antiAlias,
-                  child: Image.asset(
-                    widget.imagePath,
-                    fit: BoxFit.cover, // Ensures the image covers the card area
-                    width: double.infinity,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        'resources/images/gajanan_maharaj/Gajanan_Maharaj.png', // A generic default
-                        fit: BoxFit.cover, // Also apply fit to the error image
-                        width: double.infinity,
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
-                if (videoId != null && videoId.isNotEmpty)
+          return NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              if (notification is ScrollUpdateNotification) {
+                setState(() {
+                  _listenTabProgress =
+                      notification.metrics.pixels /
+                      notification.metrics.maxScrollExtent;
+                });
+              }
+              return false;
+            },
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
                   Card(
-                    elevation: 4.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
+                    elevation: theme.cardTheme.elevation,
+                    shape: theme.cardTheme.shape,
                     clipBehavior: Clip.antiAlias,
-                    child: CrossPlatformYoutubePlayer(
-                      videoId: videoId,
-                      autoPlay: widget.autoPlay,
-                      onLaunchYoutube: () => _launchYoutube(videoId),
-                      onEnded: () {
-                        if (widget.currentIndex <
-                            widget.contentList.length - 1) {
-                          _navigateToItem(widget.currentIndex + 1);
-                        }
+                    child: Image.asset(
+                      widget.imagePath,
+                      fit:
+                          BoxFit.cover, // Ensures the image covers the card area
+                      width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          'resources/images/gajanan_maharaj/Gajanan_Maharaj.png', // A generic default
+                          fit:
+                              BoxFit
+                                  .cover, // Also apply fit to the error image
+                          width: double.infinity,
+                        );
                       },
                     ),
-                  )
-                else
-                  Card(
-                    elevation: 4.0,
-                    shape: RoundedRectangleBorder(
+                  ),
+                  const SizedBox(height: 16),
+                  if (videoId != null && videoId.isNotEmpty)
+                    Card(
+                      elevation: 4.0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: CrossPlatformYoutubePlayer(
+                        videoId: videoId,
+                        autoPlay: widget.autoPlay,
+                        onLaunchYoutube: () => _launchYoutube(videoId),
+                        onEnded: () {
+                          if (widget.currentIndex <
+                              widget.contentList.length - 1) {
+                            _navigateToItem(widget.currentIndex + 1);
+                          }
+                        },
+                      ),
+                    )
+                  else
+                    Card(
+                      elevation: 4.0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: const SizedBox(
+                        height: 200,
+                        child: Center(child: Text('Video unavailable')),
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+                  Text(
+                    title,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: theme.colorScheme.secondary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildDecorativeDivider(context),
+                  const SizedBox(height: 24),
+                  if (videoId != null && videoId.isNotEmpty)
+                    Center(
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surface,
+                              borderRadius: BorderRadius.circular(12.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: theme.appColors.surfaceSubtle,
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.share,
+                                color: theme.colorScheme.primary,
+                              ),
+                              onPressed: () {
+                                SharePlus.instance.share(
+                                  ShareParams(
+                                    text:
+                                        'Check out this content: https://www.youtube.com/watch?v=$videoId',
+                                  ),
+                                );
+                              },
+                              iconSize: 32.0,
+                              padding: const EdgeInsets.all(16.0),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            localizations.share,
+                            style: TextStyle(color: theme.colorScheme.primary),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 32),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 12.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme.appColors.primarySwatch.withValues(
+                        alpha: 0.1,
+                      ),
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    child: const SizedBox(
-                      height: 200,
-                      child: Center(child: Text('Video unavailable')),
-                    ),
-                  ),
-                const SizedBox(height: 16),
-                Text(
-                  title,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: theme.colorScheme.secondary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                _buildDecorativeDivider(context),
-                const SizedBox(height: 24),
-                if (videoId != null && videoId.isNotEmpty)
-                  Center(
-                    child: Column(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surface,
-                            borderRadius: BorderRadius.circular(12.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: theme.appColors.surfaceSubtle,
-                                spreadRadius: 1,
-                                blurRadius: 5,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.share,
-                              color: theme.colorScheme.primary,
-                            ),
-                            onPressed: () {
-                              Share.share(
-                                'Check out this content: https://www.youtube.com/watch?v=$videoId',
-                              );
-                            },
-                            iconSize: 32.0,
-                            padding: const EdgeInsets.all(16.0),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
+                        Icon(Icons.wifi, color: theme.colorScheme.secondary),
+                        const SizedBox(width: 8),
                         Text(
-                          localizations.share,
-                          style: TextStyle(color: theme.colorScheme.primary),
+                          localizations.internetRequired,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.secondary,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                const SizedBox(height: 32),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 12.0,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.appColors.primarySwatch.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.wifi, color: theme.colorScheme.secondary),
-                      const SizedBox(width: 8),
-                      Text(
-                        localizations.internetRequired,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.secondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         } else {

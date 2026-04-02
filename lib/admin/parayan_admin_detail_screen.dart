@@ -325,7 +325,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
 
                           final shareText =
                               '${l10n.shareParayanAction}: $title\n\n${l10n.shareLink}: https://gajananmaharajsevekari.org/parayan/${event.id}';
-                          Share.share(shareText);
+                          SharePlus.instance.share(ShareParams(text: shareText));
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.colorScheme.primary,

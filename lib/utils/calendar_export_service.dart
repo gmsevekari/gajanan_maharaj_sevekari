@@ -173,9 +173,11 @@ class CalendarExportService {
         final file = File(path);
         await file.writeAsString(content);
 
-        await Share.shareXFiles(
-          [XFile(path, mimeType: 'text/calendar')],
-          subject: 'Calendar Export',
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(path, mimeType: 'text/calendar')],
+            subject: 'Calendar Export',
+          ),
         );
       }
     }

@@ -395,8 +395,11 @@ class _NamavaliScreenState extends State<NamavaliScreen>
                               color: theme.colorScheme.primary,
                             ),
                             onPressed: () {
-                              Share.share(
-                                '${localizations.namavaliShareMessage}: https://www.youtube.com/watch?v=$videoId',
+                              SharePlus.instance.share(
+                                ShareParams(
+                                  text:
+                                      '${localizations.namavaliShareMessage}: https://www.youtube.com/watch?v=$videoId',
+                                ),
                               );
                             },
                             iconSize: 32.0,
