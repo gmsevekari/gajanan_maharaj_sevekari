@@ -1,1 +1,8 @@
-Updated home page to display both weekly pooja and special events.
+1. implement remote app update system with forced-exit security
+2. add scroll-based reading progress bar to ContentDetailScreen
+3. add devotional presets and dynamic custom color picker
+4. improve 1-day parayan export screenshot layout
+5. add multi-theme color palette with maroon, sandalwood, and indigo presets
+6. fix event calendar selection visibility in light theme
+7. progressive UI tracking for batch participant uploads
+8. add intuitive inline Adhyay reading navigation

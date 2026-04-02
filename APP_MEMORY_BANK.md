@@ -36,7 +36,6 @@ This document summarizes the key architectural patterns, design principles, and 
 -   **Naamjap (Chanting) Module:**
     -   **Unified Tracking:** Tab 1 (Mala Counting) and Tab 2 (Time-based Jap) share a unified chant counting aesthetic, pulling colors dynamically from `Theme.of(context)` down to the dialog modals.
     -   **Timer Persistence:** The Time-based Jap tab (Tab 2) persists user-selected Hours and Minutes between sessions using `SharedPreferences`.
-    -   **Graceful Audio Limits:** The audio loops (`audioplayers`) rely on a dedicated `_isTimeUp` boolean and synchronous native `stop()` calls to ensure background buffering never bypasses Dart's logic when a target or timer concludes.
     -   **Numeral Localization (`_formatNumber`):** Flutter defaults to casting format modifiers like `Duration` and `SnackBar` numerical `{count}` payload variables as raw base-10 integers. These must be explicitly wrapped in `_formatNumber(context)` on both UI dropdowns and `.arb` file parameter payloads (typed properly as `String` in the `.arb`) to ensure characters translate gracefully to Hindi/Marathi glyphs.
     -   **UI Refinement:** To support varied device sizes, the counting tiles on the 1st tab use reduced vertical padding and font sizes.
     -   **User Awareness:** A persistent reminder message encourages users to keep their screen on during chanting to prevent the device from sleeping and interrupting the count/timer.
@@ -109,7 +108,7 @@ This document summarizes the key architectural patterns, design principles, and 
     -   A custom `CrossPlatformYoutubePlayer` widget was created in `lib/shared/` to handle platform differences.
     -   It uses `youtube_player_flutter` for the native experience on Android/iOS.
     -   It uses `youtube_player_iframe` for web compatibility.
--   **Flexible Data Models (`app_config.dart`):
+-   **Flexible Data Models (`app_config.dart`):**
     -   **Centralized `ContentType` Logic:** A `ContentTypeExtension.fromString()` method on the `ContentType` enum provides a single, central place to convert the `contentType` string from the JSON into the correct Dart enum, removing duplicated logic from UI screens.
     -   **Flexible Aarti Structure:** The `NityopasanaConfig` can handle two different JSON structures for `aartis`: a category-based list (for Gajanan Maharaj) and a direct, flat list of files (for Datta Maharaj).
     -   **Optional Sections:** The `DeityConfig` uses nullable properties (`DonationInfo?`, `SignupInfo?`) to gracefully handle deities that do not have these sections in their JSON, preventing crashes.
@@ -163,3 +162,21 @@ This document summarizes the key architectural patterns, design principles, and 
 -   **Flutter `Color` API Breaking Change (`_createMaterialColor`):** In newer Flutter versions (3.27+), `Color.r`, `.g`, `.b` return **normalized doubles** (0.0–1.0), NOT integers (0–255). Code using `color.r.toInt()` will silently produce `0` for all channels, making every generated `MaterialColor` swatch shade pure black. The fix is `(color.r * 255).round()`. This caused non-saffron theme text and selected cards to appear completely black.
 -   **Firestore Document Format Consistency:** Enrollment documents in the `participants` subcollection MUST use the **flattened format** with top-level `memberName`, `name`, `assignedAdhyays`, `completions`, and `deviceId` fields. The old nested `members` map format (where the doc ID was the device ID and member names were map keys) is **not supported** by `getAllParticipants()` or `getParticipantsByDevice()`. If stale household-format documents are found in Firestore, they should be migrated/fixed directly in the Firestore console rather than adding backward-compatibility code.
 -   **Null-Coalesce (`??`) Does Not Catch Empty Strings:** Dart's `??` operator only falls through on `null`. If a Firestore field contains `""` (empty string), `data['memberName'] ?? data['name'] ?? fallback` will stop at the empty string and never reach the fallback. Keep this in mind when debugging "missing" display text — the field might exist but be empty.
+
+---
+
+### 9. Remote App Update Mechanism
+
+-   **Overview:** The app includes a remote-controlled update check that runs on `HomeScreen` startup. It distinguishes between `forced` (mandatory) and `recommended` updates based on version comparisons stored in Firestore.
+-   **Firestore Schema (`app_config/version`):**
+    -   The document contains platform-specific maps (`android`, `ios`).
+    -   Fields: `latest_version` (String), `min_version` (String), `store_url` (String).
+-   **Update Logic (`UpdateService`):**
+    -   Uses `pub_semver` for robust version comparison.
+    -   `forced`: If `currentVersion < minVersion`. The dialog blocks usage and closes the app on back-press via `SystemNavigator.pop()`.
+    -   `recommended`: If `currentVersion < latestVersion`. The dialog offers "Update Now" or "Later".
+-   **UI & Localization:**
+    -   `UpdateDialog`: Displays both current and available versions in a left-aligned, themed container.
+    -   **Numeral Localization:** Version strings are converted to Marathi/Hindi digits (using `toMarathiNumerals`) when the app locale is Marathi to maintain visual consistency.
+-   **Web Behavior:** The update check is explicitly skipped on Web platforms using `!kIsWeb` in `HomeScreen`. This is because web users always receive the latest code upon refresh, and app store redirects are not applicable.
+-   **Manual Deployment Script:** A Python utility (`scripts/update_remote_version.py`) is provided to safely update the Firestore version document using the Firebase Admin SDK.

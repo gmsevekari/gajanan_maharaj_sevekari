@@ -1,3 +1,80 @@
+# Command to deploy Gajanan Maharaj Sevekari App to Web
+fl-prod-web() {
+    # Define colors using zsh specific codes for better compatibility
+    local GREEN=$'\e[1;32m'
+    local RED=$'\e[1;31m'
+    local CYAN=$'\e[1;36m'
+    local YELLOW=$'\e[1;33m'
+    local NC=$'\e[0m' # No Color
+
+    echo "${CYAN}🚀 Starting App Web Deployment...${NC}"
+
+    # Helper function to run commands and check status
+    run_step() {
+        local cmd="$1"
+        echo -e "\n${YELLOW}⚙️  Executing: ${NC}${cmd}..."
+        
+        # Run the command
+        eval "$cmd"
+        
+        # Check exit status
+        if [ $? -eq 0 ]; then
+            echo "${GREEN}✅ Success: ${NC}${cmd}"
+        else
+            echo "${RED}❌ Error: Command failed - ${NC}${cmd}"
+            echo "${RED}🛑 Deployment stopped.${NC}"
+            return 1
+        fi
+    }
+
+    # --- The Workflow ---
+    
+    # 1. Clean the build artifacts
+    run_step "flutter clean" || return 1
+
+    # 2. Get dependencies
+    run_step "flutter pub get" || return 1
+
+    # 3. Build the web release
+    run_step "flutter build web --release" || return 1
+
+    # 4. Deploy to Firebase
+    run_step "firebase deploy --only hosting" || return 1
+
+    echo -e "\n${GREEN}✨ Deployment Complete! The Temple site is live.${NC}"
+}
+
+# Command to deploy Gajanan Maharaj Sevekari App to iOS
+fl-prod-ios() {
+  echo "🚀 Starting Build for iOS..."
+
+  # 1. Read current version from pubspec.yaml
+  # This is needed to update Firestore later
+  CURRENT_VERSION_LINE=$(grep '^version: ' pubspec.yaml)
+  VERSION_NAME=$(echo "$CURRENT_VERSION_LINE" | sed 's/version: \(.*\)+.*/\1/')
+  
+  echo "📦 Current iOS Version: $VERSION_NAME"
+
+  # 2. Standard Flutter build to update code and assets
+  # --no-codesign is used because Fastlane gym will handle the signing
+  if flutter build ios --release --no-codesign; then
+    echo "✅ Flutter build successful. Handing over to Fastlane..."
+    
+    if (cd ios && bundle exec fastlane deploy); then
+      # 3. Update Remote Firestore Version (iOS only)
+      echo "🌐 Updating Remote Firestore Version for iOS..."
+      python3 /Users/abhishekkulkarni/Antigravity_Projects/gajanan_maharaj_sevekari/scripts/update_remote_version.py --platform ios --version "$VERSION_NAME" --min-version "1.0.21"
+      
+      echo "🎉 App successfully submitted for review and Firestore updated!"
+    else
+      echo "❌ Fastlane Deployment Failed"; return 1
+    fi
+  else
+    echo "❌ Flutter build failed. Deployment aborted."
+    return 1
+  fi
+}
+
 # Command to deploy Gajanan Maharaj Sevekari App to iOS TestFlight (Beta)
 fl-beta-ios() {
   echo "🚀 Starting Beta Build for iOS..."
@@ -12,4 +89,89 @@ fl-beta-ios() {
     echo "❌ Flutter build failed. Deployment aborted."
     return 1
   fi
+}
+
+# Deploy to Android Production
+fl-prod-and() {
+  echo "🚀 Starting Production Build for Android..."
+  _fl-dep-int_ "production" "deploy_production"
+}
+
+# Deploy to Android Closed Testing (Alpha)
+fl-alpha-and() {
+  echo "🧪 Starting Closed Testing (Alpha) Build for Android..."
+  _fl-dep-int_ "alpha" "deploy_closed_testing"
+}
+
+# Shared logic for Android deployment to different tracks (Production vs Alpha)
+_fl-dep-int_() {
+  local track=$1
+  local lane=$2
+
+  # 1. Read current version from pubspec.yaml
+  CURRENT_VERSION_LINE=$(grep '^version: ' pubspec.yaml)
+  CURRENT_VERSION_NAME=$(echo "$CURRENT_VERSION_LINE" | sed 's/version: \(.*\)+.*/\1/')
+  
+  # Correctly parse the version parts (assuming x.y.z format)
+  IFS='.' read -r -A VERSION_PARTS <<< "$CURRENT_VERSION_NAME"
+  MAJOR=${VERSION_PARTS[1]}
+  MINOR=${VERSION_PARTS[2]}
+  PATCH=${VERSION_PARTS[3]}
+  
+  # Increment Patch
+  NEW_PATCH=$((PATCH + 1))
+  NEW_VERSION_NAME="${MAJOR}.${MINOR}.${NEW_PATCH}"
+  
+  echo "🔄 Bumping Version Name: $CURRENT_VERSION_NAME -> $NEW_VERSION_NAME"
+
+  # 2. Get the latest version code from alpha and production tracks
+  echo "🔍 Fetching latest version codes from Google Play (alpha and production)..."
+  cd android || return 1
+  
+  # Fetch from Production
+  RAW_OUTPUT_PROD=$(bundle exec fastlane run google_play_track_version_codes track:production)
+  LATEST_PROD_JSON=$(echo "$RAW_OUTPUT_PROD" | grep "Result:" | tail -n 1 | grep -oE '\[[0-9, ]+\]' | tr -d '[]')
+  LATEST_PROD=$(echo "$LATEST_PROD_JSON" | tr -d '[:space:]' | tr ',' '\n' | sort -rn | head -n 1)
+
+  # Fetch from Alpha
+  RAW_OUTPUT_ALPHA=$(bundle exec fastlane run google_play_track_version_codes track:alpha)
+  LATEST_ALPHA_JSON=$(echo "$RAW_OUTPUT_ALPHA" | grep "Result:" | tail -n 1 | grep -oE '\[[0-9, ]+\]' | tr -d '[]')
+  LATEST_ALPHA=$(echo "$LATEST_ALPHA_JSON" | tr -d '[:space:]' | tr ',' '\n' | sort -rn | head -n 1)
+  cd ..
+
+  # Default to 0 if not found
+  if ! [[ "$LATEST_PROD" =~ ^[0-9]+$ ]]; then
+    LATEST_PROD=0
+  fi
+  
+  if ! [[ "$LATEST_ALPHA" =~ ^[0-9]+$ ]]; then
+    LATEST_ALPHA=0
+  fi
+  
+  # Find the maximum version code across tracks
+  MAX_BUILD=$(( LATEST_PROD > LATEST_ALPHA ? LATEST_PROD : LATEST_ALPHA ))
+
+  # Increment by 1 for the new code
+  ANDROID_NEW_CODE=$(( MAX_BUILD + 1 ))
+  
+  echo "📱 Target Android Version Code: $ANDROID_NEW_CODE (Alpha: $LATEST_ALPHA, Prod: $LATEST_PROD)"
+
+  # 3. Update pubspec.yaml
+  sed -i '' "s/^version: .*/version: $NEW_VERSION_NAME+$ANDROID_NEW_CODE/" pubspec.yaml
+
+  # 4. Build & Deploy
+  echo "🤖 Building Android... (--build-name=$NEW_VERSION_NAME --build-number=$ANDROID_NEW_CODE)"
+  if flutter build appbundle --release --build-name=$NEW_VERSION_NAME --build-number=$ANDROID_NEW_CODE; then
+    if (cd android && bundle exec fastlane "$lane" build_number:"$ANDROID_NEW_CODE"); then
+      # 5. Update Remote Firestore Version (Android only)
+      echo "🌐 Updating Remote Firestore Version for Android..."
+      python3 /Users/abhishekkulkarni/Antigravity_Projects/gajanan_maharaj_sevekari/scripts/update_remote_version.py --platform android --version "$NEW_VERSION_NAME" --min-version "1.0.21"
+    else
+      echo "❌ Fastlane Deployment Failed"; return 1
+    fi
+  else
+    echo "❌ Android Build Failed"; return 1
+  fi
+
+  echo "🎉 Successfully deployed $NEW_VERSION_NAME to Google Play ($track) and updated Firestore!"
 }
