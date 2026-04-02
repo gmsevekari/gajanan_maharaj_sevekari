@@ -36,6 +36,7 @@ import 'package:gajanan_maharaj_sevekari/admin/admin_dashboard_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_temple_notifications_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_coordination_dashboard.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/create_parayan_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/user_notifications_screen.dart';
 import 'package:gajanan_maharaj_sevekari/other/my_playlist_screen.dart';
@@ -337,6 +338,14 @@ class _MyAppState extends State<MyApp> {
                     return MaterialPageRoute(
                       builder: (context) =>
                           ParayanAdminDetailScreen(event: event),
+                    );
+                  case Routes.adminParayanList:
+                    final args = settings.arguments as Map<String, dynamic>;
+                    return MaterialPageRoute(
+                      builder: (context) => ParayanAdminListScreen(
+                        title: args['title'],
+                        statusFilter: args['statusFilter'],
+                      ),
                     );
                   default:
                     return null;

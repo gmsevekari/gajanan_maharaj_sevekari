@@ -484,5 +484,6 @@
   "latestVersionLabel": "Latest Version",
   "currentVersionLabel": "Current Version",
   "updateNow": "Update Now",
-  "updateLater": "Later"
+  "updateLater": "Later",
+  "noParayansFound": "No parayans found for the current year"
 }

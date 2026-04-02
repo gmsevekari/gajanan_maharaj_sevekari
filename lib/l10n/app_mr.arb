@@ -484,5 +484,6 @@
   "latestVersionLabel": "नवीन व्हर्जन",
   "currentVersionLabel": "आत्ताचे व्हर्जन",
   "updateNow": "आता अपडेट करा",
-  "updateLater": "नंतर"
+  "updateLater": "नंतर",
+  "noParayansFound": "चालू वर्षासाठी कोणतेही पारायण सापडले नाही"
 }

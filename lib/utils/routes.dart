@@ -26,6 +26,7 @@ class Routes {
   static const String adminParayanCoordination = '/admin_parayan_coordination';
   static const String adminCreateParayan = '/admin_create_parayan';
   static const String adminParayanDetail = '/admin_parayan_detail';
+  static const String adminParayanList = '/admin_parayan_list';
   static const String parayanList = '/parayan_list';
   static const String parayanDetail = '/parayan_detail';
   static const String userNotifications = '/user_notifications';

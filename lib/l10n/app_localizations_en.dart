@@ -1282,4 +1282,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateLater => 'Later';
+
+  @override
+  String get noParayansFound => 'No parayans found for the current year';
 }

@@ -1285,4 +1285,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get updateLater => 'नंतर';
+
+  @override
+  String get noParayansFound => 'चालू वर्षासाठी कोणतेही पारायण सापडले नाही';
 }

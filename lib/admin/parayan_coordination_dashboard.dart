@@ -102,7 +102,15 @@ class _ParayanCoordinationDashboardState
                         context,
                         theme,
                         localizations.recentlyCompletedParayanLabel,
-                        showViewAll: false,
+                        showViewAll: true,
+                        onViewAll: () => Navigator.pushNamed(
+                          context,
+                          Routes.adminParayanList,
+                          arguments: {
+                            'title': localizations.recentlyCompletedParayanLabel,
+                            'statusFilter': 'completed',
+                          },
+                        ),
                       ),
                       const SizedBox(height: 12),
                       if (completedEvents.isNotEmpty)
@@ -159,7 +167,15 @@ class _ParayanCoordinationDashboardState
                       context,
                       theme,
                       localizations.nextParayanLabel,
-                      showViewAll: false,
+                      showViewAll: true,
+                      onViewAll: () => Navigator.pushNamed(
+                        context,
+                        Routes.adminParayanList,
+                        arguments: {
+                          'title': localizations.nextParayanLabel,
+                          'statusFilter': 'upcoming',
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -233,6 +249,7 @@ class _ParayanCoordinationDashboardState
     ThemeData theme,
     String title, {
     bool showViewAll = true,
+    VoidCallback? onViewAll,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -245,7 +262,7 @@ class _ParayanCoordinationDashboardState
         ),
         if (showViewAll)
           TextButton(
-            onPressed: () {},
+            onPressed: onViewAll,
             child: Text(
               AppLocalizations.of(context)!.viewAllLabel,
               style: TextStyle(

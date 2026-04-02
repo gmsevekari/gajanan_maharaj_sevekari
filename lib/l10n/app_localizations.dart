@@ -2515,6 +2515,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Later'**
   String get updateLater;
+
+  /// No description provided for @noParayansFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No parayans found for the current year'**
+  String get noParayansFound;
 }
 
 class _AppLocalizationsDelegate
