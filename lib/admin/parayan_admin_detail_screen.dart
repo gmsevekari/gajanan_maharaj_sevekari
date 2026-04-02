@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
+import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:share_plus/share_plus.dart';
@@ -158,8 +159,11 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             actions: [
               IconButton(
                 icon: const Icon(Icons.home),
-                onPressed: () =>
-                    Navigator.of(context).popUntil((route) => route.isFirst),
+                onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  Routes.home,
+                  (route) => false,
+                ),
               ),
               IconButton(
                 icon: const Icon(Icons.settings),
@@ -246,6 +250,55 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            // Join Code Card
+            if (event.joinCode != null)
+              Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        Icon(Icons.vpn_key, color: theme.colorScheme.primary),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.joinCodeLabel,
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                  color: theme.colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                event.joinCode!,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 2.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: l10n.copyJoinCode,
+                          icon: const Icon(Icons.copy),
+                          color: theme.colorScheme.primary,
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: event.joinCode!));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l10n.joinCodeCopied)),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -291,7 +344,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: null, // Disabled for now (Coming Soon)
+                    onPressed: participants.isNotEmpty
+                        ? () => _exportAllGroups(context, event, l10n)
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: theme.colorScheme.onPrimary,
@@ -303,8 +358,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    icon: const Icon(Icons.notification_important, size: 20),
-                    label: Text(l10n.manualPingLabel),
+                    icon: const Icon(Icons.ios_share, size: 20),
+                    label: Text(l10n.exportAllocations),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -339,9 +394,19 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: participants.isNotEmpty
-                            ? () => _exportAllGroups(context, event, l10n)
-                            : null,
+                        onPressed: () {
+                          final isMarathi =
+                              Localizations.localeOf(context).languageCode ==
+                              'mr';
+                          final title = isMarathi
+                              ? event.titleMr
+                              : event.titleEn;
+
+                          final joinCodeText = event.joinCode != null ? '\n\n${l10n.joinCodeLabel}: ${event.joinCode}' : '';
+                          final shareText =
+                              '${l10n.shareParayanAction}: $title$joinCodeText\n\n${l10n.shareLink}: https://gajananmaharajsevekari.org/parayan/${event.id}?joinCode=${event.joinCode}';
+                          Share.share(shareText);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.colorScheme.primary,
                           foregroundColor: theme.colorScheme.onPrimary,
@@ -353,8 +418,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        icon: const Icon(Icons.ios_share, size: 20),
-                        label: Text(l10n.exportAllocations),
+                        icon: const Icon(Icons.share, size: 20),
+                        label: Text(l10n.shareWithCode),
                       ),
                     ),
                   ],

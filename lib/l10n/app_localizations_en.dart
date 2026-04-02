@@ -1285,4 +1285,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noParayansFound => 'No parayans found for the current year';
+
+  @override
+  String get joinCodeTitle => 'Enter Join Code';
+
+  @override
+  String get joinCodeHint => 'Enter 6-character code';
+
+  @override
+  String get invalidJoinCode => 'Invalid Join Code!';
+
+  @override
+  String get copyInviteLink => 'Copy Invite Link';
+
+  @override
+  String get copyJoinCode => 'Copy Join Code';
+
+  @override
+  String get joinCodeCopied => 'Join Code copied to clipboard';
+
+  @override
+  String get inviteLinkCopied => 'Invite Link copied to clipboard';
+
+  @override
+  String get joinCodeLabel => 'Join Code';
+
+  @override
+  String get shareWithCode => 'Share with Code';
+
+  @override
+  String get guruPushyaEndDateRequired =>
+      'Please set the end date and time for Guru Pushya parayan';
 }

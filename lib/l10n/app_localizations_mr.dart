@@ -1288,4 +1288,35 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get noParayansFound => 'चालू वर्षासाठी कोणतेही पारायण सापडले नाही';
+
+  @override
+  String get joinCodeTitle => 'जॉईन कोड एंटर करा';
+
+  @override
+  String get joinCodeHint => '६-अक्षरी कोड एंटर करा';
+
+  @override
+  String get invalidJoinCode => 'जॉईन कोड चुकीचा आहे!';
+
+  @override
+  String get copyInviteLink => 'निमंत्रण लिंक कॉपी करा';
+
+  @override
+  String get copyJoinCode => 'जॉईन कोड कॉपी करा';
+
+  @override
+  String get joinCodeCopied => 'जॉईन कोड क्लिपबोर्डवर कॉपी केला';
+
+  @override
+  String get inviteLinkCopied => 'निमंत्रण लिंक क्लिपबोर्डवर कॉपी केली';
+
+  @override
+  String get joinCodeLabel => 'जॉईन कोड';
+
+  @override
+  String get shareWithCode => 'कोडसह शेअर करा';
+
+  @override
+  String get guruPushyaEndDateRequired =>
+      'कृपया गुरुपुष्यामृत योग पारायणाची समाप्ती तारीख आणि वेळ सेट करा';
 }

@@ -8,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:intl/intl.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateParayanScreen extends StatefulWidget {
   const CreateParayanScreen({super.key});
@@ -27,6 +28,7 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
   ParayanType _selectedType = ParayanType.oneDay;
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
+  bool _isEndDateSetManually = false;
 
   bool _isLoading = false;
 
@@ -67,12 +69,28 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
         if (isStartDate) {
           _startDate = newDateTime;
           if (_selectedType == ParayanType.threeDay) {
-            _endDate = _startDate.add(const Duration(days: 2));
+            final targetEnd = _startDate.add(const Duration(days: 2));
+            _endDate = DateTime(
+              targetEnd.year,
+              targetEnd.month,
+              targetEnd.day,
+              23,
+              59,
+              59,
+            );
           } else if (_selectedType == ParayanType.oneDay) {
-            _endDate = _startDate;
+            _endDate = DateTime(
+              _startDate.year,
+              _startDate.month,
+              _startDate.day,
+              23,
+              59,
+              59,
+            );
           }
         } else {
           _endDate = newDateTime;
+          _isEndDateSetManually = true;
         }
       });
     }
@@ -90,13 +108,35 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
         if (isStartDate) {
           _startDate = picked;
           if (_selectedType == ParayanType.threeDay) {
-            _endDate = _startDate.add(const Duration(days: 2));
-          } else if (_selectedType == ParayanType.oneDay ||
-              _selectedType == ParayanType.guruPushya) {
-            _endDate = _startDate;
+            final targetEnd = _startDate.add(const Duration(days: 2));
+            _endDate = DateTime(
+              targetEnd.year,
+              targetEnd.month,
+              targetEnd.day,
+              23,
+              59,
+              59,
+            );
+          } else if (_selectedType == ParayanType.oneDay) {
+            _endDate = DateTime(
+              _startDate.year,
+              _startDate.month,
+              _startDate.day,
+              23,
+              59,
+              59,
+            );
           }
         } else {
-          _endDate = picked;
+          _endDate = DateTime(
+            picked.year,
+            picked.month,
+            picked.day,
+            23,
+            59,
+            59,
+          );
+          _isEndDateSetManually = true;
         }
       });
     }
@@ -104,6 +144,20 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
+    // Guru Pushya mandatory end date validation
+    if (_selectedType == ParayanType.guruPushya && !_isEndDateSetManually) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.guruPushyaEndDateRequired,
+          ),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+      return;
+    }
+
     final localizations = AppLocalizations.of(context)!;
 
     setState(() {
@@ -130,6 +184,7 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
         status: 'upcoming',
         reminderTimes: formattedTimes,
         createdAt: DateTime.now(),
+        joinCode: const Uuid().v4().substring(0, 6).toUpperCase(),
       );
 
       await _parayanService.createEvent(event);
@@ -210,8 +265,9 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color:
-                              theme.colorScheme.primary.withValues(alpha: 0.1),
+                          color: theme.colorScheme.primary.withValues(
+                            alpha: 0.1,
+                          ),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
@@ -320,9 +376,28 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                         setState(() {
                           _selectedType = value;
                           if (_selectedType == ParayanType.threeDay) {
-                            _endDate = _startDate.add(const Duration(days: 2));
-                          } else {
-                            _endDate = _startDate;
+                            final targetEnd = _startDate.add(
+                              const Duration(days: 2),
+                            );
+                            _endDate = DateTime(
+                              targetEnd.year,
+                              targetEnd.month,
+                              targetEnd.day,
+                              23,
+                              59,
+                              59,
+                            );
+                          } else if (_selectedType == ParayanType.oneDay) {
+                            _endDate = DateTime(
+                              _startDate.year,
+                              _startDate.month,
+                              _startDate.day,
+                              23,
+                              59,
+                              59,
+                            );
+                          } else if (_selectedType == ParayanType.guruPushya) {
+                            _isEndDateSetManually = false;
                           }
                         });
                       }
@@ -344,8 +419,9 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                       title: Text(localizations.startDateLabel),
                       subtitle: Text(
                         _selectedType == ParayanType.guruPushya
-                            ? DateFormat('MMM d, yyyy - hh:mm a')
-                                .format(_startDate)
+                            ? DateFormat(
+                                'MMM d, yyyy - hh:mm a',
+                              ).format(_startDate)
                             : DateFormat('MMM d, yyyy').format(_startDate),
                       ),
                       trailing: const Icon(Icons.calendar_today),
@@ -378,10 +454,14 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: theme.appColors.primarySwatch.withValues(alpha: 0.05),
+                      color: theme.appColors.primarySwatch.withValues(
+                        alpha: 0.05,
+                      ),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
+                        color: theme.appColors.primarySwatch.withValues(
+                          alpha: 0.2,
+                        ),
                       ),
                     ),
                     child: Column(

@@ -107,12 +107,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (weeklyPooja != null && specialEvent != null) break;
     }
 
-    // 2. Fetch from 'parayan_events' collection
-    // Simplified query: Fetch recent/upcoming ones and filter in-memory
-    // to avoid needing a composite index for 'status' + 'startDate'.
+    // Simplified query: Fetch events that haven't ended yet
     final parayanSnapshot = await FirebaseFirestore.instance
         .collection('parayan_events')
-        .orderBy('startDate')
+        .where('endDate', isGreaterThanOrEqualTo: nowTimestamp)
+        .orderBy('endDate')
         .limit(10)
         .get();
 
@@ -693,10 +692,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   ) {
     final locale = Localizations.localeOf(context).languageCode;
     final title = locale == 'mr' ? event.titleMr : event.titleEn;
-    final isSingleDay =
-        event.type == ParayanType.oneDay ||
-        event.type == ParayanType.guruPushya;
-    final dateRange = isSingleDay
+    final isSameDay = event.startDate.year == event.endDate.year &&
+        event.startDate.month == event.endDate.month &&
+        event.startDate.day == event.endDate.day;
+    final dateRange = isSameDay
         ? DateFormat.yMMMMEEEEd(locale).format(event.startDate)
         : (locale == 'mr'
               ? "${DateFormat('E, d MMMM', 'mr').format(event.startDate)} - ${DateFormat('E, d MMMM, yyyy', 'mr').format(event.endDate)}"

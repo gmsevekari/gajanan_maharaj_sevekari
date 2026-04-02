@@ -485,5 +485,16 @@
   "currentVersionLabel": "आत्ताचे व्हर्जन",
   "updateNow": "आता अपडेट करा",
   "updateLater": "नंतर",
-  "noParayansFound": "चालू वर्षासाठी कोणतेही पारायण सापडले नाही"
+  "noParayansFound": "चालू वर्षासाठी कोणतेही पारायण सापडले नाही",
+  "joinCodeTitle": "जॉईन कोड एंटर करा",
+  "joinCodeHint": "६-अक्षरी कोड एंटर करा",
+  "invalidJoinCode": "जॉईन कोड चुकीचा आहे!",
+  "cancel": "रद्द करा",
+  "copyInviteLink": "निमंत्रण लिंक कॉपी करा",
+  "copyJoinCode": "जॉईन कोड कॉपी करा",
+  "joinCodeCopied": "जॉईन कोड क्लिपबोर्डवर कॉपी केला",
+  "inviteLinkCopied": "निमंत्रण लिंक क्लिपबोर्डवर कॉपी केली",
+  "joinCodeLabel": "जॉईन कोड",
+  "shareWithCode": "कोडसह शेअर करा",
+  "guruPushyaEndDateRequired": "कृपया गुरुपुष्यामृत योग पारायणाची समाप्ती तारीख आणि वेळ सेट करा"
 }

@@ -16,6 +16,7 @@ class ParayanEvent {
   final DateTime createdAt;
   final int joinedParticipants;
   final Map<String, dynamic> sentReminders; // e.g., {'day1_20:00': Timestamp}
+  final String? joinCode;
 
   const ParayanEvent({
     required this.id,
@@ -32,6 +33,7 @@ class ParayanEvent {
     required this.createdAt,
     this.joinedParticipants = 0,
     this.sentReminders = const {},
+    this.joinCode,
   });
 
   factory ParayanEvent.fromFirestore(DocumentSnapshot doc) {
@@ -62,6 +64,7 @@ class ParayanEvent {
       sentReminders: data['sentReminders'] != null
           ? Map<String, dynamic>.from(data['sentReminders'] as Map)
           : {},
+      joinCode: data['joinCode'],
     );
   }
 
@@ -87,6 +90,7 @@ class ParayanEvent {
       'createdAt': Timestamp.fromDate(createdAt),
       'joinedParticipants': joinedParticipants,
       'sentReminders': sentReminders,
+      if (joinCode != null) 'joinCode': joinCode,
     };
   }
 }

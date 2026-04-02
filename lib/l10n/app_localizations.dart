@@ -2521,6 +2521,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No parayans found for the current year'**
   String get noParayansFound;
+
+  /// No description provided for @joinCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Join Code'**
+  String get joinCodeTitle;
+
+  /// No description provided for @joinCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 6-character code'**
+  String get joinCodeHint;
+
+  /// No description provided for @invalidJoinCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Join Code!'**
+  String get invalidJoinCode;
+
+  /// No description provided for @copyInviteLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Invite Link'**
+  String get copyInviteLink;
+
+  /// No description provided for @copyJoinCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Join Code'**
+  String get copyJoinCode;
+
+  /// No description provided for @joinCodeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Code copied to clipboard'**
+  String get joinCodeCopied;
+
+  /// No description provided for @inviteLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Link copied to clipboard'**
+  String get inviteLinkCopied;
+
+  /// No description provided for @joinCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Code'**
+  String get joinCodeLabel;
+
+  /// No description provided for @shareWithCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with Code'**
+  String get shareWithCode;
+
+  /// No description provided for @guruPushyaEndDateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please set the end date and time for Guru Pushya parayan'**
+  String get guruPushyaEndDateRequired;
 }
 
 class _AppLocalizationsDelegate

@@ -485,5 +485,16 @@
   "currentVersionLabel": "Current Version",
   "updateNow": "Update Now",
   "updateLater": "Later",
-  "noParayansFound": "No parayans found for the current year"
+  "noParayansFound": "No parayans found for the current year",
+  "joinCodeTitle": "Enter Join Code",
+  "joinCodeHint": "Enter 6-character code",
+  "invalidJoinCode": "Invalid Join Code!",
+  "cancel": "Cancel",
+  "copyInviteLink": "Copy Invite Link",
+  "copyJoinCode": "Copy Join Code",
+  "joinCodeCopied": "Join Code copied to clipboard",
+  "inviteLinkCopied": "Invite Link copied to clipboard",
+  "joinCodeLabel": "Join Code",
+  "shareWithCode": "Share with Code",
+  "guruPushyaEndDateRequired": "Please set the end date and time for Guru Pushya parayan"
 }

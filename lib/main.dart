@@ -157,9 +157,11 @@ class _MyAppState extends State<MyApp> {
       id = uri.queryParameters['id'];
     }
 
+    String? joinCode = uri.queryParameters['joinCode'] ?? uri.queryParameters['code'];
+
     if (id != null) {
-      debugPrint('Deep Link: Navigating to Parayan ID: $id');
-      DeepLinkManager.setPendingRoute(Routes.parayanDetail, {'id': id});
+      debugPrint('Deep Link: Navigating to Parayan ID: $id with code: $joinCode');
+      DeepLinkManager.setPendingRoute(Routes.parayanDetail, {'id': id, 'joinCode': joinCode});
 
       // ONLY navigate directly if the app is already past the Splash screen.
       // During startup, SplashScreen will consume the result from consumePendingRoute().
@@ -173,7 +175,7 @@ class _MyAppState extends State<MyApp> {
       });
 
       if (navState != null && !isAtSplash) {
-        _safeNavigate(Routes.parayanDetail, {'id': id});
+        _safeNavigate(Routes.parayanDetail, {'id': id, 'joinCode': joinCode});
       } else {
         debugPrint(
           '[DeepLinkManager] App is starting. Deferring navigation to SplashScreen.',
@@ -328,8 +330,10 @@ class _MyAppState extends State<MyApp> {
                     } else if (settings.arguments is Map) {
                       final args = settings.arguments as Map;
                       return MaterialPageRoute(
-                        builder: (context) =>
-                            ParayanDetailScreen(eventId: args['id']),
+                        builder: (context) => ParayanDetailScreen(
+                          eventId: args['id'],
+                          prefilledJoinCode: args['joinCode'],
+                        ),
                       );
                     }
                     return null;

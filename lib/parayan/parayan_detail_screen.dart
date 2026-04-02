@@ -21,9 +21,14 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 class ParayanDetailScreen extends StatefulWidget {
   final ParayanEvent? event;
   final String? eventId;
+  final String? prefilledJoinCode;
 
-  const ParayanDetailScreen({super.key, this.event, this.eventId})
-    : assert(event != null || eventId != null);
+  const ParayanDetailScreen({
+    super.key,
+    this.event,
+    this.eventId,
+    this.prefilledJoinCode,
+  }) : assert(event != null || eventId != null);
 
   @override
   State<ParayanDetailScreen> createState() => _ParayanDetailScreenState();
@@ -111,6 +116,74 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
         });
   }
 
+  Future<void> _attemptJoin(BuildContext context, AppLocalizations localizations) async {
+    // If prefilled code matches or event surprisingly has no code (legacy safety)
+    if (_event!.joinCode == null || widget.prefilledJoinCode == _event!.joinCode) {
+      _navigateAndHandleResult();
+      return;
+    }
+
+    final codeController = TextEditingController();
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(localizations.joinCodeTitle),
+          content: TextField(
+            controller: codeController,
+            decoration: InputDecoration(
+              hintText: localizations.joinCodeHint,
+            ),
+            textCapitalization: TextCapitalization.characters,
+            autofocus: true,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(localizations.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                 if (codeController.text.trim().toUpperCase() == _event!.joinCode) {
+                    Navigator.pop(context, true);
+                 } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(localizations.invalidJoinCode)));
+                 }
+              },
+              child: Text(localizations.submitLabel),
+            )
+          ]
+        );
+      }
+    );
+
+    if (result == true) {
+      _navigateAndHandleResult();
+    }
+  }
+
+  Future<void> _navigateAndHandleResult([ParayanHousehold? household]) async {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ParayanSignupScreen(
+            event: _event!,
+            existingEnrollment: household,
+          ),
+        ),
+      );
+      if (result != null && _deviceId != null && mounted) {
+        if (result == true) {
+          _checkRegistration(_deviceId!);
+        } else if (result is Map && result['deleted'] == true) {
+          _checkRegistration(_deviceId!);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context)!.signupDeletedSuccess)),
+          );
+        }
+      }
+  }
+
   @override
   void dispose() {
     _eventSubscription?.cancel();
@@ -133,19 +206,36 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
     return locale == 'mr' ? toMarathiNumerals(dateStr) : dateStr;
   }
 
+  String _formatTime(DateTime date, String locale) {
+    final timeStr = DateFormat.jm(locale).format(date);
+    return locale == 'mr' ? toMarathiNumerals(timeStr) : timeStr;
+  }
+
   String _getSmartDate(String locale) {
     if (_event == null) return "";
-    if (_event!.type == ParayanType.oneDay ||
-        _event!.type == ParayanType.guruPushya) {
-      return _formatDate(_event!.startDate, locale);
+    final isSameDay = _event!.startDate.year == _event!.endDate.year &&
+        _event!.startDate.month == _event!.endDate.month &&
+        _event!.startDate.day == _event!.endDate.day;
+
+    String dateStr;
+    if (isSameDay) {
+      dateStr = _formatDate(_event!.startDate, locale);
     } else {
       final startStr = locale == 'mr'
           ? DateFormat('d MMMM', 'mr').format(_event!.startDate)
           : DateFormat('MMMM d').format(_event!.startDate);
       final start = locale == 'mr' ? toMarathiNumerals(startStr) : startStr;
       final end = _formatDate(_event!.endDate, locale);
-      return "$start - $end";
+      dateStr = "$start - $end";
     }
+
+    if (_event!.type == ParayanType.guruPushya) {
+      final startTime = _formatTime(_event!.startDate, locale);
+      final endTime = _formatTime(_event!.endDate, locale);
+      return "$dateStr ($startTime - $endTime)";
+    }
+
+    return dateStr;
   }
 
   String _getDescriptiveStatus(AppLocalizations localizations, String locale) {
@@ -426,66 +516,10 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                               _deviceId!,
                                             );
                                         if (household != null && mounted) {
-                                          final result = await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ParayanSignupScreen(
-                                                    event: _event!,
-                                                    existingEnrollment:
-                                                        household,
-                                                  ),
-                                            ),
-                                          );
-                                          if (result != null &&
-                                              _deviceId != null) {
-                                            if (result == true) {
-                                              _checkRegistration(_deviceId!);
-                                            } else if (result is Map &&
-                                                result['deleted'] == true) {
-                                              _checkRegistration(_deviceId!);
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    localizations
-                                                        .signupDeletedSuccess,
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          }
+                                          _navigateAndHandleResult(household);
                                         }
                                       } else {
-                                        final result = await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                ParayanSignupScreen(
-                                                  event: _event!,
-                                                ),
-                                          ),
-                                        );
-                                        if (result != null &&
-                                            _deviceId != null) {
-                                          if (result == true) {
-                                            _checkRegistration(_deviceId!);
-                                          } else if (result is Map &&
-                                              result['deleted'] == true) {
-                                            _checkRegistration(_deviceId!);
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                  localizations
-                                                      .signupDeletedSuccess,
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                        }
+                                        _attemptJoin(context, localizations);
                                       }
                                     }
                                   : null,
