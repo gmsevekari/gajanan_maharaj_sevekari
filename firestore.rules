@@ -2,44 +2,53 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-  
-    // Allow public read access to app configuration
+    
+    // Helper function to check if the user is an authorized admin
+    function isAdmin() {
+      return request.auth != null &&
+             exists(/databases/$(database)/documents/admin_allowlist/$(request.auth.token.email));
+    }
+
+    // App Config: Publicly readable; Admin writable
     match /app_config/{document} {
       allow read: if true;
-      allow write: if false; // Only allow writes from Admin/Console
+      allow write: if isAdmin();
     }
-    
-    // Keep your existing public event read access
-    match /events/{eventId} {
-      allow read: if true;
-      allow write: if false; 
+
+    // Admin Allowlist: Read-only for admins (to verify themselves)
+    match /admin_allowlist/{email} {
+      allow read: if request.auth != null && request.auth.token.email == email;
+      allow write: if false; // Security preference: Keep this manual in console
     }
-    
-    // Allow anyone to read notifications, but only let authenticated admins write them
-    match /notifications/{document=**} {
-      allow read: if true;
-      allow write: if request.auth != null; 
-    }
-    
-    // Allow the app to check if an email is in the allowlist during login
-    match /admin_allowlist/{document=**} {
-      allow read: if true;
-      allow write: if false;
-    }
-    
-    // Allow authenticated admins to write audit logs, but nobody can read them via the app
+
+    // Admin Audit Logs: Admin writable; Not readable via app
     match /admin_audit_logs/{document=**} {
       allow read: if false;
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
-    
+
+    // Parayan Events: Publicly readable; Admin writable
     match /parayan_events/{eventId} {
-    	allow read: if true;
-  		allow write: if request.auth != null;
-  
-  		match /participants/{deviceId} {
-    		allow read, write: if true;
-  		}
-		}
+      allow read: if true;
+      allow write: if isAdmin();
+      
+      match /participants/{participantId} {
+        allow read: if true;
+        allow create: if true;
+        allow update, delete: if isAdmin() || (request.resource.data.deviceId == resource.data.deviceId);
+      }
+    }
+
+    // Notifications: Publicly readable; Admin writable
+    match /notifications/{notificationId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Legacy Events: Publicly readable
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
   }
 }
