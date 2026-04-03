@@ -406,30 +406,34 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
         ),
       ),
       content: SizedBox(
-        width: 300,
+        width: MediaQuery.of(context).size.width * 0.9,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // ── Color Preview ──
             Container(
-              height: 60,
+              height: 80,
               decoration: BoxDecoration(
                 color: selectedColor,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: theme.colorScheme.outline.withValues(alpha: 0.2),
+                  width: 1,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: selectedColor.withValues(alpha: 0.4),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+                    color: selectedColor.withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
             // ── Hue Slider ──
             _buildLabel(context, 'Hue'),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             _HueSlider(
               hue: _hslColor.hue,
               onChanged: (hue) {
@@ -438,11 +442,11 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
                 });
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // ── Saturation Slider ──
             _buildLabel(context, 'Saturation'),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             _GradientSlider(
               value: _hslColor.saturation,
               startColor: _hslColor.withSaturation(0.0).toColor(),
@@ -453,18 +457,20 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
                 });
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
-            // ── Lightness Slider ──
+            // ── Lightness Slider (Brightness) ──
             _buildLabel(context, 'Brightness'),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             _GradientSlider(
               value: _hslColor.lightness,
-              startColor: Colors.black,
-              endColor: _hslColor.withLightness(0.5).toColor(),
+              startColor: _hslColor.withLightness(0.0).toColor(),
+              endColor: _hslColor.withLightness(1.0).toColor(),
               onChanged: (value) {
                 setState(() {
-                  _hslColor = _hslColor.withLightness(value.clamp(0.15, 0.65));
+                  // Allow wider range for flexibility, but keep a tiny buffer
+                  // to stay within usable theme ranges if necessary.
+                  _hslColor = _hslColor.withLightness(value.clamp(0.05, 0.95));
                 });
               },
             ),
