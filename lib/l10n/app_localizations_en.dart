@@ -1316,4 +1316,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get guruPushyaEndDateRequired =>
       'Please set the end date and time for Guru Pushya parayan';
+
+  @override
+  String get confirmCompletionTitle => 'Confirm Completion';
+
+  @override
+  String get confirmCompletionMessage =>
+      'Have you completed reading the assigned adhyay?';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get readingProgressUpdated => 'Reading progress updated';
 }

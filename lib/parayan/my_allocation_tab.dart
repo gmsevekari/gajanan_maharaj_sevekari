@@ -119,9 +119,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    Localizations.localeOf(context).languageCode == 'mr'
-                        ? "अध्याय वाटप अद्याप झाले नाही, कृपया नंतर तपासा"
-                        : "Adhyay not allocated yet, please check back later",
+                    localizations.upcomingParayanMessage,
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: theme.hintColor,
                     ),
@@ -367,27 +365,28 @@ class _MyAllocationTabState extends State<MyAllocationTab>
   }
 
   void _showCompletionDialog(BuildContext context, VoidCallback onComplete) {
+    final localizations = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Confirm Completion"),
-        content: const Text("Have you finished reading the assigned Adhyay?"),
+        title: Text(localizations.confirmCompletionTitle),
+        content: Text(localizations.confirmCompletionMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("No"),
+            child: Text(localizations.no),
           ),
           ElevatedButton(
             onPressed: () {
               onComplete();
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Reading progress updated successfully!"),
+                SnackBar(
+                  content: Text(localizations.readingProgressUpdated),
                 ),
               );
             },
-            child: const Text("Yes"),
+            child: Text(localizations.yes),
           ),
         ],
       ),

@@ -496,5 +496,10 @@
   "inviteLinkCopied": "निमंत्रण लिंक क्लिपबोर्डवर कॉपी केली",
   "joinCodeLabel": "जॉईन कोड",
   "shareWithCode": "कोडसह शेअर करा",
-  "guruPushyaEndDateRequired": "कृपया गुरुपुष्यामृत योग पारायणाची समाप्ती तारीख आणि वेळ सेट करा"
+  "guruPushyaEndDateRequired": "कृपया गुरुपुष्यामृत योग पारायणाची समाप्ती तारीख आणि वेळ सेट करा",
+  "confirmCompletionTitle": "खात्री करा",
+  "confirmCompletionMessage": "तुम्हाला नियुक्त केलेला अध्याय वाचून पूर्ण झाला आहे का?",
+  "no": "नाही",
+  "yes": "हो",
+  "readingProgressUpdated": "अध्याय स्टेटस उपडेट केले आहे"
 }

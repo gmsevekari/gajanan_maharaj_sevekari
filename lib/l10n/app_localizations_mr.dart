@@ -1319,4 +1319,20 @@ class AppLocalizationsMr extends AppLocalizations {
   @override
   String get guruPushyaEndDateRequired =>
       'कृपया गुरुपुष्यामृत योग पारायणाची समाप्ती तारीख आणि वेळ सेट करा';
+
+  @override
+  String get confirmCompletionTitle => 'खात्री करा';
+
+  @override
+  String get confirmCompletionMessage =>
+      'तुम्हाला नियुक्त केलेला अध्याय वाचून पूर्ण झाला आहे का?';
+
+  @override
+  String get no => 'नाही';
+
+  @override
+  String get yes => 'हो';
+
+  @override
+  String get readingProgressUpdated => 'अध्याय स्टेटस उपडेट केले आहे';
 }

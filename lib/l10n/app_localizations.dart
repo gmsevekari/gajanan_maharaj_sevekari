@@ -2581,6 +2581,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please set the end date and time for Guru Pushya parayan'**
   String get guruPushyaEndDateRequired;
+
+  /// No description provided for @confirmCompletionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Completion'**
+  String get confirmCompletionTitle;
+
+  /// No description provided for @confirmCompletionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Have you completed reading the assigned adhyay?'**
+  String get confirmCompletionMessage;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @readingProgressUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading progress updated'**
+  String get readingProgressUpdated;
 }
 
 class _AppLocalizationsDelegate

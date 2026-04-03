@@ -496,5 +496,10 @@
   "inviteLinkCopied": "Invite Link copied to clipboard",
   "joinCodeLabel": "Join Code",
   "shareWithCode": "Share with Code",
-  "guruPushyaEndDateRequired": "Please set the end date and time for Guru Pushya parayan"
+  "guruPushyaEndDateRequired": "Please set the end date and time for Guru Pushya parayan",
+  "confirmCompletionTitle": "Confirm Completion",
+  "confirmCompletionMessage": "Have you completed reading the assigned adhyay?",
+  "no": "No",
+  "yes": "Yes",
+  "readingProgressUpdated": "Reading progress updated"
 }
