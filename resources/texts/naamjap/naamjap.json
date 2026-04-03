@@ -11,6 +11,12 @@
             "title_mr": "दिगंबरा दिगंबरा श्रीपाद वल्लभ दिगंबरा",
             "title_en": "Digambara Digambara Shripad Vallabh Digambara",
             "audio": "digambara_digambara.mp3"
+        },
+        {
+            "id": "shri_ram_jay_ram",
+            "title_mr": "श्री राम जय राम जय जय राम",
+            "title_en": "Shri Ram Jay Ram Jay Jay Ram",
+            "audio": "shri_ram_jay_ram.mp3"
         }
     ]
 }
