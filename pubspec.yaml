@@ -67,6 +67,7 @@ dependencies:
   flutter_secure_storage: ^10.0.0
   flutter_file_dialog: ^3.0.1
   pub_semver: ^2.1.4
+  firebase_app_check: ^0.4.2
   
 dev_dependencies:
   flutter_test:

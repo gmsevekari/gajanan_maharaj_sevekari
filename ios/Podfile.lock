@@ -1235,6 +1235,11 @@ PODS:
   - Firebase/Messaging (12.9.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 12.9.0)
+  - firebase_app_check (0.4.2):
+    - Firebase/CoreOnly (~> 12.9.0)
+    - firebase_core
+    - FirebaseAppCheck (~> 12.9.0)
+    - Flutter
   - firebase_auth (6.3.0):
     - Firebase/Auth (= 12.9.0)
     - firebase_core
@@ -1246,6 +1251,12 @@ PODS:
     - Firebase/Messaging (= 12.9.0)
     - firebase_core
     - Flutter
+  - FirebaseAppCheck (12.9.0):
+    - AppCheckCore (~> 11.0)
+    - FirebaseAppCheckInterop (~> 12.9.0)
+    - FirebaseCore (~> 12.9.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
   - FirebaseAppCheckInterop (12.9.0)
   - FirebaseAuth (12.9.0):
     - FirebaseAppCheckInterop (~> 12.9.0)
@@ -1496,6 +1507,7 @@ DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - firebase_app_check (from `.symlinks/plugins/firebase_app_check/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
@@ -1521,6 +1533,7 @@ SPEC REPOS:
     - AppCheckCore
     - BoringSSL-GRPC
     - Firebase
+    - FirebaseAppCheck
     - FirebaseAppCheckInterop
     - FirebaseAuth
     - FirebaseAuthInterop
@@ -1560,6 +1573,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/cloud_functions/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
+  firebase_app_check:
+    :path: ".symlinks/plugins/firebase_app_check/ios"
   firebase_auth:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
@@ -1607,9 +1622,11 @@ SPEC CHECKSUMS:
   cloud_functions: 8cfd7ba062db83be645823b41f2b42aa234bcfe3
   device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
   Firebase: 065f2bb395062046623036d8e6dc857bc2521d56
+  firebase_app_check: 4d509b2df4dc9ad0aa7260a74443b4d32d852bff
   firebase_auth: 323c64eedef33fc3fdf438d16c29d2624b2ce4f4
   firebase_core: 8e6f58412ca227827c366b92e7cee047a2148c60
   firebase_messaging: c3aa897e0d40109cfb7927c40dc0dea799863f3b
+  FirebaseAppCheck: 94dae4d9bb682bdef85a778b0c1024a4613f1e89
   FirebaseAppCheckInterop: 4bade10286cc977e516f75d2d8312cbdfa534789
   FirebaseAuth: 3a39f6436c21ebfd7919b698228b4f89ff94c23b
   FirebaseAuthInterop: f8f6ff72dc24621906497fbe5cf3c42ee815e59c
