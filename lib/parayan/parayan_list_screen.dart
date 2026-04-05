@@ -8,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/calendar_export_service.dart';
 import 'package:intl/intl.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class ParayanListScreen extends StatefulWidget {
   const ParayanListScreen({super.key});
@@ -70,7 +71,7 @@ class _ParayanListScreenState extends State<ParayanListScreen>
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,
@@ -90,7 +91,7 @@ class _ParayanListScreenState extends State<ParayanListScreen>
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],

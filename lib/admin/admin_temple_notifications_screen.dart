@@ -5,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_session_service.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class AdminTempleNotificationsScreen extends StatefulWidget {
   const AdminTempleNotificationsScreen({super.key});
@@ -109,7 +110,7 @@ class _AdminTempleNotificationsScreenState
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.home),
+              icon: const ThemedIcon(LogicalIcon.home),
               onPressed: () => Navigator.pushNamedAndRemoveUntil(
                 context,
                 Routes.home,

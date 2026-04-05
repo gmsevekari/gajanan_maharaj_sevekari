@@ -10,6 +10,7 @@ import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.da
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -279,8 +280,7 @@ class NotificationManager {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          icon: Icon(
-            Icons.notifications_active_outlined,
+          icon: Icon(Icons.notifications_active_outlined,
             size: 48,
             color: theme.colorScheme.primary,
           ),

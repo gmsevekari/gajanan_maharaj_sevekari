@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class ThemeSelectionScreen extends StatelessWidget {
   const ThemeSelectionScreen({super.key});
@@ -17,7 +18,7 @@ class ThemeSelectionScreen extends StatelessWidget {
         title: Text(localizations.theme),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,

@@ -17,6 +17,7 @@ import 'dart:io';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_add_participants_screen.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 enum _ParticipantFilter { all, completed, pending }
 
@@ -158,7 +159,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.home),
+                icon: const ThemedIcon(LogicalIcon.home),
                 onPressed: () => Navigator.pushNamedAndRemoveUntil(
                   context,
                   Routes.home,
@@ -166,7 +167,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.settings),
+                icon: const ThemedIcon(LogicalIcon.settings),
                 onPressed: () => Navigator.pushNamed(context, Routes.settings),
               ),
             ],

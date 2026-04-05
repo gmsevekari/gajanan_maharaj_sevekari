@@ -8,6 +8,9 @@ import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class DeityDashboardScreen extends StatelessWidget {
   final DeityConfig deity;
@@ -128,7 +131,7 @@ class DeityDashboardScreen extends StatelessWidget {
         title: Text(deityName),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const ThemedIcon(LogicalIcon.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -139,7 +142,7 @@ class DeityDashboardScreen extends StatelessWidget {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,
@@ -147,7 +150,7 @@ class DeityDashboardScreen extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/event_calendar/event_calendar_screen.dart';
@@ -9,12 +10,17 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/festival_launch_animation.dart';
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
-import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/shared/update_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/utils/update_service.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_loading_indicator.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/festival_tap_effect.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,6 +32,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<Map<String, dynamic>>? _upcomingEventsFuture;
   String? _lastReadTimestamp;
+  bool _showFestivalAnimation = false;
+  FestivalAnimationType _activeAnimationType = FestivalAnimationType.fireworks;
+  String _animationMessage = '';
 
   @override
   void initState() {
@@ -33,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _upcomingEventsFuture = _fetchUpcomingEvents();
     _loadUnreadStatus();
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
 
@@ -40,6 +50,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (!kIsWeb) {
         await NotificationManager.requestPermissions(context);
       }
+
+      if (!mounted) return;
+
+      // Festival Launch Check
+      await _checkFestivalLaunch();
 
       if (!mounted) return;
 
@@ -57,6 +72,38 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  Future<void> _checkFestivalLaunch() async {
+    final festivalProvider = Provider.of<FestivalProvider>(context, listen: false);
+    final activeFestival = festivalProvider.activeFestival;
+    if (activeFestival == null) return;
+
+    final localizations = AppLocalizations.of(context);
+    if (localizations == null) return;
+    final prefs = await SharedPreferences.getInstance();
+
+    if (activeFestival.id == 'diwali') {
+      final hasLaunched = prefs.getBool('has_launched_diwali_2026') ?? false;
+      if (!hasLaunched) {
+        setState(() {
+          _showFestivalAnimation = true;
+          _activeAnimationType = FestivalAnimationType.fireworks;
+          _animationMessage = localizations.chantHappyDiwali;
+        });
+        await prefs.setBool('has_launched_diwali_2026', true);
+      }
+    } else if (activeFestival.id == 'ganesh_chaturthi') {
+      final hasLaunched = prefs.getBool('has_launched_ganesh_chaturthi_2026') ?? false;
+      if (!hasLaunched) {
+        setState(() {
+          _showFestivalAnimation = true;
+          _activeAnimationType = FestivalAnimationType.flowerPetals;
+          _animationMessage = localizations.chantGanpatiBappa;
+        });
+        await prefs.setBool('has_launched_ganesh_chaturthi_2026', true);
+      }
+    }
   }
 
   @override
@@ -152,24 +199,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     if (localizations == null) return const SizedBox.shrink();
 
+    final festivalProvider = Provider.of<FestivalProvider>(context);
+    final activeFestivalId = festivalProvider.activeFestival?.id;
+    final isGaneshotsav = activeFestivalId == 'ganesh_chaturthi';
+    final isDiwali = activeFestivalId == 'diwali';
+
     final List<Widget> cards = [];
 
     cards.add(
       _buildIconGridItem(
         context: context,
         title: localizations.nityopasanaTitle,
-        imagePath: 'resources/images/icon/Nityopasana.png',
-        imageSize: 100.0,
-        onTap: () =>
-            Navigator.pushNamed(context, Routes.nityopasanaConsolidated),
+        imagePath: isGaneshotsav 
+            ? 'resources/images/festive_icons/ganesh_chaturthi/nityopasana.png' 
+            : isDiwali
+                ? 'resources/images/festive_icons/diwali/nityopasana.png'
+                : 'resources/images/icon/Nityopasana.png',
+        imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 40.0,
+        onTap: () => Navigator.pushNamed(context, Routes.nityopasanaConsolidated),
       ),
     );
     cards.add(
       _buildIconGridItem(
         context: context,
         title: localizations.naamjapTitle,
-        imagePath: 'resources/images/icon/Rudraksha_Mala.png',
-        imageSize: 100.0,
+        imagePath: isGaneshotsav 
+            ? 'resources/images/festive_icons/ganesh_chaturthi/naamjap.png' 
+            : isDiwali
+                ? 'resources/images/festive_icons/diwali/naamjap.png'
+                : 'resources/images/icon/Rudraksha_Mala.png',
+        imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 40.0,
         onTap: () => Navigator.pushNamed(context, Routes.naamjap),
       ),
     );
@@ -177,8 +236,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _buildIconGridItem(
         context: context,
         title: localizations.parayanTitle,
-        imagePath: 'resources/images/icon/Parayan.png',
-        imageSize: 100.0,
+        imagePath: isGaneshotsav 
+            ? 'resources/images/festive_icons/ganesh_chaturthi/parayan.png' 
+            : isDiwali
+                ? 'resources/images/festive_icons/diwali/parayan.png'
+                : 'resources/images/icon/Parayan.png',
+        imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 40.0,
         onTap: () => Navigator.pushNamed(context, Routes.parayanList),
       ),
     );
@@ -186,13 +249,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _buildIconGridItem(
         context: context,
         title: localizations.calendarTitle,
-        icon: Icons.calendar_month_outlined,
-        imageSize: 100.0,
+        customWidget: (isGaneshotsav || isDiwali) ? null : const ThemedIcon(LogicalIcon.calendar, size: 60.0),
+        imagePath: isGaneshotsav 
+            ? 'resources/images/festive_icons/ganesh_chaturthi/calendar.png' 
+            : isDiwali
+                ? 'resources/images/festive_icons/diwali/calendar.png'
+                : null,
+        imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 40.0,
         onTap: () => Navigator.pushNamed(context, Routes.calendar),
       ),
     );
 
-    return Scaffold(
+    final scaffoldBase = Scaffold(
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -201,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         title: Text(localizations.appName),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const ThemedIcon(LogicalIcon.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -245,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 alignment: Alignment.center,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.notifications),
+                    icon: const ThemedIcon(LogicalIcon.notifications),
                     onPressed: () async {
                       await Navigator.pushNamed(
                         context,
@@ -271,16 +339,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
+      body: Container(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
                 children: [
                   _buildUpcomingEventCard(context, localizations),
                   Padding(
@@ -294,12 +363,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   if (kIsWeb) _buildDownloadBanner(context, localizations),
                   const SizedBox(
-                    height: 100,
+                    height: 80,
                   ), // Extra space to prevent bottom cards from cutting off on zoomed displays
                 ],
               ),
             ),
           ),
+          if (isGaneshotsav) const MouseMarquee(),
+
           SafeArea(
             top: false,
             child: Padding(
@@ -307,14 +378,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.spa,
-                    color: theme.appColors.primarySwatch[300],
-                    size: 20,
-                  ),
+                  (isGaneshotsav || isDiwali)
+                      ? Image.asset(
+                          isDiwali 
+                              ? 'resources/images/festive_icons/diwali/list.png'
+                              : 'resources/images/festive_icons/ganesh_chaturthi/list.png', 
+                          width: 24, 
+                          height: 24,
+                        )
+                      : Icon(
+                          Icons.spa,
+                          color: theme.appColors.primarySwatch[300],
+                          size: 20,
+                        ),
                   const SizedBox(width: 12),
                   Text(
-                    localizations.gajananChant,
+                     isDiwali 
+                        ? localizations.chantHappyDiwali 
+                        : isGaneshotsav 
+                            ? localizations.chantGanpatiBappa 
+                            : localizations.gajananChant,
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -323,18 +406,46 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Icon(
-                    Icons.spa,
-                    color: theme.appColors.primarySwatch[300],
-                    size: 20,
-                  ),
+                  (isGaneshotsav || isDiwali)
+                      ? Image.asset(
+                          isDiwali 
+                              ? 'resources/images/festive_icons/diwali/list.png'
+                              : 'resources/images/festive_icons/ganesh_chaturthi/list.png', 
+                          width: 24, 
+                          height: 24,
+                        )
+                      : Icon(
+                          Icons.spa,
+                          color: theme.appColors.primarySwatch[300],
+                          size: 20,
+                        ),
                 ],
               ),
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
+
+    if (_showFestivalAnimation) {
+      return Stack(
+        children: [
+          scaffoldBase,
+          FestivalLaunchAnimation(
+            message: _animationMessage,
+            type: _activeAnimationType,
+            onComplete: () {
+              if (mounted) {
+                setState(() => _showFestivalAnimation = false);
+              }
+            },
+          ),
+        ],
+      );
+    }
+    
+    return scaffoldBase;
   }
 
   Widget _buildDownloadBanner(
@@ -435,6 +546,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     AppLocalizations localizations,
   ) {
     final theme = Theme.of(context);
+    final activeFestivalId = context.watch<FestivalProvider>().activeFestival?.id;
+    final isGaneshotsav = activeFestivalId == 'ganesh_chaturthi';
+    final isDiwali = activeFestivalId == 'diwali';
 
     return FutureBuilder<Map<String, dynamic>>(
       future: _upcomingEventsFuture,
@@ -451,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Card(child: Center(child: CircularProgressIndicator()));
+          return const Card(child: Center(child: ThemedLoadingIndicator()));
         }
 
         final data = snapshot.data;
@@ -566,34 +680,126 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           );
         }
 
+        final cardContent = Card(
+          elevation: 0,
+          margin: EdgeInsets.zero,
+          color: theme.cardTheme.color,
+          shape: theme.cardTheme.shape,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: children,
+            ),
+          ),
+        );
+
+        if (!isGaneshotsav && !isDiwali) {
+          return Container(
+            margin: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16.0),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.cardTheme.shadowColor ?? Colors.black12,
+                  offset: const Offset(0, 4),
+                  blurRadius: 0,
+                  spreadRadius: 0,
+                ),
+              ],
+            ),
+            child: cardContent,
+          );
+        }
+
+        // Hibiscus Border Wrapper using Custom Imagery
         return Container(
           margin: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16.0),
+            border: Border.all(
+              color: isDiwali 
+                  ? const Color(0xFFE52B7B).withValues(alpha: 0.8) 
+                  : theme.appColors.primarySwatch.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
             boxShadow: [
               BoxShadow(
-                color: theme.cardTheme.shadowColor!,
+                color: theme.cardTheme.shadowColor ?? Colors.black12,
                 offset: const Offset(0, 4),
                 blurRadius: 0,
                 spreadRadius: 0,
               ),
             ],
           ),
-          child: Card(
-            elevation: 0,
-            margin: EdgeInsets.zero,
-            color: theme.cardTheme.color,
-            shape: theme.cardTheme.shape,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 8.0,
+          child: Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                  top: isDiwali ? 36.0 : 8.0, 
+                  left: 8.0, 
+                  right: 8.0, 
+                  bottom: 8.0,
+                ), 
+                child: cardContent,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: children,
-              ),
-            ),
+              if (!isDiwali)
+                Positioned(
+                  top: 0, left: 0, 
+                  child: Image.asset(
+                    'resources/images/festive_icons/ganesh_chaturthi/hibiscus.png', 
+                    width: 32, height: 32,
+                  ),
+                ),
+              if (!isDiwali)
+                Positioned(
+                  top: 0, right: 0, 
+                  child: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.rotationY(3.14159), // math.pi
+                    child: Image.asset(
+                      'resources/images/festive_icons/ganesh_chaturthi/hibiscus.png', 
+                      width: 32, height: 32,
+                    ),
+                  ),
+                ),
+              if (isDiwali)
+                Positioned(
+                  top: -6, 
+                  left: 0, 
+                  right: 0,
+                  child: Image.asset(
+                    'resources/images/festive_icons/diwali/toran_final_flat.png',
+                    height: 48,
+                    alignment: Alignment.topCenter,
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              if (!isDiwali)
+                Positioned(
+                  bottom: 0, left: 0, 
+                  child: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.rotationX(3.14159), // math.pi
+                    child: Image.asset(
+                      'resources/images/festive_icons/ganesh_chaturthi/hibiscus.png', 
+                      width: 32, height: 32,
+                    ),
+                  ),
+                ),
+              if (!isDiwali)
+                Positioned(
+                  bottom: 0, right: 0, 
+                  child: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.rotationZ(3.14159), // math.pi
+                    child: Image.asset(
+                      'resources/images/festive_icons/ganesh_chaturthi/hibiscus.png', 
+                      width: 32, height: 32,
+                    ),
+                  ),
+                ),
+            ],
           ),
         );
       },
@@ -608,6 +814,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     String eventTypeLabel,
     ThemeData theme,
   ) {
+    final activeFestivalId = context.watch<FestivalProvider>().activeFestival?.id;
+    final isGaneshotsav = activeFestivalId == 'ganesh_chaturthi';
+    final isDiwali = activeFestivalId == 'diwali';
     final eventData = doc.data() as Map<String, dynamic>;
     final event = Event.fromFirestore(doc);
     final locale = Localizations.localeOf(context).languageCode;
@@ -634,7 +843,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 color: iconColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: iconColor),
+              child: (isGaneshotsav || isDiwali)
+                  ? Image.asset(
+                      isDiwali 
+                          ? 'resources/images/festive_icons/diwali/crackers.png'
+                          : 'resources/images/festive_icons/ganesh_chaturthi/modak.png',
+                      width: 36,
+                      height: 36,
+                      color: iconColor, // Optional tint if desired, but we want full color
+                      colorBlendMode: BlendMode.dst,
+                    )
+                  : Icon(icon, color: iconColor),
             ),
             const SizedBox(width: 16.0),
             Expanded(
@@ -690,9 +909,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ThemeData theme,
     AppLocalizations localizations,
   ) {
+    final activeFestivalId = context.watch<FestivalProvider>().activeFestival?.id;
+    final isGaneshotsav = activeFestivalId == 'ganesh_chaturthi';
+    final isDiwali = activeFestivalId == 'diwali';
     final locale = Localizations.localeOf(context).languageCode;
     final title = locale == 'mr' ? event.titleMr : event.titleEn;
-    final isSameDay = event.startDate.year == event.endDate.year &&
+    final isSameDay =
+        event.startDate.year == event.endDate.year &&
         event.startDate.month == event.endDate.month &&
         event.startDate.day == event.endDate.day;
     final dateRange = isSameDay
@@ -720,10 +943,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 color: theme.appColors.primarySwatch.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.menu_book,
-                color: theme.appColors.primarySwatch,
-              ),
+              child: (isGaneshotsav || isDiwali)
+                  ? Image.asset(
+                      isDiwali 
+                          ? 'resources/images/festive_icons/diwali/crackers.png'
+                          : 'resources/images/festive_icons/ganesh_chaturthi/modak.png',
+                      width: 36,
+                      height: 36,
+                    )
+                  : Icon(
+                      Icons.menu_book,
+                      color: theme.appColors.primarySwatch,
+                    ),
             ),
             const SizedBox(width: 16.0),
             Expanded(
@@ -777,16 +1008,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     required BuildContext context,
     required String title,
     IconData? icon,
-    String? imagePath,
     Widget? customWidget,
-    double? imageSize,
+    String? imagePath,
+    double imageSize = 40.0,
     required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
-    final size = imageSize ?? 48.0;
+    final size = imageSize;
 
     return SizedBox(
-      width: (MediaQuery.of(context).size.width - 24) / 2,
+      width: (MediaQuery.of(context).size.width - 40) / 2,
       child: AspectRatio(
         aspectRatio: 1.4,
         child: Container(
@@ -806,41 +1037,44 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             margin: EdgeInsets.zero,
             color: theme.cardTheme.color,
             shape: theme.cardTheme.shape,
-            child: InkWell(
-              onTap: onTap,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (customWidget != null)
-                    customWidget
-                  else if (imagePath != null)
-                    Image.asset(
-                      imagePath,
-                      height: size,
-                      width: size,
-                      errorBuilder: (context, error, stackTrace) => Icon(
-                        Icons.error_outline,
-                        size: size,
-                        color: theme.iconTheme.color,
-                      ),
-                    )
-                  else if (icon != null)
-                    Icon(icon, size: size, color: theme.iconTheme.color),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: theme.appColors.primarySwatch[600],
-                        fontWeight: FontWeight.bold,
+            child: FestivalTapEffect(
+              child: InkWell(
+                onTap: onTap,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (customWidget != null)
+                      customWidget
+                    else if (imagePath != null)
+                      Image.asset(
+                        imagePath,
+                        height: size,
+                        width: size,
+
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.error_outline,
+                          size: size,
+                          color: theme.iconTheme.color,
+                        ),
+                      )
+                    else if (icon != null)
+                      Icon(icon, size: size, color: theme.iconTheme.color),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: theme.appColors.primarySwatch[600],
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -849,3 +1083,83 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 }
+
+class MouseMarquee extends StatefulWidget {
+  const MouseMarquee({super.key});
+
+  @override
+  State<MouseMarquee> createState() => _MouseMarqueeState();
+}
+
+class _MouseMarqueeState extends State<MouseMarquee>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+       vsync: this,
+       duration: const Duration(seconds: 8),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final mouseWidth = screenWidth * 0.25;
+    
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        // Broaden the translation distance so all 3 mice completely clear the screen before wrap
+        final xPos = - (mouseWidth * 3) - 100.0 + (_controller.value * (screenWidth + (mouseWidth * 3) + 200.0));
+
+        Widget buildMouse(int index) {
+          // Phase shift based on the index so their feet hit the ground at different times
+          final phase = index * (math.pi / 2.5); 
+          final bounce = -5.0 * (math.sin((_controller.value * math.pi * 20) + phase).abs()); 
+          final rotation = math.sin((_controller.value * math.pi * 40) + phase) * 0.02; 
+
+          return Positioned(
+            left: xPos - (index * (mouseWidth * 0.8)), // Compress the distance so they overlap/follow closely
+            top: bounce,
+            child: Transform.rotate(
+              angle: rotation,
+              alignment: Alignment.centerRight,
+              child: Image.asset(
+                'resources/images/festive_icons/ganesh_chaturthi/mouse_garland.png',
+                width: mouseWidth, 
+                height: 60,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+              ),
+            ),
+          );
+        }
+
+        return SizedBox(
+          height: 60,
+          width: screenWidth,
+          child: Stack(
+            clipBehavior: Clip.none,
+            // Build in reverse order so the front mouse (index 0) draws on top of the follower (index 1)
+            children: [
+              buildMouse(2),
+              buildMouse(1),
+              buildMouse(0),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+

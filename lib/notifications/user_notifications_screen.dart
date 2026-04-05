@@ -7,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class UserNotificationsScreen extends StatefulWidget {
   const UserNotificationsScreen({super.key});
@@ -131,7 +132,7 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
         title: Text(localizations.allNotifications),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () {
               Navigator.of(
                 context,
@@ -139,7 +140,7 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],
@@ -261,8 +262,7 @@ class _UserNotificationsScreenState extends State<UserNotificationsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.notifications_off_outlined,
+            Icon(Icons.notifications_off_outlined,
               size: 80,
               color: theme.colorScheme.primary.withValues(alpha: 0.1),
             ),
