@@ -44,6 +44,12 @@ This document summarizes the key architectural patterns, design principles, and 
     -   **Admin System:** A secure admin login and dashboard allow moderators to draft and send push notifications directly from the app.
     -   **Local Notifications:** Uses `flutter_local_notifications` to provide a consistent experience for foreground messages across Android and iOS, including custom actions like "Mark as Read" or "Open Link".
     -   **Notification History:** The `UserNotificationsScreen` provides a persistent archive of all received temple notifications, automatically clearing unread badges when opened.
+-   **Typo Reporting Feature:**
+    -   **Crowdsourced Accuracy:** Users can report typos or content errors in any text-based content (stotras, bhajans, etc.) to ensure the digital library remains accurate and high-quality.
+    -   **Trigger Mechanism:** Reports can be initiated by long-pressing specific text in `ContentDetailScreen` (which pre-fills the "Incorrect Text" field) or by tapping the flag icon in the AppBar.
+    -   **Data Captured:** `TypoReport` model includes `contentPath`, `contentTitle`, `deityId`, `typoText`, `suggestedCorrection`, and `deviceId` for audit trailing.
+    -   **Admin Review Module:** Reports are sent to the `typo_reports` Firestore collection and appear in the `AdminTypoReportsScreen`. Admins can view, verify, and dismiss reports once the underlying JSON content is fixed.
+    -   **FCM Alerts for Admins:** Admins with the appropriate permissions can toggle "Typo Notifications" in their dashboard. This subscribes them to the `admin_typo_reports` FCM topic, receiving real-time alerts whenever a new report is submitted.
 -   **Parayan (Group Scripture Reading) Module:**
     -   **Overview:** Parayan is a community-driven scripture reading event where participants are assigned specific chapters (adhyays) of a holy text. The app manages the entire lifecycle: event creation → enrollment → allocation → tracking → completion.
     -   **Event Types (`ParayanType` enum):**
@@ -108,6 +114,9 @@ This document summarizes the key architectural patterns, design principles, and 
     -   A custom `CrossPlatformYoutubePlayer` widget was created in `lib/shared/` to handle platform differences.
     -   It uses `youtube_player_flutter` for the native experience on Android/iOS.
     -   It uses `youtube_player_iframe` for web compatibility.
+-   **Deep Linking:**
+    -   Uses the `app_links` package for cross-platform support (Universal Links on iOS, App Links on Android).
+    -   A centralized `DeepLinkManager` (`lib/utils/deeplink_manager.dart`) handles the parsing, deduplication, and pending navigation logic.
 -   **Flexible Data Models (`app_config.dart`):**
     -   **Centralized `ContentType` Logic:** A `ContentTypeExtension.fromString()` method on the `ContentType` enum provides a single, central place to convert the `contentType` string from the JSON into the correct Dart enum, removing duplicated logic from UI screens.
     -   **Flexible Aarti Structure:** The `NityopasanaConfig` can handle two different JSON structures for `aartis`: a category-based list (for Gajanan Maharaj) and a direct, flat list of files (for Datta Maharaj).
@@ -138,45 +147,48 @@ This document summarizes the key architectural patterns, design principles, and 
 
 ### 6. Multi-Theme Preset System
 
--   **Architecture:** The app supports multiple color palettes (Saffron, Maroon, Sandalwood, Indigo) via a `ThemePreset` enum and a `getTheme(ThemePreset preset, bool isDark)` factory method in `AppTheme`.
--   **Preserve-and-Clone Pattern:** The original `lightTheme` and `darkTheme` (Saffron/Orange) are kept **byte-for-byte untouched** as static fields. For the `saffron` preset, `getTheme()` returns these originals directly. For other presets, it creates a **structurally identical** `ThemeData` copy, swapping only the color constants (primary swatch, card background, borders, shadows, icons, buttons).
--   **AppColors Extension:** Theme-scoped custom colors are accessed via `theme.appColors.primarySwatch`, `theme.appColors.surface`, etc. The `AppColors` class extends `ThemeExtension<AppColors>` and is injected into every `ThemeData` via `extensions`.
--   **State Persistence:** `ThemeProvider` manages both `ThemeMode` (light/dark/system) and `ThemePreset`, persisting the selected preset to `SharedPreferences` under the key `theme_preset`.
--   **Main Entry Point:** `main.dart` calls `AppTheme.getTheme(themeProvider.themePreset, false/true)` to inject the appropriate `ThemeData` into `MaterialApp.theme` and `MaterialApp.darkTheme`.
--   **Theme Selection UI:** `theme_selection_screen.dart` has two sections: (1) Light/Dark/System mode picker (existing), and (2) a Color Palette grid with circular swatch previews for each preset.
--   **Localization Keys:** `colorPalette`, `themeSaffron`, `themeMaroon`, `themeSandalwood`, `themeIndigo` are registered in both `app_en.arb` and `app_mr.arb`.
+-   **Architecture:** The app supports multiple color palettes (Saffron, Maroon, Sandalwood, Indigo, Tulsi, Kumkum, Lotus, Peacock, Custom) via a `ThemePreset` enum and a `getTheme(ThemePreset preset, bool isDark)` factory method in `AppTheme`.
+-   **Expanded Palette:**
+    -   **Tulsi:** Green (#2E7D32)
+    -   **Kumkum:** Dark Red (#E53935)
+    -   **Lotus:** Pink (#E91E90)
+    -   **Peacock:** Deep Teal/Blue (#00897B)
+-   **Color-Tinted Dark Mode:** Dark modes are no longer flat black/grey. They are algorithmically "tinted" based on the primary color of the theme (e.g., a deep green-black for Tulsi). This is achieved via `_deriveThemeColors` using HSL transformations to maintain consistent vibrant aesthetics across all presets.
+-   **Dynamic Custom Theme Generator:** Users can select any base color from a picker. The `AppTheme` then derives a complete `ThemeData` (MaterialColor swatch, surface colors, shadows, etc.) on the fly, allowing for unlimited personalization while maintaining the app's structural styling.
+-   **Preserve-and-Clone Pattern:** The original `lightTheme` and `darkTheme` (Saffron/Orange) remain the byte-for-byte source of truth. All other themes are clones with swapped indices.
+-   **State Persistence:** `ThemeProvider` manages both `ThemeMode` and `ThemePreset`, persisting the selected preset (and custom color hex) to `SharedPreferences`.
 
-### 7. Parayan Export Screenshot Layout
+### 7. Parayan Management & Export
 
--   **1-Day Export Card (`_buildExportableGroupCard`):** The export snapshot for 1-day parayana now includes:
-    -   A **serial number (#)** column as the first column, starting at 1 per group (localized via `_formatNumberInternal` for Marathi numerals).
-    -   **Centered adhyay numbers** using `textAlign: TextAlign.center`.
-    -   **Group label and date on the same row** — group pill on the left, date label on the right — saving vertical space.
-    -   Increased bottom padding (`EdgeInsets.fromLTRB(24, 24, 24, 32)`) and a trailing `SizedBox(height: 8)` after the "Jai Gajanan" footer to prevent clipping during screenshot capture.
--   **Container width** was increased from `400` to `420` to accommodate the new serial number column.
+-   **Editable Signups:** Participants can now edit their enrollment (add/remove names, change phone) as long as the event status is `enrolling`. Once the status moves to `allocated` or higher, edits are disabled to prevent data inconsistency with assignments.
+-   **Responsive Allocation Table:** The allocation table in `ParayanDetailScreen` was refactored from `DataTable` (which has fixed size limits) to a `Table` widget with `FlexColumnWidth`. This ensures the table spans the full screen width and scales gracefully on tablets and landscape orientations.
+-   **1-Day Export Card (`_buildExportableGroupCard`):** Includes a localized serial number column, centered adhyays, and a space-saving header where group labels and dates share a single row.
+-   **3-Day Export Card:** Up to 3 groups are batched into a single grid image for easier sharing on platforms like WhatsApp.
+
+### 8. Admin Dashboard & RBAC
+
+-   **Role-Based Access Control (RBAC):** The admin dashboard is now protected by a role-based system.
+-   **Firestore Source:** The `admin_allowlist` collection defines permissions per email.
+-   **Dynamic Module Filtering:** Modules (Temple Notifications, Parayan Coordination, Typo Reports) are only visible if the logged-in admin has the required role (e.g., `temple_admin`, `parayan_coordinator`).
+-   **Audit Logging:** Critical admin actions (sending notifications, starting allocations) are logged via `AdminAuditService` for accountability.
+
+### 9. Deep Linking & App Initialization
+
+-   **Stability Improvements:** To fix race conditions where deep links were missed during cold boots, the initialization sequence in `main.dart` was made strictly sequential.
+-   **Readiness Signaling:** The `App` widget now waits for a "readiness signal" from core providers before attempting to process the initial deep link, ensuring the navigation stack is fully mounted and ready to receive the destination route.
+-   **Universal/App Links:** Supports `gmsevekari.com` deep links for navigating directly to specific Parayan events or temple alerts.
+
+### 10. Remote App Update Mechanism
+
+-   **Update Logic (`UpdateService`):** distinguish between `forced` (mandatory) and `recommended` updates using `pub_semver`. `forced` updates lock the UI until the user upgrades.
+-   **Web Behavior:** Explicitly skipped via `!kIsWeb` as web users always receive the latest bundle.
+-   **Deployment UI:** `UpdateDialog` uses themed, left-aligned version containers with localized Marathi numerals for consistency.
 
 ---
 
-### 8. Critical Bug Fixes & Gotchas (Lessons Learned)
+### 11. Critical Bug Fixes & Gotchas (Lessons Learned)
 
--   **Flutter `Color` API Breaking Change (`_createMaterialColor`):** In newer Flutter versions (3.27+), `Color.r`, `.g`, `.b` return **normalized doubles** (0.0–1.0), NOT integers (0–255). Code using `color.r.toInt()` will silently produce `0` for all channels, making every generated `MaterialColor` swatch shade pure black. The fix is `(color.r * 255).round()`. This caused non-saffron theme text and selected cards to appear completely black.
--   **Firestore Document Format Consistency:** Enrollment documents in the `participants` subcollection MUST use the **flattened format** with top-level `memberName`, `name`, `assignedAdhyays`, `completions`, and `deviceId` fields. The old nested `members` map format (where the doc ID was the device ID and member names were map keys) is **not supported** by `getAllParticipants()` or `getParticipantsByDevice()`. If stale household-format documents are found in Firestore, they should be migrated/fixed directly in the Firestore console rather than adding backward-compatibility code.
--   **Null-Coalesce (`??`) Does Not Catch Empty Strings:** Dart's `??` operator only falls through on `null`. If a Firestore field contains `""` (empty string), `data['memberName'] ?? data['name'] ?? fallback` will stop at the empty string and never reach the fallback. Keep this in mind when debugging "missing" display text — the field might exist but be empty.
-
----
-
-### 9. Remote App Update Mechanism
-
--   **Overview:** The app includes a remote-controlled update check that runs on `HomeScreen` startup. It distinguishes between `forced` (mandatory) and `recommended` updates based on version comparisons stored in Firestore.
--   **Firestore Schema (`app_config/version`):**
-    -   The document contains platform-specific maps (`android`, `ios`).
-    -   Fields: `latest_version` (String), `min_version` (String), `store_url` (String).
--   **Update Logic (`UpdateService`):**
-    -   Uses `pub_semver` for robust version comparison.
-    -   `forced`: If `currentVersion < minVersion`. The dialog blocks usage and closes the app on back-press via `SystemNavigator.pop()`.
-    -   `recommended`: If `currentVersion < latestVersion`. The dialog offers "Update Now" or "Later".
--   **UI & Localization:**
-    -   `UpdateDialog`: Displays both current and available versions in a left-aligned, themed container.
-    -   **Numeral Localization:** Version strings are converted to Marathi/Hindi digits (using `toMarathiNumerals`) when the app locale is Marathi to maintain visual consistency.
--   **Web Behavior:** The update check is explicitly skipped on Web platforms using `!kIsWeb` in `HomeScreen`. This is because web users always receive the latest code upon refresh, and app store redirects are not applicable.
--   **Manual Deployment Script:** A Python utility (`scripts/update_remote_version.py`) is provided to safely update the Firestore version document using the Firebase Admin SDK.
+-   **Flutter `Color` API Breaking Change (`_createMaterialColor`):** In Flutter 3.27+, `Color.r`, `.g`, `.b` return **normalized doubles** (0.0–1.0). **CRITICAL:** Multiplying by 255 and rounding is mandatory before using these values as integer channel inputs; otherwise, themes will render as pure black.
+-   **Firestore Document Format Consistency:** Enrollment documents must use the **flattened format**. Nested maps are deprecated and unsupported by the current query architecture.
+-   **Deep Link Race Conditions:** Never attempt to navigate based on an incoming link during the first frame of `main()`. Always wait for the `MaterialApp` to be fully built and providers to be initialized.
+-   **`??` vs `.isEmpty`:** Always remember that `??` only catches `null`. Firestore fields that exist but are empty (`""`) will bypass null-coalescing fallbacks. Use `.trim().isEmpty` checks for robust UI text handling.
