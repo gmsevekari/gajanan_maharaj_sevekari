@@ -11,7 +11,8 @@
       "stotras",
       "bhajans",
       "aartis",
-      "namavali"
+      "namavali",
+      "kidsStories"
     ],
     "granth": {
       "title_key": "granthTitle",
@@ -277,6 +278,99 @@
       "image": "108_Namavali.png",
       "textResourceDirectory": "resources/texts/gajanan_maharaj/namavali",
       "imageResourceDirectory": "resources/images/gajanan_maharaj/namavali"
+    },
+    "kidsStories": {
+      "videos": {
+        "textResourceDirectory": "resources/texts/gajanan_maharaj/stories/videos",
+        "groups": [
+          {
+            "id": "adhyay_1",
+            "title_en": "Adhyay 1",
+            "title_mr": "अध्याय १",
+            "files": [
+              {
+                "file": "adhyay_1_pragat_din.json"
+              },
+              {
+                "file": "adhyay_1.json"
+              }
+            ]
+          },
+          {
+            "id": "adhyay_2",
+            "title_en": "Adhyay 2",
+            "title_mr": "अध्याय २",
+            "files": [
+              {
+                "file": "adhyay_2_takalikar.json"
+              },
+              {
+                "file": "adhyay_2_bankat_home.json"
+              },
+              {
+                "file": "adhyay_2_dry_river_water.json"
+              },
+              {
+                "file": "adhyay_2_ichharam.json"
+              },
+              {
+                "file": "adhyay_2.json"
+              }
+            ]
+          },
+          {
+            "id": "adhyay_3",
+            "title_en": "Adhyay 3",
+            "title_mr": "अध्याय ३",
+            "files": [
+              {
+                "file": "adhyay_3.json"
+              }
+            ]
+          },
+          {
+            "id": "adhyay_4",
+            "title_en": "Adhyay 4",
+            "title_mr": "अध्याय ४",
+            "files": [
+              {
+                "file": "adhyay_4.json"
+              }
+            ]
+          },
+          {
+            "id": "adhyay_5",
+            "title_en": "Adhyay 5",
+            "title_mr": "अध्याय ५",
+            "files": [
+              {
+                "file": "adhyay_5.json"
+              }
+            ]
+          },
+          {
+            "id": "adhyay_6",
+            "title_en": "Adhyay 6",
+            "title_mr": "अध्याय ६",
+            "files": [
+              {
+                "file": "adhyay_6.json"
+              }
+            ]
+          }
+        ]
+      },
+      "audios": {
+        "categories": []
+      },
+      "stories": {
+        "textResourceDirectory": "resources/texts/gajanan_maharaj/stories/text",
+        "files": [
+          {
+            "file": "adhyay_1.json"
+          }
+        ]
+      }
     }
   },
   "social_media_links": [

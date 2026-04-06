@@ -43,6 +43,7 @@ import 'package:gajanan_maharaj_sevekari/admin/create_parayan_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/user_notifications_screen.dart';
 import 'package:gajanan_maharaj_sevekari/other/my_playlist_screen.dart';
 import 'package:gajanan_maharaj_sevekari/other/playlist_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/story/story_type_picker_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/navigator_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/deeplink_manager.dart';
@@ -323,6 +324,11 @@ class _MyAppState extends State<MyApp> {
                   case Routes.namavali:
                     return MaterialPageRoute(
                       builder: (context) => NamavaliScreen(deity: deity!),
+                    );
+                  case Routes.stories:
+                    return MaterialPageRoute(
+                      builder: (context) =>
+                          StoryTypePickerScreen(deity: deity!),
                     );
                   case Routes.songs:
                     return MaterialPageRoute(

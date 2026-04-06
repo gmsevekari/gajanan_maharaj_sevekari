@@ -501,5 +501,9 @@
   "confirmCompletionMessage": "तुम्हाला नियुक्त केलेला अध्याय वाचून पूर्ण झाला आहे का?",
   "no": "नाही",
   "yes": "हो",
-  "readingProgressUpdated": "अध्याय स्टेटस उपडेट केले आहे"
+  "readingProgressUpdated": "अध्याय स्टेटस उपडेट केले आहे",
+  "homeStoriesTitle": "बाल कथा",
+  "storiesTitle": "कथा",
+  "audiosTitle": "ऑडिओज",
+  "videosTitle": "व्हिडीओज"
 }

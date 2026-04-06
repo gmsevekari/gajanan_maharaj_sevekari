@@ -33,4 +33,5 @@ class Routes {
   static const String nityopasanaConsolidated = '/nityopasana_consolidated';
   static const String myPlaylists = '/my_playlists';
   static const String playlistDetail = '/playlist_detail';
+  static const String stories = '/stories';
 }

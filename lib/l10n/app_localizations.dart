@@ -2611,6 +2611,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reading progress updated'**
   String get readingProgressUpdated;
+
+  /// No description provided for @homeStoriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Kids Stories'**
+  String get homeStoriesTitle;
+
+  /// No description provided for @storiesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stories'**
+  String get storiesTitle;
+
+  /// No description provided for @audiosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Audios'**
+  String get audiosTitle;
+
+  /// No description provided for @videosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Videos'**
+  String get videosTitle;
 }
 
 class _AppLocalizationsDelegate

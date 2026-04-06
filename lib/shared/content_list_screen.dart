@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
+import 'package:gajanan_maharaj_sevekari/shared/story_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
@@ -16,6 +17,7 @@ class ContentListScreen extends StatefulWidget {
   final String title;
   final ContentType contentType;
   final ContentContainer content;
+  final String? storyType;
 
   const ContentListScreen({
     super.key,
@@ -23,6 +25,7 @@ class ContentListScreen extends StatefulWidget {
     required this.title,
     required this.contentType,
     required this.content,
+    this.storyType,
   });
 
   @override
@@ -215,19 +218,35 @@ class _ContentListScreenState extends State<ContentListScreen> {
                       ],
                     ),
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ContentDetailScreen(
-                            deity: widget.deity,
-                            contentType: widget.contentType,
-                            contentList: items,
-                            currentIndex: index,
-                            imagePath: item['imagePath']!,
-                            assetPath: item['assetPath']!,
+                      if (widget.contentType == ContentType.story) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => StoryDetailScreen(
+                              deity: widget.deity,
+                              contentList: items,
+                              currentIndex: index,
+                              assetPath: item['assetPath']!,
+                              imagePath: item['imagePath']!,
+                              storyType: widget.storyType ?? 'watch',
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ContentDetailScreen(
+                              deity: widget.deity,
+                              contentType: widget.contentType,
+                              contentList: items,
+                              currentIndex: index,
+                              imagePath: item['imagePath']!,
+                              assetPath: item['assetPath']!,
+                            ),
+                          ),
+                        );
+                      }
                     },
                   ),
                 );

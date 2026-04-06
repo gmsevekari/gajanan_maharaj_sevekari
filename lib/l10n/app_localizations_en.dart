@@ -1332,4 +1332,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get readingProgressUpdated => 'Reading progress updated';
+
+  @override
+  String get homeStoriesTitle => 'Kids Stories';
+
+  @override
+  String get storiesTitle => 'Stories';
+
+  @override
+  String get audiosTitle => 'Audios';
+
+  @override
+  String get videosTitle => 'Videos';
 }

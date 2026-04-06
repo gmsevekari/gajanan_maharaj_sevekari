@@ -11,7 +11,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
-import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/shared/update_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/utils/update_service.dart';
@@ -191,6 +190,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         onTap: () => Navigator.pushNamed(context, Routes.calendar),
       ),
     );
+
 
     return Scaffold(
       appBar: AppBar(
@@ -692,7 +692,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   ) {
     final locale = Localizations.localeOf(context).languageCode;
     final title = locale == 'mr' ? event.titleMr : event.titleEn;
-    final isSameDay = event.startDate.year == event.endDate.year &&
+    final isSameDay =
+        event.startDate.year == event.endDate.year &&
         event.startDate.month == event.endDate.month &&
         event.startDate.day == event.endDate.day;
     final dateRange = isSameDay

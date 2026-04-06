@@ -501,5 +501,9 @@
   "confirmCompletionMessage": "Have you completed reading the assigned adhyay?",
   "no": "No",
   "yes": "Yes",
-  "readingProgressUpdated": "Reading progress updated"
+  "readingProgressUpdated": "Reading progress updated",
+  "homeStoriesTitle": "Kids Stories",
+  "storiesTitle": "Stories",
+  "audiosTitle": "Audios",
+  "videosTitle": "Videos"
 }

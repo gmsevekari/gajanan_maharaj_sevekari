@@ -7,7 +7,9 @@ import 'package:gajanan_maharaj_sevekari/aarti/aarti_screen.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/story/story_type_picker_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:provider/provider.dart';
 
 class DeityDashboardScreen extends StatelessWidget {
   final DeityConfig deity;
@@ -38,16 +40,28 @@ class DeityDashboardScreen extends StatelessWidget {
         continue;
       }
 
+      String title;
+      IconData? fallbackIcon;
+      dynamic icon;
+      if (id == 'kidsStories') {
+        title = localizations.homeStoriesTitle;
+        icon = 'resources/images/icon/Stories.png';
+      } else {
+        title = _getNityopasanaTitle(localizations, (content as dynamic).titleKey);
+        icon = _getNityopasanaIcon((content as dynamic).icon);
+      }
+
       featureCards.add(
         _buildGridItem(
           context,
-          _getNityopasanaTitle(localizations, (content as dynamic).titleKey),
-          _getNityopasanaIcon((content as dynamic).icon),
+          title,
+          icon,
           () => _navigateToContent(
             context,
             deity,
-            _getNityopasanaTitle(localizations, (content as dynamic).titleKey),
+            title,
             content,
+            id,
           ),
         ),
       );
@@ -185,6 +199,8 @@ class DeityDashboardScreen extends StatelessWidget {
         return nityopasana.aartis;
       case 'namavali':
         return nityopasana.namavali;
+      case 'kidsStories':
+        return nityopasana.kidsStories;
       default:
         return null;
     }
@@ -210,6 +226,8 @@ class DeityDashboardScreen extends StatelessWidget {
         return localizations.otherStotras;
       case 'otherBhajans':
         return localizations.otherBhajans;
+      case 'kidsStories':
+        return localizations.homeStoriesTitle;
       default:
         return '';
     }
@@ -222,6 +240,7 @@ class DeityDashboardScreen extends StatelessWidget {
       'lyrics_outlined': Icons.lyrics_outlined,
       'library_music_outlined': Icons.library_music_outlined,
       'format_list_numbered': Icons.format_list_numbered,
+      'auto_stories_outlined': Icons.auto_stories_outlined,
     };
     return iconMap[iconName] ?? Icons.info;
   }
@@ -231,12 +250,16 @@ class DeityDashboardScreen extends StatelessWidget {
     DeityConfig deity,
     String title,
     dynamic content,
+    String id,
   ) {
     Widget screen;
     if (content is AartiContent) {
       screen = AartiScreen(deity: deity);
     } else if (content is NamavaliContent) {
       screen = NamavaliScreen(deity: deity);
+    } else if (id == 'kidsStories') {
+      // Import the screen if not already imported
+      screen = StoryTypePickerScreen(deity: deity);
     } else {
       screen = ContentListScreen(
         deity: deity,
@@ -302,9 +325,15 @@ class DeityDashboardScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (icon is IconData)
-                    Icon(icon, size: 40.0, color: theme.iconTheme.color)
+                    Icon(icon, size: 56.0, color: theme.colorScheme.primary)
                   else if (icon is String)
-                    Image.asset(icon, height: 40.0, width: 40.0),
+                    ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        theme.colorScheme.primary,
+                        BlendMode.srcIn,
+                      ),
+                      child: Image.asset(icon, height: 72.0, width: 72.0),
+                    ),
                   const SizedBox(height: 8.0),
                   Text(
                     title,

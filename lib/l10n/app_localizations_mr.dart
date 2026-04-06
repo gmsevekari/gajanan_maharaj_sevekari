@@ -1335,4 +1335,16 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get readingProgressUpdated => 'अध्याय स्टेटस उपडेट केले आहे';
+
+  @override
+  String get homeStoriesTitle => 'बाल कथा';
+
+  @override
+  String get storiesTitle => 'कथा';
+
+  @override
+  String get audiosTitle => 'ऑडिओज';
+
+  @override
+  String get videosTitle => 'व्हिडीओज';
 }
