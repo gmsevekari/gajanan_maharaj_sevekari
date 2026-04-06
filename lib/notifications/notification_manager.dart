@@ -10,6 +10,7 @@ import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.da
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/providers/typo_report_service.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -160,6 +161,23 @@ class NotificationManager {
         );
       }
     }
+
+    // 2. Typo Report Notifications (Admin)
+    if (!kIsWeb) {
+      try {
+        final typoEnabled = await TypoReportService.areNotificationsEnabled();
+        if (typoEnabled) {
+          debugPrint(
+            'NotificationManager: Typo Notifications Enabled. Subscribing to: ${TypoReportService.typoTopic}',
+          );
+          await FirebaseMessaging.instance.subscribeToTopic(
+            TypoReportService.typoTopic,
+          );
+        }
+      } catch (e) {
+        debugPrint('Error syncing typo report topic: $e');
+      }
+    }
   }
 
   static void _handleNotificationResponse(
@@ -299,7 +317,9 @@ class NotificationManager {
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
             TextButton(
-              style: TextButton.styleFrom(foregroundColor: theme.appColors.secondaryText),
+              style: TextButton.styleFrom(
+                foregroundColor: theme.appColors.secondaryText,
+              ),
               child: Text(localizations.notificationDialogDeny),
               onPressed: () {
                 Navigator.of(dialogContext).pop(false);

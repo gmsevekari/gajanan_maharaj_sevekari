@@ -9,7 +9,8 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
+import 'package:gajanan_maharaj_sevekari/shared/typo_report_dialog.dart';
+import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 
 class StoryDetailScreen extends StatefulWidget {
   final DeityConfig deity;
@@ -36,11 +37,35 @@ class StoryDetailScreen extends StatefulWidget {
 class _StoryDetailScreenState extends State<StoryDetailScreen> {
   late Future<Map<String, dynamic>> _contentFuture;
   double _fontSize = 18.0;
+  String _selectedText = '';
+  String _deviceId = '';
 
   @override
   void initState() {
     super.initState();
     _contentFuture = _loadContent();
+    _initDeviceId();
+  }
+
+  Future<void> _initDeviceId() async {
+    final id = await UniqueIdService.getUniqueId();
+    setState(() {
+      _deviceId = id;
+    });
+  }
+
+  void _showReportDialog(String typo, String title, String path) {
+    showDialog(
+      context: context,
+      builder: (context) => TypoReportDialog(
+        initialTypoText: typo,
+        contentPath: path,
+        contentTitle: title,
+        contentType: widget.storyType,
+        deityId: widget.deity.id,
+        deviceId: _deviceId,
+      ),
+    );
   }
 
   Future<Map<String, dynamic>> _loadContent() async {
@@ -147,6 +172,32 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
             icon: const Icon(Icons.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
+          if (widget.storyType == 'stories')
+            FutureBuilder<Map<String, dynamic>>(
+              future: _contentFuture,
+              builder: (context, snapshot) {
+                final title = snapshot.hasData
+                    ? (snapshot.data!['title_${locale.languageCode}'] ??
+                          snapshot.data!['title_en'] ??
+                          '')
+                    : '';
+                return IconButton(
+                  icon: const Icon(Icons.flag_outlined),
+                  tooltip: localizations.reportTypoTitle,
+                  onPressed: () {
+                    if (_selectedText.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(localizations.selectTextToReportHint),
+                        ),
+                      );
+                    } else {
+                      _showReportDialog(_selectedText, title, widget.assetPath);
+                    }
+                  },
+                );
+              },
+            ),
         ],
       ),
       body: Column(
@@ -208,8 +259,6 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
   ) {
     final title =
         data['title_${locale.languageCode}'] ?? data['title_en'] ?? '';
-    final description =
-        data['content_${locale.languageCode}'] ?? data['content_en'] ?? '';
     final theme = Theme.of(context);
 
     return SingleChildScrollView(
@@ -243,14 +292,44 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
   Widget _buildReadContent(Map<String, dynamic> data, Locale locale) {
     final fontProvider = Provider.of<FontProvider>(context);
     final text = data['content_${locale.languageCode}'] ?? data['content_en']!;
+    final title =
+        data['title_${locale.languageCode}'] ?? data['title_en'] ?? '';
+    final localizations = AppLocalizations.of(context)!;
 
-    return Text(
+    return SelectableText(
       text,
       textAlign: TextAlign.left,
       style: fontProvider.marathiTextStyle.copyWith(
         fontSize: _fontSize,
         height: 1.6,
       ),
+      onSelectionChanged: (selection, cause) {
+        if (selection.start >= 0 &&
+            selection.end <= text.length &&
+            selection.start < selection.end) {
+          _selectedText = text.substring(selection.start, selection.end);
+        } else {
+          _selectedText = '';
+        }
+      },
+      contextMenuBuilder: (context, editableTextState) {
+        final List<ContextMenuButtonItem> buttonItems =
+            editableTextState.contextMenuButtonItems;
+        buttonItems.insert(
+          0,
+          ContextMenuButtonItem(
+            label: localizations.reportTypoTitle,
+            onPressed: () {
+              _showReportDialog(_selectedText, title, widget.assetPath);
+              editableTextState.hideToolbar();
+            },
+          ),
+        );
+        return AdaptiveTextSelectionToolbar.buttonItems(
+          anchors: editableTextState.contextMenuAnchors,
+          buttonItems: buttonItems,
+        );
+      },
     );
   }
 

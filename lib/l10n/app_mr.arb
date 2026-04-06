@@ -505,5 +505,29 @@
   "homeStoriesTitle": "बाल कथा",
   "storiesTitle": "कथा",
   "audiosTitle": "ऑडिओज",
-  "videosTitle": "व्हिडीओज"
+  "videosTitle": "व्हिडीओज",
+  "reportTypoTitle": "चूक रिपोर्ट करा",
+  "reportTypoLabel": "चूक",
+  "suggestedCorrectionLabel": "सुधारित मजकूर (optional)",
+  "reportTypoSuccess": "धन्यवाद! तुमची दुरुस्ती नोंदवली गेली आहे.",
+  "reportTypoError": "दुरुस्ती नोंदवता आली नाही. कृपया पुन्हा प्रयत्न करा.",
+  "adminTypoReportsModuleTitle": "टायपो रिपोर्ट्स",
+  "adminTypoReportsModuleSubtitle": "मजकुरातील दुरुस्त्या तपासा",
+  "typoNotificationToggleLabel": "नवीन टायपो रिपोर्टबद्दल नोटिफाय करा",
+  "markAsFixed": "फिक्स मार्क करा",
+  "selectTextToReportHint": "कृपया आधी चुकीचा मजकूर निवडा आणि मग या चिन्हावर क्लिक करा.",
+  "typoReportConfirmDeleteMessage": "तुम्ही हा रिपोर्ट डिलीट करू इच्छिता?",
+  "typoReportDeleteButton": "रिपोर्ट डिलीट करा",
+  "typoReportIncorrectTextLabel": "चुकीचा मजकूर:",
+  "typoReportSuggestedCorrectionLabel": "सुधारित मजकूर:",
+  "typoReportNoSuggestion": "(सुधारणा दिली नाही)",
+  "typoReportNoPendingReports": "कोणतेही टायपो रिपोर्ट केले नाहीत",
+  "typoReportPathLabel": "पथ: {path}",
+  "@typoReportPathLabel": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -1,8 +1,13 @@
 class AdminUser {
   final String email;
   final List<String> roles;
+  final bool typoNotificationsEnabled;
 
-  const AdminUser({required this.email, required this.roles});
+  const AdminUser({
+    required this.email,
+    required this.roles,
+    this.typoNotificationsEnabled = false,
+  });
 
   factory AdminUser.fromFirestore(Map<String, dynamic> data, String email) {
     final rolesData = data['roles'];
@@ -12,7 +17,11 @@ class AdminUser {
     } else {
       rolesList = [];
     }
-    return AdminUser(email: email, roles: rolesList);
+    return AdminUser(
+      email: email,
+      roles: rolesList,
+      typoNotificationsEnabled: data['typoNotificationsEnabled'] ?? false,
+    );
   }
 
   bool hasRole(String role) {

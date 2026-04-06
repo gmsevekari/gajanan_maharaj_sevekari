@@ -36,6 +36,7 @@ import 'package:gajanan_maharaj_sevekari/jap_mala/naamjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_login_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_dashboard_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_temple_notifications_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_typo_reports_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_coordination_dashboard.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_list_screen.dart';
@@ -294,6 +295,8 @@ class _MyAppState extends State<MyApp> {
                 Routes.myPlaylists: (context) => const MyPlaylistsScreen(),
                 Routes.playlistDetail: (context) =>
                     const PlaylistDetailScreen(),
+                Routes.adminTypoReports: (context) =>
+                    const AdminTypoReportsScreen(),
               },
               onGenerateRoute: (settings) {
                 final DeityConfig? deity = settings.arguments is DeityConfig

@@ -160,3 +160,69 @@ exports.sendParayanReminders = onSchedule("0 * * * *", async (event) => {
     }
   }
 });
+
+/**
+ * Triggered when a new typo report is submitted.
+ * Sends a notification to the admin typo reports topic.
+ */
+exports.onTypoReportCreated = onDocumentCreated(
+  "typo_reports/{reportId}",
+  async (event) => {
+    const snapshot = event.data;
+    if (!snapshot) {
+      logger.error("No data associated with the typo report creation event.");
+      return;
+    }
+
+    const data = snapshot.data();
+    const contentTitle = data.contentTitle || "Content";
+    const title = "New Typo Report";
+    const body = `A typo was reported in: "${contentTitle}"`;
+
+    const message = {
+      notification: {
+        title: title,
+        body: body,
+      },
+      data: {
+        type: "TYPO_REPORT",
+        reportId: event.params.reportId,
+        contentPath: data.contentPath || "",
+      },
+      android: {
+        priority: "high",
+        notification: {
+          channelId: "admin_notifications",
+          priority: "high",
+          defaultSound: true,
+        },
+      },
+      apns: {
+        headers: {
+          "apns-push-type": "alert",
+          "apns-priority": "10",
+        },
+        payload: {
+          aps: {
+            alert: {
+              title: title,
+              body: body,
+            },
+            sound: "default",
+            badge: 1,
+          },
+        },
+      },
+      topic: "admin_typo_reports",
+    };
+
+    logger.info(`Sending Typo Report notification for ${event.params.reportId} to admin topic.`);
+
+    try {
+      const response = await admin.messaging().send(message);
+      logger.info("Successfully sent typo report notification:", response);
+    } catch (error) {
+      logger.error("Error sending typo report notification:", error);
+    }
+  },
+);

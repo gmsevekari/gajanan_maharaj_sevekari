@@ -216,7 +216,6 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
           content: Text(
             "${isMarathi ? 'पारायण " $eventTitle " यशस्वीरीत्या तयार केले आहे.' : 'Parayan " $eventTitle " has been created successfully.'}",
           ),
-          behavior: SnackBarBehavior.floating,
         ),
       );
     } catch (e) {

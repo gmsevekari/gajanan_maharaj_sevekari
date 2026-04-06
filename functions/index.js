@@ -19,3 +19,4 @@ exports.adminAddParticipants = parayan.adminAddParticipants;
 // Notifications & Reminders
 exports.sendTempleNotification = notifications.sendTempleNotification;
 exports.sendParayanReminders = notifications.sendParayanReminders;
+exports.onTypoReportCreated = notifications.onTypoReportCreated;
