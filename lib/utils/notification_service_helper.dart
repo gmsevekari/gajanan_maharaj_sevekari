@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
+import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 
@@ -102,19 +104,35 @@ class NotificationServiceHelper {
       final messaging = FirebaseMessaging.instance;
       for (var entry in enrollments) {
         final event = entry['event'];
-        if (event is! ParayanEvent) continue;
+        final household = entry['household'];
+        if (event is! ParayanEvent || household is! ParayanHousehold) continue;
 
-        // Subscribe to all days needed for the event type
-        final int daysToSubscribe = (event.type.name == 'threeDay') ? 3 : 1;
-        for (int day = 1; day <= daysToSubscribe; day++) {
+        // Subscribe to all days needed for the event type, but check completion first
+        final int daysInEvent = (event.type == ParayanType.threeDay) ? 3 : 1;
+        for (int day = 1; day <= daysInEvent; day++) {
           final topic = NotificationConstants.getParayanReminderTopic(
             event.id,
             day,
           );
-          debugPrint('Syncing subscription for event ${event.id} Day $day');
-          await messaging
-              .subscribeToTopic(topic)
-              .timeout(const Duration(seconds: 5));
+
+          // Check if EVERY member in this household has completed THIS specific day
+          final allDoneForDay = household.members.values.every(
+            (m) => m.completions[day.toString()] == true,
+          );
+
+          if (allDoneForDay) {
+            debugPrint(
+              'Sync: Unsubscribing from $topic - All members completed.',
+            );
+            await messaging
+                .unsubscribeFromTopic(topic)
+                .timeout(const Duration(seconds: 5));
+          } else {
+            debugPrint('Sync: Subscribing to $topic - Pending adhyays found.');
+            await messaging
+                .subscribeToTopic(topic)
+                .timeout(const Duration(seconds: 5));
+          }
         }
       }
     } catch (e) {

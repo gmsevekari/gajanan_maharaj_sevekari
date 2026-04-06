@@ -209,8 +209,10 @@ class ParayanService {
           dayIndex,
         );
         if (allCompleted) {
+          debugPrint(
+            'Unsubscribing from $topic - All household members completed Day $dayIndex.',
+          );
           await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-          print('Unsubscribed from $topic - All family members completed.');
         } else {
           final prefs = await SharedPreferences.getInstance();
           final remindersEnabled =
