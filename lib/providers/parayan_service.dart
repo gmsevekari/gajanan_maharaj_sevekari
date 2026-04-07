@@ -10,7 +10,10 @@ import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart'
 import 'package:flutter/foundation.dart';
 
 class ParayanService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore _db;
+
+  ParayanService({FirebaseFirestore? firestore})
+      : _db = firestore ?? FirebaseFirestore.instance;
 
   // Collection reference
   CollectionReference get _eventsRef => _db.collection('parayan_events');

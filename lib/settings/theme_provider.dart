@@ -39,7 +39,7 @@ class ThemeProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setTheme(ThemeMode themeMode) async {
+  Future<void> setTheme(ThemeMode themeMode) async {
     if (_themeMode == themeMode) return;
 
     _themeMode = themeMode;
@@ -49,7 +49,7 @@ class ThemeProvider with ChangeNotifier {
     await prefs.setInt(_themePrefKey, themeMode.index);
   }
 
-  void setPreset(ThemePreset preset) async {
+  Future<void> setPreset(ThemePreset preset) async {
     if (_themePreset == preset && preset != ThemePreset.custom) return;
 
     _themePreset = preset;
@@ -59,7 +59,7 @@ class ThemeProvider with ChangeNotifier {
     await prefs.setInt(_presetPrefKey, preset.index);
   }
 
-  void setCustomColor(Color color) async {
+  Future<void> setCustomColor(Color color) async {
     _customColor = color;
     _themePreset = ThemePreset.custom;
     notifyListeners();
@@ -99,7 +99,7 @@ class ThemeProvider with ChangeNotifier {
     );
   }
 
-  void applySavedColor(Color color) async {
+  Future<void> applySavedColor(Color color) async {
     _customColor = color;
     _themePreset = ThemePreset.custom;
     notifyListeners();

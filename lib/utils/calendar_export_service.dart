@@ -32,6 +32,13 @@ class CalendarExportService {
     await _handleExport(icsContent, fileName);
   }
 
+  @visibleForTesting
+  static String generateEventsIcs(List<Event> events, String calName) {
+    // ... logic remains same, just renaming for clarity if needed
+    // Actually, I'll just change the visibility for now.
+    return _generateEventsIcs(events, calName);
+  }
+
   static String _generateEventsIcs(List<Event> events, String calName) {
     final StringBuffer buffer = StringBuffer();
     buffer.write('BEGIN:VCALENDAR\r\n');
@@ -71,6 +78,11 @@ class CalendarExportService {
 
     buffer.write('END:VCALENDAR\r\n');
     return buffer.toString();
+  }
+
+  @visibleForTesting
+  static String generateParayansIcs(List<ParayanEvent> events, String calName) {
+    return _generateParayansIcs(events, calName);
   }
 
   static String _generateParayansIcs(List<ParayanEvent> events, String calName) {

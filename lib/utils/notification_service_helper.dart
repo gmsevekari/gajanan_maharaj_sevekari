@@ -13,7 +13,7 @@ class NotificationServiceHelper {
   static const String _pendingSubscriptionsKey = 'pending_fcm_subscriptions';
 
   /// Add a list of topics to be subscribed to in the background.
-  static Future<void> addPendingSubscriptions(List<String> topics) async {
+  static Future<void> addPendingSubscriptions(List<String> topics, {FirebaseMessaging? messaging}) async {
     final prefs = await SharedPreferences.getInstance();
     final existingJson = prefs.getString(_pendingSubscriptionsKey);
     List<String> pending = [];
@@ -31,11 +31,11 @@ class NotificationServiceHelper {
     await prefs.setString(_pendingSubscriptionsKey, json.encode(pending));
 
     // Trigger immediate attempt in background
-    _processPendingSubscriptions();
+    _processPendingSubscriptions(messaging: messaging);
   }
 
   /// Attempt to subscribe to all pending topics.
-  static Future<void> _processPendingSubscriptions() async {
+  static Future<void> _processPendingSubscriptions({FirebaseMessaging? messaging}) async {
     final prefs = await SharedPreferences.getInstance();
     final existingJson = prefs.getString(_pendingSubscriptionsKey);
     if (existingJson == null) return;
@@ -48,13 +48,13 @@ class NotificationServiceHelper {
       return;
     }
 
-    final messaging = FirebaseMessaging.instance;
+    final fcm = messaging ?? FirebaseMessaging.instance;
     final List<String> succeeded = [];
 
     for (var topic in pending) {
       try {
         debugPrint('Attempting background subscription to topic: $topic');
-        await messaging
+        await fcm
             .subscribeToTopic(topic)
             .timeout(const Duration(seconds: 10));
         succeeded.add(topic);
