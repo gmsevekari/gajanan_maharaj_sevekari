@@ -196,56 +196,68 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             icon: Icons.event_note,
                             color: theme.appColors.primarySwatch[600]!,
                             onTap: () {
+                              if (adminUser.parayanGroupId != null) {
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.adminParayanCoordination,
+                                  arguments: adminUser,
+                                );
+                              } else {
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.adminParayanGroups,
+                                  arguments: adminUser,
+                                );
+                              }
+                            },
+                          ),
+                        if (adminUser.hasRole('app_developer'))
+                          _buildModuleCard(
+                            context: context,
+                            title: localizations.adminTypoReportsModuleTitle,
+                            subtitle:
+                                localizations.adminTypoReportsModuleSubtitle,
+                            icon: Icons.edit_note,
+                            color: theme.appColors.primarySwatch[600]!,
+                            onTap: () {
                               Navigator.pushNamed(
                                 context,
-                                Routes.adminParayanCoordination,
+                                Routes.adminTypoReports,
                               );
                             },
                           ),
-                        _buildModuleCard(
-                          context: context,
-                          title: localizations.adminTypoReportsModuleTitle,
-                          subtitle:
-                              localizations.adminTypoReportsModuleSubtitle,
-                          icon: Icons.edit_note,
-                          color: theme.appColors.primarySwatch[600]!,
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              Routes.adminTypoReports,
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          localizations.settings,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.appColors.primarySwatch[600],
+                        if (adminUser.hasRole('app_developer')) ...[
+                          const SizedBox(height: 24),
+                          Text(
+                            localizations.settings,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.appColors.primarySwatch[600],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        Card(
-                          elevation: theme.cardTheme.elevation,
-                          color: theme.cardTheme.color,
-                          shape: theme.cardTheme.shape,
-                          child: SwitchListTile(
-                            title: Text(
-                              localizations.typoNotificationToggleLabel,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: theme.appColors.primarySwatch[600],
+                          const SizedBox(height: 16),
+                          Card(
+                            elevation: theme.cardTheme.elevation,
+                            color: theme.cardTheme.color,
+                            shape: theme.cardTheme.shape,
+                            child: SwitchListTile(
+                              title: Text(
+                                localizations.typoNotificationToggleLabel,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.appColors.primarySwatch[600],
+                                ),
+                              ),
+                              value: adminUser.typoNotificationsEnabled,
+                              activeColor: theme.colorScheme.primary,
+                              onChanged: _toggleTypoNotifications,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
                               ),
                             ),
-                            value: adminUser.typoNotificationsEnabled,
-                            activeColor: theme.colorScheme.primary,
-                            onChanged: _toggleTypoNotifications,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
                           ),
-                        ),
+                        ],
                       ],
                     );
                   },

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
@@ -11,7 +12,9 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:uuid/uuid.dart';
 
 class CreateParayanScreen extends StatefulWidget {
-  const CreateParayanScreen({super.key});
+  final AdminUser? adminUser;
+
+  const CreateParayanScreen({super.key, this.adminUser});
 
   @override
   State<CreateParayanScreen> createState() => _CreateParayanScreenState();
@@ -29,6 +32,7 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
   bool _isEndDateSetManually = false;
+  String? _selectedGroupId;
 
   bool _isLoading = false;
 
@@ -168,9 +172,28 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
       // Fixed reminder times: 1 PM, 4 PM, 7 PM
       final List<String> formattedTimes = ["13:00", "16:00", "19:00"];
 
-      // New ID format: YYYY-MM-DD-parayanType
+      if (_selectedGroupId == null) {
+        throw Exception("Group ID is required to create a Parayan event.");
+      }
+      final String groupId = _selectedGroupId!;
       final String dateStr = DateFormat('yyyy-MM-dd').format(_startDate);
-      final String eventId = "$dateStr-${_selectedType.name}";
+      final String eventId = "${groupId}_$dateStr-${_selectedType.name}";
+
+      // Check for duplicate
+      final bool alreadyExists = await _parayanService.exists(eventId);
+      if (alreadyExists) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(localizations.parayanAlreadyExists),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
 
       final event = ParayanEvent(
         id: eventId,
@@ -184,7 +207,10 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
         status: 'upcoming',
         reminderTimes: formattedTimes,
         createdAt: DateTime.now(),
+        joinedParticipants: 0,
+        sentReminders: const {},
         joinCode: const Uuid().v4().substring(0, 6).toUpperCase(),
+        groupId: groupId,
       );
 
       await _parayanService.createEvent(event);
@@ -249,6 +275,8 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  _buildGroupSelection(localizations, theme),
+                  const SizedBox(height: 16),
                   // --- Status (Label) ---
                   Row(
                     children: [
@@ -517,6 +545,74 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildGroupSelection(
+    AppLocalizations localizations,
+    ThemeData theme,
+  ) {
+    // If admin has a fixed group, show it as a label
+    if (widget.adminUser?.parayanGroupId != null) {
+      final groupId = widget.adminUser!.parayanGroupId!;
+      _selectedGroupId = groupId; // Set it once
+
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest.withValues(
+            alpha: 0.3,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.business, color: theme.colorScheme.primary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    localizations.parayanGroupLabel,
+                    style: theme.textTheme.bodySmall,
+                  ),
+                  Text(
+                    groupId, // In a real app, map this to a friendly name from config
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Otherwise show a fallback error if no group is pre-selected
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+          const SizedBox(height: 16),
+          Text(
+            "Error: Missing Parayan Group",
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.error,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Please navigate from a specific group coordination dashboard.",
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -142,9 +142,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
               final theme = Theme.of(context);
               final participant = sortedParticipants[pIndex];
 
-              final int groupSize = (widget.event.type == ParayanType.threeDay)
-                  ? 7
-                  : 21;
+              final int groupSize = 21 ~/ widget.event.type.daysCount;
               final int groupNumber =
                   participant.groupNumber ??
                   ((participant.globalIndex ?? 0) ~/ groupSize) + 1;

@@ -1404,4 +1404,22 @@ class AppLocalizationsMr extends AppLocalizations {
   String typoReportPathLabel(String path) {
     return 'पथ: $path';
   }
+
+  @override
+  String get parayanGroupLabel => 'पारायण ग्रुप';
+
+  @override
+  String get statusOngoingDesc =>
+      'पारायण सध्या सुरू आहे. कृपया तुमचे नेमून दिलेले अध्याय पूर्ण करा.';
+
+  @override
+  String get statusCompletedDesc =>
+      'पारायण यशस्वीरीत्या पूर्ण झाले आहे. जय गजानन!';
+
+  @override
+  String get adminParayanGroupTitle => 'पारायण ग्रुप्स';
+
+  @override
+  String get parayanAlreadyExists =>
+      'या ग्रुपमध्ये या तारखेसाठी आणि टाईप साठी पारायण आधीच अस्तित्वात आहे.';
 }

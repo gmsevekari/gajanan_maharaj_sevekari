@@ -145,20 +145,9 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
           prefs.getBool(NotificationConstants.parayanRemindersPrefKey) ?? true;
       if (parayanRemindersEnabled) {
         final List<String> topics = [];
-        if (widget.event.type == ParayanType.oneDay ||
-            widget.event.type == ParayanType.guruPushya) {
+        for (int i = 1; i <= widget.event.type.daysCount; i++) {
           topics.add(
-            NotificationConstants.getParayanReminderTopic(widget.event.id, 1),
-          );
-        } else {
-          topics.add(
-            NotificationConstants.getParayanReminderTopic(widget.event.id, 1),
-          );
-          topics.add(
-            NotificationConstants.getParayanReminderTopic(widget.event.id, 2),
-          );
-          topics.add(
-            NotificationConstants.getParayanReminderTopic(widget.event.id, 3),
+            NotificationConstants.getParayanReminderTopic(widget.event.id, i),
           );
         }
         await NotificationServiceHelper.addPendingSubscriptions(topics);
@@ -236,6 +225,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
       // Unsubscribe from topics
       await NotificationServiceHelper.unsubscribeFromEventTopics(
         widget.event.id,
+        widget.event.type.daysCount,
       );
 
       if (!mounted) return;

@@ -10,7 +10,10 @@ import 'package:intl/intl.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class ParayanListScreen extends StatefulWidget {
-  const ParayanListScreen({super.key});
+  final String? groupId;
+  final String? groupName;
+
+  const ParayanListScreen({super.key, this.groupId, this.groupName});
 
   @override
   State<ParayanListScreen> createState() => _ParayanListScreenState();
@@ -26,7 +29,7 @@ class _ParayanListScreenState extends State<ParayanListScreen>
   @override
   void initState() {
     super.initState();
-    _eventsStream = _parayanService.getAllEvents();
+    _eventsStream = _parayanService.getAllEvents(widget.groupId!);
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       setState(() {}); // Rebuild to update AppBar actions
@@ -50,7 +53,7 @@ class _ParayanListScreenState extends State<ParayanListScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          localizations.parayanListTitle,
+          widget.groupName ?? localizations.parayanListTitle,
           style: theme.textTheme.titleLarge?.copyWith(
             color: theme.colorScheme.onPrimary,
             fontWeight: FontWeight.bold,

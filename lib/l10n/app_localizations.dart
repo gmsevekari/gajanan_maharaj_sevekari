@@ -2737,6 +2737,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Path: {path}'**
   String typoReportPathLabel(String path);
+
+  /// No description provided for @parayanGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan Group'**
+  String get parayanGroupLabel;
+
+  /// No description provided for @statusOngoingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The parayan is currently ongoing. Please complete your assigned adhyays.'**
+  String get statusOngoingDesc;
+
+  /// No description provided for @statusCompletedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The parayan has been completed. Jai Gajanan!'**
+  String get statusCompletedDesc;
+
+  /// No description provided for @adminParayanGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan Groups'**
+  String get adminParayanGroupTitle;
+
+  /// No description provided for @parayanAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'A Parayan event already exists for this date and type in this group.'**
+  String get parayanAlreadyExists;
 }
 
 class _AppLocalizationsDelegate

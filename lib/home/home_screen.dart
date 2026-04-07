@@ -178,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         title: localizations.parayanTitle,
         imagePath: 'resources/images/icon/Parayan.png',
         imageSize: 100.0,
-        onTap: () => Navigator.pushNamed(context, Routes.parayanList),
+        onTap: () => Navigator.pushNamed(context, Routes.parayanGroups),
       ),
     );
     cards.add(

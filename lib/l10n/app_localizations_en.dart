@@ -1399,4 +1399,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String typoReportPathLabel(String path) {
     return 'Path: $path';
   }
+
+  @override
+  String get parayanGroupLabel => 'Parayan Group';
+
+  @override
+  String get statusOngoingDesc =>
+      'The parayan is currently ongoing. Please complete your assigned adhyays.';
+
+  @override
+  String get statusCompletedDesc =>
+      'The parayan has been completed. Jai Gajanan!';
+
+  @override
+  String get adminParayanGroupTitle => 'Parayan Groups';
+
+  @override
+  String get parayanAlreadyExists =>
+      'A Parayan event already exists for this date and type in this group.';
 }

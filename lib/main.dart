@@ -14,10 +14,12 @@ import 'package:gajanan_maharaj_sevekari/firebase_options.dart';
 import 'package:gajanan_maharaj_sevekari/gallery/gallery_screen.dart';
 import 'package:gajanan_maharaj_sevekari/home/home_screen.dart';
 import 'package:gajanan_maharaj_sevekari/home/nityopasana_consolidated_screen.dart';
+import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_list_screen.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_group_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
@@ -40,6 +42,7 @@ import 'package:gajanan_maharaj_sevekari/admin/admin_typo_reports_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_coordination_dashboard.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_list_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_group_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/create_parayan_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/user_notifications_screen.dart';
 import 'package:gajanan_maharaj_sevekari/other/my_playlist_screen.dart';
@@ -283,13 +286,30 @@ class _MyAppState extends State<MyApp> {
                     const AdminDashboardScreen(),
                 Routes.adminTempleNotifications: (context) =>
                     const AdminTempleNotificationsScreen(),
-                Routes.adminParayanCoordination: (context) =>
-                    ParayanCoordinationDashboard(),
-                Routes.adminCreateParayan: (context) =>
-                    const CreateParayanScreen(),
+                Routes.adminParayanCoordination: (context) {
+                  final adminUser = ModalRoute.of(context)?.settings.arguments as AdminUser?;
+                  return ParayanCoordinationDashboard(adminUser: adminUser);
+                },
+                Routes.adminCreateParayan: (context) {
+                  final adminUser =
+                      ModalRoute.of(context)?.settings.arguments as AdminUser?;
+                  return CreateParayanScreen(adminUser: adminUser);
+                },
+                Routes.adminParayanGroups: (context) {
+                  final adminUser =
+                      ModalRoute.of(context)?.settings.arguments as AdminUser;
+                  return AdminParayanGroupScreen(adminUser: adminUser);
+                },
                 Routes.userNotifications: (context) =>
                     const UserNotificationsScreen(),
-                Routes.parayanList: (context) => ParayanListScreen(),
+                Routes.parayanGroups: (context) => const ParayanGroupScreen(),
+                Routes.parayanList: (context) {
+                  final args = ModalRoute.of(context)?.settings.arguments as Map?;
+                  return ParayanListScreen(
+                    groupId: args?['groupId'],
+                    groupName: args?['groupName'],
+                  );
+                },
                 Routes.nityopasanaConsolidated: (context) =>
                     const NityopasanaConsolidatedScreen(),
                 Routes.myPlaylists: (context) => const MyPlaylistsScreen(),
@@ -369,8 +389,9 @@ class _MyAppState extends State<MyApp> {
                     final args = settings.arguments as Map<String, dynamic>;
                     return MaterialPageRoute(
                       builder: (context) => ParayanAdminListScreen(
-                        title: args['title'],
-                        statusFilter: args['statusFilter'],
+                        title: args['title'] as String,
+                        statusFilter: args['statusFilter'] as String,
+                        groupId: args['groupId'] as String?,
                       ),
                     );
                   default:

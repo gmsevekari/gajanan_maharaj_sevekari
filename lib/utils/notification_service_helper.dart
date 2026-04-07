@@ -124,14 +124,22 @@ class NotificationServiceHelper {
             debugPrint(
               'Sync: Unsubscribing from $topic - All members completed.',
             );
-            await messaging
-                .unsubscribeFromTopic(topic)
-                .timeout(const Duration(seconds: 5));
+            try {
+              await messaging
+                  .unsubscribeFromTopic(topic)
+                  .timeout(const Duration(seconds: 5));
+            } catch (e) {
+              debugPrint('Sync: Unsubscribe timeout/error for $topic: $e');
+            }
           } else {
             debugPrint('Sync: Subscribing to $topic - Pending adhyays found.');
-            await messaging
-                .subscribeToTopic(topic)
-                .timeout(const Duration(seconds: 5));
+            try {
+              await messaging
+                  .subscribeToTopic(topic)
+                  .timeout(const Duration(seconds: 5));
+            } catch (e) {
+              debugPrint('Sync: Subscribe timeout/error for $topic: $e');
+            }
           }
         }
       }
@@ -149,9 +157,9 @@ class NotificationServiceHelper {
       final enrollments = await parayanService.getAllMyEnrollments(deviceId);
 
       for (var entry in enrollments) {
-        final event = entry['event'];
+        final ParayanEvent event = entry['event'];
         if (event.status == 'completed') {
-          await unsubscribeFromEventTopics(event.id);
+          await unsubscribeFromEventTopics(event.id, event.type.daysCount);
         }
       }
     } catch (e) {
@@ -160,24 +168,26 @@ class NotificationServiceHelper {
   }
 
   /// Unsubscribe from reminder topics for a specific event.
-  static Future<void> unsubscribeFromEventTopics(String eventId) async {
+  static Future<void> unsubscribeFromEventTopics(String eventId, int days) async {
     if (kIsWeb) return;
     try {
       final messaging = FirebaseMessaging.instance;
       debugPrint('Unsubscribing from topics for completed event: $eventId');
-      await Future.wait([
-        messaging
-            .unsubscribeFromTopic('parayan_${eventId}_day1')
-            .timeout(const Duration(seconds: 5)),
-        messaging
-            .unsubscribeFromTopic('parayan_${eventId}_day2')
-            .timeout(const Duration(seconds: 5)),
-        messaging
-            .unsubscribeFromTopic('parayan_${eventId}_day3')
-            .timeout(const Duration(seconds: 5)),
-      ]);
+
+      // Unsubscribe from each day individually up to the specified days count
+      for (int i = 1; i <= days; i++) {
+        final topic = 'parayan_${eventId}_day$i';
+        try {
+          await messaging
+              .unsubscribeFromTopic(topic)
+              .timeout(const Duration(seconds: 5));
+          debugPrint('Successfully unsubscribed from $topic');
+        } catch (e) {
+          debugPrint('Warning: Could not unsubscribe from $topic: $e');
+        }
+      }
     } catch (e) {
-      debugPrint('Error unsubscribing from event $eventId: $e');
+      debugPrint('Error in unsubscribe process for event $eventId: $e');
     }
   }
 }
