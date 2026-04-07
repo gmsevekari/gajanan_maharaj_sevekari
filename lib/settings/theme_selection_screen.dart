@@ -496,6 +496,13 @@ class _ColorPickerDialog extends StatefulWidget {
 
 class _ColorPickerDialogState extends State<_ColorPickerDialog> {
   late HSLColor _hslColor;
+  late TextEditingController _hexController;
+
+  @override
+  void dispose() {
+    _hexController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -507,6 +514,32 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
     }
     if (_hslColor.lightness < 0.2 || _hslColor.lightness > 0.7) {
       _hslColor = _hslColor.withLightness(0.45);
+    }
+    _hexController = TextEditingController(text: _getHexFromColor(_hslColor.toColor()));
+  }
+
+  String _getHexFromColor(Color color) {
+    return color.value.toRadixString(16).substring(2).toUpperCase();
+  }
+
+  void _updateHexFromHSL() {
+    final hex = _getHexFromColor(_hslColor.toColor());
+    if (_hexController.text != hex) {
+      _hexController.text = hex;
+    }
+  }
+
+  void _onHexChanged(String value) {
+    String cleanHex = value.replaceAll('#', '').trim();
+    if (cleanHex.length == 6) {
+      try {
+        final color = Color(int.parse("FF$cleanHex", radix: 16));
+        setState(() {
+          _hslColor = HSLColor.fromColor(color);
+        });
+      } catch (e) {
+        // Invalid hex format
+      }
     }
   }
 
@@ -523,11 +556,12 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      content: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.9,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+      content: SingleChildScrollView(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.9,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
             // ── Color Preview ──
             Container(
               height: 80,
@@ -547,6 +581,42 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Text(
+                  localizations.hexLabel,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: _hexController,
+                    onChanged: _onHexChanged,
+                    maxLength: 6,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      prefixText: '#',
+                      counterText: '',
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 32),
 
             // ── Hue Slider ──
@@ -557,6 +627,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
               onChanged: (hue) {
                 setState(() {
                   _hslColor = _hslColor.withHue(hue);
+                  _updateHexFromHSL();
                 });
               },
             ),
@@ -572,6 +643,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
               onChanged: (value) {
                 setState(() {
                   _hslColor = _hslColor.withSaturation(value);
+                  _updateHexFromHSL();
                 });
               },
             ),
@@ -589,13 +661,15 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
                   // Allow wider range for flexibility, but keep a tiny buffer
                   // to stay within usable theme ranges if necessary.
                   _hslColor = _hslColor.withLightness(value.clamp(0.05, 0.95));
+                  _updateHexFromHSL();
                 });
               },
             ),
           ],
         ),
       ),
-      actions: [
+    ),
+    actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text(

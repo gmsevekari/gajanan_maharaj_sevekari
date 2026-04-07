@@ -380,6 +380,12 @@ abstract class AppLocalizations {
   /// **'Theme already exists in library'**
   String get themeAlreadySaved;
 
+  /// No description provided for @hexLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hex Code'**
+  String get hexLabel;
+
   /// No description provided for @english.
   ///
   /// In en, this message translates to:

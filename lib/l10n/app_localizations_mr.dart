@@ -150,6 +150,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get themeAlreadySaved => 'ही थीम आधीच सेव्ह केलेली आहे';
 
   @override
+  String get hexLabel => 'हेक्स कोड';
+
+  @override
   String get english => 'इंग्रजी';
 
   @override

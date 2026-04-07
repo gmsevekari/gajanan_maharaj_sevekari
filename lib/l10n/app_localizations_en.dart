@@ -150,6 +150,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeAlreadySaved => 'Theme already exists in library';
 
   @override
+  String get hexLabel => 'Hex Code';
+
+  @override
   String get english => 'English';
 
   @override
