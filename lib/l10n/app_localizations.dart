@@ -2623,6 +2623,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reading progress updated'**
   String get readingProgressUpdated;
+
+  /// No description provided for @homeStoriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Kids Stories'**
+  String get homeStoriesTitle;
+
+  /// No description provided for @storiesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stories'**
+  String get storiesTitle;
+
+  /// No description provided for @audiosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Audios'**
+  String get audiosTitle;
+
+  /// No description provided for @videosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Videos'**
+  String get videosTitle;
+
+  /// No description provided for @reportTypoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a Typo'**
+  String get reportTypoTitle;
+
+  /// No description provided for @reportTypoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect Text'**
+  String get reportTypoLabel;
+
+  /// No description provided for @suggestedCorrectionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested Correction (Optional)'**
+  String get suggestedCorrectionLabel;
+
+  /// No description provided for @reportTypoSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you! Your report has been submitted.'**
+  String get reportTypoSuccess;
+
+  /// No description provided for @reportTypoError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit report. Please try again.'**
+  String get reportTypoError;
+
+  /// No description provided for @adminTypoReportsModuleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Typo Reports'**
+  String get adminTypoReportsModuleTitle;
+
+  /// No description provided for @adminTypoReportsModuleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage and fix content typos'**
+  String get adminTypoReportsModuleSubtitle;
+
+  /// No description provided for @typoNotificationToggleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify me of new typo reports'**
+  String get typoNotificationToggleLabel;
+
+  /// No description provided for @markAsFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Fixed'**
+  String get markAsFixed;
+
+  /// No description provided for @selectTextToReportHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select the typo text first, then click this icon to report it.'**
+  String get selectTextToReportHint;
+
+  /// No description provided for @typoReportConfirmDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure the content has been updated and you want to delete this report?'**
+  String get typoReportConfirmDeleteMessage;
+
+  /// No description provided for @typoReportDeleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Report'**
+  String get typoReportDeleteButton;
+
+  /// No description provided for @typoReportIncorrectTextLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect Text:'**
+  String get typoReportIncorrectTextLabel;
+
+  /// No description provided for @typoReportSuggestedCorrectionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested Correction:'**
+  String get typoReportSuggestedCorrectionLabel;
+
+  /// No description provided for @typoReportNoSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'(No suggestion provided)'**
+  String get typoReportNoSuggestion;
+
+  /// No description provided for @typoReportNoPendingReports.
+  ///
+  /// In en, this message translates to:
+  /// **'No typos reported'**
+  String get typoReportNoPendingReports;
+
+  /// No description provided for @typoReportPathLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Path: {path}'**
+  String typoReportPathLabel(String path);
 }
 
 class _AppLocalizationsDelegate

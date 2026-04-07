@@ -18,7 +18,17 @@ service cloud.firestore {
     // Admin Allowlist: Read-only for admins (to verify themselves)
     match /admin_allowlist/{email} {
       allow read: if request.auth != null && request.auth.token.email == email;
+      // Allow admins to toggle their own typo notifications
+      allow update: if request.auth != null && request.auth.token.email == email
+                    && (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['typoNotificationsEnabled']));
       allow write: if false; // Security preference: Keep this manual in console
+    }
+
+    // Typo Reports: Authenticated create; Admin readable/deletable
+    match /typo_reports/{reportId} {
+      allow create: if request.auth != null;
+      allow read, delete: if isAdmin();
+      allow update: if false;
     }
 
     // Admin Audit Logs: Admin writable; Not readable via app

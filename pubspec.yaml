@@ -125,6 +125,8 @@ flutter:
     - resources/images/gajanan_maharaj/aartis/event/
     - resources/images/gajanan_maharaj/namavali/
     - resources/texts/gajanan_maharaj/namavali/
+    - resources/texts/gajanan_maharaj/stories/videos/
+    - resources/texts/gajanan_maharaj/stories/text/
     - resources/images/gajanan_maharaj/qr_code/
     - resources/images/gajanan_maharaj/icon/
     - resources/images/gajanan_maharaj/social/

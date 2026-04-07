@@ -4,6 +4,8 @@ import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/shared/typo_report_dialog.dart';
+import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 
 class AboutMaharajScreen extends StatefulWidget {
   final DeityConfig deity;
@@ -17,6 +19,9 @@ class AboutMaharajScreen extends StatefulWidget {
 class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
   double _fontSize = 18.0;
   late Future<AboutDeity> _aboutDeityFuture;
+  String _selectedText = '';
+  String? _deviceId;
+  String? _currentDeityTitle;
 
   @override
   void initState() {
@@ -24,6 +29,30 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
     final path =
         'resources/texts/${widget.deity.id}/about/${widget.deity.aboutFile}';
     _aboutDeityFuture = AboutDeity.fromFile(path);
+    _getDeviceId();
+  }
+
+  Future<void> _getDeviceId() async {
+    final id = await UniqueIdService.getUniqueId();
+    if (mounted) {
+      setState(() {
+        _deviceId = id;
+      });
+    }
+  }
+
+  void _showReportDialog(String typo, String title) {
+    showDialog(
+      context: context,
+      builder: (context) => TypoReportDialog(
+        initialTypoText: typo,
+        contentPath: 'about/${widget.deity.id}',
+        contentTitle: title,
+        contentType: 'about',
+        deityId: widget.deity.id,
+        deviceId: _deviceId ?? '',
+      ),
+    );
   }
 
   void _changeFontSize(double delta) {
@@ -63,6 +92,22 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
+          IconButton(
+            icon: const Icon(Icons.flag_outlined),
+            tooltip: localizations.reportTypoTitle,
+            onPressed: () {
+              if (_selectedText.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(localizations.selectTextToReportHint)),
+                );
+              } else {
+                _showReportDialog(
+                  _selectedText,
+                  _currentDeityTitle ?? localizations.aboutMaharajTitle,
+                );
+              }
+            },
+          ),
         ],
       ),
       body: FutureBuilder<AboutDeity>(
@@ -74,6 +119,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final about = snapshot.data!;
+            _currentDeityTitle = locale == 'mr' ? about.titleMr : about.titleEn;
             return SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
               child: Column(
@@ -262,12 +308,46 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
           collapsedIconColor: theme.iconTheme.color,
           childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           children: [
-            Text(
+            SelectableText(
               content,
               textAlign: TextAlign.justify,
               style: Theme.of(
                 context,
               ).textTheme.bodyLarge?.copyWith(fontSize: _fontSize, height: 1.5),
+              onSelectionChanged: (selection, cause) {
+                if (selection.start >= 0 &&
+                    selection.end <= content.length &&
+                    selection.start < selection.end) {
+                  _selectedText = content.substring(
+                    selection.start,
+                    selection.end,
+                  );
+                } else {
+                  _selectedText = '';
+                }
+              },
+              contextMenuBuilder: (context, editableTextState) {
+                final localizations = AppLocalizations.of(context)!;
+                final List<ContextMenuButtonItem> buttonItems =
+                    editableTextState.contextMenuButtonItems;
+                buttonItems.insert(
+                  0,
+                  ContextMenuButtonItem(
+                    label: localizations.reportTypoTitle,
+                    onPressed: () {
+                      _showReportDialog(
+                        _selectedText,
+                        _currentDeityTitle ?? localizations.aboutMaharajTitle,
+                      );
+                      editableTextState.hideToolbar();
+                    },
+                  ),
+                );
+                return AdaptiveTextSelectionToolbar.buttonItems(
+                  anchors: editableTextState.contextMenuAnchors,
+                  buttonItems: buttonItems,
+                );
+              },
             ),
           ],
         ),

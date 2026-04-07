@@ -5,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/admin/admin_session_service.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
+import 'package:gajanan_maharaj_sevekari/providers/typo_report_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
@@ -37,6 +38,26 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     if (!mounted) return;
     // Pop back to the settings screen where they came from
     Navigator.of(context).pop();
+  }
+
+  Future<void> _toggleTypoNotifications(bool enabled) async {
+    final user = _auth.currentUser;
+    if (user == null || user.email == null) return;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('admin_allowlist')
+          .doc(user.email)
+          .update({'typoNotificationsEnabled': enabled});
+
+      await TypoReportService.setNotificationsEnabled(enabled);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error updating settings: $e')));
+      }
+    }
   }
 
   @override
@@ -182,7 +203,50 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               );
                             },
                           ),
-                        // Future admin modules can be added here
+                        _buildModuleCard(
+                          context: context,
+                          title: localizations.adminTypoReportsModuleTitle,
+                          subtitle:
+                              localizations.adminTypoReportsModuleSubtitle,
+                          icon: Icons.edit_note,
+                          color: theme.appColors.primarySwatch[600]!,
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              Routes.adminTypoReports,
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          localizations.settings,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.appColors.primarySwatch[600],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Card(
+                          elevation: theme.cardTheme.elevation,
+                          color: theme.cardTheme.color,
+                          shape: theme.cardTheme.shape,
+                          child: SwitchListTile(
+                            title: Text(
+                              localizations.typoNotificationToggleLabel,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.appColors.primarySwatch[600],
+                              ),
+                            ),
+                            value: adminUser.typoNotificationsEnabled,
+                            activeColor: theme.colorScheme.primary,
+                            onChanged: _toggleTypoNotifications,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                          ),
+                        ),
                       ],
                     );
                   },

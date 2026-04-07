@@ -60,7 +60,7 @@ class AppTheme {
     snackBarTheme: SnackBarThemeData(
       backgroundColor: Colors.orange,
       contentTextStyle: const TextStyle(color: Colors.white),
-      behavior: SnackBarBehavior.floating,
+      behavior: SnackBarBehavior.fixed,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
     ),
     extensions: <ThemeExtension<dynamic>>[
@@ -127,7 +127,7 @@ class AppTheme {
     snackBarTheme: SnackBarThemeData(
       backgroundColor: Colors.orange,
       contentTextStyle: const TextStyle(color: Colors.white),
-      behavior: SnackBarBehavior.floating,
+      behavior: SnackBarBehavior.fixed,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
     ),
     extensions: <ThemeExtension<dynamic>>[
@@ -359,7 +359,7 @@ class AppTheme {
         snackBarTheme: SnackBarThemeData(
           backgroundColor: primary,
           contentTextStyle: const TextStyle(color: Colors.white),
-          behavior: SnackBarBehavior.floating,
+          behavior: SnackBarBehavior.fixed,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.0),
           ),
@@ -432,7 +432,7 @@ class AppTheme {
         snackBarTheme: SnackBarThemeData(
           backgroundColor: primary,
           contentTextStyle: const TextStyle(color: Colors.white),
-          behavior: SnackBarBehavior.floating,
+          behavior: SnackBarBehavior.fixed,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.0),
           ),

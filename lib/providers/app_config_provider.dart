@@ -28,10 +28,7 @@ class AppConfigProvider extends ChangeNotifier {
         }).toList();
 
     final loadedDeities = await Future.wait(futureDeities);
-
-    // Create the final AppConfig object
-    _appConfig = AppConfig(deities: loadedDeities);
-
+    _appConfig = AppConfig.fromJson(appConfigData, deities: loadedDeities);
     notifyListeners();
   }
 

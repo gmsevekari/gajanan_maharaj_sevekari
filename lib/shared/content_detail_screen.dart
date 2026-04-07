@@ -14,8 +14,10 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/shared/typo_report_dialog.dart';
+import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 
-enum ContentType { granth, aarti, bhajan, stotra, namavali, song }
+enum ContentType { granth, aarti, bhajan, stotra, namavali, song, story }
 
 extension ContentTypeExtension on ContentType {
   static ContentType fromString(String contentType) {
@@ -32,6 +34,8 @@ extension ContentTypeExtension on ContentType {
         return ContentType.namavali;
       case 'song':
         return ContentType.song;
+      case 'story':
+        return ContentType.story;
       default:
         return ContentType.granth;
     }
@@ -72,11 +76,14 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
   int _currentIndex = 0;
   double _readTabProgress = 0.0;
   double _listenTabProgress = 0.0;
+  String _selectedText = '';
+  String _deviceId = '';
 
   @override
   void initState() {
     super.initState();
     _contentFuture = _loadContent();
+    _initDeviceId();
     _tabController = TabController(
       length: 2,
       vsync: this,
@@ -108,6 +115,27 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
     setState(() {
       _fontSize = (_fontSize + delta).clamp(10.0, 40.0);
     });
+  }
+
+  Future<void> _initDeviceId() async {
+    final id = await UniqueIdService.getUniqueId();
+    setState(() {
+      _deviceId = id;
+    });
+  }
+
+  void _showReportDialog(String typo, String title, String path) {
+    showDialog(
+      context: context,
+      builder: (context) => TypoReportDialog(
+        initialTypoText: typo,
+        contentPath: path,
+        contentTitle: title,
+        contentType: widget.contentType.name,
+        deityId: widget.deity.id,
+        deviceId: _deviceId,
+      ),
+    );
   }
 
   void _navigateToItem(int index) {
@@ -247,6 +275,31 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
             icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
+          FutureBuilder<Map<String, dynamic>>(
+            future: _contentFuture,
+            builder: (context, snapshot) {
+              final title = snapshot.hasData
+                  ? (snapshot.data!['title_${locale.languageCode}'] ??
+                        snapshot.data!['title_en'] ??
+                        '')
+                  : '';
+              return IconButton(
+                icon: const Icon(Icons.flag_outlined),
+                tooltip: localizations.reportTypoTitle,
+                onPressed: () {
+                  if (_selectedText.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(localizations.selectTextToReportHint),
+                      ),
+                    );
+                  } else {
+                    _showReportDialog(_selectedText, title, widget.assetPath);
+                  }
+                },
+              );
+            },
+          ),
         ],
       ),
       body: Column(
@@ -321,8 +374,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
 
   Widget _buildReadingProgressIndicator(BuildContext context) {
     final theme = Theme.of(context);
-    final double progress =
-        _currentIndex == 0 ? _readTabProgress : _listenTabProgress;
+    final double progress = _currentIndex == 0
+        ? _readTabProgress
+        : _listenTabProgress;
 
     return Container(
       height: 3.0,
@@ -448,13 +502,58 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
             },
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
-              child: Text(
-                text,
-                textAlign: TextAlign.center,
-                style: fontProvider.marathiTextStyle.copyWith(
-                  fontSize: _fontSize,
-                  height: 1.6,
-                ),
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: _contentFuture,
+                builder: (context, titleSnapshot) {
+                  final title = titleSnapshot.hasData
+                      ? (titleSnapshot.data!['title_${locale.languageCode}'] ??
+                            titleSnapshot.data!['title_en'] ??
+                            '')
+                      : '';
+                  return SelectableText(
+                    text,
+                    textAlign: TextAlign.center,
+                    style: fontProvider.marathiTextStyle.copyWith(
+                      fontSize: _fontSize,
+                      height: 1.6,
+                    ),
+                    onSelectionChanged: (selection, cause) {
+                      if (selection.start >= 0 &&
+                          selection.end <= text.length &&
+                          selection.start < selection.end) {
+                        _selectedText = text.substring(
+                          selection.start,
+                          selection.end,
+                        );
+                      } else {
+                        _selectedText = '';
+                      }
+                    },
+                    contextMenuBuilder: (context, editableTextState) {
+                      final localizations = AppLocalizations.of(context)!;
+                      final List<ContextMenuButtonItem> buttonItems =
+                          editableTextState.contextMenuButtonItems;
+                      buttonItems.insert(
+                        0,
+                        ContextMenuButtonItem(
+                          label: localizations.reportTypoTitle,
+                          onPressed: () {
+                            _showReportDialog(
+                              _selectedText,
+                              title,
+                              widget.assetPath,
+                            );
+                            editableTextState.hideToolbar();
+                          },
+                        ),
+                      );
+                      return AdaptiveTextSelectionToolbar.buttonItems(
+                        anchors: editableTextState.contextMenuAnchors,
+                        buttonItems: buttonItems,
+                      );
+                    },
+                  );
+                },
               ),
             ),
           );
@@ -507,15 +606,14 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                     clipBehavior: Clip.antiAlias,
                     child: Image.asset(
                       widget.imagePath,
-                      fit:
-                          BoxFit.cover, // Ensures the image covers the card area
+                      fit: BoxFit
+                          .cover, // Ensures the image covers the card area
                       width: double.infinity,
                       errorBuilder: (context, error, stackTrace) {
                         return Image.asset(
                           'resources/images/gajanan_maharaj/Gajanan_Maharaj.png', // A generic default
                           fit:
-                              BoxFit
-                                  .cover, // Also apply fit to the error image
+                              BoxFit.cover, // Also apply fit to the error image
                           width: double.infinity,
                         );
                       },

@@ -237,130 +237,185 @@ class _MyAllocationTabState extends State<MyAllocationTab>
     // Buttons are enabled if already read, or if it's ongoing and the day has arrived.
     final canInteract = isRead || (isOngoing && dayNum <= currentDayOfEvent);
 
-    void handleReadTap() {
-      final configProvider = Provider.of<AppConfigProvider>(
-        context,
-        listen: false,
-      );
-      final appConfig = configProvider.appConfig;
-      if (appConfig == null || appConfig.deities.isEmpty) return;
-      final deity = appConfig.deities.firstWhere(
-        (d) => d.id == 'gajanan_maharaj',
-        orElse: () => appConfig.deities.first,
-      );
+            void handleReadTap({int initialTabIndex = 0, bool autoPlay = false}) {
+              final configProvider = Provider.of<AppConfigProvider>(
+                context,
+                listen: false,
+              );
+              final appConfig = configProvider.appConfig;
+              if (appConfig == null || appConfig.deities.isEmpty) return;
+              final deity = appConfig.deities.firstWhere(
+                (d) => d.id == 'gajanan_maharaj',
+                orElse: () => appConfig.deities.first,
+              );
 
-      final List<Map<String, String>> contentList = List.generate(21, (index) {
-        final adhyayNum = index + 1;
-        return {
-          'title_en': 'Adhyay $adhyayNum',
-          'title_mr': 'अध्याय ${_formatNumber(context, adhyayNum)}',
-          'assetPath':
-              'resources/texts/gajanan_maharaj/granth/adhyay_$adhyayNum.json',
-          'imagePath':
-              'resources/images/gajanan_maharaj/granth/adhyay_$adhyayNum.png',
-          'youtube_video_id': '', // Optional, the view will load it from JSON
-        };
-      });
+              final List<Map<String, String>> contentList = List.generate(
+                21,
+                (index) {
+                  final adhyayNum = index + 1;
+                  return {
+                    'title_en': 'Adhyay $adhyayNum',
+                    'title_mr': 'अध्याय ${_formatNumber(context, adhyayNum)}',
+                    'assetPath':
+                        'resources/texts/gajanan_maharaj/granth/adhyay_$adhyayNum.json',
+                    'imagePath':
+                        'resources/images/gajanan_maharaj/granth/adhyay_$adhyayNum.png',
+                    'youtube_video_id':
+                        '', // Optional, the view will load it from JSON
+                  };
+                },
+              );
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ContentDetailScreen(
-            deity: deity,
-            contentType: ContentType.granth,
-            contentList: contentList,
-            currentIndex: adhyay - 1,
-            assetPath:
-                'resources/texts/gajanan_maharaj/granth/adhyay_$adhyay.json',
-            imagePath:
-                'resources/images/gajanan_maharaj/granth/adhyay_$adhyay.png',
-          ),
-        ),
-      );
-    }
-
-    return Card(
-      margin: EdgeInsets.zero,
-      color: theme.cardTheme.color,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: isRead ? theme.appColors.success.withValues(alpha: 0.5) : theme.appColors.divider,
-          width: 1,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            // Day Indicator
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: isRead
-                    ? theme.appColors.success
-                    : theme.colorScheme.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isRead ? theme.appColors.success : theme.colorScheme.primary,
-                  width: 2,
-                ),
-              ),
-              alignment: Alignment.center,
-              child: Icon(
-                Icons.menu_book,
-                size: 20,
-                color: isRead ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                "${localizations.day} ${_formatNumber(context, dayNum)} - ${localizations.adhyay} ${_formatNumber(context, adhyay)}",
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: theme.colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: canInteract ? handleReadTap : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: canInteract
-                    ? theme.colorScheme.primary
-                    : theme.appColors.disabledBackground,
-                foregroundColor: canInteract ? theme.colorScheme.onPrimary : theme.appColors.disabledText,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: Text(localizations.read),
-            ),
-            const SizedBox(width: 8),
-            if (isRead)
-              Icon(Icons.check_circle, color: theme.appColors.success)
-            else
-              ElevatedButton(
-                onPressed: canInteract
-                    ? () => _showCompletionDialog(context, onComplete)
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: canInteract
-                      ? theme.colorScheme.primary
-                      : theme.appColors.disabledBackground,
-                  foregroundColor: canInteract ? theme.colorScheme.onPrimary : theme.appColors.disabledText,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ContentDetailScreen(
+                    deity: deity,
+                    contentType: ContentType.granth,
+                    contentList: contentList,
+                    currentIndex: adhyay - 1,
+                    assetPath:
+                        'resources/texts/gajanan_maharaj/granth/adhyay_$adhyay.json',
+                    imagePath:
+                        'resources/images/gajanan_maharaj/granth/adhyay_$adhyay.png',
+                    initialTabIndex: initialTabIndex,
+                    autoPlay: autoPlay,
                   ),
                 ),
-                child: Text(localizations.submitLabel),
+              );
+            }
+
+            return Card(
+              margin: EdgeInsets.zero,
+              color: theme.cardTheme.color,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(
+                  color:
+                      isRead
+                          ? theme.appColors.success.withValues(alpha: 0.5)
+                          : theme.appColors.divider,
+                  width: 1,
+                ),
               ),
-          ],
-        ),
-      ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12.0,
+                  vertical: 8.0,
+                ),
+                child: Row(
+                  children: [
+                    // Day Indicator
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color:
+                            isRead
+                                ? theme.appColors.success
+                                : theme.colorScheme.primary.withValues(
+                                  alpha: 0.1,
+                                ),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color:
+                              isRead
+                                  ? theme.appColors.success
+                                  : theme.colorScheme.primary,
+                          width: 2,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.menu_book,
+                        size: 20,
+                        color:
+                            isRead
+                                ? theme.colorScheme.onPrimary
+                                : theme.colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        "${localizations.day} ${_formatNumber(context, dayNum)} - ${localizations.adhyay} ${_formatNumber(context, adhyay)}",
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.onSurface,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    // Action Icons
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildActionButton(
+                          icon: Icons.chrome_reader_mode_outlined,
+                          onPressed: () => handleReadTap(initialTabIndex: 0),
+                          isEnabled: canInteract,
+                          theme: theme,
+                          tooltip: localizations.read,
+                        ),
+                        _buildActionButton(
+                          icon: Icons.play_circle_outline_rounded,
+                          onPressed:
+                              () => handleReadTap(
+                                initialTabIndex: 1,
+                                autoPlay: true,
+                              ),
+                          isEnabled: canInteract,
+                          theme: theme,
+                          tooltip: localizations.listen,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 8),
+                    if (isRead)
+                      Icon(Icons.check_circle, color: theme.appColors.success)
+                    else
+                      ElevatedButton(
+                        onPressed:
+                            canInteract
+                                ? () =>
+                                    _showCompletionDialog(context, onComplete)
+                                : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              canInteract
+                                  ? theme.colorScheme.primary
+                                  : theme.appColors.disabledBackground,
+                          foregroundColor:
+                              canInteract
+                                  ? theme.colorScheme.onPrimary
+                                  : theme.appColors.disabledText,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: Text(localizations.submitLabel),
+                      ),
+                  ],
+                ),
+              ),
+            );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required bool isEnabled,
+    required ThemeData theme,
+    required String tooltip,
+  }) {
+    return IconButton(
+      icon: Icon(icon),
+      onPressed: isEnabled ? onPressed : null,
+      color: isEnabled ? theme.colorScheme.primary : theme.appColors.disabledText,
+      tooltip: tooltip,
+      visualDensity: VisualDensity.compact,
+      padding: const EdgeInsets.all(8),
+      constraints: const BoxConstraints(),
     );
   }
 

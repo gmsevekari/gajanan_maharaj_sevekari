@@ -1338,4 +1338,71 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get readingProgressUpdated => 'Reading progress updated';
+
+  @override
+  String get homeStoriesTitle => 'Kids Stories';
+
+  @override
+  String get storiesTitle => 'Stories';
+
+  @override
+  String get audiosTitle => 'Audios';
+
+  @override
+  String get videosTitle => 'Videos';
+
+  @override
+  String get reportTypoTitle => 'Report a Typo';
+
+  @override
+  String get reportTypoLabel => 'Incorrect Text';
+
+  @override
+  String get suggestedCorrectionLabel => 'Suggested Correction (Optional)';
+
+  @override
+  String get reportTypoSuccess => 'Thank you! Your report has been submitted.';
+
+  @override
+  String get reportTypoError => 'Failed to submit report. Please try again.';
+
+  @override
+  String get adminTypoReportsModuleTitle => 'Typo Reports';
+
+  @override
+  String get adminTypoReportsModuleSubtitle => 'Manage and fix content typos';
+
+  @override
+  String get typoNotificationToggleLabel => 'Notify me of new typo reports';
+
+  @override
+  String get markAsFixed => 'Mark as Fixed';
+
+  @override
+  String get selectTextToReportHint =>
+      'Please select the typo text first, then click this icon to report it.';
+
+  @override
+  String get typoReportConfirmDeleteMessage =>
+      'Are you sure the content has been updated and you want to delete this report?';
+
+  @override
+  String get typoReportDeleteButton => 'Delete Report';
+
+  @override
+  String get typoReportIncorrectTextLabel => 'Incorrect Text:';
+
+  @override
+  String get typoReportSuggestedCorrectionLabel => 'Suggested Correction:';
+
+  @override
+  String get typoReportNoSuggestion => '(No suggestion provided)';
+
+  @override
+  String get typoReportNoPendingReports => 'No typos reported';
+
+  @override
+  String typoReportPathLabel(String path) {
+    return 'Path: $path';
+  }
 }

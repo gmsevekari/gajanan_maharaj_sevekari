@@ -1341,4 +1341,73 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get readingProgressUpdated => 'अध्याय स्टेटस उपडेट केले आहे';
+
+  @override
+  String get homeStoriesTitle => 'बाल कथा';
+
+  @override
+  String get storiesTitle => 'कथा';
+
+  @override
+  String get audiosTitle => 'ऑडिओज';
+
+  @override
+  String get videosTitle => 'व्हिडीओज';
+
+  @override
+  String get reportTypoTitle => 'चूक रिपोर्ट करा';
+
+  @override
+  String get reportTypoLabel => 'चूक';
+
+  @override
+  String get suggestedCorrectionLabel => 'सुधारित मजकूर (optional)';
+
+  @override
+  String get reportTypoSuccess => 'धन्यवाद! तुमची दुरुस्ती नोंदवली गेली आहे.';
+
+  @override
+  String get reportTypoError =>
+      'दुरुस्ती नोंदवता आली नाही. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get adminTypoReportsModuleTitle => 'टायपो रिपोर्ट्स';
+
+  @override
+  String get adminTypoReportsModuleSubtitle => 'मजकुरातील दुरुस्त्या तपासा';
+
+  @override
+  String get typoNotificationToggleLabel =>
+      'नवीन टायपो रिपोर्टबद्दल नोटिफाय करा';
+
+  @override
+  String get markAsFixed => 'फिक्स मार्क करा';
+
+  @override
+  String get selectTextToReportHint =>
+      'कृपया आधी चुकीचा मजकूर निवडा आणि मग या चिन्हावर क्लिक करा.';
+
+  @override
+  String get typoReportConfirmDeleteMessage =>
+      'तुम्ही हा रिपोर्ट डिलीट करू इच्छिता?';
+
+  @override
+  String get typoReportDeleteButton => 'रिपोर्ट डिलीट करा';
+
+  @override
+  String get typoReportIncorrectTextLabel => 'चुकीचा मजकूर:';
+
+  @override
+  String get typoReportSuggestedCorrectionLabel => 'सुधारित मजकूर:';
+
+  @override
+  String get typoReportNoSuggestion => '(सुधारणा दिली नाही)';
+
+  @override
+  String get typoReportNoPendingReports => 'कोणतेही टायपो रिपोर्ट केले नाहीत';
+
+  @override
+  String typoReportPathLabel(String path) {
+    return 'पथ: $path';
+  }
 }

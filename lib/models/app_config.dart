@@ -12,16 +12,47 @@ abstract class ContentContainer {
 
 class AppConfig {
   final List<DeityConfig> deities;
+  final SignupInfo? signupInfo;
+  final List<SocialMediaLink> socialMediaLinks;
+  final Map<String, String> appName;
+  final Map<String, String> updateMessage;
+  final String latestVersion;
+  final String forceUpdate;
+  final String playStoreUrl;
+  final String appStoreUrl;
 
-  AppConfig({required this.deities});
+  AppConfig({
+    required this.deities,
+    this.signupInfo,
+    required this.socialMediaLinks,
+    required this.appName,
+    required this.updateMessage,
+    required this.latestVersion,
+    required this.forceUpdate,
+    required this.playStoreUrl,
+    required this.appStoreUrl,
+  });
 
-  factory AppConfig.fromJson(Map<String, dynamic> json) {
+  factory AppConfig.fromJson(
+    Map<String, dynamic> json, {
+    List<DeityConfig>? deities,
+  }) {
+    var socialMediaList = json['social_media_links'] as List? ?? [];
+    List<SocialMediaLink> socialMediaLinks =
+        socialMediaList.map((i) => SocialMediaLink.fromJson(i)).toList();
+
     return AppConfig(
-      deities:
-          (json['deities'] as List?)
-              ?.map((d) => DeityConfig.fromJson(d))
-              .toList() ??
-          [],
+      deities: deities ?? [],
+      signupInfo: json['signup_links'] != null
+          ? SignupInfo.fromJson(json['signup_links'])
+          : null,
+      socialMediaLinks: socialMediaLinks,
+      appName: Map<String, String>.from(json['appName'] ?? {}),
+      updateMessage: Map<String, String>.from(json['updateMessage'] ?? {}),
+      latestVersion: json['latestVersion'] ?? '',
+      forceUpdate: json['forceUpdate'] ?? 'false',
+      playStoreUrl: json['playStoreUrl'] ?? '',
+      appStoreUrl: json['appStoreUrl'] ?? '',
     );
   }
 }
@@ -168,6 +199,7 @@ class NityopasanaConfig {
   final NityopasanaContent? stotras;
   final dynamic aartis; // Can be AartiContent or NityopasanaContent
   final NamavaliContent? namavali;
+  final Map<String, StoriesConfig>? kidsStories;
 
   NityopasanaConfig({
     required this.order,
@@ -176,6 +208,7 @@ class NityopasanaConfig {
     this.stotras,
     this.aartis,
     this.namavali,
+    this.kidsStories,
   });
 
   factory NityopasanaConfig.fromJson(Map<String, dynamic> json) {
@@ -204,6 +237,10 @@ class NityopasanaConfig {
       namavali: json['namavali'] != null
           ? NamavaliContent.fromJson(json['namavali'])
           : null,
+      kidsStories:
+          (json['kidsStories'] as Map<String, dynamic>?)?.map(
+            (key, value) => MapEntry(key, StoriesConfig.fromJson(value)),
+          ),
     );
   }
 }
@@ -460,6 +497,181 @@ class SignupLink {
       icon: json['icon'] ?? '',
       url: json['url'] ?? '',
       color: json['color'] ?? '',
+    );
+  }
+}
+
+class StoriesConfig {
+  final List<StoryItem> items;
+  final List<StoryCategory> categories;
+  final List<StoryGroup>? groups;
+  final List<ContentItem> files;
+  final String? textResourceDirectory;
+  final String? imageResourceDirectory;
+
+  StoriesConfig({
+    required this.items,
+    required this.categories,
+    this.groups,
+    required this.files,
+    this.textResourceDirectory,
+    this.imageResourceDirectory,
+  });
+
+  factory StoriesConfig.fromJson(Map<String, dynamic> json) {
+    return StoriesConfig(
+      items: (json['items'] as List?)
+              ?.map((i) => StoryItem.fromJson(i))
+              .toList() ??
+          [],
+      categories: (json['categories'] as List?)
+              ?.map((i) => StoryCategory.fromJson(i))
+              .toList() ??
+          [],
+      groups: (json['groups'] as List?)
+          ?.map((i) => StoryGroup.fromJson(i))
+          .toList(),
+      files:
+          (json['files'] as List?)
+              ?.map((i) => ContentItem.fromJson(i))
+              .toList() ??
+          [],
+      textResourceDirectory: json['textResourceDirectory'],
+      imageResourceDirectory: json['imageResourceDirectory'],
+    );
+  }
+
+  bool get isCategorized => categories.isNotEmpty;
+  bool get isGrouped => groups != null && groups!.isNotEmpty;
+  bool get hasContent =>
+      items.isNotEmpty || categories.isNotEmpty || isGrouped || files.isNotEmpty;
+}
+
+class StoryCategory implements ContentContainer {
+  final String id;
+  final String titleEn;
+  final String titleMr;
+  final String? imagePath;
+  final List<StoryGroup>? groups;
+  @override
+  final String textResourceDirectory;
+  @override
+  final String imageResourceDirectory;
+  @override
+  final List<ContentItem> files;
+
+  StoryCategory({
+    required this.id,
+    required this.titleEn,
+    required this.titleMr,
+    this.imagePath,
+    this.groups,
+    required this.textResourceDirectory,
+    required this.imageResourceDirectory,
+    required this.files,
+  });
+
+  @override
+  String get titleKey => id;
+  @override
+  String get contentType => 'story';
+  @override
+  List<String> get regions => [];
+
+  factory StoryCategory.fromJson(Map<String, dynamic> json) {
+    return StoryCategory(
+      id: json['id'] ?? '',
+      titleEn: json['title_en'] ?? '',
+      titleMr: json['title_mr'] ?? '',
+      imagePath: json['imagePath'],
+      groups: (json['groups'] as List?)
+          ?.map((i) => StoryGroup.fromJson(i))
+          .toList(),
+      textResourceDirectory: json['textResourceDirectory'] ?? '',
+      imageResourceDirectory: json['imageResourceDirectory'] ?? '',
+      files:
+          (json['files'] as List?)
+              ?.map((i) => ContentItem.fromJson(i))
+              .toList() ??
+          [],
+    );
+  }
+}
+
+class StoryGroup {
+  final String id;
+  final String titleEn;
+  final String titleMr;
+  final String? textResourceDirectory;
+  final String? imageResourceDirectory;
+  final List<ContentItem> files;
+
+  StoryGroup({
+    required this.id,
+    required this.titleEn,
+    required this.titleMr,
+    this.textResourceDirectory,
+    this.imageResourceDirectory,
+    required this.files,
+  });
+
+  factory StoryGroup.fromJson(Map<String, dynamic> json) {
+    return StoryGroup(
+      id: json['id'] ?? '',
+      titleEn: json['title_en'] ?? '',
+      titleMr: json['title_mr'] ?? '',
+      textResourceDirectory: json['textResourceDirectory'],
+      imageResourceDirectory: json['imageResourceDirectory'],
+      files:
+          (json['files'] as List?)
+              ?.map((i) => ContentItem.fromJson(i))
+              .toList() ??
+          [],
+    );
+  }
+}
+
+class StoryItem {
+  final String id;
+  final String titleEn;
+  final String titleMr;
+  final String url;
+  final bool? _isShortOverride;
+
+  StoryItem({
+    required this.id,
+    required this.titleEn,
+    required this.titleMr,
+    required this.url,
+    bool? isShort,
+  }) : _isShortOverride = isShort;
+
+  bool get isShort => _isShortOverride ?? url.contains('/shorts/');
+
+  factory StoryItem.fromJson(Map<String, dynamic> json) {
+    final url = json['url'] ?? '';
+    String id = json['id'] ?? '';
+
+    // Automatically extract ID from URL if not provided
+    if (id.isEmpty && url.isNotEmpty) {
+      final uri = Uri.tryParse(url);
+      if (uri != null) {
+        if (url.contains('/shorts/')) {
+          id = uri.pathSegments.last;
+        } else if (uri.host.contains('youtube.com')) {
+          id = uri.queryParameters['v'] ?? '';
+        } else if (uri.host.contains('youtu.be')) {
+          id = uri.pathSegments.last;
+        }
+      }
+    }
+
+    return StoryItem(
+      id: id,
+      titleEn: json['title_en'] ?? '',
+      titleMr: json['title_mr'] ?? '',
+      url: url,
+      isShort: json['isShort'],
     );
   }
 }
