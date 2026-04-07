@@ -1,8 +1,4 @@
-1. implement remote app update system with forced-exit security
-2. add scroll-based reading progress bar to ContentDetailScreen
-3. add devotional presets and dynamic custom color picker
-4. improve 1-day parayan export screenshot layout
-5. add multi-theme color palette with maroon, sandalwood, and indigo presets
-6. fix event calendar selection visibility in light theme
-7. progressive UI tracking for batch participant uploads
-8. add intuitive inline Adhyay reading navigation
+1. Updated my allocation tab to add read and play action icons on adhyay cards.
+2. feat(story): implement Kids Stories feature in Deity Dashboard
+3. fix(parayan): implement completion-aware FCM topic synchronization
+4. feat: implement robust typo reporting system with admin notifications
