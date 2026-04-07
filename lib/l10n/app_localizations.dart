@@ -338,6 +338,48 @@ abstract class AppLocalizations {
   /// **'Pick Your Color'**
   String get customColorPicker;
 
+  /// No description provided for @savedThemes.
+  ///
+  /// In en, this message translates to:
+  /// **'My Themes'**
+  String get savedThemes;
+
+  /// No description provided for @saveTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Theme'**
+  String get saveTheme;
+
+  /// No description provided for @deleteTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Theme'**
+  String get deleteTheme;
+
+  /// No description provided for @themeSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme added to library'**
+  String get themeSaved;
+
+  /// No description provided for @themeDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme removed'**
+  String get themeDeleted;
+
+  /// No description provided for @noSavedThemes.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved themes yet'**
+  String get noSavedThemes;
+
+  /// No description provided for @themeAlreadySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme already exists in library'**
+  String get themeAlreadySaved;
+
   /// No description provided for @english.
   ///
   /// In en, this message translates to:
@@ -2681,7 +2723,7 @@ abstract class AppLocalizations {
   /// No description provided for @typoNotificationToggleLabel.
   ///
   /// In en, this message translates to:
-  /// **'Notify me of new typo reports'**
+  /// **'Typo Report Notifications'**
   String get typoNotificationToggleLabel;
 
   /// No description provided for @markAsFixed.

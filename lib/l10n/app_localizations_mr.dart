@@ -129,6 +129,27 @@ class AppLocalizationsMr extends AppLocalizations {
   String get customColorPicker => 'तुमचा रंग निवडा';
 
   @override
+  String get savedThemes => 'माझ्या थीम्स';
+
+  @override
+  String get saveTheme => 'थीम सेव्ह करा';
+
+  @override
+  String get deleteTheme => 'थीम डिलीट करा';
+
+  @override
+  String get themeSaved => 'थीम सेव्ह झाली';
+
+  @override
+  String get themeDeleted => 'थीम डिलीट झाली';
+
+  @override
+  String get noSavedThemes => 'अद्याप कोणतीही थीम सेव्ह केलेली नाही';
+
+  @override
+  String get themeAlreadySaved => 'ही थीम आधीच सेव्ह केलेली आहे';
+
+  @override
   String get english => 'इंग्रजी';
 
   @override
@@ -1371,8 +1392,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get adminTypoReportsModuleSubtitle => 'मजकुरातील दुरुस्त्या तपासा';
 
   @override
-  String get typoNotificationToggleLabel =>
-      'नवीन टायपो रिपोर्टबद्दल नोटिफाय करा';
+  String get typoNotificationToggleLabel => 'टायपो रिपोर्ट नोटिफिकेशन्स';
 
   @override
   String get markAsFixed => 'फिक्स मार्क करा';
