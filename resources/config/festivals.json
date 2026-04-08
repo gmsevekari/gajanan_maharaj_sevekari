@@ -4,9 +4,9 @@
       "id": "ganesh_chaturthi",
       "name_en": "Ganesh Chaturthi",
       "name_mr": "गणेश चतुर्थी",
-      "startDate": "2026-09-14",
+      "startDate": "2026-04-04",
       "endDate": "2026-09-24",
-      "themePreset": "maroon"
+      "themePreset": "ganeshChaturthi"
     },
     {
       "id": "diwali",

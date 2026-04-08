@@ -6,8 +6,20 @@ import 'package:gajanan_maharaj_sevekari/models/festival.dart';
 class FestivalProvider extends ChangeNotifier {
   List<Festival> _festivals = [];
   Festival? _activeFestival;
+  bool _shouldTriggerAnimation = false;
 
   Festival? get activeFestival => _activeFestival;
+  bool get shouldTriggerAnimation => _shouldTriggerAnimation;
+
+  void triggerAnimation() {
+    _shouldTriggerAnimation = true;
+    notifyListeners();
+  }
+
+  void resetAnimationTrigger() {
+    _shouldTriggerAnimation = false;
+    // We don't notify here to prevent unnecessary rebuilds while the animation is already active
+  }
 
   Future<void> loadFestivals() async {
     try {

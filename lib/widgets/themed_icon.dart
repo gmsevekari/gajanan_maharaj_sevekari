@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
+import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 enum LogicalIcon {
@@ -35,12 +36,19 @@ class ThemedIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final festivalProvider = Provider.of<FestivalProvider>(context);
-    final activeFestivalId = festivalProvider.activeFestival?.id;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final activeFestival = festivalProvider.activeFestival;
 
-    if (activeFestivalId == 'ganesh_chaturthi') {
-      return _buildGaneshChaturthiIcon(context);
-    } else if (activeFestivalId == 'diwali') {
-      return _buildDiwaliIcon(context);
+    // Only show festive icon if both a festival is active AND the matching theme is selected
+    final showFestive = activeFestival != null &&
+        themeProvider.themePreset == activeFestival.themePreset;
+
+    if (showFestive) {
+      if (activeFestival.id == 'ganesh_chaturthi') {
+        return _buildGaneshChaturthiIcon(context);
+      } else if (activeFestival.id == 'diwali') {
+        return _buildDiwaliIcon(context);
+      }
     }
 
     // Default mappings

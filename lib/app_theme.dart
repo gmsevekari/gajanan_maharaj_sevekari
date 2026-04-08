@@ -11,6 +11,7 @@ enum ThemePreset {
   peacock,
   custom,
   diwali,
+  ganeshChaturthi,
 }
 
 class AppTheme {
@@ -179,6 +180,20 @@ class AppTheme {
 
     switch (preset) {
       case ThemePreset.maroon:
+        primary = const Color(0xFF9B3746);
+        secondary = const Color(0xFFFFD700);
+        swatch = _createMaterialColor(primary);
+        lightCardColor = const Color(0xFFF9EBEB);
+        lightCardBorder = primary;
+        lightIconColor = const Color(0xFFB14A5B);
+        lightButtonFg = const Color(0xFF7D2C39);
+        darkCardColor = const Color(0xFF140A0C);
+        darkShadowColor = const Color(0xFF5D1D27);
+        darkCardBorder = primary;
+        darkIconColor = const Color(0xFFB14A5B);
+        darkButtonFg = const Color(0xFFCF6679);
+        break;
+      case ThemePreset.ganeshChaturthi:
         primary = const Color(0xFF9B3746);
         secondary = const Color(0xFFFFD700);
         swatch = _createMaterialColor(primary);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
+import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class FestivalOverlay extends StatelessWidget {
@@ -9,17 +10,22 @@ class FestivalOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<FestivalProvider>(
-      builder: (context, festivalProvider, _) {
-        final activeFestival = festivalProvider.activeFestival?.id;
+    return Consumer2<FestivalProvider, ThemeProvider>(
+      builder: (context, festivalProvider, themeProvider, _) {
+        final activeFestival = festivalProvider.activeFestival;
+        if (activeFestival == null) return child;
 
-        if (activeFestival == 'ganesh_chaturthi') {
+        // Only show festive overlay if the current theme selection matches the festival theme
+        if (themeProvider.themePreset != activeFestival.themePreset) {
+          return child;
+        }
+
+        if (activeFestival.id == 'ganesh_chaturthi') {
           return Directionality(
             textDirection: TextDirection.ltr,
             child: Stack(
               children: [
                 child,
-                // Top-level IgnorePointer overlay ensures it doesn't block taps
                 Positioned.fill(
                   child: IgnorePointer(
                     child: _buildGaneshChaturthiOverlay(context),

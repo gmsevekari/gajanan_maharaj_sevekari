@@ -105,6 +105,9 @@ void main() async {
     festivalProvider.loadFestivals(),
   ]);
 
+  // After loading, check if we need to auto-apply a festival theme
+  await themeProvider.checkAndApplyFestivalTheme(festivalProvider.activeFestival);
+
   runApp(
     MultiProvider(
       providers: [
@@ -253,9 +256,7 @@ class _MyAppState extends State<MyApp> {
                 ? fontProvider.marathiFontFamily
                 : fontProvider.englishFontFamily;
 
-            final activePreset =
-                festivalProvider.activeFestival?.themePreset ??
-                themeProvider.themePreset;
+            final activePreset = themeProvider.themePreset;
 
             final lightTextTheme = GoogleFonts.getTextTheme(
               fontFamily,

@@ -14,6 +14,7 @@ import 'package:gajanan_maharaj_sevekari/widgets/festival_launch_animation.dart'
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
+import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/shared/update_dialog.dart';
@@ -199,10 +200,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     if (localizations == null) return const SizedBox.shrink();
 
+    final themeProvider = Provider.of<ThemeProvider>(context);
     final festivalProvider = Provider.of<FestivalProvider>(context);
-    final activeFestivalId = festivalProvider.activeFestival?.id;
-    final isGaneshotsav = activeFestivalId == 'ganesh_chaturthi';
-    final isDiwali = activeFestivalId == 'diwali';
+    final activeFestival = festivalProvider.activeFestival;
+
+    // Check if the current theme selection matches the festival's preset
+    final isFestiveThemeMode = activeFestival != null && 
+        themeProvider.themePreset == activeFestival.themePreset;
+
+    final isGaneshotsav = isFestiveThemeMode && activeFestival.id == 'ganesh_chaturthi';
+    final isDiwali = isFestiveThemeMode && activeFestival.id == 'diwali';
+
+    if (festivalProvider.shouldTriggerAnimation && !_showFestivalAnimation) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _triggerAnimationFromProvider(festivalProvider);
+      });
+    }
 
     final List<Widget> cards = [];
 
@@ -264,8 +277,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
 
     final scaffoldBase = Scaffold(
-
-    return Scaffold(
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -453,6 +464,29 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return scaffoldBase;
   }
 
+  void _triggerAnimationFromProvider(FestivalProvider provider) {
+    if (!mounted) return;
+    final activeFestival = provider.activeFestival;
+    if (activeFestival == null) {
+       provider.resetAnimationTrigger();
+       return;
+    }
+    
+    final localizations = AppLocalizations.of(context);
+    if (localizations == null) return;
+
+    setState(() {
+      _showFestivalAnimation = true;
+      _activeAnimationType = activeFestival.id == 'diwali' 
+          ? FestivalAnimationType.fireworks 
+          : FestivalAnimationType.flowerPetals;
+      _animationMessage = activeFestival.id == 'diwali' 
+          ? localizations.chantHappyDiwali 
+          : localizations.chantGanpatiBappa;
+    });
+    provider.resetAnimationTrigger();
+  }
+
   Widget _buildDownloadBanner(
     BuildContext context,
     AppLocalizations localizations,
@@ -551,9 +585,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     AppLocalizations localizations,
   ) {
     final theme = Theme.of(context);
-    final activeFestivalId = context.watch<FestivalProvider>().activeFestival?.id;
-    final isGaneshotsav = activeFestivalId == 'ganesh_chaturthi';
-    final isDiwali = activeFestivalId == 'diwali';
+    final activeFestival = context.watch<FestivalProvider>().activeFestival;
+    final themeProvider = context.watch<ThemeProvider>();
+    
+    // Only show festive decor if a festival is active AND the matching theme is selected
+    final isFestiveTheme = activeFestival != null && 
+        themeProvider.themePreset == activeFestival.themePreset;
+        
+    final isGaneshotsav = isFestiveTheme && activeFestival.id == 'ganesh_chaturthi';
+    final isDiwali = isFestiveTheme && activeFestival.id == 'diwali';
 
     return FutureBuilder<Map<String, dynamic>>(
       future: _upcomingEventsFuture,
@@ -819,9 +859,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     String eventTypeLabel,
     ThemeData theme,
   ) {
-    final activeFestivalId = context.watch<FestivalProvider>().activeFestival?.id;
-    final isGaneshotsav = activeFestivalId == 'ganesh_chaturthi';
-    final isDiwali = activeFestivalId == 'diwali';
+    final activeFestival = context.watch<FestivalProvider>().activeFestival;
+    final themeProvider = context.watch<ThemeProvider>();
+    
+    final isFestiveTheme = activeFestival != null && 
+        themeProvider.themePreset == activeFestival.themePreset;
+
+    final isGaneshotsav = isFestiveTheme && activeFestival.id == 'ganesh_chaturthi';
+    final isDiwali = isFestiveTheme && activeFestival.id == 'diwali';
     final eventData = doc.data() as Map<String, dynamic>;
     final event = Event.fromFirestore(doc);
     final locale = Localizations.localeOf(context).languageCode;
@@ -914,9 +959,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ThemeData theme,
     AppLocalizations localizations,
   ) {
-    final activeFestivalId = context.watch<FestivalProvider>().activeFestival?.id;
-    final isGaneshotsav = activeFestivalId == 'ganesh_chaturthi';
-    final isDiwali = activeFestivalId == 'diwali';
+    final activeFestival = context.watch<FestivalProvider>().activeFestival;
+    final themeProvider = context.watch<ThemeProvider>();
+    
+    final isFestiveTheme = activeFestival != null && 
+        themeProvider.themePreset == activeFestival.themePreset;
+
+    final isGaneshotsav = isFestiveTheme && activeFestival.id == 'ganesh_chaturthi';
+    final isDiwali = isFestiveTheme && activeFestival.id == 'diwali';
     final locale = Localizations.localeOf(context).languageCode;
     final title = locale == 'mr' ? event.titleMr : event.titleEn;
     final isSameDay =
@@ -1123,8 +1173,10 @@ class _MouseMarqueeState extends State<MouseMarquee>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        // Broaden the translation distance so all 3 mice completely clear the screen before wrap
-        final xPos = - (mouseWidth * 3) - 100.0 + (_controller.value * (screenWidth + (mouseWidth * 3) + 200.0));
+        // Precise distance to ensure that as the trail leaves (x = screenWidth + 1.6*mw), 
+        // the lead immediately enters (x = -mw) on the next loop iteration.
+        final totalDistance = screenWidth + (mouseWidth * 2.6);
+        final xPos = -mouseWidth + (_controller.value * totalDistance);
 
         Widget buildMouse(int index) {
           // Phase shift based on the index so their feet hit the ground at different times

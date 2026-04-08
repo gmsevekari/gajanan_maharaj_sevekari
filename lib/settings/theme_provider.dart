@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/models/festival.dart';
 
 class ThemeProvider with ChangeNotifier {
   static const String _themePrefKey = 'theme_mode';
   static const String _presetPrefKey = 'theme_preset';
   static const String _customColorPrefKey = 'custom_theme_color';
   static const String _savedThemesPrefKey = 'saved_custom_themes';
+  static const String _lastFestivalIdKey = 'last_festival_id';
   ThemeMode _themeMode = ThemeMode.light;
   ThemePreset _themePreset = ThemePreset.saffron;
   Color? _customColor;
   List<Color> _savedCustomColors = [];
+  String? _lastFestivalId;
 
   ThemeMode get themeMode => _themeMode;
   ThemePreset get themePreset => _themePreset;
@@ -35,8 +38,32 @@ class ThemeProvider with ChangeNotifier {
     final savedThemesValues = prefs.getStringList(_savedThemesPrefKey) ?? [];
     _savedCustomColors =
         savedThemesValues.map((v) => Color(int.parse(v))).toList();
+    _lastFestivalId = prefs.getString(_lastFestivalIdKey);
 
     notifyListeners();
+  }
+
+  /// Automatically applies the festival theme if it hasn't been applied yet
+  /// for this specific festival in a previous session.
+  Future<void> checkAndApplyFestivalTheme(Festival? activeFestival) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (activeFestival != null) {
+      // If this is a new festival we haven't auto-applied yet
+      if (_lastFestivalId != activeFestival.id) {
+        _lastFestivalId = activeFestival.id;
+        await prefs.setString(_lastFestivalIdKey, _lastFestivalId!);
+        
+        // Auto-apply the theme preset
+        setPreset(activeFestival.themePreset);
+      }
+    } else {
+      // If no festival is active, but we are still on a festival-only theme,
+      // revert to default (Saffron).
+      if (_themePreset == ThemePreset.diwali || _themePreset == ThemePreset.ganeshChaturthi) {
+        setPreset(ThemePreset.saffron);
+      }
+    }
   }
 
   Future<void> setTheme(ThemeMode themeMode) async {
