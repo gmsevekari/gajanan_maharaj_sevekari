@@ -1,4 +1,5 @@
-1. Updated my allocation tab to add read and play action icons on adhyay cards.
-2. feat(story): implement Kids Stories feature in Deity Dashboard
-3. fix(parayan): implement completion-aware FCM topic synchronization
-4. feat: implement robust typo reporting system with admin notifications
+1. feat: implement multi-group support for Parayan management
+2. feat: implement local custom theme library and persistence
+3. feat: add hex code input and sync to custom color picker
+4. feat: implementation of comprehensive unit testing suite (70 tests)
+5. refactor(naamjap): centralize logic into JapMalaProvider and isolate tab state
