@@ -17,6 +17,7 @@ class ParayanEvent {
   final int joinedParticipants;
   final Map<String, dynamic> sentReminders; // e.g., {'day1_20:00': Timestamp}
   final String? joinCode;
+  final String groupId;
 
   const ParayanEvent({
     required this.id,
@@ -34,6 +35,7 @@ class ParayanEvent {
     this.joinedParticipants = 0,
     this.sentReminders = const {},
     this.joinCode,
+    required this.groupId,
   });
 
   factory ParayanEvent.fromFirestore(DocumentSnapshot doc) {
@@ -65,6 +67,7 @@ class ParayanEvent {
           ? Map<String, dynamic>.from(data['sentReminders'] as Map)
           : {},
       joinCode: data['joinCode'],
+      groupId: data['groupId'] ?? 'gajanan_maharaj_seattle',
     );
   }
 
@@ -91,6 +94,7 @@ class ParayanEvent {
       'joinedParticipants': joinedParticipants,
       'sentReminders': sentReminders,
       if (joinCode != null) 'joinCode': joinCode,
+      'groupId': groupId,
     };
   }
 }

@@ -10,7 +10,10 @@ import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart'
 import 'package:flutter/foundation.dart';
 
 class ParayanService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore _db;
+
+  ParayanService({FirebaseFirestore? firestore})
+      : _db = firestore ?? FirebaseFirestore.instance;
 
   // Collection reference
   CollectionReference get _eventsRef => _db.collection('parayan_events');
@@ -19,17 +22,26 @@ class ParayanService {
     await _eventsRef.doc(event.id).set(event.toFirestore());
   }
 
+  // Check if an event exists by ID
+  Future<bool> exists(String eventId) async {
+    final doc = await _eventsRef.doc(eventId).get();
+    return doc.exists;
+  }
+
   // Update status of a Parayan Event
-  Future<void> updateEventStatus(String eventId, String newStatus) async {
-    await _eventsRef.doc(eventId).update({'status': newStatus});
+  Future<void> updateEventStatus(ParayanEvent event, String newStatus) async {
+    await _eventsRef.doc(event.id).update({'status': newStatus});
 
     // If status changed to allocated, perform batch adhyay allocation
     if (newStatus == 'allocated') {
-      await allocateAdhyays(eventId);
+      await allocateAdhyays(event.id);
     } else if (newStatus == 'completed') {
       // Unsubscribe the current (admin) device as well
       if (!kIsWeb) {
-        await NotificationServiceHelper.unsubscribeFromEventTopics(eventId);
+        await NotificationServiceHelper.unsubscribeFromEventTopics(
+          event.id,
+          event.type.daysCount,
+        );
       }
     }
   }
@@ -42,31 +54,32 @@ class ParayanService {
         .map((doc) => ParayanEvent.fromFirestore(doc));
   }
 
-  // Get all active/upcoming events
-  Stream<List<ParayanEvent>> getActiveEvents() {
-    return _eventsRef
-        .where('endDate', isGreaterThanOrEqualTo: Timestamp.now())
-        .snapshots()
-        .map((snapshot) {
-          final events = snapshot.docs
-              .map((doc) => ParayanEvent.fromFirestore(doc))
-              .toList();
-          // Sort by startDate ascending (nearest first)
-          events.sort((a, b) => a.startDate.compareTo(b.startDate));
-          return events;
-        });
+  // Get all active/upcoming events for a specific group
+  Stream<List<ParayanEvent>> getActiveEvents(String groupId) {
+    Query query = _eventsRef
+        .where('groupId', isEqualTo: groupId)
+        .where('endDate', isGreaterThanOrEqualTo: Timestamp.now());
+
+    return query.snapshots().map((snapshot) {
+      final events =
+          snapshot.docs.map((doc) => ParayanEvent.fromFirestore(doc)).toList();
+
+      // Sort by startDate ascending (nearest first)
+      events.sort((a, b) => a.startDate.compareTo(b.startDate));
+      return events;
+    });
   }
 
-  // Get all events for stats
-  Stream<List<ParayanEvent>> getAllEvents() {
-    return _eventsRef
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => ParayanEvent.fromFirestore(doc))
-              .toList(),
-        );
+  // Get all events for a specific group (history/stats)
+  Stream<List<ParayanEvent>> getAllEvents(String groupId) {
+    Query query = _eventsRef
+        .where('groupId', isEqualTo: groupId)
+        .orderBy('createdAt', descending: true);
+
+    return query.snapshots().map(
+      (snapshot) =>
+          snapshot.docs.map((doc) => ParayanEvent.fromFirestore(doc)).toList(),
+    );
   }
 
   // Enrollment Logic (Household-based) - Optimized for restricted permissions
@@ -80,16 +93,6 @@ class ParayanService {
     final eventDoc = _eventsRef.doc(eventId);
     final participantsRef = eventDoc.collection('participants');
 
-    // 1. Get current participant count OUTSIDE transaction if possible,
-    // or just use a query if the event doc has restricted WRITE permissions.
-    // We'll fetch all docs to count them accurately for allocation.
-    final querySnapshot = await participantsRef.get();
-    int currentTotal = 0;
-    for (var doc in querySnapshot.docs) {
-      final data = doc.data();
-      final members = data['members'] as Map<String, dynamic>? ?? {};
-      currentTotal += members.length;
-    }
     // 1. Get all existing members for this device to handle deletions
     final existingSnapshot = await participantsRef
         .where('deviceId', isEqualTo: deviceId)
@@ -186,7 +189,10 @@ class ParayanService {
     required bool completed,
     String? deviceId,
   }) async {
-    final docRef = _eventsRef.doc(eventId).collection('participants').doc(memberId);
+    final docRef = _eventsRef
+        .doc(eventId)
+        .collection('participants')
+        .doc(memberId);
 
     await docRef.update({'completions.$dayIndex': completed});
 

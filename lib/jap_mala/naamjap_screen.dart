@@ -6,6 +6,8 @@ import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/manual_jap_tab.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:provider/provider.dart';
+import 'package:gajanan_maharaj_sevekari/providers/jap_mala_provider.dart';
 
 class NaamjapScreen extends StatelessWidget {
   const NaamjapScreen({super.key});
@@ -114,9 +116,22 @@ class NaamjapScreen extends StatelessWidget {
             ),
           ),
         ),
-        body: const TabBarView(
-          physics: NeverScrollableScrollPhysics(),
-          children: [CountingJapTab(), TimeBasedJapTab(), ManualJapTab()],
+        body: TabBarView(
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            ChangeNotifierProvider(
+              create: (_) => JapMalaProvider()..init(),
+              child: const CountingJapTab(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => JapMalaProvider()..init(),
+              child: const TimeBasedJapTab(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => JapMalaProvider()..init(),
+              child: const ManualJapTab(),
+            ),
+          ],
         ),
       ),
     );

@@ -1,13 +1,13 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
-
+import 'package:gajanan_maharaj_sevekari/providers/jap_mala_provider.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
+import 'package:provider/provider.dart';
 class TimeBasedJapTab extends StatefulWidget {
   const TimeBasedJapTab({super.key});
 
@@ -18,30 +18,22 @@ class TimeBasedJapTab extends StatefulWidget {
 class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
   List<Map<String, dynamic>>? _chants;
   Map<String, dynamic>? _selectedChant;
-  int _selectedHours = 0;
-  int _selectedMinutes = 10;
 
-  Timer? _timer;
-  int _remainingSeconds = 0;
-  bool _isRunning = false;
-
-  int _currentCount = 0;
   bool _isTimeUp = false;
   final AudioPlayer _audioPlayer = AudioPlayer();
+  late JapMalaProvider _provider;
 
   @override
   void initState() {
     super.initState();
     _audioPlayer.setReleaseMode(ReleaseMode.stop);
     _loadChants();
-    _loadCustomTarget();
+    _provider = context.read<JapMalaProvider>();
 
     // Listen to audio completion to increment counts and replay
     _audioPlayer.onPlayerComplete.listen((event) {
-      _incrementCount();
-      if (_isRunning) {
-        if (_remainingSeconds <= 0 || _isTimeUp) {
-          _isTimeUp = false;
+      if (_provider.isPlaying) {
+        if (_provider.isTimerExpired) {
           _stopTimer();
           HapticFeedback.heavyImpact(); // Vibrate when fully done
           if (mounted) {
@@ -51,19 +43,24 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
             );
           }
         } else {
+          _provider.increment();
+          HapticFeedback.lightImpact();
           _playNextJap();
         }
       }
     });
+
+    _provider.addListener(_onProviderStateChanged);
   }
 
-  Future<void> _loadCustomTarget() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _selectedHours = prefs.getInt('timeBasedJapHours') ?? 0;
-      _selectedMinutes = prefs.getInt('timeBasedJapMinutes') ?? 10;
-    });
+  void _onProviderStateChanged() {
+    final provider = context.read<JapMalaProvider>();
+    if (!provider.isPlaying && _audioPlayer.state == PlayerState.playing) {
+      _audioPlayer.stop();
+      WakelockPlus.disable();
+    }
   }
+
 
   Future<void> _loadChants() async {
     final String response = await rootBundle.loadString(
@@ -82,17 +79,9 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
     }
   }
 
-  void _incrementCount() {
-    if (!_isRunning) return;
-
-    setState(() {
-      _currentCount++;
-      HapticFeedback.lightImpact();
-    });
-  }
-
   void _playNextJap() {
-    if (!_isRunning || _isTimeUp || _remainingSeconds <= 0) {
+    final provider = context.read<JapMalaProvider>();
+    if (!provider.isPlaying || _isTimeUp || provider.remainingSeconds <= 0) {
       return; // Prevent zombie audio if called exactly as timer stops
     }
 
@@ -106,88 +95,43 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
   }
 
   void _startTimer() {
-    if (_selectedHours == 0 && _selectedMinutes == 0) return;
+    final provider = context.read<JapMalaProvider>();
+    if (provider.selectedHours == 0 && provider.selectedMinutes == 0) return;
 
-    setState(() {
-      _isTimeUp = false;
-      if (_remainingSeconds == 0) {
-        _remainingSeconds = (_selectedHours * 3600) + (_selectedMinutes * 60);
-        _currentCount = 0; // Reset chant counter on a completely fresh start
-      }
-      _isRunning = true;
-    });
-
+    _isTimeUp = false;
     WakelockPlus.enable(); // Keep screen awake
+    provider.startTimeBasedSession();
     _playNextJap();
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_remainingSeconds > 1) {
-        setState(() {
-          _remainingSeconds--;
-        });
-      } else {
-        setState(() {
-          _remainingSeconds = 0;
-          _isTimeUp = true;
-        });
-        timer.cancel(); // Let the audio naturally finish the final chant
-      }
-    });
   }
 
   void _stopTimer() {
-    _timer?.cancel();
     WakelockPlus.disable(); // Allow screen to sleep
     _isTimeUp = false;
-
-    // Stop audio physically synchronously to guarantee immediate halt
+    context.read<JapMalaProvider>().stop();
     _audioPlayer.stop();
-
-    // Use microtask so setState runs outside the timer loop / plugin callback,
-    // guaranteeing the stop button disappears even if called from deep native code.
-    Future.microtask(() {
-      if (!mounted) return;
-      setState(() {
-        _isRunning = false;
-      });
-      _audioPlayer.release();
-    });
   }
 
   void _resetTimer() {
     _stopTimer();
-    setState(() {
-      _remainingSeconds = 0;
-      _currentCount = 0;
-    });
+    context.read<JapMalaProvider>().reset();
   }
 
   String _formatTime(BuildContext context, int totalSeconds) {
     int h = totalSeconds ~/ 3600;
     int m = (totalSeconds % 3600) ~/ 60;
     int s = totalSeconds % 60;
-    return '${_formatNumber(context, h, pad: true)}:${_formatNumber(context, m, pad: true)}:${_formatNumber(context, s, pad: true)}';
-  }
-
-  String _formatNumber(BuildContext context, int number, {bool pad = true}) {
-    String numStr = pad ? number.toString().padLeft(2, '0') : number.toString();
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
-    if (!isMarathi) return numStr;
-
-    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    const marathi = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
-    for (int i = 0; i < english.length; i++) {
-      numStr = numStr.replaceAll(english[i], marathi[i]);
-    }
-    return numStr;
+    final locale = Localizations.localeOf(context).languageCode;
+    return '${formatNumberLocalized(h, locale)}:${formatNumberLocalized(m, locale)}:${formatNumberLocalized(s, locale)}';
   }
 
   void _showDurationPicker(BuildContext context) {
-    if (_isRunning) return; // Prevent changing time while running
+    final provider = context.read<JapMalaProvider>();
+    if (provider.isPlaying) return; // Prevent changing time while running
 
-    int tempHours = _selectedHours;
-    int tempMinutes = _selectedMinutes;
+    int tempHours = provider.selectedHours;
+    int tempMinutes = provider.selectedMinutes;
     final localizations = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
     final theme = Theme.of(context);
 
     showDialog(
@@ -228,7 +172,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                               (index) => DropdownMenuItem(
                                 value: index,
                                 child: Text(
-                                  _formatNumber(context, index, pad: false),
+                                  formatNumberLocalized(index, locale, pad: false),
                                   style: theme.textTheme.bodyLarge?.copyWith(
                                     color: theme.colorScheme.onSurface,
                                   ),
@@ -263,7 +207,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
                               (index) => DropdownMenuItem(
                                 value: index,
                                 child: Text(
-                                  _formatNumber(context, index, pad: false),
+                                  formatNumberLocalized(index, locale, pad: false),
                                   style: theme.textTheme.bodyLarge?.copyWith(
                                     color: theme.colorScheme.onSurface,
                                   ),
@@ -296,16 +240,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
             ),
             TextButton(
               onPressed: () async {
-                setState(() {
-                  _selectedHours = tempHours;
-                  _selectedMinutes = tempMinutes;
-                  _resetTimer();
-                });
-
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.setInt('timeBasedJapHours', tempHours);
-                await prefs.setInt('timeBasedJapMinutes', tempMinutes);
-
+                await provider.setDuration(tempHours, tempMinutes);
                 if (context.mounted) {
                   Navigator.of(context).pop();
                 }
@@ -326,7 +261,7 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _provider.removeListener(_onProviderStateChanged);
     WakelockPlus.disable(); // Ensure wakelock is released
     _audioPlayer.dispose();
     super.dispose();
@@ -338,311 +273,310 @@ class _TimeBasedJapTabTabState extends State<TimeBasedJapTab> {
     final locale = Localizations.localeOf(context).languageCode;
     final theme = Theme.of(context);
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Top Image Banner
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                'resources/images/naamjap/naamjap.png',
-                width: double.infinity,
-                fit: BoxFit.contain,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: theme.cardTheme.color ?? theme.cardColor,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: theme.appColors.primarySwatch,
-                  width: 2,
+    return Consumer<JapMalaProvider>(
+      builder: (context, provider, child) {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Top Image Banner
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    'resources/images/naamjap/naamjap.png',
+                    width: double.infinity,
+                    fit: BoxFit.contain,
+                  ),
                 ),
-              ),
-              child: _chants == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : DropdownButtonHideUnderline(
-                      child: DropdownButton<Map<String, dynamic>>(
-                        value: _selectedChant,
-                        isExpanded: true,
-                        alignment: Alignment.center,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                        isDense: true,
-                        dropdownColor: theme.cardTheme.color ?? theme.cardColor,
-                        borderRadius: BorderRadius.circular(12),
-                        onChanged: _isRunning
-                            ? null
-                            : (Map<String, dynamic>? newValue) {
-                                if (newValue != null) {
-                                  setState(() {
-                                    _selectedChant = newValue;
-                                    _resetTimer();
-                                  });
-                                }
-                              },
-                        items: _chants!.map((Map<String, dynamic> chant) {
-                          final title = locale == 'mr'
-                              ? chant['title_mr']
-                              : chant['title_en'];
-                          return DropdownMenuItem<Map<String, dynamic>>(
-                            value: chant,
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: theme.cardTheme.color ?? theme.cardColor,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: theme.appColors.primarySwatch,
+                      width: 2,
+                    ),
+                  ),
+                  child: _chants == null
+                      ? const Center(child: CircularProgressIndicator())
+                      : DropdownButtonHideUnderline(
+                          child: DropdownButton<Map<String, dynamic>>(
+                            value: _selectedChant,
+                            isExpanded: true,
                             alignment: Alignment.center,
-                            child: Text(
-                              title,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: theme.colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            icon: Icon(
+                              Icons.keyboard_arrow_down,
+                              color: theme.colorScheme.onSurface,
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-            ),
-            const SizedBox(height: 16),
-
-            // Progress Indicators (Cards) - Added from Request #2
-            Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal:
-                      32, // slightly wider internal padding makes it match typical dropdown width
-                ),
-                decoration: BoxDecoration(
-                  color: theme.cardTheme.color ?? theme.cardColor,
-                  border: Border.all(
-                    color: theme.appColors.primarySwatch,
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize
-                      .min, // This fixes the bottom overflow naturally
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      localizations.jap,
-                      style: TextStyle(
-                        color: theme.appColors.primarySwatch,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        _formatNumber(context, _currentCount, pad: false),
-                        style: TextStyle(
-                          color: theme.appColors.primarySwatch,
-                          fontSize: 36,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Time Selection Area
-            Text(
-              localizations.duration,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.appColors.primarySwatch[600],
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 8),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: theme.appColors.primarySwatch,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Current Time / Editable Card
-            GestureDetector(
-              onTap: () => _showDurationPicker(context),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                decoration: BoxDecoration(
-                  color: theme.cardTheme.color ?? theme.cardColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: theme.appColors.primarySwatch,
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    if (!_isRunning && _remainingSeconds == 0) ...[
-                      Text(
-                        '${_formatNumber(context, _selectedHours, pad: false)} ${localizations.hours} ${_formatNumber(context, _selectedMinutes, pad: false)} ${localizations.minutes}',
-                        style: theme.textTheme.displaySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme
-                              .colorScheme
-                              .primary, // Changed from onSurface
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.edit,
-                            size: 16,
-                            color: theme.appColors.primarySwatch[300],
+                            isDense: true,
+                            dropdownColor: theme.cardTheme.color ?? theme.cardColor,
+                            borderRadius: BorderRadius.circular(12),
+                            onChanged: provider.isPlaying
+                                ? null
+                                : (Map<String, dynamic>? newValue) {
+                                    if (newValue != null) {
+                                      setState(() {
+                                        _selectedChant = newValue;
+                                        _resetTimer();
+                                      });
+                                    }
+                                  },
+                            items: _chants!.map((Map<String, dynamic> chant) {
+                              final title = locale == 'mr'
+                                  ? chant['title_mr']
+                                  : chant['title_en'];
+                              return DropdownMenuItem<Map<String, dynamic>>(
+                                value: chant,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  title,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
-                          const SizedBox(width: 4),
+                        ),
+                ),
+                const SizedBox(height: 16),
+
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 32,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme.cardTheme.color ?? theme.cardColor,
+                      border: Border.all(
+                        color: theme.appColors.primarySwatch,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          localizations.jap,
+                          style: TextStyle(
+                            color: theme.appColors.primarySwatch,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            formatNumberLocalized(provider.currentCount, locale, pad: false),
+                            style: TextStyle(
+                              color: theme.appColors.primarySwatch,
+                              fontSize: 36,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Time Selection Area
+                Text(
+                  localizations.duration,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.appColors.primarySwatch[600],
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: theme.appColors.primarySwatch,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Current Time / Editable Card
+                GestureDetector(
+                  onTap: () => _showDurationPicker(context),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    decoration: BoxDecoration(
+                      color: theme.cardTheme.color ?? theme.cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: theme.appColors.primarySwatch,
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        if (!provider.isPlaying && provider.remainingSeconds == 0) ...[
                           Text(
-                            localizations.tapToEdit,
-                            style: theme.textTheme.bodyMedium?.copyWith(
+                            '${formatNumberLocalized(provider.selectedHours, locale, pad: false)} ${localizations.hours} ${formatNumberLocalized(provider.selectedMinutes, locale, pad: false)} ${localizations.minutes}',
+                            style: theme.textTheme.displaySmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                size: 16,
+                                color: theme.appColors.primarySwatch[300],
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                localizations.tapToEdit,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.appColors.primarySwatch[300],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ] else ...[
+                          Text(
+                            localizations.timeRemaining,
+                            style: theme.textTheme.titleMedium?.copyWith(
                               color: theme.appColors.primarySwatch[300],
                             ),
                           ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _formatTime(context, provider.remainingSeconds),
+                            style: theme.textTheme.displayMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.appColors.primarySwatch,
+                              fontFeatures: const [FontFeature.tabularFigures()],
+                            ),
+                          ),
                         ],
-                      ),
-                    ] else ...[
-                      Text(
-                        localizations.timeRemaining,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: theme.appColors.primarySwatch[300],
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+
+                // Big Start/Pause Button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (provider.isPlaying ||
+                        (provider.remainingSeconds > 0 &&
+                            provider.remainingSeconds <
+                                ((provider.selectedHours * 3600) +
+                                    (provider.selectedMinutes * 60))))
+                      GestureDetector(
+                        onTap: _resetTimer,
+                        child: Container(
+                          width: 60,
+                          height: 60,
+                          margin: const EdgeInsets.only(right: 24),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: theme.cardTheme.color ?? theme.cardColor,
+                            border: Border.all(
+                              color: theme.appColors.primarySwatch,
+                              width: 2,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.stop,
+                            color: theme.appColors.error,
+                            size: 30,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _formatTime(context, _remainingSeconds),
-                        style: theme.textTheme.displayMedium?.copyWith(
+
+                    ElevatedButton.icon(
+                      onPressed: provider.isPlaying ? _stopTimer : _startTimer,
+                      icon: Icon(
+                        provider.isPlaying ? Icons.pause : Icons.play_arrow,
+                        size: 28,
+                      ),
+                      label: Text(
+                        provider.isPlaying ? 'Pause' : localizations.startPlay,
+                        style: const TextStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: theme.appColors.primarySwatch,
-                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
-                    ],
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 48,
+                          vertical: 16,
+                        ),
+                        shape: const StadiumBorder(),
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ),
 
-            const SizedBox(height: 40),
-
-            // Big Start/Pause Button
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (_isRunning ||
-                    (_remainingSeconds > 0 &&
-                        _remainingSeconds <
-                            ((_selectedHours * 3600) +
-                                (_selectedMinutes * 60))))
-                  GestureDetector(
-                    onTap: _resetTimer,
-                    child: Container(
-                      width: 60,
-                      height: 60,
-                      margin: const EdgeInsets.only(right: 24),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(
-                          color: theme.appColors.primarySwatch,
-                          width: 2,
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.graphic_eq,
+                      color: theme.appColors.primarySwatch,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        provider.isPlaying
+                            ? localizations.keepPhoneUnlocked
+                            : localizations.audioJapWillStart,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.appColors.primarySwatch.shade300,
                         ),
-                      ),
-                      child: Icon(
-                        Icons.stop,
-                        color: theme.appColors.error,
-                        size: 30,
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                  ),
-
-                ElevatedButton.icon(
-                  onPressed: _isRunning ? _stopTimer : _startTimer,
-                  icon: Icon(
-                    _isRunning ? Icons.pause : Icons.play_arrow,
-                    size: 28,
-                  ),
-                  label: Text(
-                    _isRunning ? 'Pause' : localizations.startPlay,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 48,
-                      vertical: 16,
-                    ),
-                    shape: const StadiumBorder(),
-                  ),
+                  ],
                 ),
+                const SizedBox(height: 32),
               ],
             ),
-
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.graphic_eq,
-                  color: theme.appColors.primarySwatch,
-                  size: 16,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    _isRunning
-                        ? localizations.keepPhoneUnlocked
-                        : localizations.audioJapWillStart,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.appColors.primarySwatch.shade300,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

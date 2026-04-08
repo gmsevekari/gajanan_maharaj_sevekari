@@ -6,3 +6,9 @@ String toMarathiNumerals(String input) {
   }
   return input;
 }
+
+String formatNumberLocalized(int number, String languageCode, {bool pad = true}) {
+  String numStr = pad ? number.toString().padLeft(2, '0') : number.toString();
+  if (languageCode != 'mr') return numStr;
+  return toMarathiNumerals(numStr);
+}

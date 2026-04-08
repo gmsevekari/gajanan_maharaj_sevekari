@@ -129,6 +129,30 @@ class AppLocalizationsMr extends AppLocalizations {
   String get customColorPicker => 'तुमचा रंग निवडा';
 
   @override
+  String get savedThemes => 'माझ्या थीम्स';
+
+  @override
+  String get saveTheme => 'थीम सेव्ह करा';
+
+  @override
+  String get deleteTheme => 'थीम डिलीट करा';
+
+  @override
+  String get themeSaved => 'थीम सेव्ह झाली';
+
+  @override
+  String get themeDeleted => 'थीम डिलीट झाली';
+
+  @override
+  String get noSavedThemes => 'अद्याप कोणतीही थीम सेव्ह केलेली नाही';
+
+  @override
+  String get themeAlreadySaved => 'ही थीम आधीच सेव्ह केलेली आहे';
+
+  @override
+  String get hexLabel => 'हेक्स कोड';
+
+  @override
   String get english => 'इंग्रजी';
 
   @override
@@ -1377,8 +1401,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get adminTypoReportsModuleSubtitle => 'मजकुरातील दुरुस्त्या तपासा';
 
   @override
-  String get typoNotificationToggleLabel =>
-      'नवीन टायपो रिपोर्टबद्दल नोटिफाय करा';
+  String get typoNotificationToggleLabel => 'टायपो रिपोर्ट नोटिफिकेशन्स';
 
   @override
   String get markAsFixed => 'फिक्स मार्क करा';
@@ -1410,4 +1433,22 @@ class AppLocalizationsMr extends AppLocalizations {
   String typoReportPathLabel(String path) {
     return 'पथ: $path';
   }
+
+  @override
+  String get parayanGroupLabel => 'पारायण ग्रुप';
+
+  @override
+  String get statusOngoingDesc =>
+      'पारायण सध्या सुरू आहे. कृपया तुमचे नेमून दिलेले अध्याय पूर्ण करा.';
+
+  @override
+  String get statusCompletedDesc =>
+      'पारायण यशस्वीरीत्या पूर्ण झाले आहे. जय गजानन!';
+
+  @override
+  String get adminParayanGroupTitle => 'पारायण ग्रुप्स';
+
+  @override
+  String get parayanAlreadyExists =>
+      'या ग्रुपमध्ये या तारखेसाठी आणि टाईप साठी पारायण आधीच अस्तित्वात आहे.';
 }

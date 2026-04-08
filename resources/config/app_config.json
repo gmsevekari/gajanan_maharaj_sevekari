@@ -28,5 +28,13 @@
       "id": "other",
       "configFile": "resources/config/other.json"
     }
+  ],
+  "parayan_groups": [
+    {
+      "id": "gajanan_maharaj_seattle",
+      "icon": "resources/images/icon/Space_Needle.png",
+      "name_en": "Seattle",
+      "name_mr": "सिअ‍ॅटल"
+    }
   ]
 }

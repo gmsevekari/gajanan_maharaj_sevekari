@@ -338,6 +338,54 @@ abstract class AppLocalizations {
   /// **'Pick Your Color'**
   String get customColorPicker;
 
+  /// No description provided for @savedThemes.
+  ///
+  /// In en, this message translates to:
+  /// **'My Themes'**
+  String get savedThemes;
+
+  /// No description provided for @saveTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Theme'**
+  String get saveTheme;
+
+  /// No description provided for @deleteTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Theme'**
+  String get deleteTheme;
+
+  /// No description provided for @themeSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme added to library'**
+  String get themeSaved;
+
+  /// No description provided for @themeDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme removed'**
+  String get themeDeleted;
+
+  /// No description provided for @noSavedThemes.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved themes yet'**
+  String get noSavedThemes;
+
+  /// No description provided for @themeAlreadySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme already exists in library'**
+  String get themeAlreadySaved;
+
+  /// No description provided for @hexLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hex Code'**
+  String get hexLabel;
+
   /// No description provided for @english.
   ///
   /// In en, this message translates to:
@@ -2693,7 +2741,7 @@ abstract class AppLocalizations {
   /// No description provided for @typoNotificationToggleLabel.
   ///
   /// In en, this message translates to:
-  /// **'Notify me of new typo reports'**
+  /// **'Typo Report Notifications'**
   String get typoNotificationToggleLabel;
 
   /// No description provided for @markAsFixed.
@@ -2749,6 +2797,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Path: {path}'**
   String typoReportPathLabel(String path);
+
+  /// No description provided for @parayanGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan Group'**
+  String get parayanGroupLabel;
+
+  /// No description provided for @statusOngoingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The parayan is currently ongoing. Please complete your assigned adhyays.'**
+  String get statusOngoingDesc;
+
+  /// No description provided for @statusCompletedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The parayan has been completed. Jai Gajanan!'**
+  String get statusCompletedDesc;
+
+  /// No description provided for @adminParayanGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan Groups'**
+  String get adminParayanGroupTitle;
+
+  /// No description provided for @parayanAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'A Parayan event already exists for this date and type in this group.'**
+  String get parayanAlreadyExists;
 }
 
 class _AppLocalizationsDelegate

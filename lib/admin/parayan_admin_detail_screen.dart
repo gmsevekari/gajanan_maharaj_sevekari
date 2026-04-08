@@ -81,7 +81,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   //   );
   // }
 
-  Future<void> _updateStatus(String? newStatus) async {
+  Future<void> _updateStatus(ParayanEvent event, String? newStatus) async {
     if (newStatus == null || newStatus == widget.event.status) return;
 
     final l10n = AppLocalizations.of(context)!;
@@ -110,16 +110,16 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     try {
       if (newStatus == 'allocated') {
         // Trigger cloud-based allocation
-        await _parayanService.allocateAdhyays(widget.event.id);
+        await _parayanService.allocateAdhyays(event.id);
       } else {
-        await _parayanService.updateEventStatus(widget.event.id, newStatus);
+        await _parayanService.updateEventStatus(event, newStatus);
       }
 
       await AdminAuditService.logAction(
         action: 'UPDATE_PARAYAN_STATUS',
         details: {
-          'event_id': widget.event.id,
-          'old_status': widget.event.status,
+          'event_id': event.id,
+          'old_status': event.status,
           'new_status': newStatus,
         },
       );
@@ -139,6 +139,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -450,7 +451,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         Column(
           children: [
             SizedBox(
@@ -494,7 +495,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 onSelectionChanged: (Set<String> newSelection) {
                   final value = newSelection.firstOrNull;
                   if (value != null && value != event.status) {
-                    _updateStatus(value);
+                    _updateStatus(event, value);
                   }
                 },
                 showSelectedIcon: false,
@@ -529,7 +530,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 onSelectionChanged: (Set<String> newSelection) {
                   final value = newSelection.firstOrNull;
                   if (value != null && value != event.status) {
-                    _updateStatus(value);
+                    _updateStatus(event, value);
                   }
                 },
                 showSelectedIcon: false,
@@ -1232,7 +1233,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             batchGroups.add(MapEntry(i, groupParticipants));
           }
           if (batchGroups.isEmpty) continue;
-          batchWidget = _buildExportableThreeDayBatchCard(
+          batchWidget = _buildExportableBatchCard(
             event: event,
             batchGroups: batchGroups,
             l10n: l10n,
@@ -1767,7 +1768,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   /// Renders a single export image for up to 3 groups of a 3-day parayan.
   /// One shared header, one unified grid with full-width group separator rows,
   /// actual event dates as column headers, and one footer.
-  Widget _buildExportableThreeDayBatchCard({
+  Widget _buildExportableBatchCard({
     required ParayanEvent event,
     required List<MapEntry<int, List<ParayanMember>>> batchGroups,
     required AppLocalizations l10n,
@@ -1776,9 +1777,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     required String dateString,
     required ThemeData theme,
   }) {
-    // Fixed column widths — total 380px matches inner container (420 - 16*2)
+    // Dynamic column widths — total 380px matches inner container (420 - 16*2)
     const double nameColW = 152.0;
-    const double dayColW = 76.0;
+    final int daysCount = event.type.daysCount;
+    final double dayColW = (380.0 - nameColW) / daysCount;
 
     String dayHeader(int dayOffset) {
       final date = event.startDate.add(Duration(days: dayOffset));
@@ -1874,9 +1876,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               background: theme.appColors.primarySwatch,
               alignment: Alignment.center,
             ),
-            cell(
+            ...List.generate(daysCount, (i) => cell(
               child: Text(
-                dayHeader(0),
+                dayHeader(i),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
@@ -1885,32 +1887,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               ),
               width: dayColW,
               background: theme.appColors.primarySwatch,
-            ),
-            cell(
-              child: Text(
-                dayHeader(1),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  color: theme.colorScheme.onPrimary,
-                ),
-              ),
-              width: dayColW,
-              background: theme.appColors.primarySwatch,
-            ),
-            cell(
-              child: Text(
-                dayHeader(2),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  color: theme.colorScheme.onPrimary,
-                ),
-              ),
-              width: dayColW,
-              background: theme.appColors.primarySwatch,
-              rightBorder: false,
-            ),
+              rightBorder: i < daysCount - 1,
+            )),
           ],
         ),
       ),
@@ -1925,7 +1903,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       if (event.status != 'upcoming' && event.status != 'enrolling') {
         rows.add(
           Container(
-            width: nameColW + dayColW * 3,
+            width: nameColW + dayColW * daysCount,
             alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(vertical: 3),
             decoration: BoxDecoration(
@@ -1968,9 +1946,12 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                   alignment: Alignment.centerLeft,
                   bottomBorder: !isLastRow,
                 ),
-                dayCell(p, 1, bottomBorder: !isLastRow),
-                dayCell(p, 2, bottomBorder: !isLastRow),
-                dayCell(p, 3, rightBorder: false, bottomBorder: !isLastRow),
+                ...List.generate(daysCount, (i) => dayCell(
+                  p,
+                  i + 1,
+                  rightBorder: i < daysCount - 1,
+                  bottomBorder: !isLastRow,
+                )),
               ],
             ),
           ),

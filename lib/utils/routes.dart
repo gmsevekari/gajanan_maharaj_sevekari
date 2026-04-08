@@ -24,10 +24,12 @@ class Routes {
   static const String adminDashboard = '/admin_dashboard';
   static const String adminTempleNotifications = '/admin_temple_notifications';
   static const String adminParayanCoordination = '/admin_parayan_coordination';
+  static const String adminParayanGroups = '/admin_parayan_groups';
   static const String adminCreateParayan = '/admin_create_parayan';
   static const String adminParayanDetail = '/admin_parayan_detail';
   static const String adminParayanList = '/admin_parayan_list';
   static const String parayanList = '/parayan_list';
+  static const String parayanGroups = '/parayan_groups';
   static const String parayanDetail = '/parayan_detail';
   static const String userNotifications = '/user_notifications';
   static const String nityopasanaConsolidated = '/nityopasana_consolidated';

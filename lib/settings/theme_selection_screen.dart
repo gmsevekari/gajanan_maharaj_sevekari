@@ -12,6 +12,7 @@ class ThemeSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -137,6 +138,27 @@ class ThemeSelectionScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+
+                // ── Saved Themes Section ────────────────────────────
+                if (themeProvider.savedCustomColors.isNotEmpty) ...[
+                  const SizedBox(height: 32),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Text(
+                      localizations.savedThemes,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildSavedThemesGallery(
+                    context,
+                    themeProvider,
+                    localizations,
+                  ),
+                ],
+                const SizedBox(height: 48),
               ],
             ),
           );
@@ -341,6 +363,101 @@ class ThemeSelectionScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildSavedThemesGallery(
+    BuildContext context,
+    ThemeProvider themeProvider,
+    AppLocalizations localizations,
+  ) {
+    final theme = Theme.of(context);
+    final savedColors = themeProvider.savedCustomColors.reversed.toList();
+
+    return Container(
+      height: 110,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: savedColors.length,
+        itemBuilder: (context, index) {
+          final color = savedColors[index];
+          final isSelected =
+              themeProvider.themePreset == ThemePreset.custom &&
+              themeProvider.customColor?.value == color.value;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    GestureDetector(
+                      onTap: () => themeProvider.applySavedColor(color),
+                      child: Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isSelected
+                                ? theme.colorScheme.onSurface
+                                : Colors.transparent,
+                            width: 3,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: color.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: isSelected
+                            ? const Icon(
+                                Icons.check,
+                                color: Colors.white,
+                                size: 32,
+                              )
+                            : null,
+                      ),
+                    ),
+                    Positioned(
+                      top: -4,
+                      right: -4,
+                      child: GestureDetector(
+                        onTap: () => themeProvider.deleteSavedColor(color),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.errorContainer,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: theme.colorScheme.surface,
+                              width: 2,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.close,
+                            size: 14,
+                            color: theme.colorScheme.onErrorContainer,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '#${color.value.toRadixString(16).substring(2).toUpperCase()}',
+                  style: theme.textTheme.labelSmall?.copyWith(fontSize: 10),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   void _showColorPickerDialog(
     BuildContext context,
     ThemeProvider themeProvider,
@@ -380,6 +497,13 @@ class _ColorPickerDialog extends StatefulWidget {
 
 class _ColorPickerDialogState extends State<_ColorPickerDialog> {
   late HSLColor _hslColor;
+  late TextEditingController _hexController;
+
+  @override
+  void dispose() {
+    _hexController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -392,11 +516,38 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
     if (_hslColor.lightness < 0.2 || _hslColor.lightness > 0.7) {
       _hslColor = _hslColor.withLightness(0.45);
     }
+    _hexController = TextEditingController(text: _getHexFromColor(_hslColor.toColor()));
+  }
+
+  String _getHexFromColor(Color color) {
+    return color.value.toRadixString(16).substring(2).toUpperCase();
+  }
+
+  void _updateHexFromHSL() {
+    final hex = _getHexFromColor(_hslColor.toColor());
+    if (_hexController.text != hex) {
+      _hexController.text = hex;
+    }
+  }
+
+  void _onHexChanged(String value) {
+    String cleanHex = value.replaceAll('#', '').trim();
+    if (cleanHex.length == 6) {
+      try {
+        final color = Color(int.parse("FF$cleanHex", radix: 16));
+        setState(() {
+          _hslColor = HSLColor.fromColor(color);
+        });
+      } catch (e) {
+        // Invalid hex format
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context)!;
     final selectedColor = _hslColor.toColor();
 
     return AlertDialog(
@@ -406,11 +557,12 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      content: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.9,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+      content: SingleChildScrollView(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.9,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
             // ── Color Preview ──
             Container(
               height: 80,
@@ -430,6 +582,42 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Text(
+                  localizations.hexLabel,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: _hexController,
+                    onChanged: _onHexChanged,
+                    maxLength: 6,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      prefixText: '#',
+                      counterText: '',
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 32),
 
             // ── Hue Slider ──
@@ -440,6 +628,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
               onChanged: (hue) {
                 setState(() {
                   _hslColor = _hslColor.withHue(hue);
+                  _updateHexFromHSL();
                 });
               },
             ),
@@ -455,6 +644,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
               onChanged: (value) {
                 setState(() {
                   _hslColor = _hslColor.withSaturation(value);
+                  _updateHexFromHSL();
                 });
               },
             ),
@@ -472,18 +662,48 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
                   // Allow wider range for flexibility, but keep a tiny buffer
                   // to stay within usable theme ranges if necessary.
                   _hslColor = _hslColor.withLightness(value.clamp(0.05, 0.95));
+                  _updateHexFromHSL();
                 });
               },
             ),
           ],
         ),
       ),
-      actions: [
+    ),
+    actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text(
             'Cancel',
             style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+          ),
+        ),
+        FilledButton.icon(
+          onPressed: () async {
+            final provider = Provider.of<ThemeProvider>(context, listen: false);
+            final localizations = AppLocalizations.of(context)!;
+
+            provider.setCustomColor(selectedColor);
+            final success = await provider.saveCurrentCustomColor();
+
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    success
+                        ? localizations.themeSaved
+                        : localizations.themeAlreadySaved,
+                  ),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+              Navigator.pop(context);
+            }
+          },
+          icon: const Icon(Icons.favorite, size: 18),
+          label: Text(localizations.saveTheme),
+          style: FilledButton.styleFrom(
+            backgroundColor: selectedColor.withValues(alpha: 0.8),
           ),
         ),
         FilledButton(

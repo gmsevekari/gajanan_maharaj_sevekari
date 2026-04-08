@@ -129,6 +129,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customColorPicker => 'Pick Your Color';
 
   @override
+  String get savedThemes => 'My Themes';
+
+  @override
+  String get saveTheme => 'Save Theme';
+
+  @override
+  String get deleteTheme => 'Delete Theme';
+
+  @override
+  String get themeSaved => 'Theme added to library';
+
+  @override
+  String get themeDeleted => 'Theme removed';
+
+  @override
+  String get noSavedThemes => 'No saved themes yet';
+
+  @override
+  String get themeAlreadySaved => 'Theme already exists in library';
+
+  @override
+  String get hexLabel => 'Hex Code';
+
+  @override
   String get english => 'English';
 
   @override
@@ -1373,7 +1397,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminTypoReportsModuleSubtitle => 'Manage and fix content typos';
 
   @override
-  String get typoNotificationToggleLabel => 'Notify me of new typo reports';
+  String get typoNotificationToggleLabel => 'Typo Report Notifications';
 
   @override
   String get markAsFixed => 'Mark as Fixed';
@@ -1405,4 +1429,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String typoReportPathLabel(String path) {
     return 'Path: $path';
   }
+
+  @override
+  String get parayanGroupLabel => 'Parayan Group';
+
+  @override
+  String get statusOngoingDesc =>
+      'The parayan is currently ongoing. Please complete your assigned adhyays.';
+
+  @override
+  String get statusCompletedDesc =>
+      'The parayan has been completed. Jai Gajanan!';
+
+  @override
+  String get adminParayanGroupTitle => 'Parayan Groups';
+
+  @override
+  String get parayanAlreadyExists =>
+      'A Parayan event already exists for this date and type in this group.';
 }

@@ -13,8 +13,6 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
 import 'package:intl/intl.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'dart:io';
 import 'dart:async';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
@@ -75,7 +73,10 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
 
         // Auto-unsubscribe if parayan is completed
         if (updatedEvent.status == 'completed') {
-          NotificationServiceHelper.unsubscribeFromEventTopics(updatedEvent.id);
+          NotificationServiceHelper.unsubscribeFromEventTopics(
+            updatedEvent.id,
+            updatedEvent.type.daysCount,
+          );
         }
       }
     });
@@ -86,9 +87,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
     setState(() {
       _deviceId = id;
     });
-    if (id != null) {
-      _checkRegistration(id);
-    }
+    _checkRegistration(id);
   }
 
   void _checkRegistration(String deviceId) {
@@ -254,9 +253,9 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
       case 'allocated':
         return localizations.statusAllocatedDesc(date);
       case 'ongoing':
-        return localizations.statusOngoing;
+        return localizations.statusOngoingDesc;
       case 'completed':
-        return localizations.statusCompleted;
+        return localizations.statusCompletedDesc;
       default:
         return "";
     }

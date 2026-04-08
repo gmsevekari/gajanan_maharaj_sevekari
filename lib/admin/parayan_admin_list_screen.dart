@@ -10,11 +10,13 @@ import 'package:intl/intl.dart';
 class ParayanAdminListScreen extends StatefulWidget {
   final String title;
   final String statusFilter; // 'completed' or 'upcoming'
+  final String? groupId;
 
   const ParayanAdminListScreen({
     super.key,
     required this.title,
     required this.statusFilter,
+    this.groupId,
   });
 
   @override
@@ -28,7 +30,7 @@ class _ParayanAdminListScreenState extends State<ParayanAdminListScreen> {
   @override
   void initState() {
     super.initState();
-    _eventsStream = _parayanService.getAllEvents();
+    _eventsStream = _parayanService.getAllEvents(widget.groupId!);
   }
 
   @override

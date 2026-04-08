@@ -17,13 +17,14 @@ class AdminSessionService {
     _scheduleTimer();
   }
 
-  static void registerInteraction() {
-    if (FirebaseAuth.instance.currentUser == null) return;
+  static void registerInteraction({FirebaseAuth? auth}) {
+    final authInstance = auth ?? FirebaseAuth.instance;
+    if (authInstance.currentUser == null) return;
 
     final now = DateTime.now();
     if (now.difference(_lastActivity) >= _timeout) {
       debugPrint('Interaction detected after timeout, forcing logout');
-      _forceLogout();
+      _forceLogout(auth: auth);
       return;
     }
 
@@ -31,34 +32,37 @@ class AdminSessionService {
     _scheduleTimer();
   }
 
-  static void _scheduleTimer() {
+  static void _scheduleTimer({FirebaseAuth? auth, GoogleSignIn? googleSignIn}) {
     _inactivityTimer?.cancel();
-    _inactivityTimer = Timer(_timeout, _handleTimeout);
+    _inactivityTimer = Timer(_timeout, () => _handleTimeout(auth: auth, googleSignIn: googleSignIn));
   }
 
-  static Future<void> _handleTimeout() async {
+  static Future<void> _handleTimeout({FirebaseAuth? auth, GoogleSignIn? googleSignIn}) async {
     final now = DateTime.now();
     final difference = now.difference(_lastActivity);
 
     if (difference >= _timeout) {
       debugPrint('Admin session timed out');
-      await _forceLogout();
+      await _forceLogout(auth: auth, googleSignIn: googleSignIn);
     } else {
       // Timer fired early, reschedule for the remaining duration
       final remaining = _timeout - difference;
-      _inactivityTimer = Timer(remaining, _handleTimeout);
+      _inactivityTimer = Timer(remaining, () => _handleTimeout(auth: auth, googleSignIn: googleSignIn));
     }
   }
 
-  static Future<void> _forceLogout() async {
+  static Future<void> _forceLogout({FirebaseAuth? auth, GoogleSignIn? googleSignIn}) async {
     _inactivityTimer?.cancel();
 
+    final authInstance = auth ?? FirebaseAuth.instance;
+    final googleInstance = googleSignIn ?? GoogleSignIn.instance;
+
     // Check if already logged out to prevent redundant popups
-    if (FirebaseAuth.instance.currentUser == null) return;
+    if (authInstance.currentUser == null) return;
 
     debugPrint('Executing admin force logout');
-    await FirebaseAuth.instance.signOut();
-    await GoogleSignIn.instance.signOut();
+    await authInstance.signOut();
+    await googleInstance.signOut();
 
     // Use global keys for navigation and snackbar
     final context = NavigatorService.navigatorKey.currentContext;

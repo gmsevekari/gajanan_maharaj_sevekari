@@ -4,9 +4,12 @@ import 'package:gajanan_maharaj_sevekari/models/typo_report.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TypoReportService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore _db;
   static const String typoNotifPrefKey = 'admin_typo_notifications_enabled';
   static const String typoTopic = 'admin_typo_reports';
+
+  TypoReportService({FirebaseFirestore? firestore})
+      : _db = firestore ?? FirebaseFirestore.instance;
 
   CollectionReference get _typoReportsRef => _db.collection('typo_reports');
 

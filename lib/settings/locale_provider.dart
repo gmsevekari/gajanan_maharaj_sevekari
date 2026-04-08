@@ -15,7 +15,7 @@ class LocaleProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setLocale(Locale locale) async {
+  Future<void> setLocale(Locale locale) async {
     if (_locale == locale) return;
 
     _locale = locale;
