@@ -5,6 +5,9 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:gajanan_maharaj_sevekari/providers/jap_mala_provider.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
+import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class CountingJapTab extends StatefulWidget {
@@ -17,34 +20,51 @@ class CountingJapTab extends StatefulWidget {
 class _CountingJapTabState extends State<CountingJapTab> {
   List<Map<String, dynamic>>? _chants;
   Map<String, dynamic>? _selectedChant;
-  int _targetMalas = 1; // Default target
-  int? _customTargetMalas; // Persistent custom target
-  int _currentCount = 0;
-  int _completedMalas = 0;
-  final int _countsPerMala = 108;
 
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  bool _isPlaying = false;
-  int _totalJapsToPlay = 0;
-  int _japsPlayed = 0;
+  late AudioPlayer _audioPlayer;
+  late JapMalaProvider _provider;
+  int _lastJapIncrementCount = 0;
 
   @override
   void initState() {
     super.initState();
+    _audioPlayer = AudioPlayer();
     _loadChants();
-    _loadCustomTarget();
+    _provider = context.read<JapMalaProvider>();
+    _lastJapIncrementCount = _provider.currentCount;
 
     // Listen to audio completion to increment counts and replay
     _audioPlayer.onPlayerComplete.listen((event) {
-      _incrementCount();
-      if (_isPlaying) {
+      if (_provider.isPlaying) {
+        _incrementCount();
         _playNextJap();
       }
     });
+
+    // Handle session auto-stop from provider (timer)
+    _provider.addListener(_onProviderStateChanged);
+  }
+
+  void _onProviderStateChanged() {
+    final provider = context.read<JapMalaProvider>();
+    // Check if target reached logic (this tab specific logic)
+    if (_lastJapIncrementCount != provider.currentCount) {
+      _lastJapIncrementCount = provider.currentCount;
+      // If count increased to 108, heavy haptic (handled in logic or UI?)
+      if (provider.currentCount == 0 && provider.completedMalas > 0) {
+        HapticFeedback.heavyImpact();
+      }
+    }
+
+    if (!provider.isPlaying && _audioPlayer.state == PlayerState.playing) {
+      _audioPlayer.stop();
+      WakelockPlus.disable();
+    }
   }
 
   @override
   void dispose() {
+    _provider.removeListener(_onProviderStateChanged);
     WakelockPlus.disable(); // Ensure wakelock is released
     _audioPlayer.dispose();
     super.dispose();
@@ -67,41 +87,20 @@ class _CountingJapTabState extends State<CountingJapTab> {
     }
   }
 
-  Future<void> _loadCustomTarget() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _customTargetMalas = prefs.getInt('customTargetMalas');
-    });
-  }
-
   void _incrementCount() {
-    // Guard: ignore spurious completion events after stop (e.g. from _audioPlayer.stop())
-    if (!_isPlaying) return;
+    final provider = context.read<JapMalaProvider>();
+    if (!provider.isPlaying) return;
 
-    bool targetReached = false;
+    provider.increment();
+    HapticFeedback.lightImpact();
 
-    setState(() {
-      _currentCount++;
-      _japsPlayed++;
-      HapticFeedback.lightImpact();
+    // Check target reached
+    final totalJapsPlayed =
+        provider.completedMalas * JapMalaProvider.countsPerMala +
+        provider.currentCount;
+    final targetJaps = provider.targetMalas * JapMalaProvider.countsPerMala;
 
-      if (_currentCount >= _countsPerMala) {
-        _completedMalas++;
-        _currentCount = 0; // Reset for next mala
-
-        // Let user know a mala is complete via heavier haptic
-        HapticFeedback.heavyImpact();
-      }
-
-      // Flag stop condition — handle outside setState
-      if (_japsPlayed >= _totalJapsToPlay) {
-        targetReached = true;
-      }
-    });
-
-    // Use microtask so _stopAudio's setState runs outside the plugin callback,
-    // guaranteeing the stop button disappears even if the event fires from native code.
-    if (targetReached) {
+    if (totalJapsPlayed >= targetJaps) {
       Future.microtask(() {
         if (!mounted) return;
         _stopAudio();
@@ -110,7 +109,11 @@ class _CountingJapTabState extends State<CountingJapTab> {
           SnackBar(
             content: Text(
               localizations.targetMalasCompleted(
-                _formatNumber(context, _targetMalas, pad: false),
+                formatNumberLocalized(
+                  provider.targetMalas,
+                  Localizations.localeOf(context).languageCode,
+                  pad: false,
+                ),
               ),
             ),
           ),
@@ -120,6 +123,9 @@ class _CountingJapTabState extends State<CountingJapTab> {
   }
 
   void _playNextJap() {
+    final provider = context.read<JapMalaProvider>();
+    if (!provider.isPlaying) return;
+
     if (_selectedChant != null && _selectedChant!.containsKey('audio')) {
       final audioFile = _selectedChant!['audio'];
       _audioPlayer.audioCache = AudioCache(prefix: '');
@@ -131,54 +137,37 @@ class _CountingJapTabState extends State<CountingJapTab> {
 
   void _startAudio() {
     if (_selectedChant == null) return;
-
-    WakelockPlus.enable(); // Keep screen awake
-    setState(() {
-      _isPlaying = true;
-      _totalJapsToPlay = _targetMalas * _countsPerMala;
-    });
+    WakelockPlus.enable();
+    context.read<JapMalaProvider>().startCountingSession();
     _playNextJap();
   }
 
   void _stopAudio() {
-    WakelockPlus.disable(); // Allow screen to sleep
-    setState(() {
-      _isPlaying = false;
-    });
+    WakelockPlus.disable();
+    context.read<JapMalaProvider>().stop();
     _audioPlayer.stop();
   }
 
   void _resetCount() {
     _stopAudio();
-    setState(() {
-      _currentCount = 0;
-      _completedMalas = 0;
-      _japsPlayed = 0;
-    });
+    context.read<JapMalaProvider>().reset();
   }
 
   void _setTarget(int root) {
-    if (_isPlaying) return;
-    setState(() {
-      _targetMalas = root;
-      _resetCount();
-    });
+    final provider = context.read<JapMalaProvider>();
+    if (provider.isPlaying) return;
+    provider.setTarget(root);
   }
 
   Future<void> _setCustomTarget(int root) async {
-    if (_isPlaying) return;
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('customTargetMalas', root);
-
-    setState(() {
-      _customTargetMalas = root;
-    });
-    _setTarget(root);
+    final provider = context.read<JapMalaProvider>();
+    if (provider.isPlaying) return;
+    await provider.setCustomTarget(root);
   }
 
   void _showCustomTargetDialog(BuildContext context) {
-    if (_isPlaying) return;
+    final provider = context.read<JapMalaProvider>();
+    if (provider.isPlaying) return;
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final TextEditingController controller = TextEditingController();
@@ -250,19 +239,6 @@ class _CountingJapTabState extends State<CountingJapTab> {
     );
   }
 
-  String _formatNumber(BuildContext context, int number, {bool pad = true}) {
-    String numStr = pad ? number.toString().padLeft(2, '0') : number.toString();
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
-    if (!isMarathi) return numStr;
-
-    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    const marathi = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
-    for (int i = 0; i < english.length; i++) {
-      numStr = numStr.replaceAll(english[i], marathi[i]);
-    }
-    return numStr;
-  }
-
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -272,346 +248,352 @@ class _CountingJapTabState extends State<CountingJapTab> {
     // Calculate grid items
     final targets = [1, 3, 5, 11, 21];
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Top Image Banner
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                'resources/images/naamjap/naamjap.png',
-                width: double.infinity,
-                fit: BoxFit.contain,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: theme.cardTheme.color ?? theme.cardColor,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: theme.appColors.primarySwatch,
-                  width: 2,
+    return Consumer<JapMalaProvider>(
+      builder: (context, provider, child) {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Top Image Banner
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    'resources/images/naamjap/naamjap.png',
+                    width: double.infinity,
+                    fit: BoxFit.contain,
+                  ),
                 ),
-              ),
-              child: _chants == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : DropdownButtonHideUnderline(
-                      child: DropdownButton<Map<String, dynamic>>(
-                        value: _selectedChant,
-                        isExpanded: true,
-                        alignment: Alignment.center,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                        isDense: true,
-                        dropdownColor: theme.cardTheme.color ?? theme.cardColor,
-                        borderRadius: BorderRadius.circular(12),
-                        onChanged: _isPlaying
-                            ? null
-                            : (Map<String, dynamic>? newValue) {
-                                if (newValue != null) {
-                                  setState(() {
-                                    _selectedChant = newValue;
-                                    _resetCount();
-                                  });
-                                }
-                              },
-                        items: _chants!.map((Map<String, dynamic> chant) {
-                          final title = locale == 'mr'
-                              ? chant['title_mr']
-                              : chant['title_en'];
-                          return DropdownMenuItem<Map<String, dynamic>>(
-                            value: chant,
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: theme.cardTheme.color ?? theme.cardColor,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: theme.appColors.primarySwatch,
+                      width: 2,
+                    ),
+                  ),
+                  child: _chants == null
+                      ? const Center(child: CircularProgressIndicator())
+                      : DropdownButtonHideUnderline(
+                          child: DropdownButton<Map<String, dynamic>>(
+                            value: _selectedChant,
+                            isExpanded: true,
                             alignment: Alignment.center,
-                            child: Text(
-                              title,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: theme.colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            icon: Icon(
+                              Icons.keyboard_arrow_down,
+                              color: theme.colorScheme.onSurface,
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-            ),
-            const SizedBox(height: 16),
-
-            // Progress Indicators (Cards)
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(
-                          color: theme.appColors.primarySwatch,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
+                            isDense: true,
+                            dropdownColor: theme.cardTheme.color ?? theme.cardColor,
+                            borderRadius: BorderRadius.circular(12),
+                            onChanged: provider.isPlaying
+                                ? null
+                                : (Map<String, dynamic>? newValue) {
+                                    if (newValue != null) {
+                                      setState(() {
+                                        _selectedChant = newValue;
+                                        _resetCount();
+                                      });
+                                    }
+                                  },
+                            items: _chants!.map((Map<String, dynamic> chant) {
+                              final title = locale == 'mr'
+                                  ? chant['title_mr']
+                                  : chant['title_en'];
+                              return DropdownMenuItem<Map<String, dynamic>>(
+                                value: chant,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  title,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            localizations.mala,
-                            style: TextStyle(
+                        ),
+                ),
+                const SizedBox(height: 16),
+
+                // Progress Indicators (Cards)
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.cardTheme.color ?? theme.cardColor,
+                            border: Border.all(
                               color: theme.appColors.primarySwatch,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                              width: 2,
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              _targetMalas > 0
-                                  ? '${_formatNumber(context, _completedMalas, pad: false)} / ${_formatNumber(context, _targetMalas, pad: false)}'
-                                  : _formatNumber(
-                                      context,
-                                      _completedMalas,
-                                      pad: false,
-                                    ),
-                              style: TextStyle(
-                                color: theme.appColors.primarySwatch,
-                                fontSize: 32,
-                                fontWeight: FontWeight.w900,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(
-                          color: theme.appColors.primarySwatch,
-                          width: 2,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                localizations.mala,
+                                style: TextStyle(
+                                  color: theme.appColors.primarySwatch,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  provider.targetMalas > 0
+                                      ? '${formatNumberLocalized(provider.completedMalas, locale, pad: false)} / ${formatNumberLocalized(provider.targetMalas, locale, pad: false)}'
+                                      : formatNumberLocalized(
+                                          provider.completedMalas,
+                                          locale,
+                                          pad: false,
+                                        ),
+                                  style: TextStyle(
+                                    color: theme.appColors.primarySwatch,
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w900,
+                                    fontFeatures: const [FontFeature.tabularFigures()],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            localizations.jap,
-                            style: TextStyle(
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.cardTheme.color ?? theme.cardColor,
+                            border: Border.all(
                               color: theme.appColors.primarySwatch,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                              width: 2,
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              '${_formatNumber(context, _currentCount)} / ${_formatNumber(context, _countsPerMala, pad: false)}',
-                              style: TextStyle(
-                                color: theme.appColors.primarySwatch,
-                                fontSize: 28,
-                                fontWeight: FontWeight.w900,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Target Selection Title
-            Text(
-              localizations.selectMalaCount,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.appColors.primarySwatch[600],
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 8),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: theme.appColors.primarySwatch,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Grid for Targets
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 3,
-              mainAxisSpacing: 6,
-              crossAxisSpacing: 6,
-              childAspectRatio: 2.5,
-              children: [
-                ...targets.map((target) {
-                  final isSelected = _targetMalas == target;
-                  return _buildTargetCard(
-                    _formatNumber(context, target, pad: false),
-                    target == 1 ? localizations.mala : localizations.malas,
-                    isSelected,
-                    () => _setTarget(target),
-                    theme,
-                  );
-                }),
-                _buildDottedTargetCard(
-                  !targets.contains(_targetMalas) && _targetMalas > 0
-                      ? (_targetMalas == 1
-                            ? localizations.mala
-                            : localizations.malas)
-                      : (_customTargetMalas != null
-                            ? (_customTargetMalas == 1
-                                  ? localizations.mala
-                                  : localizations.malas)
-                            : localizations.other),
-                  theme,
-                  !targets.contains(_targetMalas) && _targetMalas > 0,
-                  number: !targets.contains(_targetMalas) && _targetMalas > 0
-                      ? _formatNumber(context, _targetMalas, pad: false)
-                      : (_customTargetMalas != null
-                            ? _formatNumber(
-                                context,
-                                _customTargetMalas!,
-                                pad: false,
-                              )
-                            : null),
-                  onTap: () {
-                    if (_customTargetMalas != null) {
-                      _setTarget(_customTargetMalas!);
-                    } else {
-                      _showCustomTargetDialog(context);
-                    }
-                  },
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            // Big Start/Stop Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (_isPlaying || _currentCount > 0)
-                  GestureDetector(
-                    onTap: _resetCount,
-                    child: Container(
-                      width: 60,
-                      height: 60,
-                      margin: const EdgeInsets.only(right: 24),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(
-                          color: theme.appColors.primarySwatch,
-                          width: 2,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                localizations.jap,
+                                style: TextStyle(
+                                  color: theme.appColors.primarySwatch,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  '${formatNumberLocalized(provider.currentCount, locale)} / ${formatNumberLocalized(JapMalaProvider.countsPerMala, locale, pad: false)}',
+                                  style: TextStyle(
+                                    color: theme.appColors.primarySwatch,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w900,
+                                    fontFeatures: const [FontFeature.tabularFigures()],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                      child: Icon(
-                        Icons.stop,
-                        color: theme.appColors.error,
-                        size: 30,
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Target Selection Title
+                Text(
+                  localizations.selectMalaCount,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.appColors.primarySwatch[600],
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: theme.appColors.primarySwatch,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Grid for Targets
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 6,
+                  crossAxisSpacing: 6,
+                  childAspectRatio: 2.5,
+                  children: [
+                    ...targets.map((target) {
+                      final isSelected = provider.targetMalas == target;
+                      return _buildTargetCard(
+                        formatNumberLocalized(target, locale, pad: false),
+                        target == 1 ? localizations.mala : localizations.malas,
+                        isSelected,
+                        () => _setTarget(target),
+                        theme,
+                      );
+                    }),
+                    _buildDottedTargetCard(
+                      !targets.contains(provider.targetMalas) && provider.targetMalas > 0
+                          ? (provider.targetMalas == 1
+                                ? localizations.mala
+                                : localizations.malas)
+                          : (provider.customTargetMalas != null
+                                ? (provider.customTargetMalas == 1
+                                      ? localizations.mala
+                                      : localizations.malas)
+                                : localizations.other),
+                      theme,
+                      !targets.contains(provider.targetMalas) && provider.targetMalas > 0,
+                      number: !targets.contains(provider.targetMalas) && provider.targetMalas > 0
+                          ? formatNumberLocalized(provider.targetMalas, locale, pad: false)
+                          : (provider.customTargetMalas != null
+                                ? formatNumberLocalized(
+                                    provider.customTargetMalas!,
+                                    locale,
+                                    pad: false,
+                                  )
+                                : null),
+                      onTap: () {
+                        if (provider.customTargetMalas != null) {
+                          _setTarget(provider.customTargetMalas!);
+                        } else {
+                          _showCustomTargetDialog(context);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // Big Start/Stop Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (provider.isPlaying || provider.currentCount > 0)
+                      GestureDetector(
+                        onTap: _resetCount,
+                        child: Container(
+                          width: 60,
+                          height: 60,
+                          margin: const EdgeInsets.only(right: 24),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: theme.cardTheme.color ?? theme.cardColor,
+                            border: Border.all(
+                              color: theme.appColors.primarySwatch,
+                              width: 2,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.stop,
+                            color: theme.appColors.error,
+                            size: 30,
+                          ),
+                        ),
+                      ),
+
+                    ElevatedButton.icon(
+                      onPressed: provider.isPlaying ? _stopAudio : _startAudio,
+                      icon: Icon(
+                        provider.isPlaying ? Icons.pause : Icons.play_arrow,
+                        size: 28,
+                      ),
+                      label: Text(
+                        provider.isPlaying
+                            ? 'Pause'
+                            : localizations
+                                  .startPlay, // Using standard english pause
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: theme.colorScheme.onPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 12,
+                        ),
+                        shape: const StadiumBorder(),
                       ),
                     ),
-                  ),
-
-                ElevatedButton.icon(
-                  onPressed: _isPlaying ? _stopAudio : _startAudio,
-                  icon: Icon(
-                    _isPlaying ? Icons.pause : Icons.play_arrow,
-                    size: 28,
-                  ),
-                  label: Text(
-                    _isPlaying
-                        ? 'Pause'
-                        : localizations
-                              .startPlay, // Using standard english pause
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 12,
-                    ),
-                    shape: const StadiumBorder(),
-                  ),
+                  ],
                 ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.graphic_eq,
+                      color: theme.appColors.primarySwatch,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        provider.isPlaying
+                            ? localizations.keepPhoneUnlocked
+                            : localizations.audioJapWillStart,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.appColors.primarySwatch.shade300,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
               ],
             ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.graphic_eq,
-                  color: theme.appColors.primarySwatch,
-                  size: 16,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    _isPlaying
-                        ? localizations.keepPhoneUnlocked
-                        : localizations.audioJapWillStart,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.appColors.primarySwatch.shade300,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 

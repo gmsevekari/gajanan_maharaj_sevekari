@@ -1,7 +1,9 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/providers/jap_mala_provider.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
+import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class ManualJapTab extends StatefulWidget {
@@ -12,13 +14,13 @@ class ManualJapTab extends StatefulWidget {
 }
 
 class _ManualJapTabState extends State<ManualJapTab>
-    with SingleTickerProviderStateMixin {
-  int _currentCount = 0;
-  int _completedMalas = 0;
-  final int _countsPerMala = 108;
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   static const double _beadHeight = 90.0;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -49,164 +51,147 @@ class _ManualJapTabState extends State<ManualJapTab>
   void _onBeadPulled() {
     if (_controller.isAnimating) return;
 
+    final provider = context.read<JapMalaProvider>();
+    final oldMalas = provider.completedMalas;
+
     HapticFeedback.lightImpact();
-    setState(() {
-      _currentCount++;
-      if (_currentCount >= _countsPerMala) {
-        _completedMalas++;
-        _currentCount = 0;
-        HapticFeedback.heavyImpact();
-      }
-    });
+    provider.increment();
+
+    if (provider.completedMalas > oldMalas) {
+      HapticFeedback.heavyImpact();
+    }
+
     // Start sliding animation
     _controller.forward();
   }
 
   void _decreaseCount() {
-    setState(() {
-      if (_currentCount > 0) {
-        _currentCount--;
-      } else if (_completedMalas > 0) {
-        _completedMalas--;
-        _currentCount = _countsPerMala - 1;
-      }
-    });
+    context.read<JapMalaProvider>().decrement();
   }
 
   void _resetCount() {
-    setState(() {
-      _currentCount = 0;
-      _completedMalas = 0;
-    });
+    context.read<JapMalaProvider>().reset();
   }
 
-  String _formatNumber(BuildContext context, int number, {bool pad = true}) {
-    String numStr = pad ? number.toString().padLeft(2, '0') : number.toString();
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
-    if (!isMarathi) return numStr;
-
-    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    const marathi = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
-    for (int i = 0; i < english.length; i++) {
-      numStr = numStr.replaceAll(english[i], marathi[i]);
-    }
-    return numStr;
-  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Container(
-      color: theme.scaffoldBackgroundColor, // Use theme background
-      child: Column(
-        children: [
-          // Progress Indicators (Cards)
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 24.0,
-            ),
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(color: theme.appColors.primarySwatch, width: 2),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
+    return Consumer<JapMalaProvider>(
+      builder: (context, provider, child) {
+        final locale = Localizations.localeOf(context).languageCode;
+        return Container(
+          color: theme.scaffoldBackgroundColor, // Use theme background
+          child: Column(
+            children: [
+              // Progress Indicators (Cards)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 24.0,
+                ),
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 8,
                           ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            localizations.mala,
-                            style: TextStyle(
-                              color: theme.appColors.primarySwatch,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              _formatNumber(context, _completedMalas),
-                              style: TextStyle(
-                                color: theme.appColors.primarySwatch,
-                                fontSize: 32,
-                                fontWeight: FontWeight.w900,
+                          decoration: BoxDecoration(
+                            color: theme.cardTheme.color ?? theme.cardColor,
+                            border: Border.all(color: theme.appColors.primarySwatch, width: 2),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.cardTheme.color ?? theme.cardColor,
-                        border: Border.all(color: theme.appColors.primarySwatch, width: 2),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            localizations.jap,
-                            style: TextStyle(
-                              color: theme.appColors.primarySwatch,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              '${_formatNumber(context, _currentCount)} / ${_formatNumber(context, _countsPerMala, pad: false)}',
-                              style: TextStyle(
-                                color: theme.appColors.primarySwatch,
-                                fontSize: 28,
-                                fontWeight: FontWeight.w900,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                localizations.mala,
+                                style: TextStyle(
+                                  color: theme.appColors.primarySwatch,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 4),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  formatNumberLocalized(provider.completedMalas, locale),
+                                  style: TextStyle(
+                                    color: theme.appColors.primarySwatch,
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.cardTheme.color ?? theme.cardColor,
+                            border: Border.all(color: theme.appColors.primarySwatch, width: 2),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                localizations.jap,
+                                style: TextStyle(
+                                  color: theme.appColors.primarySwatch,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  '${formatNumberLocalized(provider.currentCount, locale)} / ${formatNumberLocalized(JapMalaProvider.countsPerMala, locale, pad: false)}',
+                                  style: TextStyle(
+                                    color: theme.appColors.primarySwatch,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
 
           Expanded(
             child: ClipRect(
@@ -355,10 +340,12 @@ class _ManualJapTabState extends State<ManualJapTab>
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
+    },
+  );
+}
 
   Widget _buildSecondaryButton(
     IconData icon,
