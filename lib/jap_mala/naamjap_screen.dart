@@ -5,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/time_based_jap_tab.dar
 import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/manual_jap_tab.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/jap_mala_provider.dart';
 
@@ -32,7 +33,7 @@ class NaamjapScreen extends StatelessWidget {
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.home),
+              icon: const ThemedIcon(LogicalIcon.home),
               onPressed: () => Navigator.pushNamedAndRemoveUntil(
                 context,
                 Routes.home,
@@ -40,7 +41,7 @@ class NaamjapScreen extends StatelessWidget {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.settings),
+              icon: const ThemedIcon(LogicalIcon.settings),
               onPressed: () => Navigator.pushNamed(context, Routes.settings),
             ),
           ],

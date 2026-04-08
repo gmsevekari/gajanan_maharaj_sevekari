@@ -6,7 +6,9 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/deity/deity_dashboard_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class NityopasanaConsolidatedScreen extends StatelessWidget {
   const NityopasanaConsolidatedScreen({super.key});
@@ -39,7 +41,7 @@ class NityopasanaConsolidatedScreen extends StatelessWidget {
         title: Text(localizations.nityopasanaTitle),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const ThemedIcon(LogicalIcon.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -50,7 +52,7 @@ class NityopasanaConsolidatedScreen extends StatelessWidget {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,
@@ -58,7 +60,7 @@ class NityopasanaConsolidatedScreen extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],
@@ -86,6 +88,7 @@ class NityopasanaConsolidatedScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final locale = Localizations.localeOf(context).languageCode;
     final name = locale == 'mr' ? deity.nameMr : deity.nameEn;
+
 
     return SizedBox(
       width: (MediaQuery.of(context).size.width - 24) / 2,

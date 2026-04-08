@@ -10,6 +10,8 @@ enum ThemePreset {
   lotus,
   peacock,
   custom,
+  diwali,
+  ganeshChaturthi,
 }
 
 class AppTheme {
@@ -191,6 +193,20 @@ class AppTheme {
         darkIconColor = const Color(0xFFB14A5B);
         darkButtonFg = const Color(0xFFCF6679);
         break;
+      case ThemePreset.ganeshChaturthi:
+        primary = const Color(0xFF9B3746);
+        secondary = const Color(0xFFFFD700);
+        swatch = _createMaterialColor(primary);
+        lightCardColor = const Color(0xFFF9EBEB);
+        lightCardBorder = primary;
+        lightIconColor = const Color(0xFFB14A5B);
+        lightButtonFg = const Color(0xFF7D2C39);
+        darkCardColor = const Color(0xFF140A0C);
+        darkShadowColor = const Color(0xFF5D1D27);
+        darkCardBorder = primary;
+        darkIconColor = const Color(0xFFB14A5B);
+        darkButtonFg = const Color(0xFFCF6679);
+        break;
       case ThemePreset.sandalwood:
         primary = const Color(0xFFB87333);
         secondary = const Color(0xFFE31E24);
@@ -246,6 +262,20 @@ class AppTheme {
         darkCardBorder = primary;
         darkIconColor = const Color(0xFFEF5350);
         darkButtonFg = const Color(0xFFEF9A9A);
+        break;
+      case ThemePreset.diwali:
+        primary = const Color(0xFF154C8C); // Royal Blue from image
+        secondary = const Color(0xFFF2C249); // Gold from image
+        swatch = _createMaterialColor(primary);
+        lightCardColor = const Color(0xFFE3F2FD); // Light Blue Tint
+        lightCardBorder = const Color(0xFFE52B7B); // Vibrant Pink Border from image
+        lightIconColor = const Color(0xFFE52B7B); // Pink from image
+        lightButtonFg = const Color(0xFF154C8C); // Royal Blue
+        darkCardColor = const Color(0xFF0D2149); // Dark Navy from image
+        darkShadowColor = const Color(0xFFE52B7B); // Pink Shadow
+        darkCardBorder = const Color(0xFFE52B7B); // Vibrant Pink Border from image
+        darkIconColor = const Color(0xFFF2C249); // Gold Icons
+        darkButtonFg = const Color(0xFFF2C249); // Gold
         break;
       case ThemePreset.lotus:
         primary = const Color(0xFFE91E90);
@@ -389,7 +419,7 @@ class AppTheme {
         cardTheme: CardThemeData(
           elevation: 4.0,
           color: lightCardColor,
-          shadowColor: primary,
+          shadowColor: lightCardBorder,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.0),
             side: BorderSide(color: lightCardBorder, width: 1),

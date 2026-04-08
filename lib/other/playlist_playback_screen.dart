@@ -8,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari/shared/cross_platform_youtube_player.da
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 enum PlaybackMode { reading, video }
 
@@ -130,7 +131,7 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,
@@ -138,7 +139,7 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],

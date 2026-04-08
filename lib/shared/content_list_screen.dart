@@ -10,6 +10,9 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/add_to_playlist_modal.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_loading_indicator.dart';
+import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:provider/provider.dart';
 
 class ContentListScreen extends StatefulWidget {
@@ -75,13 +78,15 @@ class _ContentListScreenState extends State<ContentListScreen> {
     final locale = Localizations.localeOf(context);
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final festivalProvider = Provider.of<FestivalProvider>(context);
+    final isGaneshotsav = festivalProvider.activeFestival?.id == 'ganesh_chaturthi';
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const ThemedIcon(LogicalIcon.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -92,7 +97,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,
@@ -100,7 +105,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],
@@ -109,7 +114,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
         future: _contentListFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: ThemedLoadingIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
@@ -133,13 +138,21 @@ class _ContentListScreenState extends State<ContentListScreen> {
                   ),
                   child: ListTile(
                     leading: widget.contentType == ContentType.granth
-                        ? CircleAvatar(
-                            backgroundColor: theme.appColors.primarySwatch[300],
-                            child: Text(
-                              '${index + 1}',
-                              style: TextStyle(color: theme.colorScheme.onPrimary),
-                            ),
-                          )
+                        ? (isGaneshotsav
+                            ? Image.asset(
+                                'resources/images/festive_icons/ganesh_chaturthi/list.png',
+                                width: 28,
+                                height: 28,
+                              )
+                            : CircleAvatar(
+                                backgroundColor: theme.appColors.primarySwatch[300],
+                                child: Text(
+                                  '${index + 1}',
+                                  style: TextStyle(
+                                    color: theme.colorScheme.onPrimary,
+                                  ),
+                                ),
+                              ))
                         : null,
                     title: Text(
                       itemTitle!,
@@ -155,29 +168,54 @@ class _ContentListScreenState extends State<ContentListScreen> {
                         Consumer<PlaylistProvider>(
                           builder: (context, playlistProvider, child) {
                             final assetPath = item['assetPath']!;
-                            final isFavorite = playlistProvider.isFavorite(assetPath);
-                            
+                            final isFavorite = playlistProvider.isFavorite(
+                              assetPath,
+                            );
+
                             return IconButton(
-                              icon: Icon(
-                                isFavorite ? Icons.favorite : Icons.favorite_border,
-                                color: theme.colorScheme.primary,
-                              ),
+                              icon: isFavorite
+                                  ? ThemedIcon(
+                                      LogicalIcon.favorites,
+                                      color: theme.colorScheme.primary,
+                                    )
+                                  : Icon(
+                                      Icons.favorite_border,
+                                      color: theme.colorScheme.primary,
+                                    ),
                               onPressed: () async {
                                 final playlists = playlistProvider.playlists;
                                 if (playlists.length == 1) {
                                   final defaultPl = playlists.first;
                                   if (isFavorite) {
-                                    await playlistProvider.removeAarti(defaultPl.id, assetPath);
+                                    await playlistProvider.removeAarti(
+                                      defaultPl.id,
+                                      assetPath,
+                                    );
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(localizations.removedFromPlaylist)),
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            localizations.removedFromPlaylist,
+                                          ),
+                                        ),
                                       );
                                     }
                                   } else {
-                                    await playlistProvider.addAarti(defaultPl.id, assetPath);
+                                    await playlistProvider.addAarti(
+                                      defaultPl.id,
+                                      assetPath,
+                                    );
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(localizations.addedToPlaylist)),
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            localizations.addedToPlaylist,
+                                          ),
+                                        ),
                                       );
                                     }
                                   }

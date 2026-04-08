@@ -14,6 +14,7 @@ import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -190,7 +191,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         title: Text(localizations.notificationPreferences),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,
@@ -321,7 +322,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                             type: AppSettingsType.notification,
                           );
                         },
-                        icon: const Icon(Icons.settings),
+                        icon: const ThemedIcon(LogicalIcon.settings),
                         label: Text(localizations.openSettings),
                         style: ElevatedButton.styleFrom(
                           backgroundColor:

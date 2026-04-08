@@ -1148,6 +1148,18 @@ abstract class AppLocalizations {
   /// **'Gan Gan Ganat Bote'**
   String get gajananChant;
 
+  /// No description provided for @chantGanpatiBappa.
+  ///
+  /// In en, this message translates to:
+  /// **'Ganpati Bappa Moraya'**
+  String get chantGanpatiBappa;
+
+  /// No description provided for @chantHappyDiwali.
+  ///
+  /// In en, this message translates to:
+  /// **'Happy Diwali'**
+  String get chantHappyDiwali;
+
   /// No description provided for @chantOmGajananay.
   ///
   /// In en, this message translates to:

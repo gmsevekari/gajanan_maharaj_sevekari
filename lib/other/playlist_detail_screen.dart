@@ -9,6 +9,7 @@ import 'package:gajanan_maharaj_sevekari/shared/playlist_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
   const PlaylistDetailScreen({super.key});
@@ -127,7 +128,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.home),
+                icon: const ThemedIcon(LogicalIcon.home),
                 onPressed: () => Navigator.pushNamedAndRemoveUntil(
                   context,
                   Routes.home,
@@ -135,7 +136,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.settings),
+                icon: const ThemedIcon(LogicalIcon.settings),
                 onPressed: () => Navigator.pushNamed(context, Routes.settings),
               ),
             ],

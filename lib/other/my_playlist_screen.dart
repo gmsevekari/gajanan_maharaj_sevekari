@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class MyPlaylistsScreen extends StatelessWidget {
   const MyPlaylistsScreen({super.key});
@@ -18,7 +19,7 @@ class MyPlaylistsScreen extends StatelessWidget {
         title: Text(localizations.favorites),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,
@@ -26,7 +27,7 @@ class MyPlaylistsScreen extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],
