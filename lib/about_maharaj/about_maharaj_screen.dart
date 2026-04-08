@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/shared/typo_report_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 
@@ -80,7 +81,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
         iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,
@@ -88,7 +89,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
           IconButton(

@@ -4,6 +4,8 @@ import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class ThemeSelectionScreen extends StatelessWidget {
   const ThemeSelectionScreen({super.key});
@@ -18,7 +20,7 @@ class ThemeSelectionScreen extends StatelessWidget {
         title: Text(localizations.theme),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,
@@ -77,6 +79,36 @@ class ThemeSelectionScreen extends StatelessWidget {
                     crossAxisSpacing: 10,
                     childAspectRatio: 0.85,
                     children: [
+                      if (context.watch<FestivalProvider>().activeFestival !=
+                          null)
+                        Builder(
+                          builder: (context) {
+                            final festival =
+                                context.watch<FestivalProvider>()
+                                    .activeFestival!;
+                            final isMarathi =
+                                Localizations.localeOf(context).languageCode ==
+                                'mr';
+                            final festivalName =
+                                isMarathi ? festival.nameMr : festival.nameEn;
+                            final festivalColor =
+                                AppTheme.getTheme(festival.themePreset, false)
+                                    .colorScheme
+                                    .primary;
+
+                            return _buildPresetOption(
+                              context,
+                              festivalName,
+                              festivalColor,
+                              festival.themePreset,
+                              themeProvider,
+                              customOnTap: () {
+                                themeProvider.setPreset(festival.themePreset);
+                                context.read<FestivalProvider>().triggerAnimation();
+                              },
+                            );
+                          },
+                        ),
                       _buildPresetOption(
                         context,
                         localizations.themeSaffron,
@@ -220,13 +252,14 @@ class ThemeSelectionScreen extends StatelessWidget {
     String name,
     Color primaryColor,
     ThemePreset preset,
-    ThemeProvider themeProvider,
-  ) {
+    ThemeProvider themeProvider, {
+    VoidCallback? customOnTap,
+  }) {
     final theme = Theme.of(context);
     final isSelected = themeProvider.themePreset == preset;
 
     return GestureDetector(
-      onTap: () => themeProvider.setPreset(preset),
+      onTap: customOnTap ?? () => themeProvider.setPreset(preset),
       child: Container(
         decoration: BoxDecoration(
           color: isSelected

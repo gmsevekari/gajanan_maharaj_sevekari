@@ -1,0 +1,20 @@
+{
+  "festivals": [
+    {
+      "id": "ganesh_chaturthi",
+      "name_en": "Ganesh Chaturthi",
+      "name_mr": "गणेश चतुर्थी",
+      "startDate": "2026-09-14",
+      "endDate": "2026-09-24",
+      "themePreset": "ganeshChaturthi"
+    },
+    {
+      "id": "diwali",
+      "name_en": "Diwali",
+      "name_mr": "दिवाळी",
+      "startDate": "2026-11-05",
+      "endDate": "2026-11-10",
+      "themePreset": "diwali"
+    }
+  ]
+}

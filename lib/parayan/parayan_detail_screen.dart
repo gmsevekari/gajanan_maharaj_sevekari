@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'dart:async';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class ParayanDetailScreen extends StatefulWidget {
   final ParayanEvent? event;
@@ -284,7 +285,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
         iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,
@@ -292,7 +293,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],

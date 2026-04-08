@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class SocialMediaScreen extends StatelessWidget {
   final DeityConfig deity;
@@ -18,11 +19,11 @@ class SocialMediaScreen extends StatelessWidget {
         title: Text(localizations.socialMedia, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false),
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],

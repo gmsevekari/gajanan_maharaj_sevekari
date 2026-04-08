@@ -8,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/providers/typo_report_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -76,7 +77,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           title: Text(localizations.adminDashboardTitle),
           actions: [
             IconButton(
-              icon: const Icon(Icons.home),
+              icon: const ThemedIcon(LogicalIcon.home),
               onPressed: () => Navigator.pushNamedAndRemoveUntil(
                 context,
                 Routes.home,

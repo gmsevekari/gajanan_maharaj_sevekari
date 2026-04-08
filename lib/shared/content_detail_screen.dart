@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/shared/typo_report_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 
@@ -263,7 +264,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
             },
           ),
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,
@@ -271,7 +272,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
           FutureBuilder<Map<String, dynamic>>(

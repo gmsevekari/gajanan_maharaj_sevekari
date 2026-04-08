@@ -553,6 +553,12 @@ class AppLocalizationsMr extends AppLocalizations {
   String get gajananChant => 'गण गण गणात बोते';
 
   @override
+  String get chantGanpatiBappa => 'गणपती बाप्पा मोरया';
+
+  @override
+  String get chantHappyDiwali => 'शुभ दीपावली';
+
+  @override
   String get chantOmGajananay => 'ॐ श्री गजाननाय नमः';
 
   @override

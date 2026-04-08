@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class LanguageSelectionScreen extends StatelessWidget {
   const LanguageSelectionScreen({super.key});
@@ -17,7 +18,7 @@ class LanguageSelectionScreen extends StatelessWidget {
         title: Text(localizations.language),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,

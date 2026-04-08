@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class FontSelectionScreen extends StatelessWidget {
   const FontSelectionScreen({super.key});
@@ -30,7 +31,7 @@ class FontSelectionScreen extends StatelessWidget {
         title: Text(localizations.font),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,

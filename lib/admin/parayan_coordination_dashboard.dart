@@ -8,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class ParayanCoordinationDashboard extends StatefulWidget {
   final AdminUser? adminUser;
@@ -41,12 +42,12 @@ class _ParayanCoordinationDashboardState
         title: Text(localizations.parayanCoordinationModuleTitle),
         actions: [
           IconButton(
-            icon: const Icon(Icons.home),
+            icon: const ThemedIcon(LogicalIcon.home),
             onPressed: () =>
                 Navigator.of(context).popUntil((route) => route.isFirst),
           ),
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],
