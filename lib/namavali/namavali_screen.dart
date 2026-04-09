@@ -247,7 +247,7 @@ class _NamavaliScreenState extends State<NamavaliScreen>
                   child: Column(
                     children: [
                       Image.asset(
-                        'resources/images/logo/App_Logo.png',
+                        'resources/images/logo/Home_Page_Logo.png',
                         height: 50,
                         width: 50,
                       ),

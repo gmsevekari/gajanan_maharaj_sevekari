@@ -286,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Image.asset('resources/images/logo/App_Logo.png'),
+          child: Image.asset('resources/images/logo/Home_Page_Logo.png'),
         ),
         title: FittedBox(
           fit: BoxFit.scaleDown,
