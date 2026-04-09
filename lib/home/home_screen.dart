@@ -288,7 +288,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           padding: const EdgeInsets.all(8.0),
           child: Image.asset('resources/images/logo/App_Logo.png'),
         ),
-        title: Text(localizations.appName),
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(localizations.appName),
+        ),
         actions: [
           IconButton(
             icon: const ThemedIcon(LogicalIcon.search),
