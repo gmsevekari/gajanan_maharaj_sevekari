@@ -4,21 +4,21 @@ import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
-import 'package:gajanan_maharaj_sevekari/other/playlist_playback_screen.dart';
+import 'package:gajanan_maharaj_sevekari/other/favorite_item_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/playlist_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
-class PlaylistDetailScreen extends StatefulWidget {
-  const PlaylistDetailScreen({super.key});
+class FavoriteItemListScreen extends StatefulWidget {
+  const FavoriteItemListScreen({super.key});
 
   @override
-  State<PlaylistDetailScreen> createState() => _PlaylistDetailScreenState();
+  State<FavoriteItemListScreen> createState() => _FavoriteItemListScreenState();
 }
 
-class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
+class _FavoriteItemListScreenState extends State<FavoriteItemListScreen> {
   late String playlistId;
   final Map<String, Map<String, dynamic>> _aartiDetailsCache = {};
 
@@ -72,7 +72,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PlaylistPlaybackScreen(
+        builder: (context) => FavoriteItemDetailScreen(
           deity: defaultDeity,
           contentList: contentList,
           initialIndex: startIndex,
@@ -85,13 +85,13 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
 
   Map<String, String> _buildContentMap(String path, Map<String, dynamic> data) {
     return {
-      'title_mr': data['title_mr'] ?? '',
-      'title_en': data['title_en'] ?? '',
+      'title_mr': (data['title_mr']?.toString().isNotEmpty == true) ? data['title_mr'] : '',
+      'title_en': (data['title_en']?.toString().isNotEmpty == true) ? data['title_en'] : '',
       'fileName': path.split('/').last,
       'imagePath':
           'resources/images/gajanan_maharaj/Gajanan_Maharaj.png', // Generic fallback
       'assetPath': path,
-      'youtube_video_id': data['youtube_video_id'] ?? '',
+      'youtube_video_id': (data['youtube_video_id']?.toString().isNotEmpty == true) ? data['youtube_video_id'] : '',
     };
   }
 
@@ -195,96 +195,132 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                         itemBuilder: (context, index) {
                           final aartiId = playlist.aartiIds[index];
 
-                          return FutureBuilder<String>(
+                          return _FavoriteListItemWidget(
                             key: ValueKey(aartiId),
-                            future: rootBundle.loadString(aartiId),
-                            builder: (context, snapshot) {
-                              String title = aartiId
-                                  .split('/')
-                                  .last
-                                  .replaceAll('.json', '');
-                              if (snapshot.hasData) {
-                                try {
-                                  final data = json.decode(snapshot.data!);
-                                  _aartiDetailsCache[aartiId] =
-                                      data; // cache for fast playback
-                                  title = locale.languageCode == 'mr'
-                                      ? data['title_mr'] ?? title
-                                      : data['title_en'] ?? title;
-                                } catch (_) {}
-                              }
-
-                              return Card(
-                                elevation: theme.cardTheme.elevation,
-                                color: theme.cardTheme.color,
-                                shape: theme.cardTheme.shape,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 8.0,
-                                  vertical: 4.0,
-                                ),
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0,
-                                    vertical: 4.0,
-                                  ),
-                                  leading: ReorderableDragStartListener(
-                                    index: index,
-                                    child: Icon(
-                                      Icons.drag_handle,
-                                      color: theme.appColors.secondaryText,
-                                    ),
-                                  ),
-                                  title: Text(
-                                    title,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: theme.colorScheme.onSurface,
-                                    ),
-                                  ),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(
-                                          Icons.play_circle_outline,
-                                          color: theme.appColors.primarySwatch,
-                                        ),
-                                        onPressed: () => _playPlaylist(
-                                          context,
-                                          playlistProvider,
-                                          index,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
-                                          Icons.delete,
-                                          color: theme.appColors.error,
-                                        ),
-                                        tooltip: localizations.removeAarti,
-                                        onPressed: () {
-                                          playlistProvider.removeAarti(
-                                            playlist.id,
-                                            aartiId,
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                  onTap: () => _playPlaylist(
-                                    context,
-                                    playlistProvider,
-                                    index,
-                                    mode: PlaybackMode.reading,
-                                  ),
-                                ),
-                              );
-                            },
+                            aartiId: aartiId,
+                            index: index,
+                            locale: locale,
+                            theme: theme,
+                            localizations: localizations,
+                            cache: _aartiDetailsCache,
+                            onPlayPlaylist: (idx, {PlaybackMode mode = PlaybackMode.video}) => 
+                                _playPlaylist(context, playlistProvider, idx, mode: mode),
+                            onRemove: () => playlistProvider.removeAarti(playlist.id, aartiId),
                           );
                         },
                       ),
                     ),
                   ],
                 ),
+        );
+      },
+    );
+  }
+}
+
+class _FavoriteListItemWidget extends StatefulWidget {
+  final String aartiId;
+  final int index;
+  final Locale locale;
+  final ThemeData theme;
+  final AppLocalizations localizations;
+  final Map<String, Map<String, dynamic>> cache;
+  final void Function(int, {PlaybackMode mode}) onPlayPlaylist;
+  final VoidCallback onRemove;
+
+  const _FavoriteListItemWidget({
+    super.key,
+    required this.aartiId,
+    required this.index,
+    required this.locale,
+    required this.theme,
+    required this.localizations,
+    required this.cache,
+    required this.onPlayPlaylist,
+    required this.onRemove,
+  });
+
+  @override
+  State<_FavoriteListItemWidget> createState() => _FavoriteListItemWidgetState();
+}
+
+class _FavoriteListItemWidgetState extends State<_FavoriteListItemWidget> {
+  late Future<String> _contentFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _contentFuture = rootBundle.loadString(widget.aartiId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+      future: _contentFuture,
+      builder: (context, snapshot) {
+        String title = widget.aartiId.split('/').last.replaceAll('.json', '');
+        if (snapshot.hasData) {
+          try {
+            final data = json.decode(snapshot.data!);
+            widget.cache[widget.aartiId] = data; // cache for fast playback
+            title = widget.locale.languageCode == 'mr'
+                ? ((data['title_mr']?.toString().isNotEmpty == true) ? data['title_mr'] : title)
+                : ((data['title_en']?.toString().isNotEmpty == true) ? data['title_en'] : title);
+          } catch (_) {}
+        }
+
+        return Card(
+          elevation: widget.theme.cardTheme.elevation,
+          color: widget.theme.cardTheme.color,
+          shape: widget.theme.cardTheme.shape,
+          margin: const EdgeInsets.symmetric(
+            horizontal: 8.0,
+            vertical: 4.0,
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 4.0,
+            ),
+            leading: ReorderableDragStartListener(
+              index: widget.index,
+              child: Icon(
+                Icons.drag_handle,
+                color: widget.theme.appColors.secondaryText,
+              ),
+            ),
+            title: Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: widget.theme.colorScheme.onSurface,
+              ),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.play_circle_outline,
+                    color: widget.theme.appColors.primarySwatch,
+                  ),
+                  onPressed: () => widget.onPlayPlaylist(widget.index),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.delete,
+                    color: widget.theme.appColors.error,
+                  ),
+                  tooltip: widget.localizations.removeAarti,
+                  onPressed: widget.onRemove,
+                ),
+              ],
+            ),
+            onTap: () => widget.onPlayPlaylist(
+              widget.index,
+              mode: PlaybackMode.reading,
+            ),
+          ),
         );
       },
     );

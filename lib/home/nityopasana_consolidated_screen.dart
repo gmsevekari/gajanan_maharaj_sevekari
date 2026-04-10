@@ -32,7 +32,7 @@ class NityopasanaConsolidatedScreen extends StatelessWidget {
         context: context,
         title: localizations.favorites,
         imagePath: 'resources/images/icon/Favorites.png',
-        onTap: () => Navigator.pushNamed(context, Routes.myPlaylists),
+        onTap: () => Navigator.pushNamed(context, Routes.favorites),
       ),
     );
 

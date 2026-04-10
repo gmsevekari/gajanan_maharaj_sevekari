@@ -47,8 +47,8 @@ import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_group_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/create_parayan_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/user_notifications_screen.dart';
-import 'package:gajanan_maharaj_sevekari/other/my_playlist_screen.dart';
-import 'package:gajanan_maharaj_sevekari/other/playlist_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/other/favorites_screen.dart';
+import 'package:gajanan_maharaj_sevekari/other/favorite_item_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/story/story_type_picker_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/navigator_service.dart';
@@ -335,9 +335,9 @@ class _MyAppState extends State<MyApp> {
                 },
                 Routes.nityopasanaConsolidated: (context) =>
                     const NityopasanaConsolidatedScreen(),
-                Routes.myPlaylists: (context) => const MyPlaylistsScreen(),
-                Routes.playlistDetail: (context) =>
-                    const PlaylistDetailScreen(),
+                Routes.favorites: (context) => const FavoritesScreen(),
+                Routes.favoriteItemList: (context) =>
+                    const FavoriteItemListScreen(),
                 Routes.adminTypoReports: (context) =>
                     const AdminTypoReportsScreen(),
               },
