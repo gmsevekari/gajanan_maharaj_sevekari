@@ -2,14 +2,16 @@ import 'package:uuid/uuid.dart';
 
 class Playlist {
   final String id;
-  final String name;
+  final String name_en;
+  final String name_mr;
   final bool isDefault;
   final List<String> aartiIds;
   final DateTime createdAt;
 
   Playlist({
     String? id,
-    required this.name,
+    required this.name_en,
+    required this.name_mr,
     this.isDefault = false,
     List<String>? aartiIds,
     DateTime? createdAt,
@@ -18,12 +20,14 @@ class Playlist {
         createdAt = createdAt ?? DateTime.now();
 
   Playlist copyWith({
-    String? name,
+    String? name_en,
+    String? name_mr,
     List<String>? aartiIds,
   }) {
     return Playlist(
       id: id,
-      name: name ?? this.name,
+      name_en: name_en ?? this.name_en,
+      name_mr: name_mr ?? this.name_mr,
       isDefault: isDefault,
       aartiIds: aartiIds ?? this.aartiIds,
       createdAt: createdAt,
@@ -33,7 +37,8 @@ class Playlist {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
+      'name_en': name_en,
+      'name_mr': name_mr,
       'isDefault': isDefault,
       'aartiIds': aartiIds,
       'createdAt': createdAt.toIso8601String(),
@@ -43,7 +48,8 @@ class Playlist {
   factory Playlist.fromJson(Map<String, dynamic> json) {
     return Playlist(
       id: json['id'] as String,
-      name: json['name'] as String,
+      name_en: json['name_en'] as String? ?? json['name'] as String? ?? 'Playlist',
+      name_mr: json['name_mr'] as String? ?? json['name'] as String? ?? 'Playlist',
       isDefault: json['isDefault'] as bool? ?? false,
       aartiIds: List<String>.from(json['aartiIds'] ?? []),
       createdAt: json['createdAt'] != null

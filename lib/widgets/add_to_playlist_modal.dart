@@ -44,7 +44,7 @@ class AddToPlaylistModal extends StatelessWidget {
                       title: Text(
                         playlist.isDefault
                             ? localizations.myFavorites
-                            : playlist.name,
+                            : (Localizations.localeOf(context).languageCode == 'mr' ? playlist.name_mr : playlist.name_en),
                       ),
                       value: isAdded,
                       onChanged: (bool? value) {

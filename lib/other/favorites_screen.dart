@@ -70,7 +70,7 @@ class FavoritesScreen extends StatelessWidget {
                   title: Text(
                     playlist.isDefault
                         ? localizations.myFavorites
-                        : playlist.name,
+                        : (Localizations.localeOf(context).languageCode == 'mr' ? playlist.name_mr : playlist.name_en),
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Row(
@@ -97,7 +97,7 @@ class FavoritesScreen extends StatelessWidget {
                               onPressed: () => _showRenamePlaylistDialog(
                                 context,
                                 playlist.id,
-                                playlist.name,
+                                Localizations.localeOf(context).languageCode == 'mr' ? playlist.name_mr : playlist.name_en,
                               ),
                             ),
                             IconButton(

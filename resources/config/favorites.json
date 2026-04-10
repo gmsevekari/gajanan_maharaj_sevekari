@@ -1,0 +1,18 @@
+[
+  {
+    "id": "sunday_prarthana",
+    "name_en": "Sunday Prarthana",
+    "name_mr": "रविवार प्रार्थना",
+    "isDefault": false,
+    "aartiIds": [
+      "resources/texts/datta_maharaj/stotras/guru_geeta.json",
+      "resources/texts/datta_maharaj/stotras/datta_majala.json",
+      "resources/texts/datta_maharaj/stotras/karuna_tripadi.json",
+      "resources/texts/gajanan_maharaj/stotras/gajanan_maharaj_bavanni.json",
+      "resources/texts/datta_maharaj/stotras/siddha_mangal.json",
+      "resources/texts/datta_maharaj/stotras/ghor_kashtodharan.json",
+      "resources/texts/datta_maharaj/stotras/datta_stuti.json",
+      "resources/texts/other/other_stotras/vitthal_rakhumai_naamjap.json"
+    ]
+  }
+]

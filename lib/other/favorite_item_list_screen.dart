@@ -76,7 +76,7 @@ class _FavoriteItemListScreenState extends State<FavoriteItemListScreen> {
           deity: defaultDeity,
           contentList: contentList,
           initialIndex: startIndex,
-          playlistName: playlist.isDefault ? "My Favorites" : playlist.name,
+          playlistName: playlist.isDefault ? AppLocalizations.of(context)!.myFavorites : (Localizations.localeOf(context).languageCode == 'mr' ? playlist.name_mr : playlist.name_en),
           mode: mode,
         ),
       ),
@@ -111,7 +111,7 @@ class _FavoriteItemListScreenState extends State<FavoriteItemListScreen> {
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              playlist.isDefault ? localizations.myFavorites : playlist.name,
+              playlist.isDefault ? localizations.myFavorites : (locale.languageCode == 'mr' ? playlist.name_mr : playlist.name_en),
             ),
             actions: [
               IconButton(

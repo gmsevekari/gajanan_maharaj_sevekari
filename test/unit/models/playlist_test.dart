@@ -15,7 +15,8 @@ void main() {
       final playlist = Playlist.fromJson(json);
 
       expect(playlist.id, 'test-uuid');
-      expect(playlist.name, 'Daily Aarti');
+      expect(playlist.name_en, 'Daily Aarti');
+      expect(playlist.name_mr, 'Daily Aarti');
       expect(playlist.isDefault, true);
       expect(playlist.aartiIds, ['a1', 'a2']);
       expect(playlist.createdAt, DateTime.parse('2024-05-01T12:00:00.000Z'));
@@ -24,7 +25,8 @@ void main() {
     test('toJson should correctly serialize the playlist', () {
       final dateTime = DateTime.now();
       final playlist = Playlist(
-        name: 'My Custom Playlist',
+        name_en: 'My Custom Playlist',
+        name_mr: 'My Custom Playlist',
         isDefault: false,
         aartiIds: ['a1'],
         createdAt: dateTime,
@@ -32,18 +34,20 @@ void main() {
 
       final json = playlist.toJson();
 
-      expect(json['name'], 'My Custom Playlist');
+      expect(json['name_en'], 'My Custom Playlist');
+      expect(json['name_mr'], 'My Custom Playlist');
       expect(json['isDefault'], false);
       expect(json['aartiIds'], ['a1']);
       expect(json['createdAt'], dateTime.toIso8601String());
     });
 
     test('copyWith should only update changed fields', () {
-      final playlist = Playlist(name: 'Initial Name', aartiIds: ['1']);
-      final updatedPlaylist = playlist.copyWith(name: 'New Name');
+      final playlist = Playlist(name_en: 'Initial Name', name_mr: 'Initial Name', aartiIds: ['1']);
+      final updatedPlaylist = playlist.copyWith(name_en: 'New Name', name_mr: 'New Name');
 
       expect(updatedPlaylist.id, playlist.id);
-      expect(updatedPlaylist.name, 'New Name');
+      expect(updatedPlaylist.name_en, 'New Name');
+      expect(updatedPlaylist.name_mr, 'New Name');
       expect(updatedPlaylist.aartiIds, ['1']);
     });
   });
