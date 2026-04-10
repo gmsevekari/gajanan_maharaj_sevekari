@@ -6,6 +6,7 @@ These are the strict, **app-specific** coding rules and architectural guidelines
 
 ## 1. Architecture & Configuration
 - **Configuration is King:** If a piece of text, a feature flag, a region restriction, or an asset path can be placed into a JSON configuration document (`lib/config/...`) rather than deeply hardcoded into a Dart Widget, it **must** be stored in the JSON. The app's core philosophy is strict configuration-driven malleability.
+- **JSON Configuration Localization:** Any user-visible text stored in local configurations (e.g., `favorites.json`, `app_config.json`) must use suffix-based bilingual keys (e.g., `name_en` and `name_mr`) rather than a single hardcoded string. The Dart models resolving these JSONs must ingest both and display the correct one via `Localizations.localeOf(context).languageCode`.
 - **Localization Files:** Any static string exposed to the UI must be registered as a key within BOTH `app_en.arb` and `app_mr.arb`. Do not hardcode raw English text into UI Widgets.
 - **Run the Code Generator:** After modifying any `.arb` file, you **must** immediately run `flutter gen-l10n` to update the `AppLocalizations` binding classes before referencing the new keys in the Dart codebase.
 
