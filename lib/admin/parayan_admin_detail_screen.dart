@@ -153,10 +153,14 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         final event = eventSnapshot.data ?? widget.event;
         return Scaffold(
           appBar: AppBar(
-            title: Text(
-              Localizations.localeOf(context).languageCode == 'mr'
-                  ? event.titleMr
-                  : event.titleEn,
+            title: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                Localizations.localeOf(context).languageCode == 'mr'
+                    ? event.titleMr
+                    : event.titleEn,
+              ),
             ),
             actions: [
               IconButton(

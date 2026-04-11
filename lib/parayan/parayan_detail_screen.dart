@@ -229,7 +229,8 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
       dateStr = "$start - $end";
     }
 
-    if (_event!.type == ParayanType.guruPushya) {
+    if (_event!.type == ParayanType.guruPushya ||
+        _event!.type == ParayanType.threeDay) {
       final startTime = _formatTime(_event!.startDate, locale);
       final endTime = _formatTime(_event!.endDate, locale);
       return "$dateStr ($startTime - $endTime)";
@@ -272,13 +273,17 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _event == null
-              ? localizations.parayanTitle
-              : (locale == 'mr' ? _event!.titleMr : _event!.titleEn),
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onPrimary,
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            _event == null
+                ? localizations.parayanTitle
+                : (locale == 'mr' ? _event!.titleMr : _event!.titleEn),
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onPrimary,
+            ),
           ),
         ),
         backgroundColor: theme.appColors.primarySwatch,
