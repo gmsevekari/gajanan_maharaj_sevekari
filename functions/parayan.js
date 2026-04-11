@@ -234,3 +234,73 @@ exports.adminAddParticipants = onCall(async (request) => {
     return { success: true, count: results.length };
   });
 });
+
+/**
+ * Phase 1: Secure Claim Flow
+ */
+exports.claimParayanAllocation = onCall(async (request) => {
+  const { eventId, phone, deviceId, overwrite = false } = request.data;
+
+  if (!eventId || !phone || !deviceId) {
+    throw new HttpsError("invalid-argument", "Missing required fields.");
+  }
+
+  const db = admin.firestore();
+  const sanitizedInputPhone = phone.replace(/[^\d+]/g, "");
+  logger.info(`Claim request for event: ${eventId}, phone: ${sanitizedInputPhone}, device: ${deviceId}`);
+
+  try {
+    const participantsRef = db.collection("parayan_events").doc(eventId).collection("participants");
+
+    // Standardized lookup: the phone number is expected to be in +<CountryCode><10_Digit_Number> format
+    const snapshot = await participantsRef.where("phone", "==", sanitizedInputPhone).get();
+
+    if (snapshot.empty) {
+      return { status: "NOT_FOUND", message: "No participant found with this phone number." };
+    }
+
+    const participants = [];
+    let conflictFound = false;
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      // Check for conflict: another device already linked
+      if (data.deviceId && data.deviceId !== "ADMIN_MANUAL" && data.deviceId !== deviceId) {
+        conflictFound = true;
+      }
+      participants.push({ id: doc.id, ...data });
+    });
+
+    if (conflictFound && !overwrite) {
+      return {
+        status: "CONFLICT",
+        message: "This phone number is already linked to another device.",
+        count: participants.length
+      };
+    }
+
+    // Perform updates
+    const batch = db.batch();
+    const now = admin.firestore.Timestamp.now();
+    participants.forEach(p => {
+      batch.update(participantsRef.doc(p.id), {
+        deviceId: deviceId,
+        claimedAt: now
+      });
+    });
+
+    await batch.commit();
+
+    return {
+      status: "SUCCESS",
+      participants: participants.map(p => ({
+        name: p.name,
+        assignedAdhyays: p.assignedAdhyays || []
+      }))
+    };
+
+  } catch (error) {
+    logger.error(`Error in claimParayanAllocation: ${error}`);
+    throw new HttpsError("internal", error.message);
+  }
+});

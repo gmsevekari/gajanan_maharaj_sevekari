@@ -15,6 +15,7 @@ const notifications = require("./notifications");
 exports.updateParayanStatuses = parayan.updateParayanStatuses;
 exports.allocateParayanAdhyays = parayan.allocateParayanAdhyays;
 exports.adminAddParticipants = parayan.adminAddParticipants;
+exports.claimParayanAllocation = parayan.claimParayanAllocation;
 
 // Notifications & Reminders
 exports.sendTempleNotification = notifications.sendTempleNotification;
