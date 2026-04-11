@@ -14,7 +14,6 @@ class ParayanEvent {
   final List<String> reminderTimes; // e.g., ["20:00", "21:00"]
   final DateTime? manualPingRequestedAt;
   final DateTime createdAt;
-  final int joinedParticipants;
   final Map<String, dynamic> sentReminders; // e.g., {'day1_20:00': Timestamp}
   final String? joinCode;
   final String groupId;
@@ -32,7 +31,6 @@ class ParayanEvent {
     required this.reminderTimes,
     this.manualPingRequestedAt,
     required this.createdAt,
-    this.joinedParticipants = 0,
     this.sentReminders = const {},
     this.joinCode,
     required this.groupId,
@@ -62,7 +60,6 @@ class ParayanEvent {
           ? (data['manualPingRequestedAt'] as Timestamp).toDate()
           : null,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
-      joinedParticipants: data['joinedParticipants'] ?? 0,
       sentReminders: data['sentReminders'] != null
           ? Map<String, dynamic>.from(data['sentReminders'] as Map)
           : {},
@@ -91,7 +88,6 @@ class ParayanEvent {
           manualPingRequestedAt as DateTime,
         ),
       'createdAt': Timestamp.fromDate(createdAt),
-      'joinedParticipants': joinedParticipants,
       'sentReminders': sentReminders,
       if (joinCode != null) 'joinCode': joinCode,
       'groupId': groupId,

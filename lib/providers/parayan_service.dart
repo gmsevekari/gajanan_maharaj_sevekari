@@ -138,9 +138,8 @@ class ParayanService {
 
     await batch.commit();
 
-    // NOTE: We are skipping the eventDoc 'joinedParticipants' update here
-    // because standard users likely don't have WRITE permission on the event doc.
-    // Dashboard and Tabs calculate the count dynamically using getAllParticipants().
+    // NOTE: Dashboard and Tabs calculate the count dynamically
+    // using getAllParticipants() instead of a static field.
   }
 
   Future<ParayanHousehold?> getHousehold(
