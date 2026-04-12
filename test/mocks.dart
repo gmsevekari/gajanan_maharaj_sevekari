@@ -24,3 +24,7 @@ class MockPackageInfo extends Mock implements PackageInfo {}
 class MockFirebaseFunctions extends Mock implements FirebaseFunctions {}
 class MockHttpsCallable extends Mock implements HttpsCallable {}
 class MockHttpsCallableResult extends Mock implements HttpsCallableResult {}
+class MockQuerySnapshot extends Mock implements QuerySnapshot<Map<String, dynamic>> {}
+class MockQueryDocumentSnapshot extends Mock implements QueryDocumentSnapshot<Map<String, dynamic>> {}
+class MockWriteBatch extends Mock implements WriteBatch {}
+class MockSnapshot extends Mock implements DocumentSnapshot<Map<String, dynamic>> {}

@@ -190,7 +190,7 @@ exports.adminAddParticipants = onCall(async (request) => {
           } else if (type === "threeDay") {
             const grpSize = 7;
             const groupOffset = Math.floor(nextIndex / grpSize) % 3;
-            const participantOffset = (nextIndex / grpSize) * 3;
+            const participantOffset = (nextIndex % grpSize) * 3;
 
             const day1 = ((groupOffset + participantOffset) % 21) + 1;
             const day2 = (day1 % 21) + 1;

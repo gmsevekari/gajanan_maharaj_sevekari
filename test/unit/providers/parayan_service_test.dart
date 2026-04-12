@@ -8,6 +8,12 @@ import 'package:cloud_functions/cloud_functions.dart';
 import '../../mocks.dart';
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(Timestamp(0, 0));
+    registerFallbackValue(MockWriteBatch());
+    registerFallbackValue(MockDocumentReference());
+  });
+
   late MockFirestore mockFirestore;
   late MockCollectionReference mockCollection;
   late MockDocumentReference mockDocument;
@@ -23,6 +29,15 @@ void main() {
 
     when(() => mockFirestore.collection(any())).thenReturn(mockCollection);
     when(() => mockCollection.doc(any())).thenReturn(mockDocument);
+    when(() => mockCollection.where(any(),
+        isEqualTo: any(named: 'isEqualTo'),
+        isGreaterThanOrEqualTo: any(named: 'isGreaterThanOrEqualTo'))).thenReturn(mockCollection);
+    when(() => mockCollection.get()).thenAnswer((_) async => MockQuerySnapshot());
+    when(() => mockCollection.snapshots()).thenAnswer((_) => Stream.value(MockQuerySnapshot()));
+
+    when(() => mockDocument.get()).thenAnswer((_) async => mockSnapshot);
+    when(() => mockDocument.set(any())).thenAnswer((_) async => {});
+    when(() => mockDocument.update(any())).thenAnswer((_) async => {});
   });
 
   group('ParayanService', () {
