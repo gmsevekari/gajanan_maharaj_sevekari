@@ -365,12 +365,45 @@
       },
       "stories": {
         "textResourceDirectory": "resources/texts/gajanan_maharaj/stories/text",
-        "files": [
+        "groups": [
           {
-            "file": "adhyay_1.json"
+            "id": "adhyay_1",
+            "title_en": "Adhyay 1",
+            "title_mr": "अध्याय १",
+            "files": [
+              {
+                "file": "adhyay_1.json"
+              }
+            ]
           },
           {
-            "file": "adhyay_2.json"
+            "id": "adhyay_2",
+            "title_en": "Adhyay 2",
+            "title_mr": "अध्याय २",
+            "files": [
+              {
+                "file": "adhyay_2.json"
+              }
+            ]
+          },
+        {
+            "id": "adhyay_3",
+            "title_en": "Adhyay 3",
+            "title_mr": "अध्याय ३",
+            "files": [
+              {
+                "file": "adhyay_3_bhakti.json"
+              },
+              {
+                "file": "adhyay_3_gosavi.json"
+              },
+              {
+                "file": "adhyay_3_janrao_deshmukh.json"
+              },
+              {
+                "file": "adhyay_3_vithoba_ghatol.json"
+              }
+            ]
           }
         ]
       }
