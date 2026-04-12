@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
-class MyPlaylistsScreen extends StatelessWidget {
-  const MyPlaylistsScreen({super.key});
+class FavoritesScreen extends StatelessWidget {
+  const FavoritesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +70,7 @@ class MyPlaylistsScreen extends StatelessWidget {
                   title: Text(
                     playlist.isDefault
                         ? localizations.myFavorites
-                        : playlist.name,
+                        : (Localizations.localeOf(context).languageCode == 'mr' ? playlist.name_mr : playlist.name_en),
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Row(
@@ -81,7 +82,7 @@ class MyPlaylistsScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        _formatNumber(context, playlist.aartiIds.length),
+                        formatNumberLocalized(playlist.aartiIds.length, Localizations.localeOf(context).languageCode, pad: false),
                         style: theme.textTheme.bodyLarge,
                       ),
                     ],
@@ -96,7 +97,7 @@ class MyPlaylistsScreen extends StatelessWidget {
                               onPressed: () => _showRenamePlaylistDialog(
                                 context,
                                 playlist.id,
-                                playlist.name,
+                                Localizations.localeOf(context).languageCode == 'mr' ? playlist.name_mr : playlist.name_en,
                               ),
                             ),
                             IconButton(
@@ -117,7 +118,7 @@ class MyPlaylistsScreen extends StatelessWidget {
                   onTap: () {
                     Navigator.pushNamed(
                       context,
-                      Routes.playlistDetail,
+                      Routes.favoriteItemList,
                       arguments: playlist.id,
                     );
                   },
@@ -395,16 +396,4 @@ class MyPlaylistsScreen extends StatelessWidget {
     }
   }
 
-  String _formatNumber(BuildContext context, int number) {
-    String numStr = number.toString();
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
-    if (!isMarathi) return numStr;
-
-    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    const marathi = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
-    for (int i = 0; i < english.length; i++) {
-      numStr = numStr.replaceAll(english[i], marathi[i]);
-    }
-    return numStr;
-  }
 }

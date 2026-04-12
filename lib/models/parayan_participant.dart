@@ -45,7 +45,9 @@ class ParayanMember {
     return ParayanMember(
       id: data['id'],
       name: data['memberName'] ?? data['name'] ?? name,
-      assignedAdhyays: List<int>.from(data['assignedAdhyays'] ?? []),
+      assignedAdhyays: (data['assignedAdhyays'] as List? ?? [])
+          .map((e) => (e as num).toInt())
+          .toList(),
       completions: completions,
       joinedAt: joinedAt,
       deviceId: data['deviceId'] ?? deviceId,

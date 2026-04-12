@@ -35,6 +35,12 @@
       "icon": "resources/images/icon/Space_Needle.png",
       "name_en": "Seattle",
       "name_mr": "सिअ‍ॅटल"
+    },
+    {
+      "id": "gajanan_gunjan",
+      "icon": "resources/images/icon/Gajanan_Gunjan.png",
+      "name_en": "Gajanan Gunjan",
+      "name_mr": "गजानन गुंजन"
     }
   ]
 }

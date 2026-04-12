@@ -177,7 +177,7 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
       }
       final String groupId = _selectedGroupId!;
       final String dateStr = DateFormat('yyyy-MM-dd').format(_startDate);
-      final String eventId = "${groupId}_$dateStr-${_selectedType.name}";
+      final String eventId = "${groupId}-${dateStr}-${_selectedType.name}";
 
       // Check for duplicate
       final bool alreadyExists = await _parayanService.exists(eventId);
@@ -207,7 +207,6 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
         status: 'upcoming',
         reminderTimes: formattedTimes,
         createdAt: DateTime.now(),
-        joinedParticipants: 0,
         sentReminders: const {},
         joinCode: const Uuid().v4().substring(0, 6).toUpperCase(),
         groupId: groupId,

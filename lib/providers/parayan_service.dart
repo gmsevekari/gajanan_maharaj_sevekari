@@ -11,9 +11,11 @@ import 'package:flutter/foundation.dart';
 
 class ParayanService {
   final FirebaseFirestore _db;
+  final FirebaseFunctions _functions;
 
-  ParayanService({FirebaseFirestore? firestore})
-      : _db = firestore ?? FirebaseFirestore.instance;
+  ParayanService({FirebaseFirestore? firestore, FirebaseFunctions? functions})
+      : _db = firestore ?? FirebaseFirestore.instance,
+        _functions = functions ?? FirebaseFunctions.instance;
 
   // Collection reference
   CollectionReference get _eventsRef => _db.collection('parayan_events');
@@ -138,9 +140,8 @@ class ParayanService {
 
     await batch.commit();
 
-    // NOTE: We are skipping the eventDoc 'joinedParticipants' update here
-    // because standard users likely don't have WRITE permission on the event doc.
-    // Dashboard and Tabs calculate the count dynamically using getAllParticipants().
+    // NOTE: Dashboard and Tabs calculate the count dynamically
+    // using getAllParticipants() instead of a static field.
   }
 
   Future<ParayanHousehold?> getHousehold(
@@ -294,9 +295,7 @@ class ParayanService {
   // Perform batch adhyay allocation for all participants
   Future<void> allocateAdhyays(String eventId) async {
     try {
-      final callable = FirebaseFunctions.instance.httpsCallable(
-        'allocateParayanAdhyays',
-      );
+      final callable = _functions.httpsCallable('allocateParayanAdhyays');
       await callable.call({'eventId': eventId});
     } catch (e) {
       rethrow;
@@ -366,10 +365,30 @@ class ParayanService {
     required List<Map<String, dynamic>> groups,
   }) async {
     try {
-      final callable = FirebaseFunctions.instance.httpsCallable(
-        'adminAddParticipants',
-      );
+      final callable = _functions.httpsCallable('adminAddParticipants');
       await callable.call({'eventId': eventId, 'groups': groups});
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Claim a pre-allocated participant record via device linked to a phone number
+  Future<Map<String, dynamic>> claimAllocation({
+    required String eventId,
+    required String phone,
+    required String deviceId,
+    bool overwrite = false,
+  }) async {
+    try {
+      final callable = _functions.httpsCallable('claimParayanAllocation');
+      final result = await callable.call({
+        'eventId': eventId,
+        'phone': phone,
+        'deviceId': deviceId,
+        'overwrite': overwrite,
+      });
+
+      return result.data as Map<String, dynamic>;
     } catch (e) {
       rethrow;
     }

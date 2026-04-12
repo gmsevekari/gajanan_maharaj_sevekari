@@ -22,7 +22,6 @@ void main() {
         status: 'enrolling',
         reminderTimes: ['20:00'],
         createdAt: createdAt,
-        joinedParticipants: 5,
         groupId: 'test_group',
       );
 
@@ -33,7 +32,6 @@ void main() {
       expect(map['startDate'], isA<Timestamp>());
       expect((map['startDate'] as Timestamp).toDate(), startDate);
       expect(map['status'], 'enrolling');
-      expect(map['joinedParticipants'], 5);
     });
 
     test('Status mapping from type', () {

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -18,3 +19,12 @@ class MockFirebaseMessaging extends Mock implements FirebaseMessaging {}
 
 // For UpdateService
 class MockPackageInfo extends Mock implements PackageInfo {}
+
+// For Cloud Functions
+class MockFirebaseFunctions extends Mock implements FirebaseFunctions {}
+class MockHttpsCallable extends Mock implements HttpsCallable {}
+class MockHttpsCallableResult extends Mock implements HttpsCallableResult {}
+class MockQuerySnapshot extends Mock implements QuerySnapshot<Map<String, dynamic>> {}
+class MockQueryDocumentSnapshot extends Mock implements QueryDocumentSnapshot<Map<String, dynamic>> {}
+class MockWriteBatch extends Mock implements WriteBatch {}
+class MockSnapshot extends Mock implements DocumentSnapshot<Map<String, dynamic>> {}

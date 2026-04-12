@@ -234,7 +234,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             : isDiwali
             ? 'resources/images/festive_icons/diwali/nityopasana.png'
             : 'resources/images/icon/Nityopasana.png',
+<<<<<<< HEAD
         imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 40.0,
+=======
+        imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 100.0,
+>>>>>>> e31b58af4bbbe16ea790dcdb9ef67d5cb906d0e4
         onTap: () =>
             Navigator.pushNamed(context, Routes.nityopasanaConsolidated),
       ),
@@ -248,7 +252,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             : isDiwali
             ? 'resources/images/festive_icons/diwali/naamjap.png'
             : 'resources/images/icon/Rudraksha_Mala.png',
+<<<<<<< HEAD
         imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 40.0,
+=======
+        imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 100.0,
+>>>>>>> e31b58af4bbbe16ea790dcdb9ef67d5cb906d0e4
         onTap: () => Navigator.pushNamed(context, Routes.naamjap),
       ),
     );
@@ -277,7 +285,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             : isDiwali
             ? 'resources/images/festive_icons/diwali/calendar.png'
             : null,
+<<<<<<< HEAD
         imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 40.0,
+=======
+        imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 100.0,
+>>>>>>> e31b58af4bbbe16ea790dcdb9ef67d5cb906d0e4
         onTap: () => Navigator.pushNamed(context, Routes.calendar),
       ),
     );
@@ -286,9 +298,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Image.asset('resources/images/logo/App_Logo.png'),
+          child: Image.asset('resources/images/logo/Home_Page_Logo.png'),
         ),
-        title: Text(localizations.appName),
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(localizations.appName),
+        ),
         actions: [
           IconButton(
             icon: const ThemedIcon(LogicalIcon.search),

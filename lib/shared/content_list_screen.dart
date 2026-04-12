@@ -79,7 +79,12 @@ class _ContentListScreenState extends State<ContentListScreen> {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final festivalProvider = Provider.of<FestivalProvider>(context);
+<<<<<<< HEAD
     final isGaneshotsav = festivalProvider.activeFestival?.id == 'ganesh_chaturthi';
+=======
+    final isGaneshotsav =
+        festivalProvider.activeFestival?.id == 'ganesh_chaturthi';
+>>>>>>> e31b58af4bbbe16ea790dcdb9ef67d5cb906d0e4
 
     return Scaffold(
       appBar: AppBar(
@@ -139,6 +144,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
                   child: ListTile(
                     leading: widget.contentType == ContentType.granth
                         ? (isGaneshotsav
+<<<<<<< HEAD
                             ? Image.asset(
                                 'resources/images/festive_icons/ganesh_chaturthi/list.png',
                                 width: 28,
@@ -153,6 +159,23 @@ class _ContentListScreenState extends State<ContentListScreen> {
                                   ),
                                 ),
                               ))
+=======
+                              ? Image.asset(
+                                  'resources/images/festive_icons/ganesh_chaturthi/list.png',
+                                  width: 28,
+                                  height: 28,
+                                )
+                              : CircleAvatar(
+                                  backgroundColor:
+                                      theme.appColors.primarySwatch[300],
+                                  child: Text(
+                                    '${index + 1}',
+                                    style: TextStyle(
+                                      color: theme.colorScheme.onPrimary,
+                                    ),
+                                  ),
+                                ))
+>>>>>>> e31b58af4bbbe16ea790dcdb9ef67d5cb906d0e4
                         : null,
                     title: Text(
                       itemTitle!,

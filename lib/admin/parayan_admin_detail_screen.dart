@@ -153,10 +153,14 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         final event = eventSnapshot.data ?? widget.event;
         return Scaffold(
           appBar: AppBar(
-            title: Text(
-              Localizations.localeOf(context).languageCode == 'mr'
-                  ? event.titleMr
-                  : event.titleEn,
+            title: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                Localizations.localeOf(context).languageCode == 'mr'
+                    ? event.titleMr
+                    : event.titleEn,
+              ),
             ),
             actions: [
               IconButton(
@@ -1778,14 +1782,14 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     required ThemeData theme,
   }) {
     // Dynamic column widths — total 380px matches inner container (420 - 16*2)
-    const double nameColW = 152.0;
+    const double nameColW = 140.0;
     final int daysCount = event.type.daysCount;
     final double dayColW = (380.0 - nameColW) / daysCount;
 
     String dayHeader(int dayOffset) {
       final date = event.startDate.add(Duration(days: dayOffset));
       return isMarathi
-          ? DateFormat('d MMM', 'mr').format(date)
+          ? DateFormat('d MMMM', 'mr').format(date)
           : DateFormat('MMM d').format(date);
     }
 

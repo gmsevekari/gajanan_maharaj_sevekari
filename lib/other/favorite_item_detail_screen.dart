@@ -12,14 +12,14 @@ import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 enum PlaybackMode { reading, video }
 
-class PlaylistPlaybackScreen extends StatefulWidget {
+class FavoriteItemDetailScreen extends StatefulWidget {
   final DeityConfig deity;
   final List<Map<String, String>> contentList;
   final int initialIndex;
   final String playlistName;
   final PlaybackMode mode;
 
-  const PlaylistPlaybackScreen({
+  const FavoriteItemDetailScreen({
     super.key,
     required this.deity,
     required this.contentList,
@@ -29,10 +29,10 @@ class PlaylistPlaybackScreen extends StatefulWidget {
   });
 
   @override
-  State<PlaylistPlaybackScreen> createState() => _PlaylistPlaybackScreenState();
+  State<FavoriteItemDetailScreen> createState() => _FavoriteItemDetailScreenState();
 }
 
-class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
+class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
   int _currentIndex = 0;
   double _fontSize = 18.0;
   Map<String, dynamic>? _currentContentData;
@@ -92,8 +92,8 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
 
     final currentItem = widget.contentList[_currentIndex];
     final currentTitle = locale.languageCode == 'mr'
-        ? (currentItem['title_mr'] ?? '')
-        : (currentItem['title_en'] ?? '');
+        ? ((currentItem['title_mr']?.toString().isNotEmpty == true) ? currentItem['title_mr']! : '')
+        : ((currentItem['title_en']?.toString().isNotEmpty == true) ? currentItem['title_en']! : '');
 
     return Scaffold(
       appBar: AppBar(
@@ -281,9 +281,12 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
     final theme = Theme.of(context);
     final langCode = locale.languageCode;
     final text =
-        _currentContentData!['content_$langCode'] ??
-        _currentContentData!['content_en'] ??
-        '';
+        (val) {
+          if (val != null && val.toString().isNotEmpty) return val.toString();
+          final enVal = _currentContentData!['content_en'];
+          if (enVal != null && enVal.toString().isNotEmpty) return enVal.toString();
+          return '';
+        }(_currentContentData!['content_$langCode']);
 
     return GestureDetector(
       onHorizontalDragEnd: (details) {
@@ -365,10 +368,6 @@ class _PlaylistPlaybackScreenState extends State<PlaylistPlaybackScreen> {
       return const Center(child: CircularProgressIndicator());
     }
     final videoId = _currentContentData?['youtube_video_id'] as String?;
-    final title =
-        _currentContentData?['title_${locale.languageCode}'] ??
-        _currentContentData?['title_en'] ??
-        'Aarti';
 
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
