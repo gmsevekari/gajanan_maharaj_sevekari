@@ -11,7 +11,8 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_signup_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
-import 'package:intl/intl.dart';
+import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/utils/parayan_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'dart:async';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
@@ -21,12 +22,14 @@ class ParayanDetailScreen extends StatefulWidget {
   final ParayanEvent? event;
   final String? eventId;
   final String? prefilledJoinCode;
+  final ParayanService? parayanService;
 
   const ParayanDetailScreen({
     super.key,
     this.event,
     this.eventId,
     this.prefilledJoinCode,
+    this.parayanService,
   }) : assert(event != null || eventId != null);
 
   @override
@@ -36,7 +39,7 @@ class ParayanDetailScreen extends StatefulWidget {
 class _ParayanDetailScreenState extends State<ParayanDetailScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
-  final ParayanService _parayanService = ParayanService();
+  late final ParayanService _parayanService;
   String? _deviceId;
   bool _isRegistered = false;
   late Stream<List<ParayanMember>> _participantsStream;
@@ -47,6 +50,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
   @override
   void initState() {
     super.initState();
+    _parayanService = widget.parayanService ?? ParayanService();
     _tabController = TabController(length: 1, vsync: this);
     _event = widget.event;
     final effectiveEventId = _event?.id ?? widget.eventId!;
@@ -116,9 +120,13 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
         });
   }
 
-  Future<void> _attemptJoin(BuildContext context, AppLocalizations localizations) async {
+  Future<void> _attemptJoin(
+    BuildContext context,
+    AppLocalizations localizations,
+  ) async {
     // If prefilled code matches or event surprisingly has no code (legacy safety)
-    if (_event!.joinCode == null || widget.prefilledJoinCode == _event!.joinCode) {
+    if (_event!.joinCode == null ||
+        widget.prefilledJoinCode == _event!.joinCode) {
       _navigateAndHandleResult();
       return;
     }
@@ -131,9 +139,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
           title: Text(localizations.joinCodeTitle),
           content: TextField(
             controller: codeController,
-            decoration: InputDecoration(
-              hintText: localizations.joinCodeHint,
-            ),
+            decoration: InputDecoration(hintText: localizations.joinCodeHint),
             textCapitalization: TextCapitalization.characters,
             autofocus: true,
           ),
@@ -144,17 +150,20 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
             ),
             ElevatedButton(
               onPressed: () {
-                 if (codeController.text.trim().toUpperCase() == _event!.joinCode) {
-                    Navigator.pop(context, true);
-                 } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(localizations.invalidJoinCode)));
-                 }
+                if (codeController.text.trim().toUpperCase() ==
+                    _event!.joinCode) {
+                  Navigator.pop(context, true);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(localizations.invalidJoinCode)),
+                  );
+                }
               },
               child: Text(localizations.submitLabel),
-            )
-          ]
+            ),
+          ],
         );
-      }
+      },
     );
 
     if (result == true) {
@@ -163,25 +172,28 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
   }
 
   Future<void> _navigateAndHandleResult([ParayanHousehold? household]) async {
-      final result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ParayanSignupScreen(
-            event: _event!,
-            existingEnrollment: household,
-          ),
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ParayanSignupScreen(
+          event: _event!,
+          existingEnrollment: household,
+          parayanService: _parayanService,
         ),
-      );
-      if (result != null && _deviceId != null && mounted) {
-        if (result == true) {
-          _checkRegistration(_deviceId!);
-        } else if (result is Map && result['deleted'] == true) {
-          _checkRegistration(_deviceId!);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.signupDeletedSuccess)),
-          );
-        }
+      ),
+    );
+    if (result != null && _deviceId != null && mounted) {
+      if (result == true) {
+        _checkRegistration(_deviceId!);
+      } else if (result is Map && result['deleted'] == true) {
+        _checkRegistration(_deviceId!);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.signupDeletedSuccess),
+          ),
+        );
       }
+    }
   }
 
   @override
@@ -190,76 +202,6 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
     _registrationSubscription?.cancel();
     _tabController.dispose();
     super.dispose();
-  }
-
-  String _formatNumber(BuildContext context, dynamic number) {
-    if (number == null) return '';
-    String numStr = number.toString();
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
-    return isMarathi ? toMarathiNumerals(numStr) : numStr;
-  }
-
-  String _formatDate(DateTime date, String locale) {
-    final dateStr = locale == 'mr'
-        ? DateFormat('d MMMM, yyyy', 'mr').format(date)
-        : DateFormat('MMMM d, yyyy').format(date);
-    return locale == 'mr' ? toMarathiNumerals(dateStr) : dateStr;
-  }
-
-  String _formatTime(DateTime date, String locale) {
-    final timeStr = DateFormat.jm(locale).format(date);
-    return locale == 'mr' ? toMarathiNumerals(timeStr) : timeStr;
-  }
-
-  String _getSmartDate(String locale) {
-    if (_event == null) return "";
-    final isSameDay = _event!.startDate.year == _event!.endDate.year &&
-        _event!.startDate.month == _event!.endDate.month &&
-        _event!.startDate.day == _event!.endDate.day;
-
-    String dateStr;
-    if (isSameDay) {
-      dateStr = _formatDate(_event!.startDate, locale);
-    } else {
-      final startStr = locale == 'mr'
-          ? DateFormat('d MMMM', 'mr').format(_event!.startDate)
-          : DateFormat('MMMM d').format(_event!.startDate);
-      final start = locale == 'mr' ? toMarathiNumerals(startStr) : startStr;
-      final end = _formatDate(_event!.endDate, locale);
-      dateStr = "$start - $end";
-    }
-
-    if (_event!.type == ParayanType.guruPushya ||
-        _event!.type == ParayanType.threeDay) {
-      final startTime = _formatTime(_event!.startDate, locale);
-      final endTime = _formatTime(_event!.endDate, locale);
-      return "$dateStr ($startTime - $endTime)";
-    }
-
-    return dateStr;
-  }
-
-  String _getDescriptiveStatus(AppLocalizations localizations, String locale) {
-    if (_event == null) return "";
-    final date = _formatDate(_event!.startDate, locale);
-
-    switch (_event!.status) {
-      case 'upcoming':
-        return _event!.type == ParayanType.oneDay ||
-                _event!.type == ParayanType.guruPushya
-            ? localizations.statusUpcomingOneDay(date)
-            : localizations.statusUpcomingMultiDay(date);
-      case 'enrolling':
-        return localizations.statusEnrollingDesc(date);
-      case 'allocated':
-        return localizations.statusAllocatedDesc(date);
-      case 'ongoing':
-        return localizations.statusOngoingDesc;
-      case 'completed':
-        return localizations.statusCompletedDesc;
-      default:
-        return "";
-    }
   }
 
   @override
@@ -348,7 +290,9 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                               localizations.dateLabel,
                                               style: theme.textTheme.bodySmall
                                                   ?.copyWith(
-                                                    color: theme.colorScheme.onSurfaceVariant,
+                                                    color: theme
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: isLandscape
                                                         ? 10
@@ -357,7 +301,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                             ),
                                             const SizedBox(height: 2),
                                             Text(
-                                              _getSmartDate(locale),
+                                              _event!.getSmartDate(locale),
                                               style: theme.textTheme.titleMedium
                                                   ?.copyWith(
                                                     color: theme
@@ -390,7 +334,9 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                               localizations.typeLabel,
                                               style: theme.textTheme.bodySmall
                                                   ?.copyWith(
-                                                    color: theme.colorScheme.onSurfaceVariant,
+                                                    color: theme
+                                                        .colorScheme
+                                                        .onSurfaceVariant,
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: isLandscape
                                                         ? 10
@@ -438,7 +384,8 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                           : _event!.descriptionEn,
                                       style: theme.textTheme.bodySmall
                                           ?.copyWith(
-                                            color: theme.appColors.secondaryText,
+                                            color:
+                                                theme.appColors.secondaryText,
                                             height: 1.4,
                                           ),
                                     ),
@@ -447,7 +394,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                   _buildInfoChip(
                                     context,
                                     Icons.info_outline,
-                                    _getDescriptiveStatus(
+                                    _event!.getDescriptiveStatus(
                                       localizations,
                                       locale,
                                     ),
@@ -496,7 +443,11 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                 ),
                               ),
                               Text(
-                                _formatNumber(context, count),
+                                formatNumberLocalized(
+                                  count,
+                                  locale,
+                                  pad: false,
+                                ),
                                 style:
                                     (isLandscape
                                             ? theme.textTheme.titleMedium
@@ -547,12 +498,12 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor: isActionEnabled
-                                      ? theme.colorScheme.primary
-                                      : theme.appColors.disabledBackground,
-                                  foregroundColor: isActionEnabled
-                                      ? theme.colorScheme.onPrimary
-                                      : theme.appColors.disabledText,
+                                backgroundColor: isActionEnabled
+                                    ? theme.colorScheme.primary
+                                    : theme.appColors.disabledBackground,
+                                foregroundColor: isActionEnabled
+                                    ? theme.colorScheme.onPrimary
+                                    : theme.appColors.disabledText,
                                 elevation: isActionEnabled ? 2 : 0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
@@ -598,6 +549,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                             : MyAllocationTab(
                                 event: _event!,
                                 deviceId: _deviceId!,
+                                parayanService: _parayanService,
                               ),
                     ],
                   ),

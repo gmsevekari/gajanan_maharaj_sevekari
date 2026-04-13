@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
+import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/utils/parayan_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
-import 'package:intl/intl.dart';
 
 class ParayanAdminListScreen extends StatefulWidget {
   final String title;
@@ -39,9 +41,7 @@ class _ParayanAdminListScreenState extends State<ParayanAdminListScreen> {
     final nowYear = DateTime.now().year;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title)),
       body: StreamBuilder<List<ParayanEvent>>(
         stream: _eventsStream,
         builder: (context, snapshot) {
@@ -78,7 +78,8 @@ class _ParayanAdminListScreenState extends State<ParayanAdminListScreen> {
           // Group by month
           final grouped = <String, List<ParayanEvent>>{};
           for (var e in filteredEvents) {
-            final monthStr = DateFormat('MMMM yyyy').format(e.startDate);
+            final locale = Localizations.localeOf(context).languageCode;
+            final monthStr = formatMonthYear(e.startDate, locale);
             grouped.putIfAbsent(monthStr, () => []).add(e);
           }
 
@@ -147,7 +148,8 @@ class _AdminEventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
-    final dateStr = DateFormat('dd MMM').format(event.startDate).toUpperCase();
+    final locale = Localizations.localeOf(context).languageCode;
+    final dateStr = formatDateShort(event.startDate, locale).toUpperCase();
 
     return Card(
       margin: EdgeInsets.zero,
@@ -224,11 +226,7 @@ class _AdminEventCard extends StatelessWidget {
         CircleAvatar(
           radius: 8,
           backgroundColor: theme.colorScheme.primaryContainer,
-          child: Icon(
-            Icons.person,
-            size: 10,
-            color: theme.colorScheme.primary,
-          ),
+          child: Icon(Icons.person, size: 10, color: theme.colorScheme.primary),
         ),
         const SizedBox(width: 4),
         Text(

@@ -7,8 +7,18 @@ String toMarathiNumerals(String input) {
   return input;
 }
 
-String formatNumberLocalized(int number, String languageCode, {bool pad = true}) {
-  String numStr = pad ? number.toString().padLeft(2, '0') : number.toString();
+String formatNumberLocalized(
+  dynamic number,
+  String languageCode, {
+  bool pad = true,
+}) {
+  if (number == null) return '';
+  String numStr = number.toString();
+  if (pad) {
+    if (numStr.length == 1 && int.tryParse(numStr) != null) {
+      numStr = numStr.padLeft(2, '0');
+    }
+  }
   if (languageCode != 'mr') return numStr;
   return toMarathiNumerals(numStr);
 }

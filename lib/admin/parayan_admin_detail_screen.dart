@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/utils/parayan_extensions.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
@@ -63,15 +65,13 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     super.dispose();
   }
 
-  String _formatNumberInternal(dynamic number, bool isMarathi) {
-    if (number == null) return '';
-    String numStr = number.toString();
-    return isMarathi ? toMarathiNumerals(numStr) : numStr;
+  String _formatNumber(BuildContext context, dynamic number) {
+    final locale = Localizations.localeOf(context).languageCode;
+    return formatNumberLocalized(number, locale, pad: false);
   }
 
-  String _formatNumber(BuildContext context, dynamic number) {
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
-    return _formatNumberInternal(number, isMarathi);
+  String _formatNumberInternal(dynamic number, bool isMarathi) {
+    return formatNumberLocalized(number, isMarathi ? 'mr' : 'en', pad: false);
   }
 
   // Future<void> _sendManualPing() async {
@@ -139,7 +139,6 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -262,7 +261,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 margin: const EdgeInsets.only(bottom: 16),
                 child: Card(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     child: Row(
                       children: [
                         Icon(Icons.vpn_key, color: theme.colorScheme.primary),
@@ -294,7 +296,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                           icon: const Icon(Icons.copy),
                           color: theme.colorScheme.primary,
                           onPressed: () {
-                            Clipboard.setData(ClipboardData(text: event.joinCode!));
+                            Clipboard.setData(
+                              ClipboardData(text: event.joinCode!),
+                            );
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(l10n.joinCodeCopied)),
                             );
@@ -383,7 +387,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
 
                           final shareText =
                               '${l10n.shareParayanAction}: $title\n\n${l10n.shareLink}: https://gajananmaharajsevekari.org/parayan/${event.id}';
-                          SharePlus.instance.share(ShareParams(text: shareText));
+                          SharePlus.instance.share(
+                            ShareParams(text: shareText),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.colorScheme.primary,
@@ -408,7 +414,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                               ? event.titleMr
                               : event.titleEn;
 
-                          final joinCodeText = event.joinCode != null ? '\n\n${l10n.joinCodeLabel}: ${event.joinCode}' : '';
+                          final joinCodeText = event.joinCode != null
+                              ? '\n\n${l10n.joinCodeLabel}: ${event.joinCode}'
+                              : '';
                           final shareText =
                               '${l10n.shareParayanAction}: $title$joinCodeText\n\n${l10n.shareLink}: https://gajananmaharajsevekari.org/parayan/${event.id}?joinCode=${event.joinCode}';
                           Share.share(shareText);
@@ -566,7 +574,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         const SizedBox(height: 12),
         ...List.generate(totalDays, (dayIdx) {
           final dayDate = event.startDate.add(Duration(days: dayIdx));
-          final dateStr = DateFormat('MMM dd').format(dayDate);
+          final dateStr = formatDateShort(
+            dayDate,
+            Localizations.localeOf(context).languageCode,
+          );
 
           return Card(
             margin: const EdgeInsets.only(bottom: 12),
@@ -1148,9 +1159,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   ) async {
     final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
     final title = isMarathi ? event.titleMr : event.titleEn;
-    final dateString = isMarathi
-        ? DateFormat('d MMMM, yyyy', 'mr').format(event.startDate)
-        : DateFormat('MMMM d, yyyy').format(event.startDate);
+    final locale = Localizations.localeOf(context).languageCode;
+    final dateString = formatDateLong(event.startDate, locale);
 
     String suffix = "";
     if (event.status == 'allocated') {
@@ -1298,10 +1308,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                   color: exportTheme.appColors.surface,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: [
-                      batchWidget,
-                      const SizedBox(height: 20),
-                    ],
+                    children: [batchWidget, const SizedBox(height: 20)],
                   ),
                 ),
               ),
@@ -1330,7 +1337,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       if (context.mounted) Navigator.of(context).pop(); // Close loading dialog
 
       if (files.isNotEmpty) {
-        await SharePlus.instance.share(ShareParams(files: files, text: shareText));
+        await SharePlus.instance.share(
+          ShareParams(files: files, text: shareText),
+        );
       }
     } catch (e) {
       if (context.mounted) {
@@ -1358,9 +1367,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       child: Container(
         width: 420, // Slightly wider to accommodate serial number column
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-        decoration: BoxDecoration(
-          color: theme.appColors.surface,
-        ),
+        decoration: BoxDecoration(color: theme.appColors.surface),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1788,9 +1795,10 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
 
     String dayHeader(int dayOffset) {
       final date = event.startDate.add(Duration(days: dayOffset));
-      return isMarathi
-          ? DateFormat('d MMMM', 'mr').format(date)
-          : DateFormat('MMM d').format(date);
+      return formatDateShort(
+        date,
+        Localizations.localeOf(context).languageCode,
+      );
     }
 
     // A single bordered cell
@@ -1880,19 +1888,22 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               background: theme.appColors.primarySwatch,
               alignment: Alignment.center,
             ),
-            ...List.generate(daysCount, (i) => cell(
-              child: Text(
-                dayHeader(i),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  color: theme.colorScheme.onPrimary,
+            ...List.generate(
+              daysCount,
+              (i) => cell(
+                child: Text(
+                  dayHeader(i),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    color: theme.colorScheme.onPrimary,
+                  ),
                 ),
+                width: dayColW,
+                background: theme.appColors.primarySwatch,
+                rightBorder: i < daysCount - 1,
               ),
-              width: dayColW,
-              background: theme.appColors.primarySwatch,
-              rightBorder: i < daysCount - 1,
-            )),
+            ),
           ],
         ),
       ),
@@ -1950,12 +1961,15 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                   alignment: Alignment.centerLeft,
                   bottomBorder: !isLastRow,
                 ),
-                ...List.generate(daysCount, (i) => dayCell(
-                  p,
-                  i + 1,
-                  rightBorder: i < daysCount - 1,
-                  bottomBorder: !isLastRow,
-                )),
+                ...List.generate(
+                  daysCount,
+                  (i) => dayCell(
+                    p,
+                    i + 1,
+                    rightBorder: i < daysCount - 1,
+                    bottomBorder: !isLastRow,
+                  ),
+                ),
               ],
             ),
           ),
@@ -1968,78 +1982,76 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       child: Container(
         width: 420,
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-        decoration: BoxDecoration(
-          color: theme.appColors.surface,
-        ),
+        decoration: BoxDecoration(color: theme.appColors.surface),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-              // Shared header
-              Row(
-                children: [
-                  Image.asset(
-                    'resources/images/logo/App_Logo.png',
-                    width: 44,
-                    height: 44,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.seattleGajananMaharajParivar,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: theme.appColors.primarySwatch,
-                          ),
-                        ),
-                        Text(
-                          title,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Divider(
-                height: 16,
-                thickness: 1.5,
-                color: theme.appColors.primarySwatch,
-              ),
-
-              // Unified grid with outer border
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: theme.appColors.divider),
+            // Shared header
+            Row(
+              children: [
+                Image.asset(
+                  'resources/images/logo/App_Logo.png',
+                  width: 44,
+                  height: 44,
                 ),
-                child: Column(mainAxisSize: MainAxisSize.min, children: rows),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Footer
-              Center(
-                child: Text(
-                  l10n.jaiGajanan,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: theme.appColors.brandAccent,
-                    fontStyle: FontStyle.italic,
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.seattleGajananMaharajParivar,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: theme.appColors.primarySwatch,
+                        ),
+                      ),
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+              ],
+            ),
+            Divider(
+              height: 16,
+              thickness: 1.5,
+              color: theme.appColors.primarySwatch,
+            ),
+
+            // Unified grid with outer border
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: theme.appColors.divider),
               ),
-            ],
-          ),
+              child: Column(mainAxisSize: MainAxisSize.min, children: rows),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Footer
+            Center(
+              child: Text(
+                l10n.jaiGajanan,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: theme.appColors.brandAccent,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+          ],
         ),
+      ),
     );
   }
 }

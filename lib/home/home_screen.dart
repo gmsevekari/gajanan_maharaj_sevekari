@@ -7,7 +7,8 @@ import 'package:gajanan_maharaj_sevekari/event_calendar/event_calendar_screen.da
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
-import 'package:intl/intl.dart';
+import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/utils/parayan_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/festival_launch_animation.dart';
@@ -893,7 +894,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final locale = Localizations.localeOf(context).languageCode;
     final eventTitle = locale == 'mr' ? event.title_mr : event.title_en;
     final eventDate = (eventData['start_time'] as Timestamp).toDate();
-    final eventDateString = DateFormat.yMMMMEEEEd(locale).format(eventDate);
+    final eventDateString = formatDateWithDay(eventDate, locale);
 
     return InkWell(
       onTap: () {
@@ -997,20 +998,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         event.startDate.year == event.endDate.year &&
         event.startDate.month == event.endDate.month &&
         event.startDate.day == event.endDate.day;
-    final dateRange = isSameDay
-        ? DateFormat.yMMMMEEEEd(locale).format(event.startDate)
-        : (locale == 'mr'
-              ? "${DateFormat('E, d MMMM', 'mr').format(event.startDate)} - ${DateFormat('E, d MMMM, yyyy', 'mr').format(event.endDate)}"
-              : "${DateFormat.MMMEd().format(event.startDate)} - ${DateFormat.yMMMEd().format(event.endDate)}");
+    final dateRange = event.getSmartDate(locale);
 
     return InkWell(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ParayanDetailScreen(event: event),
-          ),
-        );
+        Navigator.pushNamed(context, Routes.parayanDetail, arguments: event);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0),

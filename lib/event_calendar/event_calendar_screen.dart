@@ -4,7 +4,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/calendar_export_service.dart';
-import 'package:intl/intl.dart';
+import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
@@ -171,23 +171,6 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
     }
   }
 
-  String _formatMarathiTime(DateTime time) {
-    final hour = time.hour;
-    String period;
-    if (hour >= 5 && hour < 12) {
-      period = "सकाळी"; // Morning
-    } else if (hour >= 12 && hour < 17) {
-      period = "दुपारी"; // Afternoon
-    } else if (hour >= 17 && hour < 20) {
-      period = "सायंकाळी"; // Evening
-    } else {
-      period = "रात्री"; // Night
-    }
-    final formattedTime = DateFormat('hh:mm').format(time);
-    final marathiTime = toMarathiNumerals(formattedTime);
-    return '$period $marathiTime';
-  }
-
   List<dynamic> _getGroupedEvents(List<Event> events) {
     final List<dynamic> grouped = [];
     String? currentMonth;
@@ -195,7 +178,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
 
     for (var event in events) {
       final date = event.start_time.toDate();
-      final monthYear = DateFormat('MMMM yyyy', locale).format(date);
+      final monthYear = formatMonthYear(date, locale);
 
       if (monthYear != currentMonth) {
         grouped.add(monthYear);
@@ -292,7 +275,9 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(
+            alpha: 0.7,
+          ),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: localizations.calendarTitle),
@@ -416,26 +401,15 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
     final details =
         (locale == 'mr' ? event.details_mr : event.details_en) ?? '';
 
-    final String startTime;
-    final String? endTime;
+    final startTime = formatTimeDetailed(event.start_time.toDate(), locale);
+    final String? endTime = event.end_time != null
+        ? formatTimeDetailed(event.end_time!.toDate(), locale)
+        : null;
 
-    if (locale == 'mr') {
-      startTime = _formatMarathiTime(event.start_time.toDate());
-      endTime = event.end_time != null
-          ? _formatMarathiTime(event.end_time!.toDate())
-          : null;
-    } else {
-      final timeFormatter = DateFormat.jm(locale);
-      startTime = timeFormatter.format(event.start_time.toDate());
-      endTime = event.end_time != null
-          ? timeFormatter.format(event.end_time!.toDate())
-          : null;
-    }
-
-    final eventDateString = DateFormat(
-      'EEEE, d MMMM y',
+    final eventDateString = formatDateWithDay(
+      event.start_time.toDate(),
       locale,
-    ).format(event.start_time.toDate());
+    );
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -466,10 +440,9 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
               title,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color:
-                    isSelected
-                        ? theme.colorScheme.onPrimary
-                        : theme.colorScheme.primary,
+                color: isSelected
+                    ? theme.colorScheme.onPrimary
+                    : theme.colorScheme.primary,
               ),
             ),
             const SizedBox(height: 8),
@@ -478,19 +451,17 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
                 Icon(
                   Icons.access_time,
                   size: 16,
-                  color:
-                      isSelected
-                          ? theme.colorScheme.onPrimary
-                          : theme.colorScheme.primary,
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.colorScheme.primary,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   endTime != null ? '$startTime - $endTime' : startTime,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color:
-                        isSelected
-                            ? theme.colorScheme.onPrimary
-                            : theme.appColors.secondaryText,
+                    color: isSelected
+                        ? theme.colorScheme.onPrimary
+                        : theme.appColors.secondaryText,
                   ),
                 ),
               ],
@@ -498,35 +469,31 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
             if (location.isNotEmpty) ...[
               const SizedBox(height: 8),
               InkWell(
-                onTap:
-                    event.address != null
-                        ? () => _launchMaps(event.address!)
-                        : null,
+                onTap: event.address != null
+                    ? () => _launchMaps(event.address!)
+                    : null,
                 child: Row(
                   children: [
                     Icon(
                       Icons.location_on,
                       size: 16,
-                      color:
-                          isSelected
-                              ? theme.colorScheme.onPrimary
-                              : theme.colorScheme.primary,
+                      color: isSelected
+                          ? theme.colorScheme.onPrimary
+                          : theme.colorScheme.primary,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         location,
                         style: TextStyle(
-                          decoration:
-                              event.address != null
-                                  ? TextDecoration.underline
-                                  : TextDecoration.none,
-                          color:
-                              isSelected
-                                  ? theme.colorScheme.onPrimary
-                                  : (event.address != null
-                                      ? theme.colorScheme.primary
-                                      : theme.appColors.secondaryText),
+                          decoration: event.address != null
+                              ? TextDecoration.underline
+                              : TextDecoration.none,
+                          color: isSelected
+                              ? theme.colorScheme.onPrimary
+                              : (event.address != null
+                                    ? theme.colorScheme.primary
+                                    : theme.appColors.secondaryText),
                         ),
                       ),
                     ),
@@ -537,19 +504,17 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
             if (details.isNotEmpty) ...[
               const SizedBox(height: 12),
               Divider(
-                color:
-                    isSelected
-                        ? theme.colorScheme.onPrimary.withValues(alpha: 0.3)
-                        : theme.appColors.divider,
+                color: isSelected
+                    ? theme.colorScheme.onPrimary.withValues(alpha: 0.3)
+                    : theme.appColors.divider,
               ),
               const SizedBox(height: 4),
               Text(
                 details,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color:
-                      isSelected
-                          ? theme.colorScheme.onPrimary
-                          : theme.appColors.secondaryText,
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.appColors.secondaryText,
                 ),
               ),
             ],

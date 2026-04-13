@@ -6,7 +6,8 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/calendar_export_service.dart';
-import 'package:intl/intl.dart';
+import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/utils/parayan_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
@@ -65,7 +66,9 @@ class _ParayanListScreenState extends State<ParayanListScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(
+            alpha: 0.7,
+          ),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: localizations.upcomingParayansTab),
@@ -191,7 +194,7 @@ class _ParayanListScreenState extends State<ParayanListScreen>
     // Group events by month/year
     final grouped = <String, List<ParayanEvent>>{};
     for (final event in events) {
-      final monthKey = DateFormat('MMMM yyyy', locale).format(event.startDate);
+      final monthKey = formatMonthYear(event.startDate, locale);
       grouped.putIfAbsent(monthKey, () => []).add(event);
     }
 
@@ -224,17 +227,7 @@ class _ParayanListScreenState extends State<ParayanListScreen>
 
         final event = item as ParayanEvent;
         final title = locale == 'mr' ? event.titleMr : event.titleEn;
-
-        final isSingleDay =
-            event.type == ParayanType.oneDay ||
-            event.type == ParayanType.guruPushya;
-        final dateRange = isSingleDay
-            ? (locale == 'mr'
-                  ? DateFormat('d MMMM, yyyy', 'mr').format(event.startDate)
-                  : DateFormat('MMMM d, yyyy').format(event.startDate))
-            : (locale == 'mr'
-                  ? "${DateFormat('d MMMM', 'mr').format(event.startDate)} - ${DateFormat('d MMMM, yyyy', 'mr').format(event.endDate)}"
-                  : "${DateFormat('MMMM d').format(event.startDate)} - ${DateFormat('MMMM d, yyyy').format(event.endDate)}");
+        final dateRange = event.getSmartDate(locale);
         final typeLabel = event.type == ParayanType.oneDay
             ? localizations.oneDayParayan
             : event.type == ParayanType.threeDay
@@ -249,11 +242,10 @@ class _ParayanListScreenState extends State<ParayanListScreen>
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
             onTap: () {
-              Navigator.push(
+              Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => ParayanDetailScreen(event: event),
-                ),
+                Routes.parayanDetail,
+                arguments: event,
               );
             },
             child: Padding(
@@ -301,9 +293,7 @@ class _ParayanListScreenState extends State<ParayanListScreen>
                       const SizedBox(width: 8),
                       Text(
                         dateRange,
-                        style: TextStyle(
-                          color: theme.appColors.secondaryText,
-                        ),
+                        style: TextStyle(color: theme.appColors.secondaryText),
                       ),
                     ],
                   ),
