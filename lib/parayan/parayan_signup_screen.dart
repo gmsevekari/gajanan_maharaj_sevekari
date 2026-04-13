@@ -13,11 +13,13 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 class ParayanSignupScreen extends StatefulWidget {
   final ParayanEvent event;
   final ParayanHousehold? existingEnrollment;
+  final ParayanService? parayanService;
 
   const ParayanSignupScreen({
     super.key,
     required this.event,
     this.existingEnrollment,
+    this.parayanService,
   });
 
   @override
@@ -26,7 +28,7 @@ class ParayanSignupScreen extends StatefulWidget {
 
 class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _parayanService = ParayanService();
+  late final ParayanService _parayanService;
 
   final List<TextEditingController> _nameControllers = [
     TextEditingController(),
@@ -39,6 +41,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
   @override
   void initState() {
     super.initState();
+    _parayanService = widget.parayanService ?? ParayanService();
     if (widget.existingEnrollment != null) {
       final household = widget.existingEnrollment!;
       _nameControllers.clear();
@@ -401,7 +404,9 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                   }),
 
                   const SizedBox(height: 24),
-                  Divider(color: theme.appColors.divider.withValues(alpha: 0.2)),
+                  Divider(
+                    color: theme.appColors.divider.withValues(alpha: 0.2),
+                  ),
                   const SizedBox(height: 24),
 
                   const SizedBox(height: 24),

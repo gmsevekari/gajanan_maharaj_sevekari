@@ -14,8 +14,8 @@ class ParayanService {
   final FirebaseFunctions _functions;
 
   ParayanService({FirebaseFirestore? firestore, FirebaseFunctions? functions})
-      : _db = firestore ?? FirebaseFirestore.instance,
-        _functions = functions ?? FirebaseFunctions.instance;
+    : _db = firestore ?? FirebaseFirestore.instance,
+      _functions = functions ?? FirebaseFunctions.instance;
 
   // Collection reference
   CollectionReference get _eventsRef => _db.collection('parayan_events');
@@ -63,8 +63,9 @@ class ParayanService {
         .where('endDate', isGreaterThanOrEqualTo: Timestamp.now());
 
     return query.snapshots().map((snapshot) {
-      final events =
-          snapshot.docs.map((doc) => ParayanEvent.fromFirestore(doc)).toList();
+      final events = snapshot.docs
+          .map((doc) => ParayanEvent.fromFirestore(doc))
+          .toList();
 
       // Sort by startDate ascending (nearest first)
       events.sort((a, b) => a.startDate.compareTo(b.startDate));
@@ -259,7 +260,12 @@ class ParayanService {
           members.sort((a, b) {
             final aIdx = a.globalIndex ?? -1;
             final bIdx = b.globalIndex ?? -1;
-            if (aIdx != -1 && bIdx != -1) return aIdx.compareTo(bIdx);
+
+            if (aIdx != bIdx) {
+              if (aIdx == -1) return 1;
+              if (bIdx == -1) return -1;
+              return aIdx.compareTo(bIdx);
+            }
 
             final aFirst = a.assignedAdhyays.isNotEmpty
                 ? a.assignedAdhyays.first

@@ -21,6 +21,7 @@ import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_group_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/preallocated_parayan_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
@@ -106,7 +107,9 @@ void main() async {
   ]);
 
   // After loading, check if we need to auto-apply a festival theme
-  await themeProvider.checkAndApplyFestivalTheme(festivalProvider.activeFestival);
+  await themeProvider.checkAndApplyFestivalTheme(
+    festivalProvider.activeFestival,
+  );
 
   runApp(
     MultiProvider(
@@ -278,7 +281,8 @@ class _MyAppState extends State<MyApp> {
             return MaterialApp(
               navigatorKey: NavigatorService.navigatorKey,
               scaffoldMessengerKey: NavigatorService.scaffoldMessengerKey,
-              builder: (context, child) => FestivalOverlay(child: child ?? const SizedBox.shrink()),
+              builder: (context, child) =>
+                  FestivalOverlay(child: child ?? const SizedBox.shrink()),
               onGenerateTitle: (context) =>
                   AppLocalizations.of(context)!.appName,
               theme: AppTheme.getTheme(
@@ -310,7 +314,8 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminTempleNotifications: (context) =>
                     const AdminTempleNotificationsScreen(),
                 Routes.adminParayanCoordination: (context) {
-                  final adminUser = ModalRoute.of(context)?.settings.arguments as AdminUser?;
+                  final adminUser =
+                      ModalRoute.of(context)?.settings.arguments as AdminUser?;
                   return ParayanCoordinationDashboard(adminUser: adminUser);
                 },
                 Routes.adminCreateParayan: (context) {
@@ -327,7 +332,8 @@ class _MyAppState extends State<MyApp> {
                     const UserNotificationsScreen(),
                 Routes.parayanGroups: (context) => const ParayanGroupScreen(),
                 Routes.parayanList: (context) {
-                  final args = ModalRoute.of(context)?.settings.arguments as Map?;
+                  final args =
+                      ModalRoute.of(context)?.settings.arguments as Map?;
                   return ParayanListScreen(
                     groupId: args?['groupId'],
                     groupName: args?['groupName'],
@@ -386,18 +392,38 @@ class _MyAppState extends State<MyApp> {
                       ),
                     );
                   case Routes.parayanDetail:
+                    String? eventId;
+                    ParayanEvent? event;
+                    String? joinCode;
+
                     if (settings.arguments is ParayanEvent) {
-                      return MaterialPageRoute(
-                        builder: (context) => ParayanDetailScreen(
-                          event: settings.arguments as ParayanEvent,
-                        ),
-                      );
+                      event = settings.arguments as ParayanEvent;
+                      eventId = event.id;
                     } else if (settings.arguments is Map) {
                       final args = settings.arguments as Map;
+                      eventId = args['id'];
+                      joinCode = args['joinCode'];
+                    }
+
+                    if (eventId != null &&
+                        eventId.startsWith('gajanan_gunjan')) {
+                      return MaterialPageRoute(
+                        builder: (context) => PreallocatedParayanDetailScreen(
+                          event: event,
+                          eventId: eventId,
+                        ),
+                      );
+                    }
+
+                    if (event != null) {
+                      return MaterialPageRoute(
+                        builder: (context) => ParayanDetailScreen(event: event),
+                      );
+                    } else if (eventId != null) {
                       return MaterialPageRoute(
                         builder: (context) => ParayanDetailScreen(
-                          eventId: args['id'],
-                          prefilledJoinCode: args['joinCode'],
+                          eventId: eventId,
+                          prefilledJoinCode: joinCode,
                         ),
                       );
                     }
