@@ -518,6 +518,54 @@ abstract class AppLocalizations {
   /// **'Karpur Aarti'**
   String get karpurAarti;
 
+  /// No description provided for @findMyAllocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Find My Adhyays'**
+  String get findMyAllocationLabel;
+
+  /// No description provided for @findMyAllocationPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Use \'Find My Adhyays\' to see your adhyay allocation.'**
+  String get findMyAllocationPlaceholder;
+
+  /// No description provided for @claimSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Adhyay allocation linked successfully!'**
+  String get claimSuccessMessage;
+
+  /// No description provided for @alreadyLinkedPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'This phone number is already linked to another device. Move it to this device?'**
+  String get alreadyLinkedPrompt;
+
+  /// No description provided for @phoneNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Phone Number'**
+  String get phoneNumberHint;
+
+  /// No description provided for @invalidPhoneError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid phone number'**
+  String get invalidPhoneError;
+
+  /// No description provided for @claimInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Linking allocation...'**
+  String get claimInProgress;
+
+  /// No description provided for @noAllocationFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No allocation found for this phone number.'**
+  String get noAllocationFound;
+
   /// No description provided for @prarthana.
   ///
   /// In en, this message translates to:
@@ -1963,6 +2011,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Completed'**
   String get statusCompleted;
+
+  /// No description provided for @parayanWillStartOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan will start on {date}'**
+  String parayanWillStartOn(String date);
 
   /// No description provided for @day1Label.
   ///

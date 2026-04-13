@@ -219,6 +219,32 @@ class AppLocalizationsMr extends AppLocalizations {
   String get karpurAarti => 'कर्पूर आरती';
 
   @override
+  String get findMyAllocationLabel => 'माझे अध्याय शोधा';
+
+  @override
+  String get findMyAllocationPlaceholder =>
+      'तुमचे अध्याय पाहण्यासाठी \'माझे अध्याय शोधा\' वर क्लिक करा.';
+
+  @override
+  String get claimSuccessMessage => 'अध्याय यशस्वीरीत्या लिंक झाले!';
+
+  @override
+  String get alreadyLinkedPrompt =>
+      'हा फोन नंबर आधीच दुसऱ्या फोनवर जोडला गेला आहे. तो या फोनवर घ्यायचा आहे का?';
+
+  @override
+  String get phoneNumberHint => 'फोन नंबर टाका';
+
+  @override
+  String get invalidPhoneError => 'कृपया योग्य फोन नंबर टाका';
+
+  @override
+  String get claimInProgress => 'अध्याय लिंक करत आहे...';
+
+  @override
+  String get noAllocationFound => 'या फोन नंबरशी कोणतेही अध्याय जोडलेले नाहीत.';
+
+  @override
   String get prarthana => 'प्रार्थना';
 
   @override
@@ -992,6 +1018,11 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get statusCompleted => 'पूर्ण झाले';
+
+  @override
+  String parayanWillStartOn(String date) {
+    return 'पारायण $date पासून सुरू होईल';
+  }
 
   @override
   String get day1Label => 'दिवस १';

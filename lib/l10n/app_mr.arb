@@ -69,6 +69,14 @@
   "dnyaneshwarMaharajAarti": "ज्ञानेश्वर महाराज आरती",
   "tukaramMaharajAarti": "तुकाराम महाराज आरती",
   "karpurAarti": "कर्पूर आरती",
+  "findMyAllocationLabel": "माझे अध्याय शोधा",
+  "findMyAllocationPlaceholder": "तुमचे अध्याय पाहण्यासाठी 'माझे अध्याय शोधा' वर क्लिक करा.",
+  "claimSuccessMessage": "अध्याय यशस्वीरीत्या लिंक झाले!",
+  "alreadyLinkedPrompt": "हा फोन नंबर आधीच दुसऱ्या फोनवर जोडला गेला आहे. तो या फोनवर घ्यायचा आहे का?",
+  "phoneNumberHint": "फोन नंबर टाका",
+  "invalidPhoneError": "कृपया योग्य फोन नंबर टाका",
+  "claimInProgress": "अध्याय लिंक करत आहे...",
+  "noAllocationFound": "या फोन नंबरशी कोणतेही अध्याय जोडलेले नाहीत.",
   "prarthana": "प्रार्थना",
   "mantrapushpanjali": "मंत्रपुष्पांजली",
   "kakadAarti": "काकड आरती",
@@ -376,6 +384,14 @@
   "statusEnrolling": "प्रवेश सुरू",
   "statusOngoing": "सुरू आहे",
   "statusCompleted": "पूर्ण झाले",
+  "parayanWillStartOn": "पारायण {date} पासून सुरू होईल",
+  "@parayanWillStartOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "day1Label": "दिवस १",
   "day2Label": "दिवस २",
   "day3Label": "दिवस ३",

@@ -69,6 +69,14 @@
   "dnyaneshwarMaharajAarti": "Dnyaneshwar Maharaj Aarti",
   "tukaramMaharajAarti": "Tukaram Maharaj Aarti",
   "karpurAarti": "Karpur Aarti",
+  "findMyAllocationLabel": "Find My Adhyays",
+  "findMyAllocationPlaceholder": "Use 'Find My Adhyays' to see your adhyay allocation.",
+  "claimSuccessMessage": "Adhyay allocation linked successfully!",
+  "alreadyLinkedPrompt": "This phone number is already linked to another device. Move it to this device?",
+  "phoneNumberHint": "Enter Phone Number",
+  "invalidPhoneError": "Please enter a valid phone number",
+  "claimInProgress": "Linking allocation...",
+  "noAllocationFound": "No allocation found for this phone number.",
   "prarthana": "Prarthana",
   "mantrapushpanjali": "Mantrapushpanjali",
   "kakadAarti": "Kakad Aarti",
@@ -376,6 +384,14 @@
   "statusEnrolling": "Enrolling",
   "statusOngoing": "Ongoing",
   "statusCompleted": "Completed",
+  "parayanWillStartOn": "Parayan will start on {date}",
+  "@parayanWillStartOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "day1Label": "Day 1",
   "day2Label": "Day 2",
   "day3Label": "Day 3",

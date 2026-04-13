@@ -219,6 +219,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get karpurAarti => 'Karpur Aarti';
 
   @override
+  String get findMyAllocationLabel => 'Find My Adhyays';
+
+  @override
+  String get findMyAllocationPlaceholder =>
+      'Use \'Find My Adhyays\' to see your adhyay allocation.';
+
+  @override
+  String get claimSuccessMessage => 'Adhyay allocation linked successfully!';
+
+  @override
+  String get alreadyLinkedPrompt =>
+      'This phone number is already linked to another device. Move it to this device?';
+
+  @override
+  String get phoneNumberHint => 'Enter Phone Number';
+
+  @override
+  String get invalidPhoneError => 'Please enter a valid phone number';
+
+  @override
+  String get claimInProgress => 'Linking allocation...';
+
+  @override
+  String get noAllocationFound => 'No allocation found for this phone number.';
+
+  @override
   String get prarthana => 'Prarthana';
 
   @override
@@ -991,6 +1017,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusCompleted => 'Completed';
+
+  @override
+  String parayanWillStartOn(String date) {
+    return 'Parayan will start on $date';
+  }
 
   @override
   String get day1Label => 'Day 1';
