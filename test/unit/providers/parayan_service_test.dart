@@ -43,25 +43,6 @@ void main() {
     mockCallable = MockHttpsCallable();
     mockCallableResult = MockHttpsCallableResult();
 
-    when(() => mockFirestore.collection(any())).thenReturn(mockCollection);
-    when(() => mockCollection.doc(any())).thenReturn(mockDocument);
-    when(
-      () => mockCollection.where(
-        any(),
-        isEqualTo: any(named: 'isEqualTo'),
-        isGreaterThanOrEqualTo: any(named: 'isGreaterThanOrEqualTo'),
-      ),
-    ).thenReturn(mockCollection);
-    when(
-      () => mockCollection.get(),
-    ).thenAnswer((_) async => MockQuerySnapshot());
-    when(
-      () => mockCollection.snapshots(),
-    ).thenAnswer((_) => Stream.value(MockQuerySnapshot()));
-
-    when(() => mockDocument.get()).thenAnswer((_) async => mockSnapshot);
-    when(() => mockDocument.set(any())).thenAnswer((_) async => {});
-    when(() => mockDocument.update(any())).thenAnswer((_) async => {});
     // Default wiring with BROAD matchers
     when(
       () => mockFirestore.collection(any()),

@@ -69,12 +69,4 @@ class MockAppConfigProvider extends Mock implements AppConfigProvider {}
 
 class MockLocaleProvider extends Mock implements LocaleProvider {}
 
-class MockWriteBatch extends Mock implements WriteBatch {}
-
-class MockQuerySnapshot extends Mock
-    implements QuerySnapshot<Map<String, dynamic>> {}
-
-class MockQueryDocumentSnapshot extends Mock
-    implements QueryDocumentSnapshot<Map<String, dynamic>> {}
-
 class MockQuery extends Mock implements Query<Map<String, dynamic>> {}

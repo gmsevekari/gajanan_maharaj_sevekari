@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
+import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
 
 class ClaimAllocationDialog extends StatefulWidget {
   final String eventId;
   final String deviceId;
+  final int daysCount;
   final ParayanService parayanService;
 
   const ClaimAllocationDialog({
     super.key,
     required this.eventId,
     required this.deviceId,
+    required this.daysCount,
     required this.parayanService,
   });
 
@@ -45,12 +50,30 @@ class _ClaimAllocationDialogState extends State<ClaimAllocationDialog> {
       if (!mounted) return;
 
       if (status == 'SUCCESS') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.claimSuccessMessage),
-          ),
-        );
-        Navigator.pop(context, true);
+        final localizations = AppLocalizations.of(context)!;
+
+        // Subscribe to topics
+        final prefs = await SharedPreferences.getInstance();
+        final parayanRemindersEnabled =
+            prefs.getBool(NotificationConstants.parayanRemindersPrefKey) ??
+            true;
+
+        if (parayanRemindersEnabled) {
+          final List<String> topics = [];
+          for (int i = 1; i <= widget.daysCount; i++) {
+            topics.add(
+              NotificationConstants.getParayanReminderTopic(widget.eventId, i),
+            );
+          }
+          await NotificationServiceHelper.addPendingSubscriptions(topics);
+        }
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(localizations.claimSuccessMessage)),
+          );
+          Navigator.pop(context, true);
+        }
       } else if (status == 'CONFLICT') {
         _showConflictDialog(fullPhone);
       } else if (status == 'NOT_FOUND') {

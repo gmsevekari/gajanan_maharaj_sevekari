@@ -69,6 +69,7 @@ class _PreallocatedParayanDetailScreenState
       builder: (context) => ClaimAllocationDialog(
         eventId: _event!.id,
         deviceId: _deviceId!,
+        daysCount: _event!.type.daysCount,
         parayanService: _service,
       ),
     );

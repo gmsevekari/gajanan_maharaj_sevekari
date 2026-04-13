@@ -10,12 +10,16 @@ import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import '../../mocks.dart';
 
 void main() {
   late MockParayanService mockService;
   late MockFestivalProvider mockFestivalProvider;
   late MockThemeProvider mockThemeProvider;
+  late MockFirebaseMessaging mockFirebaseMessaging;
   late MockFontProvider mockFontProvider;
   late MockAppConfigProvider mockAppConfigProvider;
 
@@ -23,6 +27,7 @@ void main() {
     mockService = MockParayanService();
     mockFestivalProvider = MockFestivalProvider();
     mockThemeProvider = MockThemeProvider();
+    mockFirebaseMessaging = MockFirebaseMessaging();
     mockFontProvider = MockFontProvider();
     mockAppConfigProvider = MockAppConfigProvider();
 
@@ -30,6 +35,15 @@ void main() {
     when(() => mockThemeProvider.themePreset).thenReturn(ThemePreset.tulsi);
     when(() => mockThemeProvider.themeMode).thenReturn(ThemeMode.light);
     when(() => mockThemeProvider.customColor).thenReturn(null);
+    when(
+      () => mockFirebaseMessaging.subscribeToTopic(any()),
+    ).thenAnswer((_) async => {});
+
+    NotificationServiceHelper.overrideMessaging = mockFirebaseMessaging;
+
+    SharedPreferences.setMockInitialValues({
+      NotificationConstants.parayanRemindersPrefKey: true,
+    });
   });
 
   Widget createTestWidget(Widget child) {
@@ -71,6 +85,7 @@ void main() {
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
+              daysCount: 3,
               parayanService: mockService,
             ),
           ),
@@ -110,6 +125,7 @@ void main() {
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
+              daysCount: 3,
               parayanService: mockService,
             ),
           ),
@@ -174,6 +190,7 @@ void main() {
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
+              daysCount: 3,
               parayanService: mockService,
             ),
           ),
@@ -221,6 +238,7 @@ void main() {
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
+              daysCount: 3,
               parayanService: mockService,
             ),
           ),
@@ -259,6 +277,7 @@ void main() {
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
+              daysCount: 3,
               parayanService: mockService,
             ),
           ),
@@ -287,6 +306,7 @@ void main() {
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
+              daysCount: 3,
               parayanService: mockService,
             ),
           ),
@@ -338,6 +358,7 @@ void main() {
                     builder: (_) => ClaimAllocationDialog(
                       eventId: 'e1',
                       deviceId: 'd1',
+                      daysCount: 3,
                       parayanService: mockService,
                     ),
                   ),

@@ -12,8 +12,14 @@ import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.da
 class NotificationServiceHelper {
   static const String _pendingSubscriptionsKey = 'pending_fcm_subscriptions';
 
+  @visibleForTesting
+  static FirebaseMessaging? overrideMessaging;
+
   /// Add a list of topics to be subscribed to in the background.
-  static Future<void> addPendingSubscriptions(List<String> topics, {FirebaseMessaging? messaging}) async {
+  static Future<void> addPendingSubscriptions(
+    List<String> topics, {
+    FirebaseMessaging? messaging,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     final existingJson = prefs.getString(_pendingSubscriptionsKey);
     List<String> pending = [];
@@ -35,7 +41,9 @@ class NotificationServiceHelper {
   }
 
   /// Attempt to subscribe to all pending topics.
-  static Future<void> _processPendingSubscriptions({FirebaseMessaging? messaging}) async {
+  static Future<void> _processPendingSubscriptions({
+    FirebaseMessaging? messaging,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     final existingJson = prefs.getString(_pendingSubscriptionsKey);
     if (existingJson == null) return;
@@ -48,15 +56,13 @@ class NotificationServiceHelper {
       return;
     }
 
-    final fcm = messaging ?? FirebaseMessaging.instance;
+    final fcm = messaging ?? overrideMessaging ?? FirebaseMessaging.instance;
     final List<String> succeeded = [];
 
     for (var topic in pending) {
       try {
         debugPrint('Attempting background subscription to topic: $topic');
-        await fcm
-            .subscribeToTopic(topic)
-            .timeout(const Duration(seconds: 10));
+        await fcm.subscribeToTopic(topic).timeout(const Duration(seconds: 10));
         succeeded.add(topic);
         debugPrint('Successfully subscribed to topic: $topic');
       } catch (e) {
@@ -168,7 +174,10 @@ class NotificationServiceHelper {
   }
 
   /// Unsubscribe from reminder topics for a specific event.
-  static Future<void> unsubscribeFromEventTopics(String eventId, int days) async {
+  static Future<void> unsubscribeFromEventTopics(
+    String eventId,
+    int days,
+  ) async {
     if (kIsWeb) return;
     try {
       final messaging = FirebaseMessaging.instance;

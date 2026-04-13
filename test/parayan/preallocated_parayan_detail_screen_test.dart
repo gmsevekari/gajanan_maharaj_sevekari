@@ -103,9 +103,20 @@ void main() {
       expect(find.textContaining('Use \'Find My Adhyays\''), findsOneWidget);
 
       // Verify "Find My Adhyays" button is enabled
-      final finder = find.widgetWithText(ElevatedButton, 'Find My Adhyays');
-      expect(finder, findsOneWidget);
-      final button = tester.widget<ElevatedButton>(finder);
+      final buttonFinder = find.ancestor(
+        of: find.byIcon(Icons.person_search),
+        matching: find.byType(ElevatedButton),
+      );
+      expect(buttonFinder, findsOneWidget);
+      expect(
+        find.descendant(
+          of: buttonFinder,
+          matching: find.text('Find My Adhyays'),
+        ),
+        findsOneWidget,
+      );
+
+      final button = tester.widget<ElevatedButton>(buttonFinder);
       expect(button.onPressed, isNotNull);
     });
 
@@ -139,10 +150,18 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        // Verify "Find My Adhyays" button is present but disabled
-        final finder = find.widgetWithText(ElevatedButton, 'Find My Adhyays');
-        expect(finder, findsOneWidget);
-        final button = tester.widget<ElevatedButton>(finder);
+        // Verify "Signed Up" button is present but disabled
+        final buttonFinder = find.ancestor(
+          of: find.byIcon(Icons.check_circle_outline),
+          matching: find.byType(ElevatedButton),
+        );
+        expect(buttonFinder, findsOneWidget);
+        expect(
+          find.descendant(of: buttonFinder, matching: find.text('Signed Up')),
+          findsOneWidget,
+        );
+
+        final button = tester.widget<ElevatedButton>(buttonFinder);
         expect(button.onPressed, isNull);
 
         // Verify placeholder is GONE and list items are shown
@@ -223,11 +242,11 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Find My Adhyays'));
+      await tester.tap(find.byIcon(Icons.person_search));
       await tester.pumpAndSettle();
 
       // Verify ClaimAllocationDialog is shown
-      expect(find.text('Find My Adhyays'), findsWidgets);
+      expect(find.byType(ClaimAllocationDialog), findsOneWidget);
 
       // Simulate dialog returning true
       Navigator.pop(tester.element(find.byType(ClaimAllocationDialog)), true);
