@@ -131,7 +131,7 @@ class _PreallocatedParayanDetailScreenState
             children: [
               // Header Card
               Padding(
-                padding: EdgeInsets.all(isLandscape ? 8.0 : 16.0),
+                padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 4.0),
                 child: Card(
                   margin: EdgeInsets.zero,
                   clipBehavior: Clip.antiAlias,
@@ -142,132 +142,82 @@ class _PreallocatedParayanDetailScreenState
                         Container(width: 4, color: theme.colorScheme.primary),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.all(isLandscape ? 8.0 : 16.0),
+                            padding: EdgeInsets.all(isLandscape ? 8.0 : 12.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  localizations.parayanDetailsHeader,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    color: theme.colorScheme.secondary,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.2,
-                                    fontSize: isLandscape ? 14 : null,
-                                  ),
-                                ),
-                                SizedBox(height: isLandscape ? 4 : 12),
+                                // Row 1: Date & Time
                                 Row(
                                   children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            localizations.dateLabel,
-                                            style: theme.textTheme.bodySmall
-                                                ?.copyWith(
-                                                  color: theme
-                                                      .colorScheme
-                                                      .onSurfaceVariant,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: isLandscape
-                                                      ? 10
-                                                      : null,
-                                                ),
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            _event!.getSmartDate(locale),
-                                            style: theme.textTheme.titleMedium
-                                                ?.copyWith(
-                                                  color: theme
-                                                      .colorScheme
-                                                      .onSurface,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: isLandscape
-                                                      ? 14
-                                                      : null,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
+                                    Icon(
+                                      Icons.calendar_today_rounded,
+                                      size: isLandscape ? 16 : 18,
+                                      color: theme.colorScheme.primary,
                                     ),
-                                    Container(
-                                      width: 1,
-                                      height: isLandscape ? 20 : 30,
-                                      color: theme.colorScheme.outline,
-                                      margin: EdgeInsets.symmetric(
-                                        horizontal: isLandscape ? 8 : 16,
-                                      ),
-                                    ),
+                                    const SizedBox(width: 12),
                                     Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            localizations.typeLabel,
-                                            style: theme.textTheme.bodySmall
-                                                ?.copyWith(
-                                                  color: theme
-                                                      .colorScheme
-                                                      .onSurfaceVariant,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: isLandscape
-                                                      ? 10
-                                                      : null,
-                                                ),
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            _event!.type == ParayanType.oneDay
-                                                ? localizations.oneDayParayan
-                                                : _event!.type ==
-                                                      ParayanType.threeDay
-                                                ? localizations.threeDayParayan
-                                                : localizations
-                                                      .guruPushyaParayan,
-                                            style: theme.textTheme.titleMedium
-                                                ?.copyWith(
-                                                  color: theme
-                                                      .colorScheme
-                                                      .onSurface,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: isLandscape
-                                                      ? 14
-                                                      : null,
-                                                ),
-                                          ),
-                                        ],
+                                      child: Text(
+                                        _event!.getSmartDate(locale),
+                                        style: theme.textTheme.titleMedium?.copyWith(
+                                          color: theme.colorScheme.onSurface,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: isLandscape ? 14 : 16,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                if (!isLandscape &&
-                                    (_event!.descriptionEn.isNotEmpty ||
-                                        _event!.descriptionMr.isNotEmpty)) ...[
+                                const SizedBox(height: 8),
+                                // Row 2: Parayan Type
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.auto_stories_rounded,
+                                      size: isLandscape ? 16 : 18,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        (_event!.type == ParayanType.oneDay
+                                                ? localizations.oneDayParayan
+                                                : _event!.type == ParayanType.threeDay
+                                                    ? localizations.threeDayParayan
+                                                    : localizations.guruPushyaParayan)
+                                            .replaceAll(' ', '\u00A0'),
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                          color: theme.colorScheme.onSurfaceVariant,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: isLandscape ? 12 : 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                // Row 3: Description (if exists)
+                                if (_event!.descriptionEn.isNotEmpty ||
+                                    _event!.descriptionMr.isNotEmpty) ...[
                                   Divider(
-                                    height: 24,
-                                    color: theme.dividerColor,
+                                    height: 12,
+                                    color: theme.dividerColor.withOpacity(0.1),
                                   ),
                                   Text(
                                     locale == 'mr'
                                         ? _event!.descriptionMr
                                         : _event!.descriptionEn,
                                     style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.appColors.secondaryText,
-                                      height: 1.4,
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                      height: 1.5,
+                                      fontStyle: FontStyle.italic,
                                     ),
                                   ),
                                 ],
-                                SizedBox(height: isLandscape ? 4 : 12),
+                                const SizedBox(height: 8),
+                                // Row 4: Status Chip
                                 _buildInfoChip(
                                   context,
-                                  Icons.info_outline,
+                                  Icons.info_outline_rounded,
                                   _event!.getDescriptiveStatus(
                                     localizations,
                                     locale,
@@ -288,31 +238,13 @@ class _PreallocatedParayanDetailScreenState
               Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: 16.0,
-                  vertical: isLandscape ? 4 : 12,
+                  vertical: isLandscape ? 4 : 6,
                 ),
                 child: SizedBox(
                   width: double.infinity,
-                  height: isLandscape ? 40 : 48,
-                  child: ElevatedButton.icon(
+                  height: isLandscape ? 40 : 50,
+                  child: ElevatedButton(
                     onPressed: _isLinked ? null : _showClaimDialog,
-                    icon: Icon(
-                      _isLinked
-                          ? Icons.check_circle_outline
-                          : Icons.person_search,
-                      size: isLandscape ? 16 : 20,
-                    ),
-                    label: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        _isLinked
-                            ? localizations.signedUpLabel
-                            : localizations.findMyAllocationLabel,
-                        style: TextStyle(
-                          fontSize: isLandscape ? 14 : 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _isLinked
                           ? theme.appColors.disabledBackground
@@ -323,6 +255,31 @@ class _PreallocatedParayanDetailScreenState
                       elevation: _isLinked ? 0 : 4,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
+                      ),
+                      alignment: Alignment.center,
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _isLinked
+                                ? Icons.check_circle_outline
+                                : Icons.person_search,
+                            size: isLandscape ? 16 : 22,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            _isLinked
+                                ? localizations.signedUpLabel
+                                : localizations.findMyAllocationLabel,
+                            style: TextStyle(
+                              fontSize: isLandscape ? 14 : 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

@@ -998,7 +998,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         event.startDate.year == event.endDate.year &&
         event.startDate.month == event.endDate.month &&
         event.startDate.day == event.endDate.day;
-    final dateRange = event.getSmartDate(locale);
+    final dateRange = event.getSmartDate(locale, includeTime: false);
 
     return InkWell(
       onTap: () {

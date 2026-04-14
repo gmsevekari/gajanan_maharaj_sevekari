@@ -6,7 +6,7 @@ import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 extension ParayanEventFormatting on ParayanEvent {
   /// Returns a human-readable date range, intelligently handling same-day vs multi-day events.
   /// Includes time ranges for specific parayan types.
-  String getSmartDate(String locale) {
+  String getSmartDate(String locale, {bool includeTime = true}) {
     final isSameDay =
         startDate.year == endDate.year &&
         startDate.month == endDate.month &&
@@ -22,7 +22,7 @@ extension ParayanEventFormatting on ParayanEvent {
     }
 
     // Add time range for multi-day or specialized events
-    if (type == ParayanType.guruPushya || type == ParayanType.threeDay) {
+    if (includeTime && (type == ParayanType.guruPushya || type == ParayanType.threeDay)) {
       final startTime = formatTimeLocalized(startDate, locale);
       final endTime = formatTimeLocalized(endDate, locale);
       return "$dateStr ($startTime - $endTime)";
