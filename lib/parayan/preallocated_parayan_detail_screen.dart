@@ -121,6 +121,10 @@ class _PreallocatedParayanDetailScreenState
                   (_) => false,
                 ),
               ),
+              IconButton(
+                icon: const ThemedIcon(LogicalIcon.settings),
+                onPressed: () => Navigator.pushNamed(context, Routes.settings),
+              ),
             ],
           ),
           body: Column(
