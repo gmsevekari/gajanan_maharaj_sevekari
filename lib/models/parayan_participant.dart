@@ -76,6 +76,8 @@ class ParayanMember {
       assignedAdhyays.isNotEmpty &&
       completions.isNotEmpty &&
       completions.values.every((v) => v);
+
+  bool get isClaimed => deviceId != null && deviceId != 'ADMIN_MANUAL';
 }
 
 class ParayanHousehold {

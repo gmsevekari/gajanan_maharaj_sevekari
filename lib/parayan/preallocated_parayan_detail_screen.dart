@@ -297,13 +297,16 @@ class _PreallocatedParayanDetailScreenState
                           : Icons.person_search,
                       size: isLandscape ? 16 : 20,
                     ),
-                    label: Text(
-                      _isLinked
-                          ? localizations.signedUpLabel
-                          : localizations.findMyAllocationLabel,
-                      style: TextStyle(
-                        fontSize: isLandscape ? 14 : 16,
-                        fontWeight: FontWeight.bold,
+                    label: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        _isLinked
+                            ? localizations.signedUpLabel
+                            : localizations.findMyAllocationLabel,
+                        style: TextStyle(
+                          fontSize: isLandscape ? 14 : 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     style: ElevatedButton.styleFrom(

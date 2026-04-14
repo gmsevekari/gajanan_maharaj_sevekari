@@ -21,7 +21,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
-enum _ParticipantFilter { all, completed, pending }
+enum _ParticipantFilter { all, completed, pending, unclaimed }
 
 class ParayanAdminDetailScreen extends StatefulWidget {
   final ParayanEvent event;
@@ -42,6 +42,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
   late Stream<List<ParayanMember>> _participantsTabStream;
   late Stream<ParayanEvent> _eventStream;
   _ParticipantFilter _currentFilter = _ParticipantFilter.all;
+  bool _isStatusLocked = true;
 
   @override
   void initState() {
@@ -248,6 +249,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           completedAdhyays += p.completions.values.where((c) => c).length;
         }
 
+        int claimedCount = participants.where((p) => p.isClaimed).length;
+
         final progress = totalAdhyays > 0
             ? completedAdhyays / totalAdhyays
             : 0.0;
@@ -324,23 +327,32 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _StatCard(
+                      label: l10n.claimedLabel.toUpperCase(),
+                      value:
+                          '${_formatNumber(context, claimedCount)} / ${_formatNumber(context, participants.length)}',
+                      subtext: '',
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: _ProgressStatCard(
                       label: l10n.progressLabel.toUpperCase(),
                       value:
                           '${_formatNumber(context, (progress * 100).toStringAsFixed(0))}%',
                       subtext:
-                          '${_formatNumber(context, completedAdhyays)} / ${_formatNumber(context, totalAdhyays)} ${l10n.adhyay}',
+                          '${_formatNumber(context, completedAdhyays)} / ${_formatNumber(context, totalAdhyays)}',
                       progress: progress,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             _buildStatusUpdateSection(l10n, theme, event),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             Text(
               l10n.quickActionsLabel.toUpperCase(),
               style: theme.textTheme.labelSmall?.copyWith(
@@ -440,7 +452,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             _buildRemindersSection(l10n, theme, event),
           ],
         );
@@ -453,104 +465,138 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     ThemeData theme,
     ParayanEvent event,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.updateStatusLabel.toUpperCase(),
-          style: theme.textTheme.labelSmall?.copyWith(
-            letterSpacing: 1.2,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Column(
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              width: double.infinity,
-              child: SegmentedButton<String>(
-                style: SegmentedButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  visualDensity: VisualDensity.compact,
-                  textStyle: const TextStyle(fontSize: 11),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.updateStatusLabel.toUpperCase(),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    letterSpacing: 1.2,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
                 ),
-                emptySelectionAllowed: true,
-                segments: [
-                  ButtonSegment(
-                    value: 'upcoming',
-                    label: Text(l10n.statusUpcoming),
-                    icon: const Icon(Icons.calendar_today_outlined, size: 14),
+                IconButton(
+                  icon: Icon(
+                    _isStatusLocked ? Icons.lock_outline : Icons.lock_open,
+                    size: 18,
+                    color: _isStatusLocked
+                        ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
+                        : theme.colorScheme.primary,
                   ),
-                  ButtonSegment(
-                    value: 'enrolling',
-                    label: Text(l10n.statusEnrolling),
-                    icon: const Icon(Icons.person_add_outlined, size: 14),
-                  ),
-                  ButtonSegment(
-                    value: 'allocated',
-                    label: Text(l10n.statusAllocated),
-                    icon: const Icon(
-                      Icons.assignment_turned_in_outlined,
-                      size: 14,
-                    ),
-                  ),
-                ],
-                selected:
-                    [
-                      'upcoming',
-                      'enrolling',
-                      'allocated',
-                    ].contains(event.status)
-                    ? {event.status}
-                    : {},
-                onSelectionChanged: (Set<String> newSelection) {
-                  final value = newSelection.firstOrNull;
-                  if (value != null && value != event.status) {
-                    _updateStatus(event, value);
-                  }
-                },
-                showSelectedIcon: false,
-              ),
+                  onPressed: () {
+                    setState(() {
+                      _isStatusLocked = !_isStatusLocked;
+                    });
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: SegmentedButton<String>(
-                style: SegmentedButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  visualDensity: VisualDensity.compact,
-                  textStyle: const TextStyle(fontSize: 11),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            const SizedBox(height: 16),
+            IgnorePointer(
+              ignoring: _isStatusLocked,
+              child: Opacity(
+                opacity: _isStatusLocked ? 0.6 : 1.0,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: SegmentedButton<String>(
+                        style: SegmentedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          textStyle: const TextStyle(fontSize: 11),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        emptySelectionAllowed: true,
+                        segments: [
+                          ButtonSegment(
+                            value: 'upcoming',
+                            label: Text(l10n.statusUpcoming),
+                            icon: const Icon(Icons.calendar_today_outlined, size: 14),
+                          ),
+                          ButtonSegment(
+                            value: 'enrolling',
+                            label: Text(l10n.statusEnrolling),
+                            icon: const Icon(Icons.person_add_outlined, size: 14),
+                          ),
+                          ButtonSegment(
+                            value: 'allocated',
+                            label: Text(l10n.statusAllocated),
+                            icon: const Icon(
+                              Icons.assignment_turned_in_outlined,
+                              size: 14,
+                            ),
+                          ),
+                        ],
+                        selected:
+                            [
+                              'upcoming',
+                              'enrolling',
+                              'allocated',
+                            ].contains(event.status)
+                            ? {event.status}
+                            : {},
+                        onSelectionChanged: (Set<String> newSelection) {
+                          final value = newSelection.firstOrNull;
+                          if (value != null && value != event.status) {
+                            _updateStatus(event, value);
+                          }
+                        },
+                        showSelectedIcon: false,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: SegmentedButton<String>(
+                        style: SegmentedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          textStyle: const TextStyle(fontSize: 11),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        emptySelectionAllowed: true,
+                        segments: [
+                          ButtonSegment(
+                            value: 'ongoing',
+                            label: Text(l10n.statusOngoing),
+                            icon: const Icon(Icons.play_circle_outline, size: 14),
+                          ),
+                          ButtonSegment(
+                            value: 'completed',
+                            label: Text(l10n.statusCompleted),
+                            icon: const Icon(Icons.check_circle_outline, size: 14),
+                          ),
+                        ],
+                        selected: ['ongoing', 'completed'].contains(event.status)
+                            ? {event.status}
+                            : {},
+                        onSelectionChanged: (Set<String> newSelection) {
+                          final value = newSelection.firstOrNull;
+                          if (value != null && value != event.status) {
+                            _updateStatus(event, value);
+                          }
+                        },
+                        showSelectedIcon: false,
+                      ),
+                    ),
+                  ],
                 ),
-                emptySelectionAllowed: true,
-                segments: [
-                  ButtonSegment(
-                    value: 'ongoing',
-                    label: Text(l10n.statusOngoing),
-                    icon: const Icon(Icons.play_circle_outline, size: 14),
-                  ),
-                  ButtonSegment(
-                    value: 'completed',
-                    label: Text(l10n.statusCompleted),
-                    icon: const Icon(Icons.check_circle_outline, size: 14),
-                  ),
-                ],
-                selected: ['ongoing', 'completed'].contains(event.status)
-                    ? {event.status}
-                    : {},
-                onSelectionChanged: (Set<String> newSelection) {
-                  final value = newSelection.firstOrNull;
-                  if (value != null && value != event.status) {
-                    _updateStatus(event, value);
-                  }
-                },
-                showSelectedIcon: false,
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
@@ -572,97 +618,93 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           ),
         ),
         const SizedBox(height: 12),
-        ...List.generate(totalDays, (dayIdx) {
-          final dayDate = event.startDate.add(Duration(days: dayIdx));
-          final dateStr = formatDateShort(
-            dayDate,
-            Localizations.localeOf(context).languageCode,
-          );
-
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '${l10n.day} ${_formatNumber(context, dayIdx + 1)}',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.primary,
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: SizedBox(
+              width: double.infinity,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: MediaQuery.of(context).size.width - 64, // Card width approx
+                  ),
+                  child: DataTable(
+                    columnSpacing: 24,
+                    headingRowHeight: 40,
+                    dataRowMinHeight: 40,
+                    dataRowMaxHeight: 40,
+                    columns: [
+                      DataColumn(
+                        label: Expanded(
+                          child: Center(
+                            child: Text(
+                              l10n.day.toUpperCase(),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                      Text(
-                        Localizations.localeOf(context).languageCode == 'mr'
-                            ? toMarathiNumerals(dateStr)
-                            : dateStr,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.appColors.secondaryText,
+                      ...event.reminderTimes.map(
+                        (time) => DataColumn(
+                          label: Expanded(
+                            child: Center(
+                              child: Text(
+                                Localizations.localeOf(context).languageCode == 'mr'
+                                    ? toMarathiNumerals(time)
+                                    : time,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                  const Divider(height: 24),
-                  ...event.reminderTimes.map((timeStr) {
-                    final reminderTimeParts = timeStr.split(':');
-                    if (reminderTimeParts.length != 2) {
-                      return const SizedBox.shrink();
-                    }
-
-                    final trackingKey = 'day${dayIdx + 1}_$timeStr';
-                    final isSent = event.sentReminders.containsKey(trackingKey);
-                    final statusText = isSent
-                        ? l10n.reminderSentStatus
-                        : l10n.reminderPendingStatus;
-                    final theme = Theme.of(context);
-                    final statusColor = isSent
-                        ? theme.appColors.success
-                        : theme.appColors.secondaryText;
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            Localizations.localeOf(context).languageCode == 'mr'
-                                ? toMarathiNumerals(timeStr)
-                                : timeStr,
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                          Row(
-                            children: [
-                              if (isSent)
-                                Icon(
-                                  Icons.check_circle,
-                                  size: 14,
-                                  color: theme.appColors.success,
-                                ),
-                              const SizedBox(width: 4),
-                              Text(
-                                statusText,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: statusColor,
-                                  fontWeight: isSent
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
+                    rows: List.generate(totalDays, (dayIdx) {
+                      return DataRow(
+                        cells: [
+                          DataCell(
+                            Center(
+                              child: Text(
+                                _formatNumber(context, dayIdx + 1),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ],
+                            ),
                           ),
+                          ...event.reminderTimes.map((timeStr) {
+                            final trackingKey = 'day${dayIdx + 1}_$timeStr';
+                            final isSent = event.sentReminders.containsKey(
+                              trackingKey,
+                            );
+                            return DataCell(
+                              Center(
+                                child: Icon(
+                                  isSent
+                                      ? Icons.check_circle
+                                      : Icons.hourglass_empty,
+                                  size: 18,
+                                  color: isSent
+                                      ? theme.appColors.success
+                                      : theme.hintColor.withOpacity(0.3),
+                                ),
+                              ),
+                            );
+                          }),
                         ],
-                      ),
-                    );
-                  }),
-                ],
+                      );
+                    }),
+                  ),
+                ),
               ),
             ),
-          );
-        }),
+          ),
+        ),
       ],
     );
   }
@@ -713,7 +755,12 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         int allCount = participants.length;
         int completedCount = 0;
         int pendingCount = 0;
+        int unclaimedCount = 0;
         for (final entry in participants) {
+          if (!entry.isClaimed) {
+            unclaimedCount++;
+          }
+
           bool upToDate = true;
           for (int d = 1; d <= currentDay; d++) {
             if (!(entry.completions[d.toString()] ?? false)) {
@@ -762,6 +809,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
 
           if (_currentFilter == _ParticipantFilter.completed) return isUpToDate;
           if (_currentFilter == _ParticipantFilter.pending) return !isUpToDate;
+          if (_currentFilter == _ParticipantFilter.unclaimed)
+            return !p.isClaimed;
           return true;
         }).toList();
 
@@ -773,6 +822,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               all: allCount,
               completed: completedCount,
               pending: pendingCount,
+              unclaimed: unclaimedCount,
             ),
             Expanded(
               child: filteredParticipants.isEmpty
@@ -867,12 +917,34 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                                               : theme.colorScheme.primary,
                                         ),
                                       ),
-                                      title: Text(
-                                        p.name,
-                                        style: theme.textTheme.titleSmall
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.bold,
+                                      title: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              p.name,
+                                              style: theme.textTheme.titleSmall
+                                                  ?.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                             ),
+                                          ),
+                                          if (!p.isClaimed)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 8.0,
+                                              ),
+                                              child: Tooltip(
+                                                message:
+                                                    "Participant has not linked their device yet",
+                                                child: Icon(
+                                                  Icons.no_accounts,
+                                                  size: 18,
+                                                  color:
+                                                      theme.colorScheme.error,
+                                                ),
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                       subtitle: RichText(
                                         text: TextSpan(
@@ -952,27 +1024,32 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     required int all,
     required int completed,
     required int pending,
+    required int unclaimed,
   }) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
         children: [
           _buildFilterChip(
             "${l10n.filterAll} - ${_formatNumber(context, all)}",
             _ParticipantFilter.all,
             theme,
           ),
-          const SizedBox(width: 8),
           _buildFilterChip(
             "${l10n.filterCompleted} - ${_formatNumber(context, completed)}",
             _ParticipantFilter.completed,
             theme,
           ),
-          const SizedBox(width: 8),
           _buildFilterChip(
             "${l10n.filterPending} - ${_formatNumber(context, pending)}",
             _ParticipantFilter.pending,
+            theme,
+          ),
+          _buildFilterChip(
+            "${l10n.unclaimedLabel.toUpperCase()} - ${_formatNumber(context, unclaimed)}",
+            _ParticipantFilter.unclaimed,
             theme,
           ),
         ],
@@ -2074,7 +2151,7 @@ class _StatCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -2085,15 +2162,19 @@ class _StatCard extends StatelessWidget {
               style: theme.textTheme.labelSmall?.copyWith(
                 letterSpacing: 1.2,
                 color: theme.appColors.secondaryText,
+                fontSize: 10,
               ),
             ),
-            const SizedBox(height: 12),
-            Text(
-              value,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.displaySmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
+            const SizedBox(height: 8),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
               ),
             ),
             if (subtext.isNotEmpty) ...[
@@ -2103,6 +2184,7 @@ class _StatCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.appColors.secondaryText,
+                  fontSize: 10,
                 ),
               ),
             ],
@@ -2131,7 +2213,7 @@ class _ProgressStatCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -2142,16 +2224,17 @@ class _ProgressStatCard extends StatelessWidget {
               style: theme.textTheme.labelSmall?.copyWith(
                 letterSpacing: 1.2,
                 color: theme.appColors.secondaryText,
+                fontSize: 10,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Center(
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   SizedBox(
-                    height: 72,
-                    width: 72,
+                    height: 54,
+                    width: 54,
                     child: CircularProgressIndicator(
                       value: progress,
                       backgroundColor: theme.colorScheme.onSurface.withValues(
@@ -2160,25 +2243,30 @@ class _ProgressStatCard extends StatelessWidget {
                       valueColor: AlwaysStoppedAnimation<Color>(
                         theme.colorScheme.primary,
                       ),
-                      strokeWidth: 6,
+                      strokeWidth: 4,
                     ),
                   ),
-                  Text(
-                    value,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      value,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Text(
               subtext,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.appColors.secondaryText,
+                fontSize: 10,
               ),
             ),
           ],

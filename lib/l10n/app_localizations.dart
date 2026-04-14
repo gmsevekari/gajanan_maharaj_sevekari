@@ -530,6 +530,18 @@ abstract class AppLocalizations {
   /// **'Use \'Find My Adhyays\' to see your adhyay allocation.'**
   String get findMyAllocationPlaceholder;
 
+  /// No description provided for @claimedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Adhyay Claimed'**
+  String get claimedLabel;
+
+  /// No description provided for @unclaimedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Adhyay Unclaimed'**
+  String get unclaimedLabel;
+
   /// No description provided for @claimSuccessMessage.
   ///
   /// In en, this message translates to:
@@ -2147,7 +2159,7 @@ abstract class AppLocalizations {
   /// No description provided for @updateStatusLabel.
   ///
   /// In en, this message translates to:
-  /// **'Update Parayan Status'**
+  /// **'Parayan Status'**
   String get updateStatusLabel;
 
   /// No description provided for @statusUpcoming.

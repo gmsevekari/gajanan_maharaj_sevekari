@@ -56,30 +56,62 @@ void main() {
       expect((map['joinedAt'] as Timestamp).toDate(), joinedAt);
     });
 
-    test('isFullyCompleted should return true only when all assigned adhyays are done', () {
-      final member1 = ParayanMember(
-        name: 'Gajanan',
-        assignedAdhyays: [1, 2],
-        completions: {'1': true, '2': true},
-        joinedAt: DateTime.now(),
-      );
-      expect(member1.isFullyCompleted, true);
+    test(
+      'isFullyCompleted should return true only when all assigned adhyays are done',
+      () {
+        final member1 = ParayanMember(
+          name: 'Gajanan',
+          assignedAdhyays: [1, 2],
+          completions: {'1': true, '2': true},
+          joinedAt: DateTime.now(),
+        );
+        expect(member1.isFullyCompleted, true);
 
-      final member2 = ParayanMember(
-        name: 'Gajanan',
-        assignedAdhyays: [1, 2],
-        completions: {'1': true, '2': false},
-        joinedAt: DateTime.now(),
-      );
-      expect(member2.isFullyCompleted, false);
+        final member2 = ParayanMember(
+          name: 'Gajanan',
+          assignedAdhyays: [1, 2],
+          completions: {'1': true, '2': false},
+          joinedAt: DateTime.now(),
+        );
+        expect(member2.isFullyCompleted, false);
 
-      final member3 = ParayanMember(
-        name: 'Gajanan',
+        final member3 = ParayanMember(
+          name: 'Gajanan',
+          assignedAdhyays: [],
+          completions: {},
+          joinedAt: DateTime.now(),
+        );
+        expect(member3.isFullyCompleted, false);
+      },
+    );
+
+    test('isClaimed should return based on deviceId', () {
+      final m1 = ParayanMember(
+        name: 'G',
         assignedAdhyays: [],
         completions: {},
         joinedAt: DateTime.now(),
+        deviceId: 'real_device_id',
       );
-      expect(member3.isFullyCompleted, false);
+      expect(m1.isClaimed, true);
+
+      final m2 = ParayanMember(
+        name: 'G',
+        assignedAdhyays: [],
+        completions: {},
+        joinedAt: DateTime.now(),
+        deviceId: 'ADMIN_MANUAL',
+      );
+      expect(m2.isClaimed, false);
+
+      final m3 = ParayanMember(
+        name: 'G',
+        assignedAdhyays: [],
+        completions: {},
+        joinedAt: DateTime.now(),
+        deviceId: null,
+      );
+      expect(m3.isClaimed, false);
     });
   });
 

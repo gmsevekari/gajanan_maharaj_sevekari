@@ -226,6 +226,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Use \'Find My Adhyays\' to see your adhyay allocation.';
 
   @override
+  String get claimedLabel => 'Adhyay Claimed';
+
+  @override
+  String get unclaimedLabel => 'Adhyay Unclaimed';
+
+  @override
   String get claimSuccessMessage => 'Adhyay allocation linked successfully!';
 
   @override
@@ -1089,7 +1095,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reminderPendingStatus => 'Yet to be sent';
 
   @override
-  String get updateStatusLabel => 'Update Parayan Status';
+  String get updateStatusLabel => 'Parayan Status';
 
   @override
   String get statusUpcoming => 'Upcoming';

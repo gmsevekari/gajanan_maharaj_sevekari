@@ -226,7 +226,13 @@ class AppLocalizationsMr extends AppLocalizations {
       'तुमचे अध्याय पाहण्यासाठी \'माझे अध्याय शोधा\' वर क्लिक करा.';
 
   @override
-  String get claimSuccessMessage => 'अध्याय यशस्वीरीत्या लिंक झाले!';
+  String get claimedLabel => 'अध्याय क्लेम केलेले';
+
+  @override
+  String get unclaimedLabel => 'अध्याय क्लेम न केलेले';
+
+  @override
+  String get claimSuccessMessage => 'अध्याय यशस्वीरीत्या क्लेम झाले!';
 
   @override
   String get alreadyLinkedPrompt =>
@@ -239,7 +245,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get invalidPhoneError => 'कृपया योग्य फोन नंबर टाका';
 
   @override
-  String get claimInProgress => 'अध्याय लिंक करत आहे...';
+  String get claimInProgress => 'अध्याय क्लेम करत आहे...';
 
   @override
   String get noAllocationFound => 'या फोन नंबरशी कोणतेही अध्याय जोडलेले नाहीत.';
@@ -1090,7 +1096,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get reminderPendingStatus => 'पाठवायचे आहे';
 
   @override
-  String get updateStatusLabel => 'पारायण स्टेटस अपडेट करा';
+  String get updateStatusLabel => 'पारायण स्टेटस';
 
   @override
   String get statusUpcoming => 'लवकरच';
