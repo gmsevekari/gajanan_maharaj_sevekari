@@ -1111,22 +1111,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (customWidget != null)
-                      customWidget
-                    else if (imagePath != null)
-                      Image.asset(
-                        imagePath,
-                        height: size,
-                        width: size,
-
-                        errorBuilder: (context, error, stackTrace) => Icon(
-                          Icons.error_outline,
-                          size: size,
-                          color: theme.iconTheme.color,
-                        ),
-                      )
-                    else if (icon != null)
-                      Icon(icon, size: size, color: theme.iconTheme.color),
+                    const SizedBox(height: 8),
+                    Flexible(
+                      child: customWidget != null
+                          ? customWidget
+                          : (imagePath != null
+                              ? Image.asset(
+                                  imagePath,
+                                  height: size,
+                                  width: size,
+                                  errorBuilder: (context, error, stackTrace) => Icon(
+                                    Icons.error_outline,
+                                    size: size,
+                                    color: theme.iconTheme.color,
+                                  ),
+                                )
+                              : Icon(icon, size: size, color: theme.iconTheme.color)),
+                    ),
                     const SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4.0),
