@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
@@ -244,7 +245,7 @@ class _PreallocatedParayanDetailScreenState
                   width: double.infinity,
                   height: isLandscape ? 40 : 50,
                   child: ElevatedButton(
-                    onPressed: _isLinked ? null : _showClaimDialog,
+                    onPressed: (kIsWeb || _isLinked) ? null : _showClaimDialog,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _isLinked
                           ? theme.appColors.disabledBackground
@@ -363,7 +364,9 @@ class _PreallocatedParayanDetailScreenState
             ),
             const SizedBox(height: 16),
             Text(
-              localizations.findMyAllocationPlaceholder,
+              kIsWeb
+                  ? localizations.useMobileAppForParayan
+                  : localizations.findMyAllocationPlaceholder,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.hintColor,
               ),

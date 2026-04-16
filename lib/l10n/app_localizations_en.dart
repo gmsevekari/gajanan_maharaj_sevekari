@@ -1484,4 +1484,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get parayanAlreadyExists =>
       'A Parayan event already exists for this date and type in this group.';
+
+  @override
+  String get useMobileAppForParayan => 'Please use the mobile app for Parayan';
 }

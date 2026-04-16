@@ -558,5 +558,6 @@
   "statusOngoingDesc": "The parayan is currently ongoing. Please complete your assigned adhyays.",
   "statusCompletedDesc": "The parayan has been completed. Jai Gajanan!",
   "adminParayanGroupTitle": "Parayan Groups",
-  "parayanAlreadyExists": "A Parayan event already exists for this date and type in this group."
+  "parayanAlreadyExists": "A Parayan event already exists for this date and type in this group.",
+  "useMobileAppForParayan": "Please use the mobile app for Parayan"
 }

@@ -1488,4 +1488,7 @@ class AppLocalizationsMr extends AppLocalizations {
   @override
   String get parayanAlreadyExists =>
       'या ग्रुपमध्ये या तारखेसाठी आणि टाईप साठी पारायण आधीच अस्तित्वात आहे.';
+
+  @override
+  String get useMobileAppForParayan => 'पारायणासाठी कृपया मोबाईल ॲप वापरा';
 }

@@ -2893,6 +2893,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A Parayan event already exists for this date and type in this group.'**
   String get parayanAlreadyExists;
+
+  /// No description provided for @useMobileAppForParayan.
+  ///
+  /// In en, this message translates to:
+  /// **'Please use the mobile app for Parayan'**
+  String get useMobileAppForParayan;
 }
 
 class _AppLocalizationsDelegate
