@@ -86,12 +86,11 @@ class SettingsScreen extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final version = snapshot.data!.version;
-                final buildNumber = snapshot.data!.buildNumber;
                 return Padding(
                   padding: const EdgeInsets.only(top: 8.0, bottom: 24.0),
                   child: Center(
                     child: Text(
-                      'Version $version ($buildNumber)',
+                      'Version: $version',
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                         fontSize: 14,
