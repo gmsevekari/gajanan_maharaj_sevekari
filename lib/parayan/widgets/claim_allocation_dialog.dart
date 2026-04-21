@@ -156,7 +156,23 @@ class _ClaimAllocationDialogState extends State<ClaimAllocationDialog> {
                     ),
                     keyboardType: TextInputType.phone,
                     validator: (value) {
-                      if (value == null || value.isEmpty || value.length < 10) {
+                      if (value == null || value.isEmpty) {
+                        return localizations.invalidPhoneError;
+                      }
+
+                      final code = _countryCodeController.text.trim();
+                      int minLength = 10;
+
+                      if (code == '+65') {
+                        minLength = 8;
+                      } else if (code == '+27' || code == '+971') {
+                        minLength = 9;
+                      }
+
+                      // Strip non-digits just in case user added spaces
+                      final digitCount = value.replaceAll(RegExp(r'\D'), '').length;
+
+                      if (digitCount < minLength) {
                         return localizations.invalidPhoneError;
                       }
                       return null;
