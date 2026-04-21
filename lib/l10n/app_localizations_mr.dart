@@ -1624,4 +1624,13 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get groupNamjapTableColTotalChants => 'एकूण नामजप';
+
+  @override
+  String get dashami => 'दशमी';
+
+  @override
+  String get ekadashi => 'एकादशी';
+
+  @override
+  String get dwadashi => 'द्वादशी';
 }

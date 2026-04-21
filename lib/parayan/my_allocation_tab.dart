@@ -282,6 +282,19 @@ class _MyAllocationTabState extends State<MyAllocationTab>
       );
     }
 
+    String dayLabel;
+    if (widget.event.type == ParayanType.threeDay) {
+      if (dayNum == 1) {
+        dayLabel = localizations.dashami;
+      } else if (dayNum == 2) {
+        dayLabel = localizations.ekadashi;
+      } else {
+        dayLabel = localizations.dwadashi;
+      }
+    } else {
+      dayLabel = "${localizations.day} ${_formatNumber(context, dayNum)}";
+    }
+
     return Card(
       margin: EdgeInsets.zero,
       color: theme.cardTheme.color,
@@ -326,7 +339,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
             const SizedBox(width: 16),
             Expanded(
               child: Text(
-                "${localizations.day} ${_formatNumber(context, dayNum)} - ${localizations.adhyay} ${_formatNumber(context, adhyay)}",
+                "$dayLabel - ${localizations.adhyay} ${_formatNumber(context, adhyay)}",
                 style: theme.textTheme.titleSmall?.copyWith(
                   color: theme.colorScheme.onSurface,
                   fontWeight: FontWeight.bold,

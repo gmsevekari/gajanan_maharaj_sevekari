@@ -603,5 +603,8 @@
   "groupNamjapShareLinkPrefix": "लिंक",
   "groupNamjapTableColName": "नाव",
   "groupNamjapTableColPhone": "फोन",
-  "groupNamjapTableColTotalChants": "एकूण नामजप"
+  "groupNamjapTableColTotalChants": "एकूण नामजप",
+  "dashami": "दशमी",
+  "ekadashi": "एकादशी",
+  "dwadashi": "द्वादशी"
 }

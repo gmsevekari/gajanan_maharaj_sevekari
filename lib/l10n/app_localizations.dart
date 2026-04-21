@@ -3163,6 +3163,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total Chants'**
   String get groupNamjapTableColTotalChants;
+
+  /// No description provided for @dashami.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashami'**
+  String get dashami;
+
+  /// No description provided for @ekadashi.
+  ///
+  /// In en, this message translates to:
+  /// **'Ekadashi'**
+  String get ekadashi;
+
+  /// No description provided for @dwadashi.
+  ///
+  /// In en, this message translates to:
+  /// **'Dwadashi'**
+  String get dwadashi;
 }
 
 class _AppLocalizationsDelegate

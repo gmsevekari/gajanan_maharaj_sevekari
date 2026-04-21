@@ -1620,4 +1620,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupNamjapTableColTotalChants => 'Total Chants';
+
+  @override
+  String get dashami => 'Dashami';
+
+  @override
+  String get ekadashi => 'Ekadashi';
+
+  @override
+  String get dwadashi => 'Dwadashi';
 }

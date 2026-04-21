@@ -603,5 +603,8 @@
   "groupNamjapShareLinkPrefix": "Link",
   "groupNamjapTableColName": "Name",
   "groupNamjapTableColPhone": "Phone",
-  "groupNamjapTableColTotalChants": "Total Chants"
+  "groupNamjapTableColTotalChants": "Total Chants",
+  "dashami": "Dashami",
+  "ekadashi": "Ekadashi",
+  "dwadashi": "Dwadashi"
 }
