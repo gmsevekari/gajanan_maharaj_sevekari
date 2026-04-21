@@ -85,6 +85,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ),
             ),
             IconButton(
+              icon: const ThemedIcon(LogicalIcon.settings),
+              onPressed: () => Navigator.pushNamed(context, Routes.settings),
+            ),
+            IconButton(
               icon: const Icon(Icons.logout),
               tooltip: localizations.logoutLabel,
               onPressed: _logout,
