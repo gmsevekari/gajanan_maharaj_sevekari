@@ -1173,7 +1173,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                               "${l10n.day} ${_formatNumber(context, idx)}: ${l10n.adhyay} ${_formatNumber(context, adhyay)}",
                             ),
                             value: isDone,
-                            onChanged: (val) async {
+                            onChanged: event.status == 'completed' ? null : (val) async {
                               if (val == null) return;
 
                               // Optimistic update for instant UI feedback
