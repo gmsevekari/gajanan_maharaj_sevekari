@@ -9,7 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AdminSessionService {
   static Timer? _inactivityTimer;
   static DateTime _lastActivity = DateTime.now();
-  static const Duration _timeout = Duration(minutes: 10);
+  static const Duration _timeout = Duration(hours: 8);
 
   static void startSession() {
     debugPrint('Admin session started');
