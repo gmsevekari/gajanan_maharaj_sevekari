@@ -10,6 +10,7 @@ class GroupNamjapEvent {
   final DateTime endDate;
   final int targetCount;
   final int totalCount;
+  final String mantra;
   final String joinCode;
   final String status;
   final String groupId;
@@ -25,6 +26,7 @@ class GroupNamjapEvent {
     required this.endDate,
     required this.targetCount,
     required this.totalCount,
+    required this.mantra,
     required this.joinCode,
     required this.status,
     required this.groupId,
@@ -42,6 +44,7 @@ class GroupNamjapEvent {
       endDate: (data['endDate'] as Timestamp).toDate(),
       targetCount: data['targetCount'] ?? 0,
       totalCount: data['totalCount'] ?? 0,
+      mantra: data['mantra'] ?? '',
       joinCode: data['joinCode'] ?? '',
       status: data['status'] ?? 'upcoming',
       groupId: data['groupId'] ?? '',
@@ -59,6 +62,7 @@ class GroupNamjapEvent {
       'endDate': Timestamp.fromDate(endDate),
       'targetCount': targetCount,
       'totalCount': totalCount,
+      'mantra': mantra,
       'joinCode': joinCode,
       'status': status,
       'groupId': groupId,

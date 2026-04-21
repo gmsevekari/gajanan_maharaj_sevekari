@@ -41,7 +41,7 @@ service cloud.firestore {
     match /parayan_events/{eventId} {
       allow read: if true;
       allow write: if isAdmin();
-      
+
       match /participants/{participantId} {
         allow read: if true;
         allow create: if true;
@@ -59,6 +59,21 @@ service cloud.firestore {
     match /events/{eventId} {
       allow read: if true;
       allow write: if isAdmin();
+    }
+
+    // Group Namjap Events: Publicly readable; Admin writable
+    match /group_namjap_events/{eventId} {
+      allow read: if true;
+      // Allow atomic updates by participants to increment global counts
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalCount']);
+      allow write: if isAdmin();
+
+      match /participants/{participantId} {
+        allow read: if true;
+        allow create: if true;
+        // Allows user to update their own jap counts locally using deviceId check
+        allow update, delete: if isAdmin() || (request.resource.data.deviceId == resource.data.deviceId);
+      }
     }
   }
 }

@@ -14,6 +14,7 @@ void main() {
       'endDate': Timestamp.fromDate(now.add(const Duration(days: 1))),
       'targetCount': 1000,
       'totalCount': 150,
+      'mantra': 'Gan Gan Ganat Bote',
       'joinCode': 'ABC123',
       'status': 'ongoing',
       'groupId': 'gajanan_maharaj_seattle',
@@ -30,6 +31,7 @@ void main() {
       expect(event.sankalpMr, 'शांती');
       expect(event.targetCount, 1000);
       expect(event.totalCount, 150);
+      expect(event.mantra, 'Gan Gan Ganat Bote');
       expect(event.joinCode, 'ABC123');
       expect(event.status, 'ongoing');
       expect(event.groupId, 'gajanan_maharaj_seattle');
@@ -46,6 +48,7 @@ void main() {
         endDate: now.add(const Duration(days: 1)),
         targetCount: 1000,
         totalCount: 150,
+        mantra: 'Gan Gan Ganat Bote',
         joinCode: 'ABC123',
         status: 'ongoing',
         groupId: 'gajanan_maharaj_seattle',
@@ -60,6 +63,7 @@ void main() {
       expect(map['sankalp_mr'], 'शांती');
       expect(map['targetCount'], 1000);
       expect(map['totalCount'], 150);
+      expect(map['mantra'], 'Gan Gan Ganat Bote');
       expect(map['joinCode'], 'ABC123');
       expect(map['status'], 'ongoing');
       expect(map['groupId'], 'gajanan_maharaj_seattle');
