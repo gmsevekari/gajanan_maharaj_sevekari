@@ -1487,4 +1487,137 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get useMobileAppForParayan => 'Please use the mobile app for Parayan';
+
+  @override
+  String get groupNamjapModuleTitle => 'Group Namjap';
+
+  @override
+  String get groupNamjapModuleSubtitle =>
+      'Manage group namjap and participant stats';
+
+  @override
+  String get createGroupNamjapTitle => 'Create Group Namjap';
+
+  @override
+  String get groupNamjapDashboardTitle => 'Group Namjap';
+
+  @override
+  String get groupNamjapCompleted => 'Completed Group Namjaps';
+
+  @override
+  String get groupNamjapRecentlyCompleted => 'Recently Completed Group Namjaps';
+
+  @override
+  String get groupNamjapOngoing => 'Ongoing Group Namjaps';
+
+  @override
+  String get groupNamjapUpcoming => 'Upcoming Group Namjaps';
+
+  @override
+  String get groupNamjapNoOngoing => 'No active group namjaps currently';
+
+  @override
+  String get groupNamjapNoUpcoming => 'No upcoming group namjaps currently';
+
+  @override
+  String get groupNamjapNoCompleted => 'No completed group namjaps yet';
+
+  @override
+  String get groupNamjapEventDetails => 'Event Details';
+
+  @override
+  String get groupNamjapJoinCode => 'Join Code';
+
+  @override
+  String get groupNamjapProgress => 'Progress';
+
+  @override
+  String get groupNamjapParticipants => 'Participants';
+
+  @override
+  String get groupNamjapNoParticipants => 'No participants joined yet.';
+
+  @override
+  String get groupNamjapNameEn => 'Event Name (English)';
+
+  @override
+  String get groupNamjapNameMr => 'Event Name (Marathi)';
+
+  @override
+  String get groupNamjapSankalpEn => 'Sankalp (English)';
+
+  @override
+  String get groupNamjapSankalpMr => 'Sankalp (Marathi)';
+
+  @override
+  String get groupNamjapTargetCount => 'Target Count';
+
+  @override
+  String get groupNamjapStartDate => 'Start Date';
+
+  @override
+  String get groupNamjapEndDate => 'End Date';
+
+  @override
+  String get groupNamjapCreateSuccess => 'Group Namjap created successfully!';
+
+  @override
+  String get groupNamjapRequired => 'Required';
+
+  @override
+  String get groupNamjapMustBeNumber => 'Must be a number';
+
+  @override
+  String get groupNamjapTargetPrefix => 'Target: ';
+
+  @override
+  String get groupNamjapAchieved => 'Achieved: ';
+
+  @override
+  String get groupNamjapOf => ' of ';
+
+  @override
+  String get groupNamjapMantra => 'Mantra';
+
+  @override
+  String get groupNamjapTotalParticipants => 'PARTICIPANTS';
+
+  @override
+  String get groupNamjapAchievedLabel => 'ACHIEVED';
+
+  @override
+  String get groupNamjapQuickActions => 'QUICK ACTIONS';
+
+  @override
+  String get groupNamjapShare => 'Share Namjap';
+
+  @override
+  String get groupNamjapExportStatus => 'Export Status';
+
+  @override
+  String get groupNamjapSankalpLabel => 'Sankalp';
+
+  @override
+  String get groupNamjapEventNotFound => 'Event not found';
+
+  @override
+  String get groupNamjapFailedToCapture => 'Failed to capture screenshot';
+
+  @override
+  String get groupNamjapStatusExport => 'Namjap Status Export';
+
+  @override
+  String get groupNamjapSharePrefix => 'Join our Namjap';
+
+  @override
+  String get groupNamjapShareLinkPrefix => 'Link';
+
+  @override
+  String get groupNamjapTableColName => 'Name';
+
+  @override
+  String get groupNamjapTableColPhone => 'Phone';
+
+  @override
+  String get groupNamjapTableColTotalChants => 'Total Chants';
 }

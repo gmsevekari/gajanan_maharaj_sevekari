@@ -216,6 +216,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               }
                             },
                           ),
+                        if (adminUser.hasRole('namjap_coordinator'))
+                          _buildModuleCard(
+                            context: context,
+                            title: localizations.groupNamjapModuleTitle,
+                            subtitle: localizations.groupNamjapModuleSubtitle,
+                            icon: Icons.group_add,
+                            color: theme.appColors.primarySwatch[600]!,
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                Routes.adminGroupNamjapDashboard,
+                              );
+                            },
+                          ),
                         if (adminUser.hasRole('app_developer'))
                           _buildModuleCard(
                             context: context,

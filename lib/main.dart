@@ -47,6 +47,10 @@ import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart'
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_group_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/create_parayan_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_dashboard.dart';
+import 'package:gajanan_maharaj_sevekari/admin/group_namjap/create_group_namjap_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/user_notifications_screen.dart';
 import 'package:gajanan_maharaj_sevekari/other/favorites_screen.dart';
 import 'package:gajanan_maharaj_sevekari/other/favorite_item_list_screen.dart';
@@ -346,6 +350,10 @@ class _MyAppState extends State<MyApp> {
                     const FavoriteItemListScreen(),
                 Routes.adminTypoReports: (context) =>
                     const AdminTypoReportsScreen(),
+                Routes.adminGroupNamjapDashboard: (context) =>
+                    const AdminGroupNamjapDashboard(),
+                Routes.adminCreateGroupNamjap: (context) =>
+                    const CreateGroupNamjapScreen(),
               },
               onGenerateRoute: (settings) {
                 final DeityConfig? deity = settings.arguments is DeityConfig
@@ -442,6 +450,16 @@ class _MyAppState extends State<MyApp> {
                         statusFilter: args['statusFilter'] as String,
                         groupId: args['groupId'] as String?,
                       ),
+                    );
+                  case Routes.adminGroupNamjapDetail:
+                    final eventId = settings.arguments as String;
+                    return MaterialPageRoute(
+                      builder: (context) => AdminGroupNamjapDetailScreen(eventId: eventId),
+                    );
+                  case Routes.adminGroupNamjapList:
+                    final status = settings.arguments as String;
+                    return MaterialPageRoute(
+                      builder: (context) => AdminGroupNamjapListScreen(status: status),
                     );
                   default:
                     return null;

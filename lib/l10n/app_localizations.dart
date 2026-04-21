@@ -2899,6 +2899,270 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please use the mobile app for Parayan'**
   String get useMobileAppForParayan;
+
+  /// No description provided for @groupNamjapModuleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Namjap'**
+  String get groupNamjapModuleTitle;
+
+  /// No description provided for @groupNamjapModuleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage group namjap and participant stats'**
+  String get groupNamjapModuleSubtitle;
+
+  /// No description provided for @createGroupNamjapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Group Namjap'**
+  String get createGroupNamjapTitle;
+
+  /// No description provided for @groupNamjapDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Namjap'**
+  String get groupNamjapDashboardTitle;
+
+  /// No description provided for @groupNamjapCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Group Namjaps'**
+  String get groupNamjapCompleted;
+
+  /// No description provided for @groupNamjapRecentlyCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Completed Group Namjaps'**
+  String get groupNamjapRecentlyCompleted;
+
+  /// No description provided for @groupNamjapOngoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing Group Namjaps'**
+  String get groupNamjapOngoing;
+
+  /// No description provided for @groupNamjapUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Group Namjaps'**
+  String get groupNamjapUpcoming;
+
+  /// No description provided for @groupNamjapNoOngoing.
+  ///
+  /// In en, this message translates to:
+  /// **'No active group namjaps currently'**
+  String get groupNamjapNoOngoing;
+
+  /// No description provided for @groupNamjapNoUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming group namjaps currently'**
+  String get groupNamjapNoUpcoming;
+
+  /// No description provided for @groupNamjapNoCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed group namjaps yet'**
+  String get groupNamjapNoCompleted;
+
+  /// No description provided for @groupNamjapEventDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Details'**
+  String get groupNamjapEventDetails;
+
+  /// No description provided for @groupNamjapJoinCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Code'**
+  String get groupNamjapJoinCode;
+
+  /// No description provided for @groupNamjapProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get groupNamjapProgress;
+
+  /// No description provided for @groupNamjapParticipants.
+  ///
+  /// In en, this message translates to:
+  /// **'Participants'**
+  String get groupNamjapParticipants;
+
+  /// No description provided for @groupNamjapNoParticipants.
+  ///
+  /// In en, this message translates to:
+  /// **'No participants joined yet.'**
+  String get groupNamjapNoParticipants;
+
+  /// No description provided for @groupNamjapNameEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Name (English)'**
+  String get groupNamjapNameEn;
+
+  /// No description provided for @groupNamjapNameMr.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Name (Marathi)'**
+  String get groupNamjapNameMr;
+
+  /// No description provided for @groupNamjapSankalpEn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sankalp (English)'**
+  String get groupNamjapSankalpEn;
+
+  /// No description provided for @groupNamjapSankalpMr.
+  ///
+  /// In en, this message translates to:
+  /// **'Sankalp (Marathi)'**
+  String get groupNamjapSankalpMr;
+
+  /// No description provided for @groupNamjapTargetCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Count'**
+  String get groupNamjapTargetCount;
+
+  /// No description provided for @groupNamjapStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get groupNamjapStartDate;
+
+  /// No description provided for @groupNamjapEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End Date'**
+  String get groupNamjapEndDate;
+
+  /// No description provided for @groupNamjapCreateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Namjap created successfully!'**
+  String get groupNamjapCreateSuccess;
+
+  /// No description provided for @groupNamjapRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get groupNamjapRequired;
+
+  /// No description provided for @groupNamjapMustBeNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be a number'**
+  String get groupNamjapMustBeNumber;
+
+  /// No description provided for @groupNamjapTargetPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Target: '**
+  String get groupNamjapTargetPrefix;
+
+  /// No description provided for @groupNamjapAchieved.
+  ///
+  /// In en, this message translates to:
+  /// **'Achieved: '**
+  String get groupNamjapAchieved;
+
+  /// No description provided for @groupNamjapOf.
+  ///
+  /// In en, this message translates to:
+  /// **' of '**
+  String get groupNamjapOf;
+
+  /// No description provided for @groupNamjapMantra.
+  ///
+  /// In en, this message translates to:
+  /// **'Mantra'**
+  String get groupNamjapMantra;
+
+  /// No description provided for @groupNamjapTotalParticipants.
+  ///
+  /// In en, this message translates to:
+  /// **'PARTICIPANTS'**
+  String get groupNamjapTotalParticipants;
+
+  /// No description provided for @groupNamjapAchievedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ACHIEVED'**
+  String get groupNamjapAchievedLabel;
+
+  /// No description provided for @groupNamjapQuickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'QUICK ACTIONS'**
+  String get groupNamjapQuickActions;
+
+  /// No description provided for @groupNamjapShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Namjap'**
+  String get groupNamjapShare;
+
+  /// No description provided for @groupNamjapExportStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Status'**
+  String get groupNamjapExportStatus;
+
+  /// No description provided for @groupNamjapSankalpLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sankalp'**
+  String get groupNamjapSankalpLabel;
+
+  /// No description provided for @groupNamjapEventNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Event not found'**
+  String get groupNamjapEventNotFound;
+
+  /// No description provided for @groupNamjapFailedToCapture.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to capture screenshot'**
+  String get groupNamjapFailedToCapture;
+
+  /// No description provided for @groupNamjapStatusExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Namjap Status Export'**
+  String get groupNamjapStatusExport;
+
+  /// No description provided for @groupNamjapSharePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Join our Namjap'**
+  String get groupNamjapSharePrefix;
+
+  /// No description provided for @groupNamjapShareLinkPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Link'**
+  String get groupNamjapShareLinkPrefix;
+
+  /// No description provided for @groupNamjapTableColName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get groupNamjapTableColName;
+
+  /// No description provided for @groupNamjapTableColPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get groupNamjapTableColPhone;
+
+  /// No description provided for @groupNamjapTableColTotalChants.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Chants'**
+  String get groupNamjapTableColTotalChants;
 }
 
 class _AppLocalizationsDelegate

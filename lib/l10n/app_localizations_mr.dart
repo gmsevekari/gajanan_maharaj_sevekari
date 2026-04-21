@@ -1491,4 +1491,137 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get useMobileAppForParayan => 'पारायणासाठी कृपया मोबाईल ॲप वापरा';
+
+  @override
+  String get groupNamjapModuleTitle => 'ग्रुप नामजप';
+
+  @override
+  String get groupNamjapModuleSubtitle => 'ग्रुप नामजप आणि आकडेवारी मॅनेज करा';
+
+  @override
+  String get createGroupNamjapTitle => 'नवीन ग्रुप नामजप तयार करा';
+
+  @override
+  String get groupNamjapDashboardTitle => 'ग्रुप नामजप';
+
+  @override
+  String get groupNamjapCompleted => 'पूर्ण झालेले ग्रुप नामजप';
+
+  @override
+  String get groupNamjapRecentlyCompleted => 'नुकतेच पूर्ण झालेले ग्रुप नामजप';
+
+  @override
+  String get groupNamjapOngoing => 'सुरू असलेले ग्रुप नामजप';
+
+  @override
+  String get groupNamjapUpcoming => 'आगामी ग्रुप नामजप';
+
+  @override
+  String get groupNamjapNoOngoing => 'सध्या कोणतेही सक्रिय ग्रुप नामजप नाहीत';
+
+  @override
+  String get groupNamjapNoUpcoming => 'सध्या कोणतेही आगामी ग्रुप नामजप नाहीत';
+
+  @override
+  String get groupNamjapNoCompleted =>
+      'अद्याप कोणतेही पूर्ण झालेले ग्रुप नामजप नाहीत';
+
+  @override
+  String get groupNamjapEventDetails => 'तपशील';
+
+  @override
+  String get groupNamjapJoinCode => 'जॉईन कोड';
+
+  @override
+  String get groupNamjapProgress => 'प्रगती';
+
+  @override
+  String get groupNamjapParticipants => 'सहभागी';
+
+  @override
+  String get groupNamjapNoParticipants => 'अद्याप कोणीही सहभागी झालेले नाही.';
+
+  @override
+  String get groupNamjapNameEn => 'इव्हेंटचे नाव (इंग्रजी)';
+
+  @override
+  String get groupNamjapNameMr => 'इव्हेंटचे नाव (मराठी)';
+
+  @override
+  String get groupNamjapSankalpEn => 'संकल्प (इंग्रजी)';
+
+  @override
+  String get groupNamjapSankalpMr => 'संकल्प (मराठी)';
+
+  @override
+  String get groupNamjapTargetCount => 'लक्ष्य';
+
+  @override
+  String get groupNamjapStartDate => 'सुरुवातीची तारीख';
+
+  @override
+  String get groupNamjapEndDate => 'शेवटची तारीख';
+
+  @override
+  String get groupNamjapCreateSuccess => 'ग्रुप नामजप यशस्वीरित्या तयार झाला!';
+
+  @override
+  String get groupNamjapRequired => 'आवश्यक';
+
+  @override
+  String get groupNamjapMustBeNumber => 'संख्या असणे आवश्यक आहे';
+
+  @override
+  String get groupNamjapTargetPrefix => 'लक्ष्य: ';
+
+  @override
+  String get groupNamjapAchieved => 'पूर्ण: ';
+
+  @override
+  String get groupNamjapOf => ' पैकी ';
+
+  @override
+  String get groupNamjapMantra => 'मंत्र';
+
+  @override
+  String get groupNamjapTotalParticipants => 'एकूण सहभागी';
+
+  @override
+  String get groupNamjapAchievedLabel => 'पूर्ण केलेले';
+
+  @override
+  String get groupNamjapQuickActions => 'त्वरित कृती';
+
+  @override
+  String get groupNamjapShare => 'नामजप शेअर करा';
+
+  @override
+  String get groupNamjapExportStatus => 'स्टेटस एक्स्पोर्ट करा';
+
+  @override
+  String get groupNamjapSankalpLabel => 'संकल्प';
+
+  @override
+  String get groupNamjapEventNotFound => 'इव्हेंट सापडला नाही';
+
+  @override
+  String get groupNamjapFailedToCapture => 'स्क्रीनशॉट कॅप्चर करण्यात अयशस्वी';
+
+  @override
+  String get groupNamjapStatusExport => 'नामजप स्टेटस';
+
+  @override
+  String get groupNamjapSharePrefix => 'नामजपमध्ये सामील व्हा';
+
+  @override
+  String get groupNamjapShareLinkPrefix => 'लिंक';
+
+  @override
+  String get groupNamjapTableColName => 'नाव';
+
+  @override
+  String get groupNamjapTableColPhone => 'फोन';
+
+  @override
+  String get groupNamjapTableColTotalChants => 'एकूण नामजप';
 }
