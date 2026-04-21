@@ -1,0 +1,96 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'package:gajanan_maharaj_sevekari/models/group_namjap_event.dart';
+import 'package:gajanan_maharaj_sevekari/models/group_namjap_participant.dart';
+import 'package:intl/intl.dart';
+
+class GroupNamjapService extends ChangeNotifier {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  static const String eventsCollection = 'group_namjap_events';
+  static const String participantsSubcollection = 'participants';
+
+  /// Fetch all upcoming and ongoing group namjaps for this specific group.
+  Stream<List<GroupNamjapEvent>> getActiveEvents(String groupId) {
+    return _firestore
+        .collection(eventsCollection)
+        .where('groupId', isEqualTo: groupId)
+        .where('status', whereIn: ['upcoming', 'ongoing'])
+        .orderBy('startDate')
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) => GroupNamjapEvent.fromMap(doc.id, doc.data()))
+          .toList();
+    });
+  }
+
+  /// Create a new event.
+  Future<void> createEvent(GroupNamjapEvent event) async {
+    await _firestore
+        .collection(eventsCollection)
+        .doc(event.id)
+        .set(event.toMap());
+  }
+
+  /// Join an event if the code matches.
+  Future<bool> joinEvent({
+    required String eventId,
+    required String joinCode,
+    required GroupNamjapParticipant participant,
+  }) async {
+    final docRefs = _firestore.collection(eventsCollection).doc(eventId);
+    final eventSnapshot = await docRefs.get();
+
+    if (!eventSnapshot.exists) return false;
+    final data = eventSnapshot.data()!;
+
+    if (data['joinCode'] != joinCode) {
+      return false; // Code mismatch
+    }
+
+    // Join logic success, insert into participants
+    final participantId = '${participant.deviceId}_${participant.memberName}'.replaceAll(' ', '_');
+    
+    await docRefs
+        .collection(participantsSubcollection)
+        .doc(participantId)
+        .set(participant.toMap());
+
+    return true;
+  }
+
+  /// Atomically submit counts to both the user scope and global scope to natively bypass concurrent race conditions.
+  Future<void> submitNamjapCount({
+    required String eventId,
+    required String deviceId,
+    required String memberName,
+    required int countToSubmit,
+  }) async {
+    if (countToSubmit <= 0) return;
+
+    final participantId = '${deviceId}_${memberName}'.replaceAll(' ', '_');
+    final eventRef = _firestore.collection(eventsCollection).doc(eventId);
+    final participantRef = eventRef.collection(participantsSubcollection).doc(participantId);
+    
+    // We strictly map the time locally.
+    final String localDateKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    final batch = _firestore.batch();
+
+    // 1. Increment global event counter
+    batch.update(eventRef, {
+      'totalCount': FieldValue.increment(countToSubmit),
+    });
+
+    // 2. Increment user counts 
+    batch.set(participantRef, {
+      'totalCount': FieldValue.increment(countToSubmit),
+      'dailyCounts': {
+        localDateKey: FieldValue.increment(countToSubmit)
+      }
+    }, SetOptions(merge: true));
+
+    await batch.commit();
+  }
+}
