@@ -17,6 +17,7 @@ import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'dart:async';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/widgets/claim_allocation_dialog.dart';
 
 class ParayanDetailScreen extends StatefulWidget {
   final ParayanEvent? event;
@@ -204,6 +205,24 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
     super.dispose();
   }
 
+  void _showClaimDialog(BuildContext context, AppLocalizations localizations) {
+    if (_deviceId == null || _event == null) return;
+
+    showDialog<bool>(
+      context: context,
+      builder: (context) => ClaimAllocationDialog(
+        eventId: _event!.id,
+        deviceId: _deviceId!,
+        daysCount: _event!.type.daysCount,
+        parayanService: _parayanService,
+      ),
+    ).then((result) {
+      if (result == true && mounted) {
+        _checkRegistration(_deviceId!);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -362,8 +381,12 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
 
                     final isEditable = _isRegistered && canJoin;
                     final isJoinable = !_isRegistered && canJoin;
+                    final isClaimable =
+                        !_isRegistered &&
+                        (_event!.status == 'allocated' ||
+                            _event!.status == 'ongoing');
                     final isActionEnabled =
-                        (isEditable || isJoinable) && !kIsWeb;
+                        (isEditable || isJoinable || isClaimable) && !kIsWeb;
 
                     return Padding(
                       padding: EdgeInsets.symmetric(
@@ -409,7 +432,9 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                             child: ElevatedButton(
                               onPressed: isActionEnabled
                                   ? () async {
-                                      if (isEditable && _deviceId != null) {
+                                      if (isClaimable) {
+                                        _showClaimDialog(context, localizations);
+                                      } else if (isEditable && _deviceId != null) {
                                         final household = await _parayanService
                                             .getHousehold(
                                               _event!.id,
@@ -445,20 +470,25 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(
-                                      isEditable
-                                          ? Icons.edit
-                                          : (_isRegistered
-                                                ? Icons.check_circle_outline
-                                                : Icons.person_add_outlined),
+                                      isClaimable
+                                          ? Icons.search
+                                          : (isEditable
+                                              ? Icons.edit
+                                              : (_isRegistered
+                                                  ? Icons.check_circle_outline
+                                                  : Icons.person_add_outlined)),
                                       size: isLandscape ? 14 : 20,
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      _isRegistered
-                                          ? (canJoin
-                                                ? localizations.editEnrollmentLabel
-                                                : localizations.signedUpLabel)
-                                          : localizations.joinParayanLabel,
+                                      isClaimable
+                                          ? localizations.findMyAllocationLabel
+                                          : (_isRegistered
+                                              ? (canJoin
+                                                  ? localizations
+                                                      .editEnrollmentLabel
+                                                  : localizations.signedUpLabel)
+                                              : localizations.joinParayanLabel),
                                       style: TextStyle(
                                         fontSize: isLandscape ? 12 : 16,
                                         fontWeight: FontWeight.bold,
@@ -474,6 +504,10 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                     );
                   },
                 ),
+                if (!_isRegistered &&
+                    (_event!.status == 'allocated' ||
+                        _event!.status == 'ongoing'))
+                  _buildClaimPlaceholder(context, localizations, theme),
                 // Tab Section
                 Container(
                   color: theme.scaffoldBackgroundColor,
@@ -511,6 +545,39 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                 ),
               ],
             ),
+    );
+  }
+
+  Widget _buildClaimPlaceholder(
+    BuildContext context,
+    AppLocalizations localizations,
+    ThemeData theme,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, color: theme.colorScheme.primary, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              localizations.findMyAllocationPlaceholder,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
