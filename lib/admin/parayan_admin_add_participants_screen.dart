@@ -67,7 +67,7 @@ class _ParayanAdminAddParticipantsScreenState
     try {
       final List<Map<String, dynamic>> groupsToUpload = _groups.map((g) {
         return {
-          'phone': '${g.selectedCountryCode} ${g.phoneController.text.trim()}',
+          'phone': '${g.selectedCountryCode}${g.phoneController.text.trim()}',
           'names': g.nameControllers
               .map((c) => c.text.trim())
               .where((n) => n.isNotEmpty)

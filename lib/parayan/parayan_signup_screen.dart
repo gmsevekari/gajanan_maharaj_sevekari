@@ -133,7 +133,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
         type: widget.event.type,
         deviceId: deviceId,
         names: names,
-        phone: '$_selectedCountryCode ${_phoneController.text.trim()}',
+        phone: '$_selectedCountryCode${_phoneController.text.trim()}',
       );
 
       // Subscribe to topics

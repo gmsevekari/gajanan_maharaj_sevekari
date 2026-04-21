@@ -215,7 +215,7 @@ exports.adminAddParticipants = onCall(async (request) => {
         const memberData = {
           name: name,
           memberName: name,
-          phone: phone,
+          phone: sanitizedPhone,
           deviceId: "ADMIN_MANUAL",
           joinedAt: now,
           assignedAdhyays: assigned,
@@ -253,19 +253,28 @@ exports.claimParayanAllocation = onCall(async (request) => {
     const participantsRef = db.collection("parayan_events").doc(eventId).collection("participants");
 
     // Standardized lookup: the phone number is expected to be in +<CountryCode><10_Digit_Number> format
-    const snapshot = await participantsRef.where("phone", "==", sanitizedInputPhone).get();
+    const snapshot = await participantsRef
+      .where("phone", "==", sanitizedInputPhone)
+      .get();
 
     if (snapshot.empty) {
-      return { status: "NOT_FOUND", message: "No participant found with this phone number." };
+      return {
+        status: "NOT_FOUND",
+        message: "No participant found with this phone number.",
+      };
     }
 
     const participants = [];
     let conflictFound = false;
 
-    snapshot.forEach(doc => {
+    snapshot.forEach((doc) => {
       const data = doc.data();
       // Check for conflict: another device already linked
-      if (data.deviceId && data.deviceId !== "ADMIN_MANUAL" && data.deviceId !== deviceId) {
+      if (
+        data.deviceId &&
+        data.deviceId !== "ADMIN_MANUAL" &&
+        data.deviceId !== deviceId
+      ) {
         conflictFound = true;
       }
       participants.push({ id: doc.id, ...data });
