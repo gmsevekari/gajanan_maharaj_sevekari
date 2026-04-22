@@ -54,7 +54,10 @@ class AppLocalizationsMr extends AppLocalizations {
   String get aboutBabaTitle => 'बाबांविषयी';
 
   @override
-  String get aboutHanumanTitle => 'श्री हनुमानांविषयी';
+  String get aboutHanumanTitle => 'श्री हनुमानाविषयी';
+
+  @override
+  String get aboutDattaMaharajTitle => 'श्री दत्त महाराजांविषयी';
 
   @override
   String get calendarTitle => 'कार्यक्रम दिनदर्शिका';

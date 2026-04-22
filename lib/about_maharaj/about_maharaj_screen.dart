@@ -21,7 +21,6 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
   late Future<AboutDeity> _aboutDeityFuture;
   String _selectedText = '';
   String? _deviceId;
-  String? _currentDeityTitle;
 
   @override
   void initState() {
@@ -71,7 +70,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          localizations.aboutMaharajTitle,
+          _getAboutTitle(localizations, widget.deity.aboutTitleKey),
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.colorScheme.onPrimary,
@@ -103,7 +102,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
               } else {
                 _showReportDialog(
                   _selectedText,
-                  _currentDeityTitle ?? localizations.aboutMaharajTitle,
+                  _getAboutTitle(localizations, widget.deity.aboutTitleKey),
                 );
               }
             },
@@ -119,7 +118,6 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final about = snapshot.data!;
-            _currentDeityTitle = locale == 'mr' ? about.titleMr : about.titleEn;
             return SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
               child: Column(
@@ -182,6 +180,25 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
         ],
       ),
     );
+  }
+
+  String _getAboutTitle(AppLocalizations localizations, String key) {
+    switch (key) {
+      case 'aboutMaharajTitle':
+        return localizations.aboutMaharajTitle;
+      case 'aboutBabaTitle':
+        return localizations.aboutBabaTitle;
+      case 'aboutGanapatiTitle':
+        return localizations.aboutGanapatiTitle;
+      case 'aboutShriramTitle':
+        return localizations.aboutShriramTitle;
+      case 'aboutHanumanTitle':
+        return localizations.aboutHanumanTitle;
+      case 'aboutDattaMaharajTitle':
+        return localizations.aboutDattaMaharajTitle;
+      default:
+        return localizations.aboutMaharajTitle; // Default fallback
+    }
   }
 
   Widget _buildTopSection(
@@ -287,6 +304,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
     required String content,
   }) {
     final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: theme.cardTheme.shape,
@@ -337,7 +355,10 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
                     onPressed: () {
                       _showReportDialog(
                         _selectedText,
-                        _currentDeityTitle ?? localizations.aboutMaharajTitle,
+                        _getAboutTitle(
+                          localizations,
+                          widget.deity.aboutTitleKey,
+                        ),
                       );
                       editableTextState.hideToolbar();
                     },

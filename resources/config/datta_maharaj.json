@@ -4,7 +4,7 @@
   "name_mr": "श्री दत्त महाराज",
   "imagePath": "resources/images/datta_maharaj/Datta_Maharaj.png",
   "about_file": "about.json",
-  "about_title_key": "aboutMaharajTitle",
+  "about_title_key": "aboutDattaMaharajTitle",
   "nityopasana": {
     "order": [
       "granth",
