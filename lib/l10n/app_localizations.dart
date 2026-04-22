@@ -1238,11 +1238,35 @@ abstract class AppLocalizations {
   /// **'Shri Gajanan Jai Gajanan'**
   String get chantShriGajananJaiGajanan;
 
-  /// No description provided for @naamjapTitle.
+  /// No description provided for @namjapTitle.
   ///
   /// In en, this message translates to:
-  /// **'Naamjap'**
-  String get naamjapTitle;
+  /// **'Namjap'**
+  String get namjapTitle;
+
+  /// No description provided for @individualNamjapLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Individual Namjap'**
+  String get individualNamjapLabel;
+
+  /// No description provided for @individualNamjapDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Chant manually or listen to namjap for a specified duration or number of malas.'**
+  String get individualNamjapDescription;
+
+  /// No description provided for @groupNamjapLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Namjap'**
+  String get groupNamjapLabel;
+
+  /// No description provided for @groupNamjapDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Join group namjap and contribute towards a shared sankalp.'**
+  String get groupNamjapDescription;
 
   /// No description provided for @malaCountingTab.
   ///

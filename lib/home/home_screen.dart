@@ -243,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     cards.add(
       _buildIconGridItem(
         context: context,
-        title: localizations.naamjapTitle,
+        title: localizations.namjapTitle,
         imagePath: isGaneshotsav
             ? 'resources/images/festive_icons/ganesh_chaturthi/naamjap.png'
             : isDiwali

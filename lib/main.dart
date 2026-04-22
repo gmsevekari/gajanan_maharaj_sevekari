@@ -37,7 +37,7 @@ import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signups_screen.dart';
 import 'package:gajanan_maharaj_sevekari/social_media/social_media_screen.dart';
 import 'package:gajanan_maharaj_sevekari/splash/splash_screen.dart';
-import 'package:gajanan_maharaj_sevekari/jap_mala/naamjap_screen.dart';
+import 'package:gajanan_maharaj_sevekari/jap_mala/namjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/individual_namjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_login_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_dashboard_screen.dart';
@@ -312,7 +312,7 @@ class _MyAppState extends State<MyApp> {
                 Routes.gallery: (context) => const GalleryScreen(),
                 Routes.settings: (context) => const SettingsScreen(),
                 Routes.sankalp: (context) => const SankalpScreen(),
-                Routes.naamjap: (context) => const NaamjapScreen(),
+                Routes.naamjap: (context) => const NamjapScreen(),
                 Routes.individualNamjap: (context) =>
                     const IndividualNamjapScreen(),
                 Routes.adminLogin: (context) => const AdminLoginScreen(),

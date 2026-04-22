@@ -600,7 +600,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chantShriGajananJaiGajanan => 'Shri Gajanan Jai Gajanan';
 
   @override
-  String get naamjapTitle => 'Naamjap';
+  String get namjapTitle => 'Namjap';
+
+  @override
+  String get individualNamjapLabel => 'Individual Namjap';
+
+  @override
+  String get individualNamjapDescription =>
+      'Chant manually or listen to namjap for a specified duration or number of malas.';
+
+  @override
+  String get groupNamjapLabel => 'Group Namjap';
+
+  @override
+  String get groupNamjapDescription =>
+      'Join group namjap and contribute towards a shared sankalp.';
 
   @override
   String get malaCountingTab => 'Mala Counting';

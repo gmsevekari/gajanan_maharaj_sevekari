@@ -600,7 +600,21 @@ class AppLocalizationsMr extends AppLocalizations {
   String get chantShriGajananJaiGajanan => 'श्री गजानन जय गजानन';
 
   @override
-  String get naamjapTitle => 'नामजप';
+  String get namjapTitle => 'नामजप';
+
+  @override
+  String get individualNamjapLabel => 'वैयक्तिक नामजप';
+
+  @override
+  String get individualNamjapDescription =>
+      'स्वतः जप करा किंवा विशिष्ट वेळेसाठी / माळांसाठी ऐका.';
+
+  @override
+  String get groupNamjapLabel => 'ग्रुप नामजप';
+
+  @override
+  String get groupNamjapDescription =>
+      'ग्रुप नामजपमध्ये सहभागी व्हा आणि सामूहिक संकल्पासाठी योगदान द्या.';
 
   @override
   String get malaCountingTab => 'माळा मोजणी';

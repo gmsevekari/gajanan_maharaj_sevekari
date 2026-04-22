@@ -15,6 +15,8 @@ enum LogicalIcon {
   settings,
   donations,
   about,
+  person,
+  groups,
 }
 
 class ThemedIcon extends StatelessWidget {
@@ -87,6 +89,10 @@ class ThemedIcon extends StatelessWidget {
         return Icons.volunteer_activism;
       case LogicalIcon.about:
         return Icons.info;
+      case LogicalIcon.person:
+        return Icons.person;
+      case LogicalIcon.groups:
+        return Icons.groups;
     }
   }
 
@@ -127,6 +133,11 @@ class ThemedIcon extends StatelessWidget {
         break;
       case LogicalIcon.settings:
         fullPath = 'resources/images/festive_icons/ganesh_chaturthi/settings.png';
+        break;
+      case LogicalIcon.person:
+      case LogicalIcon.groups:
+        // Fallback to default icons for now
+        break;
     }
 
     return Image.asset(

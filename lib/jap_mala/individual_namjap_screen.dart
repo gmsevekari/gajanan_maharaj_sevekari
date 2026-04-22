@@ -25,7 +25,7 @@ class IndividualNamjapScreen extends StatelessWidget {
           backgroundColor: theme.appColors.primarySwatch,
           iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
           title: Text(
-            localizations.naamjapTitle,
+            localizations.namjapTitle,
             style: TextStyle(
               color: theme.colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
