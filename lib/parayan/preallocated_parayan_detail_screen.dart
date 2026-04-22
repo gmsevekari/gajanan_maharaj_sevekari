@@ -72,6 +72,8 @@ class _PreallocatedParayanDetailScreenState
         deviceId: _deviceId!,
         daysCount: _event!.type.daysCount,
         parayanService: _service,
+        groupId: _event!.groupId,
+        expectedJoinCode: _event!.joinCode,
       ),
     );
 

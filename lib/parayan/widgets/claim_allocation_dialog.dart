@@ -10,6 +10,8 @@ class ClaimAllocationDialog extends StatefulWidget {
   final String deviceId;
   final int daysCount;
   final ParayanService parayanService;
+  final String? groupId;
+  final String? expectedJoinCode;
 
   const ClaimAllocationDialog({
     super.key,
@@ -17,6 +19,8 @@ class ClaimAllocationDialog extends StatefulWidget {
     required this.deviceId,
     required this.daysCount,
     required this.parayanService,
+    this.groupId,
+    this.expectedJoinCode,
   });
 
   @override
@@ -27,6 +31,7 @@ class _ClaimAllocationDialogState extends State<ClaimAllocationDialog> {
   final _formKey = GlobalKey<FormState>();
   final _countryCodeController = TextEditingController(text: '+91');
   final _phoneController = TextEditingController();
+  final _joinCodeController = TextEditingController();
   bool _isLoading = false;
 
   Future<void> _handleClaim({bool overwrite = false}) async {
@@ -36,6 +41,22 @@ class _ClaimAllocationDialogState extends State<ClaimAllocationDialog> {
 
     final fullPhone =
         '${_countryCodeController.text.trim()}${_phoneController.text.trim()}';
+
+    // Validate Join Code if applicable
+    if (widget.groupId == 'gajanan_maharaj_seattle') {
+      final enteredCode = _joinCodeController.text.trim();
+      if (enteredCode != widget.expectedJoinCode) {
+        setState(() => _isLoading = false);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.invalidJoinCode),
+            ),
+          );
+        }
+        return;
+      }
+    }
 
     try {
       final result = await widget.parayanService.claimAllocation(
@@ -181,6 +202,27 @@ class _ClaimAllocationDialogState extends State<ClaimAllocationDialog> {
                 ),
               ],
             ),
+            if (widget.groupId == 'gajanan_maharaj_seattle') ...[
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _joinCodeController,
+                decoration: InputDecoration(
+                  labelText: localizations.joinCodeLabel,
+                  hintText: localizations.joinCodeHint,
+                  prefixIcon: const Icon(Icons.vpn_key_outlined),
+                ),
+                textCapitalization: TextCapitalization.characters,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return localizations.joinCodeHint;
+                  }
+                  if (value.trim() != widget.expectedJoinCode) {
+                    return localizations.invalidJoinCode;
+                  }
+                  return null;
+                },
+              ),
+            ],
             if (_isLoading)
               const Padding(
                 padding: EdgeInsets.only(top: 16.0),

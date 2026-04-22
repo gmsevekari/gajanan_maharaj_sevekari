@@ -215,6 +215,8 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
         deviceId: _deviceId!,
         daysCount: _event!.type.daysCount,
         parayanService: _parayanService,
+        groupId: _event!.groupId,
+        expectedJoinCode: _event!.joinCode,
       ),
     ).then((result) {
       if (result == true && mounted) {
