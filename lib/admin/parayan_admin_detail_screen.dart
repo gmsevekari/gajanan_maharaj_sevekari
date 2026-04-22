@@ -1291,39 +1291,40 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
             return a.name.compareTo(b.name);
           });
       final int groupSize = (event.type == ParayanType.threeDay) ? 7 : 21;
-      final int totalGroups = (participants.length / groupSize).ceil();
+      final Map<int, List<ParayanMember>> groupedParticipants = {};
+      for (final p in participants) {
+        final int gNum =
+            p.groupNumber ?? ((p.globalIndex ?? 0) ~/ groupSize) + 1;
+        groupedParticipants.putIfAbsent(gNum, () => []).add(p);
+      }
+
+      final sortedGroupNumbers = groupedParticipants.keys.toList()..sort();
+      if (sortedGroupNumbers.isEmpty) {
+        if (context.mounted) Navigator.pop(context);
+        return;
+      }
 
       final List<XFile> files = [];
       final tempDir = await getTemporaryDirectory();
 
-      // Batch groups: 1 group per file for 1-day (easy sharing), 3 groups per file for 3-day.
+      // Batch groups: 1 group per file for 1-day, 3 groups per file for 3-day.
       final int batchSize = (event.type == ParayanType.threeDay) ? 3 : 1;
-      final int totalBatches = (totalGroups / batchSize).ceil();
       final exportTheme = Theme.of(context);
       if (!context.mounted) return;
 
-      for (int batch = 0; batch < totalBatches; batch++) {
-        final int startGroup = batch * batchSize + 1;
-        final int endGroup = (startGroup + batchSize - 1).clamp(1, totalGroups);
+      for (int i = 0; i < sortedGroupNumbers.length; i += batchSize) {
+        final currentGroupNumbers = sortedGroupNumbers.sublist(
+          i,
+          (i + batchSize).clamp(0, sortedGroupNumbers.length),
+        );
 
         Widget batchWidget;
 
         if (event.type == ParayanType.threeDay) {
-          final batchGroups = <MapEntry<int, List<ParayanMember>>>[];
-          for (int i = startGroup; i <= endGroup; i++) {
-            final int startIdx = (i - 1) * groupSize;
-            if (startIdx >= participants.length) break;
-            final int endIdx = (startIdx + groupSize).clamp(
-              0,
-              participants.length,
-            );
-            final List<ParayanMember> groupParticipants = participants.sublist(
-              startIdx,
-              endIdx,
-            );
-            batchGroups.add(MapEntry(i, groupParticipants));
-          }
-          if (batchGroups.isEmpty) continue;
+          final batchGroups = currentGroupNumbers
+              .map((gNum) => MapEntry(gNum, groupedParticipants[gNum]!))
+              .toList();
+
           batchWidget = _buildExportableBatchCard(
             event: event,
             batchGroups: batchGroups,
@@ -1335,25 +1336,15 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           );
         } else {
           final List<Widget> batchCards = [];
-          for (int i = startGroup; i <= endGroup; i++) {
-            final int startIdx = (i - 1) * groupSize;
-            if (startIdx >= participants.length) break;
-            final int endIdx = (startIdx + groupSize).clamp(
-              0,
-              participants.length,
-            );
-            final List<ParayanMember> groupParticipants = participants.sublist(
-              startIdx,
-              endIdx,
-            );
+          for (final gNum in currentGroupNumbers) {
             if (batchCards.isNotEmpty) {
               batchCards.add(const SizedBox(height: 16));
             }
             batchCards.add(
               _buildExportableGroupCard(
                 event: event,
-                groupNumber: i,
-                participants: groupParticipants,
+                groupNumber: gNum,
+                participants: groupedParticipants[gNum]!,
                 l10n: l10n,
                 isMarathi: isMarathi,
                 title: title,
@@ -1398,6 +1389,9 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           pixelRatio: 2.0,
           delay: const Duration(milliseconds: 250),
         );
+
+        final int startGroup = currentGroupNumbers.first;
+        final int endGroup = currentGroupNumbers.last;
 
         final String startFormatted = _formatNumberInternal(
           startGroup,
