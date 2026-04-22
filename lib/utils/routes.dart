@@ -20,6 +20,8 @@ class Routes {
   static const String fontSelection = '/font_selection';
   static const String songs = '/songs';
   static const String naamjap = '/naamjap';
+  static const String individualNamjap = '/individual_namjap';
+  static const String groupNamjap = '/group_namjap';
   static const String adminLogin = '/admin_login';
   static const String adminDashboard = '/admin_dashboard';
   static const String adminTempleNotifications = '/admin_temple_notifications';
