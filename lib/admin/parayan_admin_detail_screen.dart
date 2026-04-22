@@ -1992,7 +1992,8 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       final isLastGroup = gi == batchGroups.length - 1;
 
       // ── Full-width group separator row ──
-      if (event.status != 'upcoming' && event.status != 'enrolling') {
+      if (event.id.startsWith('gajanan_gunjan') ||
+          (event.status != 'upcoming' && event.status != 'enrolling')) {
         rows.add(
           Container(
             width: nameColW + dayColW * daysCount,
