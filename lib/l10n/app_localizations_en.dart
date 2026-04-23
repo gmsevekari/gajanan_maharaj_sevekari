@@ -1696,5 +1696,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Are you sure you want to delete your signup for this Namjap?';
 
   @override
+  String get groupNamjapTimezone => 'Timezone';
+
+  @override
   String get upcomingActiveTab => 'Upcoming / Active';
 }

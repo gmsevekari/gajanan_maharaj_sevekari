@@ -10,12 +10,16 @@ admin.initializeApp();
 
 const parayan = require("./parayan");
 const notifications = require("./notifications");
+const namjap = require("./namjap");
 
 // Parayan Management
 exports.updateParayanStatuses = parayan.updateParayanStatuses;
 exports.allocateParayanAdhyays = parayan.allocateParayanAdhyays;
 exports.adminAddParticipants = parayan.adminAddParticipants;
 exports.claimParayanAllocation = parayan.claimParayanAllocation;
+
+// Group Namjap Management
+exports.updateNamjapStatuses = namjap.updateNamjapStatuses;
 
 // Notifications & Reminders
 exports.sendTempleNotification = notifications.sendTempleNotification;

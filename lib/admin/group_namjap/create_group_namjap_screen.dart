@@ -25,7 +25,13 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
 
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now().add(const Duration(days: 7));
+  String _selectedTimezone = 'America/Los_Angeles';
   bool _isLoading = false;
+
+  final List<Map<String, String>> _timezones = [
+    {'label': 'Seattle (Pacific Time)', 'value': 'America/Los_Angeles'},
+    {'label': 'India (IST)', 'value': 'Asia/Kolkata'},
+  ];
 
   final GroupNamjapService _service = GroupNamjapService();
 
@@ -84,6 +90,7 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
         joinCode: _generateJoinCode(),
         status: 'upcoming',
         groupId: groupId,
+        timezone: _selectedTimezone,
         createdAt: DateTime.now(),
       );
 
@@ -185,6 +192,22 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
                         if (int.tryParse(v) == null)
                           return localizations.groupNamjapMustBeNumber;
                         return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: _selectedTimezone,
+                      decoration: InputDecoration(
+                        labelText: localizations.groupNamjapTimezone,
+                      ),
+                      items: _timezones.map((tz) {
+                        return DropdownMenuItem(
+                          value: tz['value'],
+                          child: Text(tz['label']!),
+                        );
+                      }).toList(),
+                      onChanged: (v) {
+                        if (v != null) setState(() => _selectedTimezone = v);
                       },
                     ),
                     const SizedBox(height: 24),

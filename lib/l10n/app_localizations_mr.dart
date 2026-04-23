@@ -1700,5 +1700,8 @@ class AppLocalizationsMr extends AppLocalizations {
       'तुम्ही खात्रीने या नामजपासाठी तुमचे साईन-अप डिलीट करू इच्छिता?';
 
   @override
+  String get groupNamjapTimezone => 'टाइमझोन';
+
+  @override
   String get upcomingActiveTab => 'आगामी / सक्रिय';
 }

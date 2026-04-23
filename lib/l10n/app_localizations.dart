@@ -3302,6 +3302,12 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to delete your signup for this Namjap?'**
   String get deleteSignupConfirmMessageNamjap;
 
+  /// No description provided for @groupNamjapTimezone.
+  ///
+  /// In en, this message translates to:
+  /// **'Timezone'**
+  String get groupNamjapTimezone;
+
   /// No description provided for @upcomingActiveTab.
   ///
   /// In en, this message translates to:

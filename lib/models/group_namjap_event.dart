@@ -14,6 +14,7 @@ class GroupNamjapEvent {
   final String joinCode;
   final String status;
   final String groupId;
+  final String timezone;
   final DateTime createdAt;
 
   const GroupNamjapEvent({
@@ -30,6 +31,7 @@ class GroupNamjapEvent {
     required this.joinCode,
     required this.status,
     required this.groupId,
+    this.timezone = 'America/Los_Angeles',
     required this.createdAt,
   });
 
@@ -51,6 +53,7 @@ class GroupNamjapEvent {
       joinCode: data['joinCode'] ?? '',
       status: data['status'] ?? 'upcoming',
       groupId: data['groupId'] ?? '',
+      timezone: data['timezone'] ?? 'America/Los_Angeles',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
     );
   }
@@ -69,6 +72,7 @@ class GroupNamjapEvent {
       'joinCode': joinCode,
       'status': status,
       'groupId': groupId,
+      'timezone': timezone,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
@@ -87,6 +91,7 @@ class GroupNamjapEvent {
     String? joinCode,
     String? status,
     String? groupId,
+    String? timezone,
     DateTime? createdAt,
   }) {
     return GroupNamjapEvent(
@@ -103,6 +108,7 @@ class GroupNamjapEvent {
       joinCode: joinCode ?? this.joinCode,
       status: status ?? this.status,
       groupId: groupId ?? this.groupId,
+      timezone: timezone ?? this.timezone,
       createdAt: createdAt ?? this.createdAt,
     );
   }
