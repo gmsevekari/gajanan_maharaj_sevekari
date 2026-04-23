@@ -390,7 +390,7 @@
   "statusUpcomingMultiDay": "पारायण {date} पासून सुरू होईल. सहभाग अद्याप सुरू झालेला नाही.",
   "statusEnrolling": "प्रवेश सुरू",
   "statusOngoing": "सुरू आहे",
-  "statusCompleted": "पूर्ण झाले",
+  "statusCompleted": "पूर्ण झालेले",
   "parayanWillStartOn": "पारायण {date} पासून सुरू होईल",
   "@parayanWillStartOn": {
     "placeholders": {
@@ -428,7 +428,7 @@
   "reminderSentStatus": "पाठवले",
   "reminderPendingStatus": "पाठवायचे आहे",
   "updateStatusLabel": "पारायण स्टेटस",
-  "statusUpcoming": "लवकरच",
+  "statusUpcoming": "आगामी",
   "statusAllocated": "वाटप पूर्ण",
   "statusEnrollingDesc": "प्रवेश सुरू आहे. पारायण {date} रोजी सुरू होईल.",
   "statusAllocatedDesc": "अध्याय वाटप पूर्ण झाले आहे. पारायण {date} रोजी सुरू होईल.",

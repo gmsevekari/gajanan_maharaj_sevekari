@@ -25,6 +25,21 @@ class GroupNamjapService extends ChangeNotifier {
     });
   }
 
+  /// Fetch all completed group namjaps for this specific group.
+  Stream<List<GroupNamjapEvent>> getCompletedEvents(String groupId) {
+    return _firestore
+        .collection(eventsCollection)
+        .where('groupId', isEqualTo: groupId)
+        .where('status', isEqualTo: 'completed')
+        .orderBy('startDate', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) => GroupNamjapEvent.fromMap(doc.id, doc.data()))
+          .toList();
+    });
+  }
+
   /// Create a new event.
   Future<void> createEvent(GroupNamjapEvent event) async {
     await _firestore
@@ -69,7 +84,7 @@ class GroupNamjapService extends ChangeNotifier {
   }) async {
     if (countToSubmit <= 0) return;
 
-    final participantId = '${deviceId}_${memberName}'.replaceAll(' ', '_');
+    final participantId = '${deviceId}_$memberName'.replaceAll(' ', '_');
     final eventRef = _firestore.collection(eventsCollection).doc(eventId);
     final participantRef = eventRef.collection(participantsSubcollection).doc(participantId);
     

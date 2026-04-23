@@ -1040,7 +1040,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get statusOngoing => 'सुरू आहे';
 
   @override
-  String get statusCompleted => 'पूर्ण झाले';
+  String get statusCompleted => 'पूर्ण झालेले';
 
   @override
   String parayanWillStartOn(String date) {
@@ -1116,7 +1116,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get updateStatusLabel => 'पारायण स्टेटस';
 
   @override
-  String get statusUpcoming => 'लवकरच';
+  String get statusUpcoming => 'आगामी';
 
   @override
   String get statusAllocated => 'वाटप पूर्ण';
