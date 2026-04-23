@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/group_namjap_event.dart';
@@ -9,7 +10,8 @@ class CreateGroupNamjapScreen extends StatefulWidget {
   const CreateGroupNamjapScreen({super.key});
 
   @override
-  State<CreateGroupNamjapScreen> createState() => _CreateGroupNamjapScreenState();
+  State<CreateGroupNamjapScreen> createState() =>
+      _CreateGroupNamjapScreenState();
 }
 
 class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
@@ -30,8 +32,9 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
   String _generateJoinCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final rnd = Random();
-    return String.fromCharCodes(Iterable.generate(
-        6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
+    return String.fromCharCodes(
+      Iterable.generate(6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))),
+    );
   }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
@@ -62,7 +65,11 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final docId = DateTime.now().millisecondsSinceEpoch.toString();
+      final dateStr = DateFormat('yyyyMMdd').format(_startDate);
+      const groupId = 'gajanan_maharaj_seattle';
+      final target = _targetCountController.text.trim();
+      final docId = '${groupId}_${dateStr}_$target';
+
       final newEvent = GroupNamjapEvent(
         id: docId,
         nameEn: _nameEnController.text.trim(),
@@ -76,7 +83,7 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
         totalCount: 0,
         joinCode: _generateJoinCode(),
         status: 'upcoming',
-        groupId: 'gajanan_maharaj_seattle', // Assumed scope for admin user currently
+        groupId: groupId,
         createdAt: DateTime.now(),
       );
 
@@ -84,15 +91,19 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.groupNamjapCreateSuccess)),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.groupNamjapCreateSuccess,
+            ),
+          ),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) {
@@ -107,9 +118,7 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.createGroupNamjapTitle),
-      ),
+      appBar: AppBar(title: Text(localizations.createGroupNamjapTitle)),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -121,41 +130,60 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
                   children: [
                     TextFormField(
                       controller: _nameEnController,
-                      decoration: InputDecoration(labelText: localizations.groupNamjapNameEn),
-                      validator: (v) => v!.isEmpty ? localizations.groupNamjapRequired : null,
+                      decoration: InputDecoration(
+                        labelText: localizations.groupNamjapNameEn,
+                      ),
+                      validator: (v) =>
+                          v!.isEmpty ? localizations.groupNamjapRequired : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _nameMrController,
-                      decoration: InputDecoration(labelText: localizations.groupNamjapNameMr),
-                      validator: (v) => v!.isEmpty ? localizations.groupNamjapRequired : null,
+                      decoration: InputDecoration(
+                        labelText: localizations.groupNamjapNameMr,
+                      ),
+                      validator: (v) =>
+                          v!.isEmpty ? localizations.groupNamjapRequired : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _sankalpEnController,
-                      decoration: InputDecoration(labelText: localizations.groupNamjapSankalpEn),
-                      validator: (v) => v!.isEmpty ? localizations.groupNamjapRequired : null,
+                      decoration: InputDecoration(
+                        labelText: localizations.groupNamjapSankalpEn,
+                      ),
+                      validator: (v) =>
+                          v!.isEmpty ? localizations.groupNamjapRequired : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _sankalpMrController,
-                      decoration: InputDecoration(labelText: localizations.groupNamjapSankalpMr),
-                      validator: (v) => v!.isEmpty ? localizations.groupNamjapRequired : null,
+                      decoration: InputDecoration(
+                        labelText: localizations.groupNamjapSankalpMr,
+                      ),
+                      validator: (v) =>
+                          v!.isEmpty ? localizations.groupNamjapRequired : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _mantraController,
-                      decoration: InputDecoration(labelText: localizations.groupNamjapMantra),
-                      validator: (v) => v!.isEmpty ? localizations.groupNamjapRequired : null,
+                      decoration: InputDecoration(
+                        labelText: localizations.groupNamjapMantra,
+                      ),
+                      validator: (v) =>
+                          v!.isEmpty ? localizations.groupNamjapRequired : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _targetCountController,
-                      decoration: InputDecoration(labelText: localizations.groupNamjapTargetCount),
+                      decoration: InputDecoration(
+                        labelText: localizations.groupNamjapTargetCount,
+                      ),
                       keyboardType: TextInputType.number,
                       validator: (v) {
-                        if (v == null || v.isEmpty) return localizations.groupNamjapRequired;
-                        if (int.tryParse(v) == null) return localizations.groupNamjapMustBeNumber;
+                        if (v == null || v.isEmpty)
+                          return localizations.groupNamjapRequired;
+                        if (int.tryParse(v) == null)
+                          return localizations.groupNamjapMustBeNumber;
                         return null;
                       },
                     ),
@@ -180,7 +208,13 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       onPressed: _submit,
-                      child: Text(localizations.createGroupNamjapTitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      child: Text(
+                        localizations.createGroupNamjapTitle,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
