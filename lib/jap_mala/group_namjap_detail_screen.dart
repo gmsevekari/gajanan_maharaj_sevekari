@@ -215,7 +215,13 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
                                           ),
                                           child: FittedBox(
                                             child: Text(
-                                              '${localizations.count}: ${formatNumberLocalized(japProvider.totalCount, locale, pad: false)}',
+                                              localizations.groupNamjapSubmitCount(
+                                                formatNumberLocalized(
+                                                  japProvider.totalCount,
+                                                  locale,
+                                                  pad: false,
+                                                ),
+                                              ),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),

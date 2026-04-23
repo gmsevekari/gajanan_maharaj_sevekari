@@ -616,6 +616,14 @@
   "mantraLabel": "Mantra",
   "dateRangeLabel": "Date Range",
   "statusLabel": "Status",
+  "groupNamjapSubmitCount": "Submit Namjap Count: {count}",
+  "@groupNamjapSubmitCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "dashami": "Dashami",
   "ekadashi": "Ekadashi",
   "dwadashi": "Dwadashi"

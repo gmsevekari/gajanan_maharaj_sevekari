@@ -3230,6 +3230,12 @@ abstract class AppLocalizations {
   /// **'Date Range'**
   String get dateRangeLabel;
 
+  /// No description provided for @groupNamjapSubmitCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Namjap Count: {count}'**
+  String groupNamjapSubmitCount(String count);
+
   /// No description provided for @dashami.
   ///
   /// In en, this message translates to:

@@ -1661,6 +1661,11 @@ class AppLocalizationsMr extends AppLocalizations {
   String get dateRangeLabel => 'कालावधी';
 
   @override
+  String groupNamjapSubmitCount(String count) {
+    return 'नामजप सबमिट करा: $count';
+  }
+
+  @override
   String get dashami => 'दशमी';
 
   @override

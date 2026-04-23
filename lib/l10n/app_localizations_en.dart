@@ -1657,6 +1657,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dateRangeLabel => 'Date Range';
 
   @override
+  String groupNamjapSubmitCount(String count) {
+    return 'Submit Namjap Count: $count';
+  }
+
+  @override
   String get dashami => 'Dashami';
 
   @override

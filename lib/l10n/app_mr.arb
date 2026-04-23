@@ -616,6 +616,14 @@
   "mantraLabel": "मंत्र",
   "dateRangeLabel": "कालावधी",
   "statusLabel": "स्टेटस",
+  "groupNamjapSubmitCount": "नामजप सबमिट करा: {count}",
+  "@groupNamjapSubmitCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "dashami": "दशमी",
   "ekadashi": "एकादशी",
   "dwadashi": "द्वादशी"
