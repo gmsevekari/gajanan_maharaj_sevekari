@@ -139,7 +139,7 @@ class _ParayanCoordinationDashboardState
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 sliver: SliverToBoxAdapter(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 24),
                       _buildStatsRow(
@@ -148,7 +148,6 @@ class _ParayanCoordinationDashboardState
                         activeCount,
                         completedCount,
                       ),
-                      const SizedBox(height: 32),
                       _buildSectionHeader(
                         context,
                         theme,
@@ -158,7 +157,8 @@ class _ParayanCoordinationDashboardState
                           context,
                           Routes.adminParayanList,
                           arguments: {
-                            'title': localizations.recentlyCompletedParayanLabel,
+                            'title':
+                                localizations.recentlyCompletedParayanLabel,
                             'statusFilter': 'completed',
                             'groupId': widget.adminUser?.parayanGroupId,
                           },
@@ -232,9 +232,9 @@ class _ParayanCoordinationDashboardState
                     ),
                   ),
                 ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverToBoxAdapter(
                     child: _UpcomingCard(event: upcomingEvents.first),
                   ),
                 ),
@@ -384,91 +384,73 @@ class _OngoingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final now = DateTime.now();
-    final totalDays = event.endDate.difference(event.startDate).inDays + 1;
-    int currentDay = 1;
-    double progress = 0;
-
-    if (now.isAfter(event.startDate)) {
-      currentDay = now.difference(event.startDate).inDays + 1;
-      if (currentDay > totalDays) currentDay = totalDays;
-      progress = currentDay / totalDays;
-    }
-
     return Card(
-      // Inherits AppTheme.cardTheme
       margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ParayanAdminDetailScreen(event: event),
+      child: SizedBox(
+        width: double.infinity,
+        child: InkWell(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ParayanAdminDetailScreen(event: event),
+            ),
           ),
-        ),
-        borderRadius:
-            (theme.cardTheme.shape as RoundedRectangleBorder?)?.borderRadius
-                as BorderRadius? ??
-            BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 28,
-                backgroundColor: theme.colorScheme.primary.withValues(
-                  alpha: 0.1,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: theme.colorScheme.primary.withValues(
+                    alpha: 0.1,
+                  ),
+                  child: Icon(
+                    Icons.menu_book,
+                    color: theme.colorScheme.primary,
+                    size: 28,
+                  ),
                 ),
-                child: Icon(
-                  Icons.menu_book,
-                  color: theme.colorScheme.primary,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      Localizations.localeOf(context).languageCode == 'mr'
-                          ? event.titleMr
-                          : event.titleEn,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Day ${_formatNumber(context, currentDay)} of ${_formatNumber(context, totalDays)}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(
-                          alpha: 0.5,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        Localizations.localeOf(context).languageCode == 'mr'
+                            ? event.titleMr
+                            : event.titleEn,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        backgroundColor: theme.appColors.divider.withValues(
-                          alpha: 0.1,
+                      const SizedBox(height: 4),
+                      Text(
+                        _getDateRange(context, event),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.6,
+                          ),
                         ),
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          theme.colorScheme.primary,
-                        ),
-                        minHeight: 6,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        _getParayanTypeText(context, event.type),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Icon(
-                Icons.chevron_right,
-                color: theme.appColors.divider,
-              ),
-            ],
+                const SizedBox(width: 12),
+                Icon(
+                  Icons.chevron_right,
+                  color: theme.appColors.divider,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -484,90 +466,51 @@ class _UpcomingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dateStr = DateFormat('dd MMM').format(event.startDate).toUpperCase();
 
     return Card(
-      // Inherits AppTheme.cardTheme
-      margin: EdgeInsets.zero,
-      child: InkWell(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ParayanAdminDetailScreen(event: event),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: SizedBox(
+        width: double.infinity,
+        child: InkWell(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ParayanAdminDetailScreen(event: event),
+            ),
           ),
-        ),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  Localizations.localeOf(context).languageCode == 'mr'
+                      ? event.titleMr
+                      : event.titleEn,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                const SizedBox(height: 6),
+                Text(
+                  _getDateRange(context, event),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
                 ),
-                child: Text(
-                  dateStr,
+                const SizedBox(height: 6),
+                Text(
+                  _getParayanTypeText(context, event.type),
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                Localizations.localeOf(context).languageCode == 'mr'
-                    ? event.titleMr
-                    : event.titleEn,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                Localizations.localeOf(context).languageCode == 'mr'
-                    ? event.descriptionMr
-                    : event.descriptionEn,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.appColors.secondaryText,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 10,
-                    backgroundColor: theme.colorScheme.primaryContainer,
-                    child: Icon(
-                      Icons.person,
-                      size: 12,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    event.type == ParayanType.oneDay
-                        ? '1-Day'
-                        : event.type == ParayanType.threeDay
-                        ? '3-Day'
-                        : 'Guru Pushya',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -586,4 +529,42 @@ String _formatNumber(BuildContext context, int number, {bool pad = false}) {
     numStr = numStr.replaceAll(english[i], marathi[i]);
   }
   return numStr;
+}
+
+String _getDateRange(BuildContext context, ParayanEvent event) {
+  final locale = Localizations.localeOf(context).languageCode;
+  final startDay = _formatNumber(context, event.startDate.day);
+  final startMonth = DateFormat.MMMM(locale).format(event.startDate);
+
+  if (event.type == ParayanType.oneDay) {
+    return '$startDay $startMonth';
+  }
+
+  final endDay = _formatNumber(context, event.endDate.day);
+  final endMonth = DateFormat.MMMM(locale).format(event.endDate);
+
+  if (startMonth == endMonth) {
+    return '$startDay - $endDay $startMonth';
+  }
+  return '$startDay $startMonth - $endDay $endMonth';
+}
+
+String _getParayanTypeText(BuildContext context, ParayanType type) {
+  final l10n = AppLocalizations.of(context)!;
+  final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+
+  String text;
+  switch (type) {
+    case ParayanType.oneDay:
+      text = l10n.oneDayParayan;
+      break;
+    case ParayanType.threeDay:
+      text = l10n.threeDayParayan;
+      break;
+    case ParayanType.guruPushya:
+      text = l10n.guruPushyaParayan;
+      break;
+  }
+
+  return isMarathi ? text : text.toUpperCase();
 }

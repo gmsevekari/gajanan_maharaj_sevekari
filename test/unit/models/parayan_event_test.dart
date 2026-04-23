@@ -3,6 +3,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 
+class FakeDocumentSnapshot extends Fake implements DocumentSnapshot<Map<String, dynamic>> {
+  final String _id;
+  final Map<String, dynamic> _data;
+
+  FakeDocumentSnapshot(this._id, this._data);
+
+  @override
+  String get id => _id;
+
+  @override
+  Map<String, dynamic> data() => _data;
+}
+
 void main() {
   group('ParayanEvent', () {
     final startDate = DateTime(2024, 5, 1);
@@ -23,6 +36,7 @@ void main() {
         reminderTimes: ['20:00'],
         createdAt: createdAt,
         groupId: 'test_group',
+        timezone: 'Asia/Kolkata',
       );
 
       final map = event.toFirestore();
@@ -32,6 +46,51 @@ void main() {
       expect(map['startDate'], isA<Timestamp>());
       expect((map['startDate'] as Timestamp).toDate(), startDate);
       expect(map['status'], 'enrolling');
+      expect(map['timezone'], 'Asia/Kolkata');
+    });
+
+    test('fromFirestore should correctly deserialize with default timezone', () {
+      final map = {
+        'title_en': 'Test',
+        'title_mr': 'टेस्ट',
+        'description_en': 'Desc',
+        'description_mr': 'डिस्क',
+        'type': 'oneDay',
+        'startDate': Timestamp.fromDate(startDate),
+        'endDate': Timestamp.fromDate(endDate),
+        'status': 'upcoming',
+        'reminderTimes': <String>[],
+        'createdAt': Timestamp.fromDate(createdAt),
+        'groupId': 'group1',
+      };
+
+      final doc = FakeDocumentSnapshot('id1', map);
+      final event = ParayanEvent.fromFirestore(doc);
+
+      expect(event.titleEn, 'Test');
+      expect(event.timezone, 'America/Los_Angeles'); // Default
+    });
+
+    test('fromFirestore should use provided timezone', () {
+      final map = {
+        'title_en': 'Test',
+        'title_mr': 'टेस्ट',
+        'description_en': 'Desc',
+        'description_mr': 'डिस्क',
+        'type': 'oneDay',
+        'startDate': Timestamp.fromDate(startDate),
+        'endDate': Timestamp.fromDate(endDate),
+        'status': 'upcoming',
+        'reminderTimes': <String>[],
+        'createdAt': Timestamp.fromDate(createdAt),
+        'groupId': 'group1',
+        'timezone': 'Asia/Kolkata',
+      };
+
+      final doc = FakeDocumentSnapshot('id2', map);
+      final event = ParayanEvent.fromFirestore(doc);
+
+      expect(event.timezone, 'Asia/Kolkata');
     });
 
     test('Status mapping from type', () {
