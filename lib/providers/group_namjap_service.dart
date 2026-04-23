@@ -5,7 +5,10 @@ import 'package:gajanan_maharaj_sevekari/models/group_namjap_participant.dart';
 import 'package:intl/intl.dart';
 
 class GroupNamjapService extends ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+
+  GroupNamjapService({FirebaseFirestore? firestore})
+      : _firestore = firestore ?? FirebaseFirestore.instance;
 
   static const String eventsCollection = 'group_namjap_events';
   static const String participantsSubcollection = 'participants';
@@ -37,6 +40,37 @@ class GroupNamjapService extends ChangeNotifier {
       return snapshot.docs
           .map((doc) => GroupNamjapEvent.fromMap(doc.id, doc.data()))
           .toList();
+    });
+  }
+
+  /// Get a stream of a specific event.
+  Stream<GroupNamjapEvent?> getEventStream(String eventId) {
+    return _firestore
+        .collection(eventsCollection)
+        .doc(eventId)
+        .snapshots()
+        .map((snapshot) {
+      if (!snapshot.exists) return null;
+      return GroupNamjapEvent.fromMap(snapshot.id, snapshot.data()!);
+    });
+  }
+
+  /// Get a stream of a specific participant's progress.
+  Stream<GroupNamjapParticipant?> getParticipantStream(
+    String eventId,
+    String deviceId,
+    String memberName,
+  ) {
+    final participantId = '${deviceId}_$memberName'.replaceAll(' ', '_');
+    return _firestore
+        .collection(eventsCollection)
+        .doc(eventId)
+        .collection(participantsSubcollection)
+        .doc(participantId)
+        .snapshots()
+        .map((snapshot) {
+      if (!snapshot.exists) return null;
+      return GroupNamjapParticipant.fromMap(snapshot.data()!);
     });
   }
 

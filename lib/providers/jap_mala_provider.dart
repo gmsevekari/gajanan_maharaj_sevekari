@@ -31,6 +31,7 @@ class JapMalaProvider with ChangeNotifier {
   bool get isPlaying => _isPlaying;
   bool get isTimerExpired => _isTimerExpired;
   int get japsPlayedSinceStart => _japsPlayedSinceStart;
+  int get totalCount => (completedMalas * countsPerMala) + currentCount;
 
   // Configuration Constants
   static const String keyCustomTarget = 'customTargetMalas';
