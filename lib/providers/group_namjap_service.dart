@@ -8,7 +8,7 @@ class GroupNamjapService extends ChangeNotifier {
   final FirebaseFirestore _firestore;
 
   GroupNamjapService({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   static const String eventsCollection = 'group_namjap_events';
   static const String participantsSubcollection = 'participants';
@@ -18,14 +18,14 @@ class GroupNamjapService extends ChangeNotifier {
     return _firestore
         .collection(eventsCollection)
         .where('groupId', isEqualTo: groupId)
-        .where('status', whereIn: ['upcoming', 'ongoing'])
+        .where('status', whereIn: ['upcoming', 'ongoing', 'enrolling'])
         .orderBy('startDate')
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs
-          .map((doc) => GroupNamjapEvent.fromMap(doc.id, doc.data()))
-          .toList();
-    });
+          return snapshot.docs
+              .map((doc) => GroupNamjapEvent.fromMap(doc.id, doc.data()))
+              .toList();
+        });
   }
 
   /// Fetch all completed group namjaps for this specific group.
@@ -37,22 +37,20 @@ class GroupNamjapService extends ChangeNotifier {
         .orderBy('startDate', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs
-          .map((doc) => GroupNamjapEvent.fromMap(doc.id, doc.data()))
-          .toList();
-    });
+          return snapshot.docs
+              .map((doc) => GroupNamjapEvent.fromMap(doc.id, doc.data()))
+              .toList();
+        });
   }
 
   /// Get a stream of a specific event.
   Stream<GroupNamjapEvent?> getEventStream(String eventId) {
-    return _firestore
-        .collection(eventsCollection)
-        .doc(eventId)
-        .snapshots()
-        .map((snapshot) {
-      if (!snapshot.exists) return null;
-      return GroupNamjapEvent.fromMap(snapshot.id, snapshot.data()!);
-    });
+    return _firestore.collection(eventsCollection).doc(eventId).snapshots().map(
+      (snapshot) {
+        if (!snapshot.exists) return null;
+        return GroupNamjapEvent.fromMap(snapshot.id, snapshot.data()!);
+      },
+    );
   }
 
   /// Get a stream of a specific participant's progress.
@@ -69,9 +67,9 @@ class GroupNamjapService extends ChangeNotifier {
         .doc(participantId)
         .snapshots()
         .map((snapshot) {
-      if (!snapshot.exists) return null;
-      return GroupNamjapParticipant.fromMap(snapshot.data()!);
-    });
+          if (!snapshot.exists) return null;
+          return GroupNamjapParticipant.fromMap(snapshot.data()!);
+        });
   }
 
   /// Create a new event.
@@ -99,8 +97,9 @@ class GroupNamjapService extends ChangeNotifier {
     }
 
     // Join logic success, insert into participants
-    final participantId = '${participant.deviceId}_${participant.memberName}'.replaceAll(' ', '_');
-    
+    final participantId = '${participant.deviceId}_${participant.memberName}'
+        .replaceAll(' ', '_');
+
     await docRefs
         .collection(participantsSubcollection)
         .doc(participantId)
@@ -120,26 +119,56 @@ class GroupNamjapService extends ChangeNotifier {
 
     final participantId = '${deviceId}_$memberName'.replaceAll(' ', '_');
     final eventRef = _firestore.collection(eventsCollection).doc(eventId);
-    final participantRef = eventRef.collection(participantsSubcollection).doc(participantId);
-    
+    final participantRef = eventRef
+        .collection(participantsSubcollection)
+        .doc(participantId);
+
     // We strictly map the time locally.
     final String localDateKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     final batch = _firestore.batch();
 
     // 1. Increment global event counter
-    batch.update(eventRef, {
-      'totalCount': FieldValue.increment(countToSubmit),
-    });
+    batch.update(eventRef, {'totalCount': FieldValue.increment(countToSubmit)});
 
-    // 2. Increment user counts 
+    // 2. Increment user counts
     batch.set(participantRef, {
       'totalCount': FieldValue.increment(countToSubmit),
-      'dailyCounts': {
-        localDateKey: FieldValue.increment(countToSubmit)
-      }
+      'dailyCounts': {localDateKey: FieldValue.increment(countToSubmit)},
     }, SetOptions(merge: true));
 
     await batch.commit();
+  }
+
+  /// Check if a participant exists for this device.
+  Future<GroupNamjapParticipant?> checkParticipation(
+    String eventId,
+    String deviceId,
+  ) async {
+    final querySnapshot = await _firestore
+        .collection(eventsCollection)
+        .doc(eventId)
+        .collection(participantsSubcollection)
+        .where('deviceId', isEqualTo: deviceId)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) return null;
+    return GroupNamjapParticipant.fromMap(querySnapshot.docs.first.data());
+  }
+
+  /// Delete participation for a specific participant.
+  Future<void> deleteParticipation({
+    required String eventId,
+    required String deviceId,
+    required String memberName,
+  }) async {
+    final participantId = '${deviceId}_$memberName'.replaceAll(' ', '_');
+    await _firestore
+        .collection(eventsCollection)
+        .doc(eventId)
+        .collection(participantsSubcollection)
+        .doc(participantId)
+        .delete();
   }
 }

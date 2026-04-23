@@ -33,7 +33,10 @@ class GroupNamjapEvent {
     required this.createdAt,
   });
 
-  factory GroupNamjapEvent.fromMap(String documentId, Map<String, dynamic> data) {
+  factory GroupNamjapEvent.fromMap(
+    String documentId,
+    Map<String, dynamic> data,
+  ) {
     return GroupNamjapEvent(
       id: documentId,
       nameEn: data['name_en'] ?? '',
@@ -68,5 +71,39 @@ class GroupNamjapEvent {
       'groupId': groupId,
       'createdAt': Timestamp.fromDate(createdAt),
     };
+  }
+
+  GroupNamjapEvent copyWith({
+    String? id,
+    String? nameEn,
+    String? nameMr,
+    String? sankalpEn,
+    String? sankalpMr,
+    DateTime? startDate,
+    DateTime? endDate,
+    int? targetCount,
+    int? totalCount,
+    String? mantra,
+    String? joinCode,
+    String? status,
+    String? groupId,
+    DateTime? createdAt,
+  }) {
+    return GroupNamjapEvent(
+      id: id ?? this.id,
+      nameEn: nameEn ?? this.nameEn,
+      nameMr: nameMr ?? this.nameMr,
+      sankalpEn: sankalpEn ?? this.sankalpEn,
+      sankalpMr: sankalpMr ?? this.sankalpMr,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      targetCount: targetCount ?? this.targetCount,
+      totalCount: totalCount ?? this.totalCount,
+      mantra: mantra ?? this.mantra,
+      joinCode: joinCode ?? this.joinCode,
+      status: status ?? this.status,
+      groupId: groupId ?? this.groupId,
+      createdAt: createdAt ?? this.createdAt,
+    );
   }
 }

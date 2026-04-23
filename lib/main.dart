@@ -28,6 +28,7 @@ import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_namjap_service.dart';
+import 'package:gajanan_maharaj_sevekari/providers/group_namjap_provider.dart';
 import 'package:gajanan_maharaj_sevekari/sankalp/sankalp_screen.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/festival_overlay.dart';
@@ -128,6 +129,12 @@ void main() async {
         ChangeNotifierProvider.value(value: appConfigProvider),
         ChangeNotifierProvider.value(value: playlistProvider),
         ChangeNotifierProvider(create: (_) => GroupNamjapService()),
+        ChangeNotifierProxyProvider<GroupNamjapService, GroupNamjapProvider>(
+          create: (context) =>
+              GroupNamjapProvider(service: context.read<GroupNamjapService>()),
+          update: (context, service, previous) =>
+              previous ?? GroupNamjapProvider(service: service),
+        ),
         ChangeNotifierProvider.value(value: festivalProvider),
       ],
       child: const MyApp(),
@@ -321,7 +328,8 @@ class _MyAppState extends State<MyApp> {
                     const IndividualNamjapScreen(),
                 Routes.groupNamjap: (context) => const GroupNamjapListScreen(),
                 Routes.groupNamjapDetail: (context) {
-                  final eventId = ModalRoute.of(context)!.settings.arguments as String;
+                  final eventId =
+                      ModalRoute.of(context)!.settings.arguments as String;
                   return GroupNamjapDetailScreen(eventId: eventId);
                 },
                 Routes.adminLogin: (context) => const AdminLoginScreen(),
@@ -466,12 +474,14 @@ class _MyAppState extends State<MyApp> {
                   case Routes.adminGroupNamjapDetail:
                     final eventId = settings.arguments as String;
                     return MaterialPageRoute(
-                      builder: (context) => AdminGroupNamjapDetailScreen(eventId: eventId),
+                      builder: (context) =>
+                          AdminGroupNamjapDetailScreen(eventId: eventId),
                     );
                   case Routes.adminGroupNamjapList:
                     final status = settings.arguments as String;
                     return MaterialPageRoute(
-                      builder: (context) => AdminGroupNamjapListScreen(status: status),
+                      builder: (context) =>
+                          AdminGroupNamjapListScreen(status: status),
                     );
                   default:
                     return null;

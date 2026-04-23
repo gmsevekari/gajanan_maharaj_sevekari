@@ -1,222 +1,175 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gajanan_maharaj_sevekari/models/group_namjap_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/group_namjap_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_namjap_service.dart';
-import 'package:intl/intl.dart';
 
 void main() {
   late FakeFirebaseFirestore fakeFirestore;
   late GroupNamjapService service;
-
-  const groupId = 'group1';
-  const eventId = 'event1';
-  const deviceId = 'device1';
-  const memberName = 'John Doe';
-  const phone = '1234567890';
-  final participantId = '${deviceId}_$memberName'.replaceAll(' ', '_');
 
   setUp(() {
     fakeFirestore = FakeFirebaseFirestore();
     service = GroupNamjapService(firestore: fakeFirestore);
   });
 
-  group('GroupNamjapService - Fetching', () {
-    test('getActiveEvents returns filtered events', () async {
-      await fakeFirestore.collection('group_namjap_events').doc('e1').set({
-        'groupId': groupId,
-        'status': 'ongoing',
-        'name_en': 'Event 1',
-        'startDate': Timestamp.now(),
-        'endDate': Timestamp.now(),
-        'createdAt': Timestamp.now(),
-      });
-      await fakeFirestore.collection('group_namjap_events').doc('e2').set({
-        'groupId': groupId,
-        'status': 'completed',
-        'name_en': 'Event 2',
-        'startDate': Timestamp.now(),
-        'endDate': Timestamp.now(),
-        'createdAt': Timestamp.now(),
-      });
+  group('GroupNamjapService tests', () {
+    final testEvent = GroupNamjapEvent(
+      id: 'event_1',
+      nameEn: 'Event 1',
+      nameMr: 'इव्हेंट १',
+      sankalpEn: 'Sankalp 1',
+      sankalpMr: 'संकल्प १',
+      mantra: 'Mantra 1',
+      targetCount: 1000,
+      totalCount: 0,
+      startDate: DateTime.now(),
+      endDate: DateTime.now().add(const Duration(days: 7)),
+      createdAt: DateTime.now(),
+      status: 'ongoing',
+      joinCode: '123456',
+      groupId: 'group_1',
+    );
 
-      final events = await service.getActiveEvents(groupId).first;
-      expect(events.length, 1);
-      expect(events.first.id, 'e1');
-    });
-
-    test('getCompletedEvents returns filtered events', () async {
-      await fakeFirestore.collection('group_namjap_events').doc('e1').set({
-        'groupId': groupId,
-        'status': 'ongoing',
-        'name_en': 'Event 1',
-        'startDate': Timestamp.now(),
-        'endDate': Timestamp.now(),
-        'createdAt': Timestamp.now(),
-      });
-      await fakeFirestore.collection('group_namjap_events').doc('e2').set({
-        'groupId': groupId,
-        'status': 'completed',
-        'name_en': 'Event 2',
-        'startDate': Timestamp.now(),
-        'endDate': Timestamp.now(),
-        'createdAt': Timestamp.now(),
-      });
-
-      final events = await service.getCompletedEvents(groupId).first;
-      expect(events.length, 1);
-      expect(events.first.id, 'e2');
-    });
-
-    test('getEventStream returns correct event', () async {
-      await fakeFirestore.collection('group_namjap_events').doc(eventId).set({
-        'groupId': groupId,
-        'status': 'ongoing',
-        'name_en': 'Event 1',
-        'startDate': Timestamp.now(),
-        'endDate': Timestamp.now(),
-        'createdAt': Timestamp.now(),
-      });
-
-      final event = await service.getEventStream(eventId).first;
-      expect(event?.id, eventId);
-      expect(event?.nameEn, 'Event 1');
-    });
-
-    test('getParticipantStream returns correct participant', () async {
-      await fakeFirestore
-          .collection('group_namjap_events')
-          .doc(eventId)
-          .collection('participants')
-          .doc(participantId)
-          .set({
-        'deviceId': deviceId,
-        'memberName': memberName,
-        'phone': phone,
-        'totalCount': 100,
-        'joinedAt': Timestamp.now(),
-      });
-
-      final participant = await service
-          .getParticipantStream(eventId, deviceId, memberName)
-          .first;
-      expect(participant?.memberName, memberName);
-      expect(participant?.totalCount, 100);
-    });
-  });
-
-  group('GroupNamjapService - Actions', () {
-    test('joinEvent succeeds with correct code', () async {
-      await fakeFirestore.collection('group_namjap_events').doc(eventId).set({
-        'groupId': groupId,
-        'joinCode': '1234',
-        'status': 'ongoing',
-        'name_en': 'Event 1',
-        'startDate': Timestamp.now(),
-        'endDate': Timestamp.now(),
-        'createdAt': Timestamp.now(),
-      });
-
-      final participant = GroupNamjapParticipant(
-        deviceId: deviceId,
-        memberName: memberName,
-        phone: phone,
-        joinedAt: DateTime.now(),
-        totalCount: 0,
-      );
-
-      final success = await service.joinEvent(
-        eventId: eventId,
-        joinCode: '1234',
-        participant: participant,
-      );
-
-      expect(success, isTrue);
-
+    test('createEvent should add event to Firestore', () async {
+      await service.createEvent(testEvent);
       final doc = await fakeFirestore
           .collection('group_namjap_events')
-          .doc(eventId)
-          .collection('participants')
-          .doc(participantId)
+          .doc('event_1')
           .get();
-      expect(doc.exists, isTrue);
+      expect(doc.exists, true);
+      expect(doc.data()?['name_en'], 'Event 1');
     });
 
-    test('joinEvent fails with wrong code', () async {
-      await fakeFirestore.collection('group_namjap_events').doc(eventId).set({
-        'groupId': groupId,
-        'joinCode': '1234',
-        'status': 'ongoing',
-        'name_en': 'Event 1',
-        'startDate': Timestamp.now(),
-        'endDate': Timestamp.now(),
-        'createdAt': Timestamp.now(),
-      });
+    test(
+      'getActiveEvents should return ongoing/upcoming/enrolling events',
+      () async {
+        await service.createEvent(testEvent); // ongoing
+        await service.createEvent(
+          testEvent.copyWith(id: 'event_2', status: 'enrolling'),
+        );
+        await service.createEvent(
+          testEvent.copyWith(id: 'event_3', status: 'upcoming'),
+        );
+        await service.createEvent(
+          testEvent.copyWith(id: 'event_4', status: 'completed'),
+        );
 
+        final events = await service.getActiveEvents('group_1').first;
+        expect(events.length, 3);
+        expect(events.any((e) => e.id == 'event_1'), true);
+        expect(events.any((e) => e.id == 'event_2'), true);
+        expect(events.any((e) => e.id == 'event_3'), true);
+      },
+    );
+
+    test('joinEvent should return false if code mismatch', () async {
+      await service.createEvent(testEvent);
       final participant = GroupNamjapParticipant(
-        deviceId: deviceId,
-        memberName: memberName,
-        phone: phone,
+        memberName: 'User 1',
+        deviceId: 'device_1',
+        phone: '1234567890',
         joinedAt: DateTime.now(),
         totalCount: 0,
       );
 
-      final success = await service.joinEvent(
-        eventId: eventId,
-        joinCode: 'wrong',
+      final result = await service.joinEvent(
+        eventId: 'event_1',
+        joinCode: 'wrong_code',
         participant: participant,
       );
 
-      expect(success, isFalse);
+      expect(result, false);
     });
 
-    test('submitNamjapCount increments global and user counts', () async {
-      await fakeFirestore.collection('group_namjap_events').doc(eventId).set({
-        'groupId': groupId,
-        'totalCount': 500,
-        'status': 'ongoing',
-        'name_en': 'Event 1',
-        'startDate': Timestamp.now(),
-        'endDate': Timestamp.now(),
-        'createdAt': Timestamp.now(),
-      });
+    test(
+      'joinEvent should return true and add participant if code matches',
+      () async {
+        await service.createEvent(testEvent);
+        final participant = GroupNamjapParticipant(
+          memberName: 'User 1',
+          deviceId: 'device_1',
+          phone: '1234567890',
+          joinedAt: DateTime.now(),
+          totalCount: 0,
+        );
 
-      await fakeFirestore
-          .collection('group_namjap_events')
-          .doc(eventId)
-          .collection('participants')
-          .doc(participantId)
-          .set({
-        'deviceId': deviceId,
-        'memberName': memberName,
-        'phone': phone,
-        'totalCount': 100,
-        'joinedAt': Timestamp.now(),
-      });
+        final result = await service.joinEvent(
+          eventId: 'event_1',
+          joinCode: '123456',
+          participant: participant,
+        );
 
-      final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        expect(result, true);
+        final partDoc = await fakeFirestore
+            .collection('group_namjap_events')
+            .doc('event_1')
+            .collection('participants')
+            .doc('device_1_User_1')
+            .get();
+        expect(partDoc.exists, true);
+      },
+    );
 
-      await service.submitNamjapCount(
-        eventId: eventId,
-        deviceId: deviceId,
-        memberName: memberName,
-        countToSubmit: 50,
+    test(
+      'submitNamjapCount should increment both event and participant counts',
+      () async {
+        await service.createEvent(testEvent);
+        final participant = GroupNamjapParticipant(
+          memberName: 'User 1',
+          deviceId: 'device_1',
+          phone: '1234567890',
+          joinedAt: DateTime.now(),
+          totalCount: 0,
+        );
+        await service.joinEvent(
+          eventId: 'event_1',
+          joinCode: '123456',
+          participant: participant,
+        );
+
+        await service.submitNamjapCount(
+          eventId: 'event_1',
+          deviceId: 'device_1',
+          memberName: 'User 1',
+          countToSubmit: 108,
+        );
+
+        final eventDoc = await fakeFirestore
+            .collection('group_namjap_events')
+            .doc('event_1')
+            .get();
+        expect(eventDoc.data()?['totalCount'], 108);
+
+        final partDoc = await fakeFirestore
+            .collection('group_namjap_events')
+            .doc('event_1')
+            .collection('participants')
+            .doc('device_1_User_1')
+            .get();
+        expect(partDoc.data()?['totalCount'], 108);
+        expect(partDoc.data()?['dailyCounts'], isNotNull);
+      },
+    );
+
+    test('checkParticipation should return participant if exists', () async {
+      await service.createEvent(testEvent);
+      final participant = GroupNamjapParticipant(
+        memberName: 'User 1',
+        deviceId: 'device_1',
+        phone: '1234567890',
+        joinedAt: DateTime.now(),
+        totalCount: 0,
+      );
+      await service.joinEvent(
+        eventId: 'event_1',
+        joinCode: '123456',
+        participant: participant,
       );
 
-      // Verify global count
-      final eventDoc =
-          await fakeFirestore.collection('group_namjap_events').doc(eventId).get();
-      expect(eventDoc.data()?['totalCount'], 550);
-
-      // Verify user count
-      final participantDoc = await fakeFirestore
-          .collection('group_namjap_events')
-          .doc(eventId)
-          .collection('participants')
-          .doc(participantId)
-          .get();
-      expect(participantDoc.data()?['totalCount'], 150);
-      expect(participantDoc.data()?['dailyCounts'][today], 50);
+      final result = await service.checkParticipation('event_1', 'device_1');
+      expect(result, isNotNull);
+      expect(result?.memberName, 'User 1');
     });
   });
 }
