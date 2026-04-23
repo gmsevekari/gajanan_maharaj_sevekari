@@ -3146,6 +3146,12 @@ abstract class AppLocalizations {
   /// **'Sankalp'**
   String get groupNamjapSankalpLabel;
 
+  /// No description provided for @groupNamjapStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Namjap Status'**
+  String get groupNamjapStatusLabel;
+
   /// No description provided for @groupNamjapEventNotFound.
   ///
   /// In en, this message translates to:
@@ -3191,7 +3197,7 @@ abstract class AppLocalizations {
   /// No description provided for @groupNamjapTableColTotalChants.
   ///
   /// In en, this message translates to:
-  /// **'Total Chants'**
+  /// **'Namjap'**
   String get groupNamjapTableColTotalChants;
 
   /// No description provided for @signUp.
@@ -3253,6 +3259,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dwadashi'**
   String get dwadashi;
+
+  /// No description provided for @memberName.
+  ///
+  /// In en, this message translates to:
+  /// **'Member Name'**
+  String get memberName;
+
+  /// No description provided for @phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phone;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get fieldRequired;
+
+  /// No description provided for @deleteSignupSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Signup deleted successfully'**
+  String get deleteSignupSuccess;
+
+  /// No description provided for @editLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Signup'**
+  String get editLabel;
+
+  /// No description provided for @updateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Signup'**
+  String get updateLabel;
+
+  /// No description provided for @deleteSignupConfirmMessageNamjap.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your signup for this Namjap?'**
+  String get deleteSignupConfirmMessageNamjap;
+
+  /// No description provided for @upcomingActiveTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming / Active'**
+  String get upcomingActiveTab;
 }
 
 class _AppLocalizationsDelegate

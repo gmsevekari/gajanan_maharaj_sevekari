@@ -601,6 +601,7 @@
   "groupNamjapShare": "नामजप शेअर करा",
   "groupNamjapExportStatus": "स्टेटस एक्स्पोर्ट करा",
   "groupNamjapSankalpLabel": "संकल्प",
+  "groupNamjapStatusLabel": "नामजप स्टेटस",
   "groupNamjapEventNotFound": "इव्हेंट सापडला नाही",
   "groupNamjapFailedToCapture": "स्क्रीनशॉट कॅप्चर करण्यात अयशस्वी",
   "groupNamjapStatusExport": "नामजप स्टेटस",
@@ -608,7 +609,7 @@
   "groupNamjapShareLinkPrefix": "लिंक",
   "groupNamjapTableColName": "नाव",
   "groupNamjapTableColPhone": "फोन",
-  "groupNamjapTableColTotalChants": "एकूण नामजप",
+  "groupNamjapTableColTotalChants": "नामजप",
   "signUp": "साईन-अप करा",
   "totalCountLabel": "एकूण जप",
   "myTotalLabel": "माझा जप",
@@ -626,5 +627,13 @@
   },
   "dashami": "दशमी",
   "ekadashi": "एकादशी",
-  "dwadashi": "द्वादशी"
+  "dwadashi": "द्वादशी",
+  "memberName": "सदस्याचे नाव",
+  "phone": "फोन नंबर",
+  "fieldRequired": "ही माहिती भरणे आवश्यक आहे",
+  "deleteSignupSuccess": "साईन-अप यशस्वीरित्या डिलीट झाले",
+  "editLabel": "साईन-अप बदला",
+  "updateLabel": "साईन-अप अपडेट करा",
+  "deleteSignupConfirmMessageNamjap": "तुम्ही खात्रीने या नामजपासाठी तुमचे साईन-अप डिलीट करू इच्छिता?",
+  "upcomingActiveTab": "आगामी / सक्रिय"
 }

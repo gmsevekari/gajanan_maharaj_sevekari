@@ -1619,6 +1619,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get groupNamjapSankalpLabel => 'संकल्प';
 
   @override
+  String get groupNamjapStatusLabel => 'नामजप स्टेटस';
+
+  @override
   String get groupNamjapEventNotFound => 'इव्हेंट सापडला नाही';
 
   @override
@@ -1640,7 +1643,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get groupNamjapTableColPhone => 'फोन';
 
   @override
-  String get groupNamjapTableColTotalChants => 'एकूण नामजप';
+  String get groupNamjapTableColTotalChants => 'नामजप';
 
   @override
   String get signUp => 'साईन-अप करा';
@@ -1673,4 +1676,29 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get dwadashi => 'द्वादशी';
+
+  @override
+  String get memberName => 'सदस्याचे नाव';
+
+  @override
+  String get phone => 'फोन नंबर';
+
+  @override
+  String get fieldRequired => 'ही माहिती भरणे आवश्यक आहे';
+
+  @override
+  String get deleteSignupSuccess => 'साईन-अप यशस्वीरित्या डिलीट झाले';
+
+  @override
+  String get editLabel => 'साईन-अप बदला';
+
+  @override
+  String get updateLabel => 'साईन-अप अपडेट करा';
+
+  @override
+  String get deleteSignupConfirmMessageNamjap =>
+      'तुम्ही खात्रीने या नामजपासाठी तुमचे साईन-अप डिलीट करू इच्छिता?';
+
+  @override
+  String get upcomingActiveTab => 'आगामी / सक्रिय';
 }

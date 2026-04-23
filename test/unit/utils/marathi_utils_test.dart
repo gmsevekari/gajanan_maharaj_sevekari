@@ -34,8 +34,9 @@ void main() {
         expect(formatNumberLocalized(0, 'mr', pad: false), '०');
       });
 
-      test('converts large numbers correctly', () {
-        expect(formatNumberLocalized(10800, 'mr', pad: false), '१०८००');
+      test('converts large numbers correctly with Indian formatting', () {
+        expect(formatNumberLocalized(10800, 'mr', pad: false), '१०,८००');
+        expect(formatNumberLocalized(123456, 'mr', pad: false), '१,२३,४५६');
       });
 
       test('returns empty string for null input', () {
@@ -50,6 +51,10 @@ void main() {
 
       test('does not pad when pad is false', () {
         expect(formatNumberLocalized(12, 'en', pad: false), '12');
+      });
+
+      test('formats large numbers with commas', () {
+        expect(formatNumberLocalized(123456, 'en', pad: false), '1,23,456');
       });
 
       test('returns English numerals for zero', () {

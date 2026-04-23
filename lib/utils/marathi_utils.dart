@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 String toMarathiNumerals(String input) {
   const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   const marathi = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
@@ -13,12 +15,26 @@ String formatNumberLocalized(
   bool pad = true,
 }) {
   if (number == null) return '';
-  String numStr = number.toString();
+
+  num? parsedNumber;
+  if (number is num) {
+    parsedNumber = number;
+  } else if (number is String) {
+    parsedNumber = num.tryParse(number);
+  }
+
+  // Use Indian numbering system for commas (e.g. 1,23,456)
+  final formatter = NumberFormat('#,##,###', 'en_IN');
+  String numStr = parsedNumber != null
+      ? formatter.format(parsedNumber)
+      : number.toString();
+
   if (pad) {
     if (numStr.length == 1 && int.tryParse(numStr) != null) {
       numStr = numStr.padLeft(2, '0');
     }
   }
+
   if (languageCode != 'mr') return numStr;
   return toMarathiNumerals(numStr);
 }

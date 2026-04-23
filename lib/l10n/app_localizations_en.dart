@@ -1615,6 +1615,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupNamjapSankalpLabel => 'Sankalp';
 
   @override
+  String get groupNamjapStatusLabel => 'Namjap Status';
+
+  @override
   String get groupNamjapEventNotFound => 'Event not found';
 
   @override
@@ -1636,7 +1639,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupNamjapTableColPhone => 'Phone';
 
   @override
-  String get groupNamjapTableColTotalChants => 'Total Chants';
+  String get groupNamjapTableColTotalChants => 'Namjap';
 
   @override
   String get signUp => 'Sign Up';
@@ -1669,4 +1672,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dwadashi => 'Dwadashi';
+
+  @override
+  String get memberName => 'Member Name';
+
+  @override
+  String get phone => 'Phone Number';
+
+  @override
+  String get fieldRequired => 'This field is required';
+
+  @override
+  String get deleteSignupSuccess => 'Signup deleted successfully';
+
+  @override
+  String get editLabel => 'Edit Signup';
+
+  @override
+  String get updateLabel => 'Update Signup';
+
+  @override
+  String get deleteSignupConfirmMessageNamjap =>
+      'Are you sure you want to delete your signup for this Namjap?';
+
+  @override
+  String get upcomingActiveTab => 'Upcoming / Active';
 }

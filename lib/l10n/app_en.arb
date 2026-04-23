@@ -601,6 +601,7 @@
   "groupNamjapShare": "Share Namjap",
   "groupNamjapExportStatus": "Export Status",
   "groupNamjapSankalpLabel": "Sankalp",
+  "groupNamjapStatusLabel": "Namjap Status",
   "groupNamjapEventNotFound": "Event not found",
   "groupNamjapFailedToCapture": "Failed to capture screenshot",
   "groupNamjapStatusExport": "Namjap Status Export",
@@ -608,7 +609,7 @@
   "groupNamjapShareLinkPrefix": "Link",
   "groupNamjapTableColName": "Name",
   "groupNamjapTableColPhone": "Phone",
-  "groupNamjapTableColTotalChants": "Total Chants",
+  "groupNamjapTableColTotalChants": "Namjap",
   "signUp": "Sign Up",
   "totalCountLabel": "Total Count",
   "myTotalLabel": "My Total",
@@ -626,5 +627,13 @@
   },
   "dashami": "Dashami",
   "ekadashi": "Ekadashi",
-  "dwadashi": "Dwadashi"
+  "dwadashi": "Dwadashi",
+  "memberName": "Member Name",
+  "phone": "Phone Number",
+  "fieldRequired": "This field is required",
+  "deleteSignupSuccess": "Signup deleted successfully",
+  "editLabel": "Edit Signup",
+  "updateLabel": "Update Signup",
+  "deleteSignupConfirmMessageNamjap": "Are you sure you want to delete your signup for this Namjap?",
+  "upcomingActiveTab": "Upcoming / Active"
 }
