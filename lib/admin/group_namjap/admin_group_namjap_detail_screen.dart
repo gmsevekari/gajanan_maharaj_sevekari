@@ -48,7 +48,7 @@ class _AdminGroupNamjapDetailScreenState
         .collection('group_namjap_events')
         .doc(widget.eventId)
         .collection('participants')
-        .orderBy('totalCount', descending: true)
+        .orderBy('joinedAt', descending: false)
         .snapshots();
   }
 
@@ -624,46 +624,59 @@ class _AdminGroupNamjapDetailScreenState
             .toList();
 
         return Card(
-          child: SizedBox(
-            width: double.infinity,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: [
-                  DataColumn(
-                    label: Text(
-                      localizations.groupNamjapTableColName,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      localizations.groupNamjapTableColTotalChants,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    numeric: true,
-                  ),
-                ],
-                rows: participants.map((p) {
-                  final langCode = Localizations.localeOf(context).languageCode;
-                  return DataRow(
-                    cells: [
-                      DataCell(Text(p.memberName)),
-                      DataCell(
-                        Text(
-                          formatNumberLocalized(
-                            p.totalCount,
-                            langCode,
-                            pad: false,
-                          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                  child: DataTable(
+                    columnSpacing: 24,
+                    columns: [
+                      DataColumn(
+                        label: Text(
+                          localizations.groupNamjapTableColName,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
+                      DataColumn(
+                        label: Expanded(
+                          child: Text(
+                            localizations.groupNamjapTableColTotalChants,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
                     ],
-                  );
-                }).toList(),
-              ),
-            ),
+                    rows: participants.map((p) {
+                      final langCode = Localizations.localeOf(
+                        context,
+                      ).languageCode;
+                      return DataRow(
+                        cells: [
+                          DataCell(Text(p.memberName)),
+                          DataCell(
+                            Center(
+                              child: Text(
+                                formatNumberLocalized(
+                                  p.totalCount,
+                                  langCode,
+                                  pad: false,
+                                ),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ),
+              );
+            },
           ),
         );
       },
