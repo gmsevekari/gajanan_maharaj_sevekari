@@ -22,6 +22,7 @@ class Routes {
   static const String naamjap = '/naamjap';
   static const String individualNamjap = '/individual_namjap';
   static const String groupNamjap = '/group_namjap';
+  static const String groupNamjapDetail = '/group_namjap_detail';
   static const String adminLogin = '/admin_login';
   static const String adminDashboard = '/admin_dashboard';
   static const String adminTempleNotifications = '/admin_temple_notifications';

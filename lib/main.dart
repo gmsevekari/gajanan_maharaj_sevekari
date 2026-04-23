@@ -41,6 +41,7 @@ import 'package:gajanan_maharaj_sevekari/splash/splash_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/namjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/individual_namjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/group_namjap_list_screen.dart';
+import 'package:gajanan_maharaj_sevekari/jap_mala/group_namjap_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_login_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_dashboard_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_temple_notifications_screen.dart';
@@ -319,6 +320,10 @@ class _MyAppState extends State<MyApp> {
                 Routes.individualNamjap: (context) =>
                     const IndividualNamjapScreen(),
                 Routes.groupNamjap: (context) => const GroupNamjapListScreen(),
+                Routes.groupNamjapDetail: (context) {
+                  final eventId = ModalRoute.of(context)!.settings.arguments as String;
+                  return GroupNamjapDetailScreen(eventId: eventId);
+                },
                 Routes.adminLogin: (context) => const AdminLoginScreen(),
                 Routes.adminDashboard: (context) =>
                     const AdminDashboardScreen(),

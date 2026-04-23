@@ -160,7 +160,11 @@ class _GroupNamjapListScreenState extends State<GroupNamjapListScreen>
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  // TODO: Navigate to Detail Screen in Task 4
+                  Navigator.pushNamed(
+                    context,
+                    Routes.groupNamjapDetail,
+                    arguments: event.id,
+                  );
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
