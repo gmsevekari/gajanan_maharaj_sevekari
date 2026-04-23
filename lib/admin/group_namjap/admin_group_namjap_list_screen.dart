@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
+import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 
 class AdminGroupNamjapListScreen extends StatefulWidget {
   final String status;
@@ -24,10 +25,17 @@ class _AdminGroupNamjapListScreenState
   @override
   void initState() {
     super.initState();
-    _eventsStream = FirebaseFirestore.instance
-        .collection('group_namjap_events')
-        .where('status', isEqualTo: widget.status)
-        .snapshots();
+    if (widget.status == 'upcoming') {
+      _eventsStream = FirebaseFirestore.instance
+          .collection('group_namjap_events')
+          .where('status', whereIn: ['upcoming', 'enrolling'])
+          .snapshots();
+    } else {
+      _eventsStream = FirebaseFirestore.instance
+          .collection('group_namjap_events')
+          .where('status', isEqualTo: widget.status)
+          .snapshots();
+    }
   }
 
   @override
@@ -114,8 +122,23 @@ class _AdminGroupNamjapListScreenState
                     eventName,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text(
-                    "${localizations.groupNamjapTargetPrefix}${formatNumberLocalized(event.targetCount, langCode, pad: false)} • ${localizations.groupNamjapAchieved}${formatNumberLocalized(event.totalCount, langCode, pad: false)}",
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 4),
+                      Text(
+                        "${formatDateShort(event.startDate, langCode)} - ${formatDateShort(event.endDate, langCode)}",
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        "${localizations.groupNamjapTargetPrefix}${formatNumberLocalized(event.targetCount, langCode, pad: false)}",
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ],
                   ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {

@@ -106,7 +106,8 @@ class _AdminGroupNamjapDashboardState extends State<AdminGroupNamjapDashboard> {
               allEvents
                   .where(
                     (e) =>
-                        e.status == 'upcoming' && e.startDate.year == nowYear,
+                        (e.status == 'upcoming' || e.status == 'enrolling') &&
+                        e.startDate.year == nowYear,
                   )
                   .toList()
                 ..sort((a, b) => a.startDate.compareTo(b.startDate));
@@ -372,25 +373,19 @@ class _OngoingCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "${event.totalCount}${AppLocalizations.of(context)!.groupNamjapOf}${event.targetCount}",
+                      "${formatDateShort(event.startDate, Localizations.localeOf(context).languageCode)} - ${formatDateShort(event.endDate, Localizations.localeOf(context).languageCode)}",
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withValues(
                           alpha: 0.5,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        backgroundColor: theme.appColors.divider.withValues(
-                          alpha: 0.1,
-                        ),
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          theme.colorScheme.primary,
-                        ),
-                        minHeight: 6,
+                    const SizedBox(height: 4),
+                    Text(
+                      "${AppLocalizations.of(context)!.groupNamjapTargetPrefix}${formatNumberLocalized(event.targetCount, Localizations.localeOf(context).languageCode, pad: false)}",
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                   ],
@@ -431,24 +426,6 @@ class _UpcomingCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  dateStr,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
               Text(
                 isEnglish ? event.nameEn : event.nameMr,
                 maxLines: 2,
@@ -457,36 +434,20 @@ class _UpcomingCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               Text(
-                isEnglish ? event.sankalpEn : event.sankalpMr,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                "${formatDateShort(event.startDate, langCode)} - ${formatDateShort(event.endDate, langCode)}",
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.appColors.secondaryText,
                 ),
               ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 10,
-                    backgroundColor: theme.colorScheme.primaryContainer,
-                    child: Icon(
-                      Icons.group,
-                      size: 12,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    "${AppLocalizations.of(context)!.groupNamjapTargetPrefix}${formatNumberLocalized(event.targetCount, langCode, pad: false)}",
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 4),
+              Text(
+                "${AppLocalizations.of(context)!.groupNamjapTargetPrefix}${formatNumberLocalized(event.targetCount, langCode, pad: false)}",
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),

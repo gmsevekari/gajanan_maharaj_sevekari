@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/admin/widgets/admin_stats_widgets.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/widgets/group_namjap_export_card.dart';
 
 class AdminGroupNamjapDetailScreen extends StatefulWidget {
@@ -34,6 +35,7 @@ class _AdminGroupNamjapDetailScreenState
   final ScreenshotController _screenshotController = ScreenshotController();
   final ScreenshotController _exportController = ScreenshotController();
   int _latestParticipantCount = 0;
+  bool _isStatusLocked = true;
 
   @override
   void initState() {
@@ -59,6 +61,63 @@ class _AdminGroupNamjapDetailScreenState
     final shareText =
         '${l10n.groupNamjapSharePrefix}: $title\n${l10n.groupNamjapJoinCode}: ${event.joinCode}\n\n${l10n.groupNamjapShareLinkPrefix}: https://gajananmaharajsevekari.org/namjap/${event.id}?joinCode=${event.joinCode}';
     Share.share(shareText);
+  }
+
+  Future<void> _updateStatus(GroupNamjapEvent event, String? newStatus) async {
+    if (newStatus == null || newStatus == event.status) return;
+
+    final l10n = AppLocalizations.of(context)!;
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                const Text('Updating Status...'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('group_namjap_events')
+          .doc(event.id)
+          .update({'status': newStatus});
+
+      await AdminAuditService.logAction(
+        action: 'UPDATE_GROUP_NAMJAP_STATUS',
+        details: {
+          'event_id': event.id,
+          'old_status': event.status,
+          'new_status': newStatus,
+        },
+      );
+
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.statusUpdateSuccess)));
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    }
   }
 
   Future<void> _captureAndShare(AppLocalizations l10n) async {
@@ -112,7 +171,12 @@ class _AdminGroupNamjapDetailScreenState
           snapshot.data!.data() as Map<String, dynamic>,
         );
         final eventName = isEnglish ? event.nameEn : event.nameMr;
-        final sankalpText = isEnglish ? event.sankalpEn : event.sankalpMr;
+        final sankalpText = isEnglish
+            ? event.sankalpEn
+            : toMarathiNumerals(event.sankalpMr);
+        final mantraText = isEnglish
+            ? event.mantra
+            : toMarathiNumerals(event.mantra);
 
         return Scaffold(
           appBar: AppBar(
@@ -156,7 +220,9 @@ class _AdminGroupNamjapDetailScreenState
                       return GroupNamjapExportCard(
                         event: event,
                         eventName: en ? event.nameEn : event.nameMr,
-                        sankalp: en ? event.sankalpEn : event.sankalpMr,
+                        sankalp: en
+                            ? event.sankalpEn
+                            : toMarathiNumerals(event.sankalpMr),
                         dateRange:
                             '${formatDateShort(event.startDate, lc)} - ${formatDateShort(event.endDate, lc)}',
                         percentStr:
@@ -242,118 +308,10 @@ class _AdminGroupNamjapDetailScreenState
                           ),
                         ),
 
-                      // Row 2: Namjap Mantra Card
-                      if (event.mantra.isNotEmpty)
-                        Card(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 6,
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.record_voice_over,
-                                  size: 18,
-                                  color: theme.colorScheme.primary,
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        localizations.groupNamjapMantra,
-                                        style: theme.textTheme.labelSmall
-                                            ?.copyWith(
-                                              color: theme.colorScheme.primary,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                      ),
-                                      Text(
-                                        event.mantra,
-                                        style: theme.textTheme.titleSmall
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                IconButton(
-                                  tooltip: 'Copy',
-                                  icon: const Icon(Icons.copy, size: 18),
-                                  color: theme.colorScheme.primary,
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                  onPressed: () {
-                                    Clipboard.setData(
-                                      ClipboardData(text: event.mantra),
-                                    );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Mantra copied'),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      Card(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "${localizations.groupNamjapSankalpLabel}: $sankalpText",
-                                style: theme.textTheme.bodyMedium,
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today,
-                                    size: 16,
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    "${formatDateShort(event.startDate, langCode)} - ${formatDateShort(event.endDate, langCode)}",
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: theme.colorScheme.primaryContainer,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      event.status.toUpperCase(),
-                                      style: theme.textTheme.labelSmall
-                                          ?.copyWith(
-                                            color: theme.colorScheme.primary,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      // Row 2: Status Update Section (Parayan Style)
+                      _buildStatusUpdateSection(localizations, theme, event),
+
+                      const SizedBox(height: 16),
 
                       // Row 3: Statistics Row
                       _buildStatsRow(theme, localizations, event),
@@ -501,6 +459,147 @@ class _AdminGroupNamjapDetailScreenState
     );
   }
 
+  Widget _buildStatusUpdateSection(
+    AppLocalizations l10n,
+    ThemeData theme,
+    GroupNamjapEvent event,
+  ) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.groupNamjapStatusLabel.toUpperCase(),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    letterSpacing: 1.2,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    _isStatusLocked ? Icons.lock_outline : Icons.lock_open,
+                    size: 16,
+                    color: _isStatusLocked
+                        ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
+                        : theme.colorScheme.primary,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isStatusLocked = !_isStatusLocked;
+                    });
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            IgnorePointer(
+              ignoring: _isStatusLocked,
+              child: Opacity(
+                opacity: _isStatusLocked ? 0.6 : 1.0,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: SegmentedButton<String>(
+                        style: SegmentedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          textStyle: const TextStyle(fontSize: 10),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        emptySelectionAllowed: true,
+                        segments: [
+                          ButtonSegment(
+                            value: 'upcoming',
+                            label: Text(l10n.statusUpcoming),
+                            icon: const Icon(
+                              Icons.calendar_today_outlined,
+                              size: 14,
+                            ),
+                          ),
+                          ButtonSegment(
+                            value: 'enrolling',
+                            label: Text(l10n.statusEnrolling),
+                            icon: const Icon(
+                              Icons.person_add_outlined,
+                              size: 14,
+                            ),
+                          ),
+                        ],
+                        selected:
+                            ['upcoming', 'enrolling'].contains(event.status)
+                            ? {event.status}
+                            : {},
+                        onSelectionChanged: (Set<String> newSelection) {
+                          final value = newSelection.firstOrNull;
+                          if (value != null && value != event.status) {
+                            _updateStatus(event, value);
+                          }
+                        },
+                        showSelectedIcon: false,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: SegmentedButton<String>(
+                        style: SegmentedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          textStyle: const TextStyle(fontSize: 10),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        emptySelectionAllowed: true,
+                        segments: [
+                          ButtonSegment(
+                            value: 'ongoing',
+                            label: Text(l10n.statusOngoing),
+                            icon: const Icon(
+                              Icons.play_circle_outline,
+                              size: 14,
+                            ),
+                          ),
+                          ButtonSegment(
+                            value: 'completed',
+                            label: Text(l10n.statusCompleted),
+                            icon: const Icon(
+                              Icons.check_circle_outline,
+                              size: 14,
+                            ),
+                          ),
+                        ],
+                        selected:
+                            ['ongoing', 'completed'].contains(event.status)
+                            ? {event.status}
+                            : {},
+                        onSelectionChanged: (Set<String> newSelection) {
+                          final value = newSelection.firstOrNull;
+                          if (value != null && value != event.status) {
+                            _updateStatus(event, value);
+                          }
+                        },
+                        showSelectedIcon: false,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildParticipantsTable(
     ThemeData theme,
     AppLocalizations localizations,
@@ -539,12 +638,6 @@ class _AdminGroupNamjapDetailScreenState
                   ),
                   DataColumn(
                     label: Text(
-                      localizations.groupNamjapTableColPhone,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
                       localizations.groupNamjapTableColTotalChants,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -556,7 +649,6 @@ class _AdminGroupNamjapDetailScreenState
                   return DataRow(
                     cells: [
                       DataCell(Text(p.memberName)),
-                      DataCell(Text(p.phone)),
                       DataCell(
                         Text(
                           formatNumberLocalized(
