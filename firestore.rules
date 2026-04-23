@@ -65,14 +65,22 @@ service cloud.firestore {
     match /group_namjap_events/{eventId} {
       allow read: if true;
       // Allow atomic updates by participants to increment global counts
-      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalCount']);
-      allow write: if isAdmin();
+      allow update: if (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalCount']))
+                    || isAdmin();
+      allow create, delete: if isAdmin();
 
       match /participants/{participantId} {
         allow read: if true;
         allow create: if true;
         // Allows user to update their own jap counts locally using deviceId check
-        allow update, delete: if isAdmin() || (request.resource.data.deviceId == resource.data.deviceId);
+        // Prevents changing identity fields (deviceId, memberName, phone) after creation
+        allow update: if isAdmin() || (
+          request.resource.data.deviceId == resource.data.deviceId &&
+          request.resource.data.memberName == resource.data.memberName &&
+          request.resource.data.phone == resource.data.phone &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalCount', 'dailyCounts'])
+        );
+        allow delete: if isAdmin();
       }
     }
   }
