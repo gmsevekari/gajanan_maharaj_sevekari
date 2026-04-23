@@ -33,6 +33,12 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
   DateTime _endDate = DateTime.now();
   bool _isEndDateSetManually = false;
   String? _selectedGroupId;
+  String _selectedTimezone = 'America/Los_Angeles';
+
+  final List<Map<String, String>> _timezones = [
+    {'label': 'Seattle (Pacific Time)', 'value': 'America/Los_Angeles'},
+    {'label': 'India (IST)', 'value': 'Asia/Kolkata'},
+  ];
 
   bool _isLoading = false;
 
@@ -210,6 +216,7 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
         sentReminders: const {},
         joinCode: const Uuid().v4().substring(0, 6).toUpperCase(),
         groupId: groupId,
+        timezone: _selectedTimezone,
       );
 
       await _parayanService.createEvent(event);
@@ -425,6 +432,25 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
                           } else if (_selectedType == ParayanType.guruPushya) {
                             _isEndDateSetManually = false;
                           }
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  DropdownButtonFormField<String>(
+                    value: _selectedTimezone,
+                    decoration: const InputDecoration(labelText: 'Timezone'),
+                    items: _timezones.map((tz) {
+                      return DropdownMenuItem(
+                        value: tz['value'],
+                        child: Text(tz['label']!),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedTimezone = value;
                         });
                       }
                     },

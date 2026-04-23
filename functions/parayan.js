@@ -9,10 +9,7 @@ const { DateTime } = require("luxon");
  */
 exports.updateParayanStatuses = onSchedule("0 * * * *", async (event) => {
   const db = admin.firestore();
-  const nowSeattle = DateTime.now().setZone("America/Los_Angeles");
-  const todaySeattle = nowSeattle.startOf("day");
-
-  logger.info(`Running Parayan status update. Seattle: ${nowSeattle.toISO()}`);
+  logger.info(`Running Parayan status update at ${DateTime.now().toISO()}`);
 
   const parayansRef = db.collection("parayan_events");
 
@@ -20,11 +17,15 @@ exports.updateParayanStatuses = onSchedule("0 * * * *", async (event) => {
   const allocatedQuery = await parayansRef.where("status", "==", "allocated").get();
   for (const doc of allocatedQuery.docs) {
     const data = doc.data();
-    const startDate = DateTime.fromJSDate(data.startDate.toDate()).setZone("America/Los_Angeles").startOf("day");
+    const timezone = data.timezone || "America/Los_Angeles";
+    const nowInZone = DateTime.now().setZone(timezone);
+    const todayInZone = nowInZone.startOf("day");
 
-    if (todaySeattle >= startDate) {
+    const startDate = DateTime.fromJSDate(data.startDate.toDate()).setZone(timezone).startOf("day");
+
+    if (todayInZone >= startDate) {
       await doc.ref.update({ status: "ongoing" });
-      logger.info(`Auto-transitioned Parayan ${doc.id} to ongoing (Start Date reached).`);
+      logger.info(`Auto-transitioned Parayan ${doc.id} to ongoing. Zone: ${timezone}, Now: ${nowInZone.toISO()}`);
     }
   }
 
@@ -32,11 +33,15 @@ exports.updateParayanStatuses = onSchedule("0 * * * *", async (event) => {
   const ongoingQuery = await parayansRef.where("status", "==", "ongoing").get();
   for (const doc of ongoingQuery.docs) {
     const data = doc.data();
-    const endDate = DateTime.fromJSDate(data.endDate.toDate()).setZone("America/Los_Angeles").startOf("day");
+    const timezone = data.timezone || "America/Los_Angeles";
+    const nowInZone = DateTime.now().setZone(timezone);
+    const todayInZone = nowInZone.startOf("day");
 
-    if (todaySeattle > endDate) {
+    const endDate = DateTime.fromJSDate(data.endDate.toDate()).setZone(timezone).startOf("day");
+
+    if (todayInZone > endDate) {
       await doc.ref.update({ status: "completed" });
-      logger.info(`Auto-transitioned Parayan ${doc.id} to completed (End Date passed).`);
+      logger.info(`Auto-transitioned Parayan ${doc.id} to completed. Zone: ${timezone}, Now: ${nowInZone.toISO()}`);
     }
   }
 });

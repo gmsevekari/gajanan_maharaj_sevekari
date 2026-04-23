@@ -17,6 +17,7 @@ class ParayanEvent {
   final Map<String, dynamic> sentReminders; // e.g., {'day1_20:00': Timestamp}
   final String? joinCode;
   final String groupId;
+  final String timezone;
 
   const ParayanEvent({
     required this.id,
@@ -34,6 +35,7 @@ class ParayanEvent {
     this.sentReminders = const {},
     this.joinCode,
     required this.groupId,
+    this.timezone = 'America/Los_Angeles',
   });
 
   factory ParayanEvent.fromFirestore(DocumentSnapshot doc) {
@@ -65,6 +67,7 @@ class ParayanEvent {
           : {},
       joinCode: data['joinCode'],
       groupId: data['groupId'] ?? 'gajanan_maharaj_seattle',
+      timezone: data['timezone'] ?? 'America/Los_Angeles',
     );
   }
 
@@ -91,6 +94,7 @@ class ParayanEvent {
       'sentReminders': sentReminders,
       if (joinCode != null) 'joinCode': joinCode,
       'groupId': groupId,
+      'timezone': timezone,
     };
   }
 }
