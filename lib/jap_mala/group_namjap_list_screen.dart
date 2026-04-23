@@ -27,7 +27,7 @@ class _GroupNamjapListScreenState extends State<GroupNamjapListScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
+
     // Cache streams in initState to avoid flickering (Rule 35)
     final service = context.read<GroupNamjapService>();
     final effectiveGroupId = widget.groupId ?? 'gajanan_maharaj_seattle';
@@ -66,7 +66,7 @@ class _GroupNamjapListScreenState extends State<GroupNamjapListScreen>
           ),
           indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
-            Tab(text: localizations.statusUpcoming),
+            Tab(text: localizations.upcomingActiveTab),
             Tab(text: localizations.statusCompleted),
           ],
         ),
@@ -87,11 +87,12 @@ class _GroupNamjapListScreenState extends State<GroupNamjapListScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        physics: const NeverScrollableScrollPhysics(), // Disable swipe (User Req)
+        physics:
+            const NeverScrollableScrollPhysics(), // Disable swipe (User Req)
         children: [
           _buildEventListStream(
             _activeEventsStream!,
-            localizations.groupNamjapNoUpcoming,
+            localizations.groupNamjapNoOngoing,
             locale,
             theme,
           ),
@@ -126,7 +127,9 @@ class _GroupNamjapListScreenState extends State<GroupNamjapListScreen>
                   const SizedBox(height: 16),
                   Text(
                     'Error loading data: ${snapshot.error}',
-                    style: theme.textTheme.bodySmall?.copyWith(color: Colors.red),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.red,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -150,7 +153,11 @@ class _GroupNamjapListScreenState extends State<GroupNamjapListScreen>
           itemBuilder: (context, index) {
             final event = events[index];
             final title = locale == 'mr' ? event.nameMr : event.nameEn;
-            final dateRange = _formatDateRange(event.startDate, event.endDate, locale);
+            final dateRange = _formatDateRange(
+              event.startDate,
+              event.endDate,
+              locale,
+            );
 
             return Card(
               elevation: theme.cardTheme.elevation,
@@ -191,7 +198,9 @@ class _GroupNamjapListScreenState extends State<GroupNamjapListScreen>
                           const SizedBox(width: 8),
                           Text(
                             dateRange,
-                            style: TextStyle(color: theme.appColors.secondaryText),
+                            style: TextStyle(
+                              color: theme.appColors.secondaryText,
+                            ),
                           ),
                         ],
                       ),
@@ -208,9 +217,14 @@ class _GroupNamjapListScreenState extends State<GroupNamjapListScreen>
                           const SizedBox(width: 8),
                           Expanded(
                             child: LinearProgressIndicator(
-                              value: event.targetCount > 0 ? event.totalCount / event.targetCount : 0,
-                              backgroundColor: theme.appColors.primarySwatch[100],
-                              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                              value: event.targetCount > 0
+                                  ? event.totalCount / event.targetCount
+                                  : 0,
+                              backgroundColor:
+                                  theme.appColors.primarySwatch[100],
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                theme.colorScheme.primary,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 12),

@@ -5,15 +5,15 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/group_namjap_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/group_namjap_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_namjap_service.dart';
+import 'package:gajanan_maharaj_sevekari/providers/group_namjap_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/jap_mala_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/manual_jap_tab.dart';
-import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/signup_dialog.dart';
+import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/namjap_signup_dialog.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class GroupNamjapDetailScreen extends StatefulWidget {
@@ -30,7 +30,6 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
   Stream<GroupNamjapEvent?>? _eventStream;
   Stream<GroupNamjapParticipant?>? _participantStream;
   Stream<int>? _participantsCountStream;
-  String? _currentMemberName;
 
   @override
   void initState() {
@@ -38,30 +37,42 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
     final service = context.read<GroupNamjapService>();
     _eventStream = service.getEventStream(widget.eventId);
     _participantsCountStream = Stream.value(0);
-    _loadParticipationStatus();
+    _initSync();
   }
 
-  Future<void> _loadParticipationStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!mounted) return;
-    final service = context.read<GroupNamjapService>();
-    final memberName = prefs.getString('group_namjap_${widget.eventId}_member');
+  Future<void> _initSync() async {
+    final provider = context.read<GroupNamjapProvider>();
+    await provider.loadLocalData();
 
-    if (memberName != null) {
-      final deviceId = await UniqueIdService.getUniqueId();
-      setState(() {
-        _currentMemberName = memberName;
-        _participantStream = service.getParticipantStream(
-          widget.eventId,
-          deviceId,
-          memberName,
-        );
+    final deviceId = await UniqueIdService.getUniqueId();
+    if (mounted) {
+      await provider.syncParticipation(widget.eventId, deviceId);
+      _updateParticipantStream();
+    }
+  }
+
+  void _updateParticipantStream() {
+    final provider = context.read<GroupNamjapProvider>();
+    final service = context.read<GroupNamjapService>();
+
+    if (provider.isJoined(widget.eventId)) {
+      UniqueIdService.getUniqueId().then((deviceId) {
+        if (mounted) {
+          setState(() {
+            _participantStream = service.getParticipantStream(
+              widget.eventId,
+              deviceId,
+              provider.memberName!,
+            );
+          });
+        }
       });
     }
   }
 
   Future<void> _submitCount(int countToSubmit) async {
-    final currentMemberName = _currentMemberName;
+    final provider = context.read<GroupNamjapProvider>();
+    final currentMemberName = provider.memberName;
     if (currentMemberName == null) return;
 
     try {
@@ -153,7 +164,10 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
                         isLandscape,
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 8.0,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -166,73 +180,78 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
                             const SizedBox(height: 16),
                             ChangeNotifierProvider(
                               create: (_) => JapMalaProvider(),
-                              child: Consumer<JapMalaProvider>(
-                                builder: (context, japProvider, _) {
-                                  final isSignedUp = _currentMemberName != null;
-                                  return Column(
-                                    children: [
-                                      ManualJapTab(
-                                        compact: true,
-                                        enabled: isSignedUp,
-                                      ),
-                                      const SizedBox(height: 12),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        height: 50,
-                                        child: ElevatedButton(
-                                          onPressed:
-                                              (japProvider.totalCount > 0 &&
-                                                  isSignedUp)
-                                              ? () async {
-                                                  await _submitCount(
-                                                    japProvider.totalCount,
-                                                  );
-                                                  japProvider.reset();
-                                                }
-                                              : null,
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                (japProvider.totalCount > 0 &&
-                                                    isSignedUp)
-                                                ? theme.colorScheme.primary
-                                                : theme
-                                                      .appColors
-                                                      .disabledBackground,
-                                            foregroundColor:
-                                                (japProvider.totalCount > 0 &&
-                                                    isSignedUp)
-                                                ? theme.colorScheme.onPrimary
-                                                : theme.appColors.disabledText,
-                                            elevation:
-                                                (japProvider.totalCount > 0 &&
-                                                    isSignedUp)
-                                                ? 2
-                                                : 0,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
+                              child: Consumer2<JapMalaProvider, GroupNamjapProvider>(
+                                builder:
+                                    (context, japProvider, groupProvider, _) {
+                                      final isJoined = groupProvider.isJoined(
+                                        widget.eventId,
+                                      );
+                                      final isOngoing =
+                                          event.status == 'ongoing';
+                                      final canSubmit =
+                                          japProvider.totalCount > 0 &&
+                                          isJoined &&
+                                          isOngoing;
+
+                                      return Column(
+                                        children: [
+                                          ManualJapTab(
+                                            compact: true,
+                                            enabled: isJoined && isOngoing,
                                           ),
-                                          child: FittedBox(
-                                            child: Text(
-                                              localizations.groupNamjapSubmitCount(
-                                                formatNumberLocalized(
-                                                  japProvider.totalCount,
-                                                  locale,
-                                                  pad: false,
+                                          const SizedBox(height: 12),
+                                          SizedBox(
+                                            width: double.infinity,
+                                            height: 50,
+                                            child: ElevatedButton(
+                                              onPressed: canSubmit
+                                                  ? () async {
+                                                      await _submitCount(
+                                                        japProvider.totalCount,
+                                                      );
+                                                      japProvider.reset();
+                                                    }
+                                                  : null,
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: canSubmit
+                                                    ? theme.colorScheme.primary
+                                                    : theme
+                                                          .appColors
+                                                          .disabledBackground,
+                                                foregroundColor: canSubmit
+                                                    ? theme
+                                                          .colorScheme
+                                                          .onPrimary
+                                                    : theme
+                                                          .appColors
+                                                          .disabledText,
+                                                elevation: canSubmit ? 2 : 0,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                 ),
                                               ),
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
+                                              child: FittedBox(
+                                                child: Text(
+                                                  localizations
+                                                      .groupNamjapSubmitCount(
+                                                        formatNumberLocalized(
+                                                          japProvider
+                                                              .totalCount,
+                                                          locale,
+                                                          pad: false,
+                                                        ),
+                                                      ),
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ),
-
-                                    ],
-                                  );
-                                },
+                                        ],
+                                      );
+                                    },
                               ),
                             ),
                           ],
@@ -407,7 +426,8 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
     String locale,
     bool isLandscape,
   ) {
-    final isActionEnabled = event.status == 'ongoing' && !kIsWeb;
+    final isActionEnabled =
+        (event.status == 'ongoing' || event.status == 'enrolling') && !kIsWeb;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
@@ -445,78 +465,89 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
               );
             },
           ),
-          if (_currentMemberName == null)
-            SizedBox(
-              height: isLandscape ? 32 : 50,
-              child: ElevatedButton(
-                onPressed: isActionEnabled
-                    ? () async {
-                        final memberName = await showDialog<String>(
-                          context: context,
-                          builder: (context) => SignupDialog(event: event),
-                        );
-                        if (memberName != null) {
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setString(
-                            'group_namjap_${widget.eventId}_member',
-                            memberName,
+          Consumer<GroupNamjapProvider>(
+            builder: (context, groupProvider, _) {
+              final isJoined = groupProvider.isJoined(event.id);
+              final canJoin =
+                  event.status == 'enrolling' || event.status == 'ongoing';
+              final isEditable = isJoined && event.status == 'enrolling';
+              final isJoinable = !isJoined && canJoin;
+              final isActionEnabled = (isEditable || isJoinable) && !kIsWeb;
+
+              return SizedBox(
+                height: isLandscape ? 32 : 50,
+                child: ElevatedButton(
+                  onPressed: isActionEnabled
+                      ? () async {
+                          final result = await showDialog(
+                            context: context,
+                            builder: (context) => NamjapSignupDialog(
+                              event: event,
+                              isEdit: isJoined,
+                            ),
                           );
-                          await _loadParticipationStatus();
+                          if (result == true) {
+                            _updateParticipantStream();
+                          } else if (result is Map &&
+                              result['deleted'] == true) {
+                            _updateParticipantStream();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  localizations.deleteSignupSuccess,
+                                ),
+                              ),
+                            );
+                          }
                         }
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isActionEnabled
-                      ? theme.colorScheme.primary
-                      : theme.appColors.disabledBackground,
-                  foregroundColor: isActionEnabled
-                      ? theme.colorScheme.onPrimary
-                      : theme.appColors.disabledText,
-                  elevation: isActionEnabled ? 2 : 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isLandscape ? 12 : 20,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.person_add, size: 18),
-                    const SizedBox(width: 8),
-                    Text(localizations.signUp),
-                  ],
-                ),
-              ),
-            )
-          else
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.check_circle,
-                    color: theme.colorScheme.primary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    _currentMemberName!,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isActionEnabled
+                        ? theme.colorScheme.primary
+                        : theme.appColors.disabledBackground,
+                    foregroundColor: isActionEnabled
+                        ? theme.colorScheme.onPrimary
+                        : theme.appColors.disabledText,
+                    elevation: isActionEnabled ? 2 : 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isLandscape ? 12 : 20,
                     ),
                   ),
-                ],
-              ),
-            ),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isJoined
+                              ? (isEditable
+                                    ? Icons.edit
+                                    : Icons.check_circle_outline)
+                              : Icons.person_add_outlined,
+                          size: isLandscape ? 14 : 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          isJoined
+                              ? (isEditable
+                                    ? localizations.editLabel
+                                    : localizations.signedUpLabel)
+                              : localizations.signUp,
+                          style: TextStyle(
+                            fontSize: isLandscape ? 12 : 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

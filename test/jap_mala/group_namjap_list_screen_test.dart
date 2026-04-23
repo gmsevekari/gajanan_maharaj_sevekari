@@ -18,11 +18,17 @@ void main() {
 
   setUp(() {
     mockService = MockGroupNamjapService();
-    when(() => mockService.getActiveEvents(any())).thenAnswer((_) => Stream.value([]));
-    when(() => mockService.getCompletedEvents(any())).thenAnswer((_) => Stream.value([]));
+    when(
+      () => mockService.getActiveEvents(any()),
+    ).thenAnswer((_) => Stream.value([]));
+    when(
+      () => mockService.getCompletedEvents(any()),
+    ).thenAnswer((_) => Stream.value([]));
   });
 
-  testWidgets('GroupNamjapListScreen renders with two tabs', (WidgetTester tester) async {
+  testWidgets('GroupNamjapListScreen renders with two tabs', (
+    WidgetTester tester,
+  ) async {
     tester.view.physicalSize = const Size(1080, 1920);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -57,7 +63,7 @@ void main() {
     expect(find.byType(AppBar), findsOneWidget);
 
     // Verify Tabs
-    expect(find.text('Upcoming'), findsOneWidget);
+    expect(find.text('Upcoming / Active'), findsOneWidget);
     expect(find.text('Completed'), findsOneWidget);
 
     // Verify Title
