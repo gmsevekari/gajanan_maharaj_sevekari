@@ -18,8 +18,13 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class GroupNamjapDetailScreen extends StatefulWidget {
   final String eventId;
+  final String? prefilledJoinCode;
 
-  const GroupNamjapDetailScreen({super.key, required this.eventId});
+  const GroupNamjapDetailScreen({
+    super.key,
+    required this.eventId,
+    this.prefilledJoinCode,
+  });
 
   @override
   State<GroupNamjapDetailScreen> createState() =>
@@ -484,6 +489,7 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
                             builder: (context) => NamjapSignupDialog(
                               event: event,
                               isEdit: isJoined,
+                              prefilledJoinCode: widget.prefilledJoinCode,
                             ),
                           );
                           if (result == true) {

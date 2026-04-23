@@ -189,15 +189,18 @@ class _MyAppState extends State<MyApp> {
 
     // 1. Handle Custom Scheme: gmsevekari://parayan/ID or gmsevekari:///parayan/ID
     if (uri.scheme == 'gmsevekari') {
-      if (uri.host == 'parayan' && uri.pathSegments.isNotEmpty) {
+      if ((uri.host == 'parayan' || uri.host == 'namjap') &&
+          uri.pathSegments.isNotEmpty) {
         id = uri.pathSegments.first;
       } else if (uri.pathSegments.length >= 2 &&
-          uri.pathSegments[0] == 'parayan') {
+          (uri.pathSegments[0] == 'parayan' ||
+              uri.pathSegments[0] == 'namjap')) {
         id = uri.pathSegments[1];
       }
     }
-    // 2. Handle Web Links: https://gajananmaharajsevekari.org/parayan/ID
-    else if (uri.pathSegments.length >= 2 && uri.pathSegments[0] == 'parayan') {
+    // 2. Handle Web Links: https://gajananmaharajsevekari.org/parayan/ID or /namjap/ID
+    else if (uri.pathSegments.length >= 2 &&
+        (uri.pathSegments[0] == 'parayan' || uri.pathSegments[0] == 'namjap')) {
       id = uri.pathSegments[1];
     }
     // 3. Handle Legacy Query Parameters: /parayan_detail?id=ID
@@ -209,11 +212,16 @@ class _MyAppState extends State<MyApp> {
     String? joinCode =
         uri.queryParameters['joinCode'] ?? uri.queryParameters['code'];
 
+    final bool isNamjap =
+        uri.toString().contains('/namjap/') || uri.host == 'namjap';
+    final String routeName =
+        isNamjap ? Routes.groupNamjapDetail : Routes.parayanDetail;
+
     if (id != null) {
       debugPrint(
-        'Deep Link: Navigating to Parayan ID: $id with code: $joinCode',
+        'Deep Link: Navigating to ${isNamjap ? "Namjap" : "Parayan"} ID: $id with code: $joinCode',
       );
-      DeepLinkManager.setPendingRoute(Routes.parayanDetail, {
+      DeepLinkManager.setPendingRoute(routeName, {
         'id': id,
         'joinCode': joinCode,
       });
@@ -230,7 +238,7 @@ class _MyAppState extends State<MyApp> {
       });
 
       if (navState != null && !isAtSplash) {
-        _safeNavigate(Routes.parayanDetail, {'id': id, 'joinCode': joinCode});
+        _safeNavigate(routeName, {'id': id, 'joinCode': joinCode});
       } else {
         debugPrint(
           '[DeepLinkManager] App is starting. Deferring navigation to SplashScreen.',
@@ -328,9 +336,21 @@ class _MyAppState extends State<MyApp> {
                     const IndividualNamjapScreen(),
                 Routes.groupNamjap: (context) => const GroupNamjapListScreen(),
                 Routes.groupNamjapDetail: (context) {
-                  final eventId =
-                      ModalRoute.of(context)!.settings.arguments as String;
-                  return GroupNamjapDetailScreen(eventId: eventId);
+                  final args = ModalRoute.of(context)!.settings.arguments;
+                  String? eventId;
+                  String? joinCode;
+
+                  if (args is String) {
+                    eventId = args;
+                  } else if (args is Map) {
+                    eventId = args['id'];
+                    joinCode = args['joinCode'];
+                  }
+
+                  return GroupNamjapDetailScreen(
+                    eventId: eventId!,
+                    prefilledJoinCode: joinCode,
+                  );
                 },
                 Routes.adminLogin: (context) => const AdminLoginScreen(),
                 Routes.adminDashboard: (context) =>

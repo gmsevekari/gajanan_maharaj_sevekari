@@ -9,11 +9,13 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 class NamjapSignupDialog extends StatefulWidget {
   final GroupNamjapEvent event;
   final bool isEdit;
+  final String? prefilledJoinCode;
 
   const NamjapSignupDialog({
     super.key,
     required this.event,
     this.isEdit = false,
+    this.prefilledJoinCode,
   });
 
   @override
@@ -47,6 +49,10 @@ class _NamjapSignupDialogState extends State<NamjapSignupDialog> {
       if (_phoneController.text.isEmpty && fullPhone.isNotEmpty) {
         _phoneController.text = fullPhone;
       }
+    }
+
+    if (widget.prefilledJoinCode != null) {
+      _codeController.text = widget.prefilledJoinCode!;
     }
   }
 
