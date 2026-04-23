@@ -4,42 +4,49 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/providers/jap_mala_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:provider/provider.dart';
-import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+
+import 'jap_control_buttons.dart';
+import 'mala_count_card.dart';
+import 'rudraksha_animation.dart';
 
 class ManualJapTab extends StatefulWidget {
-  const ManualJapTab({super.key});
+  final bool compact;
+  final bool enabled;
+  const ManualJapTab({super.key, this.compact = false, this.enabled = true});
 
   @override
   State<ManualJapTab> createState() => _ManualJapTabState();
 }
 
 class _ManualJapTabState extends State<ManualJapTab>
-    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  static const double _beadHeight = 90.0;
-
-  @override
-  bool get wantKeepAlive => true;
+  double get _beadHeight => widget.compact ? 80.0 : 95.0;
+  int get _visibleBeads => widget.compact ? 3 : 5;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 300),
     );
-
     _animation = Tween<double>(
       begin: 0,
       end: _beadHeight,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-    // Re-center when animation finishes
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _controller.reset();
-      }
-    });
+  }
+
+  @override
+  void didUpdateWidget(ManualJapTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.compact != widget.compact) {
+      _animation = Tween<double>(
+        begin: 0,
+        end: _beadHeight,
+      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    }
   }
 
   @override
@@ -48,374 +55,95 @@ class _ManualJapTabState extends State<ManualJapTab>
     super.dispose();
   }
 
-  void _onBeadPulled() {
-    if (_controller.isAnimating) return;
-
-    final provider = context.read<JapMalaProvider>();
-    final oldMalas = provider.completedMalas;
-
-    HapticFeedback.lightImpact();
-    provider.increment();
-
-    if (provider.completedMalas > oldMalas) {
-      HapticFeedback.heavyImpact();
-    }
-
-    // Start sliding animation
-    _controller.forward();
+  void _startAnimation() {
+    _controller.forward(from: 0);
   }
-
-  void _decreaseCount() {
-    context.read<JapMalaProvider>().decrement();
-  }
-
-  void _resetCount() {
-    context.read<JapMalaProvider>().reset();
-  }
-
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
-    return Consumer<JapMalaProvider>(
-      builder: (context, provider, child) {
-        final locale = Localizations.localeOf(context).languageCode;
-        return Container(
-          color: theme.scaffoldBackgroundColor, // Use theme background
-          child: Column(
-            children: [
-              // Progress Indicators (Cards)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 24.0,
-                ),
-                child: IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: theme.cardTheme.color ?? theme.cardColor,
-                            border: Border.all(color: theme.appColors.primarySwatch, width: 2),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                localizations.mala,
-                                style: TextStyle(
-                                  color: theme.appColors.primarySwatch,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  formatNumberLocalized(provider.completedMalas, locale),
-                                  style: TextStyle(
-                                    color: theme.appColors.primarySwatch,
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isScrollable = constraints.maxHeight == double.infinity;
+        return Consumer<JapMalaProvider>(
+          builder: (context, provider, child) {
+            final locale = Localizations.localeOf(context).languageCode;
+            return Container(
+              color: theme.scaffoldBackgroundColor,
+              child: Column(
+                mainAxisSize: isScrollable ? MainAxisSize.min : MainAxisSize.max,
+                children: [
+                  // Progress Indicators (Cards) - Hidden in compact mode
+                  if (!widget.compact)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 24.0,
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: theme.cardTheme.color ?? theme.cardColor,
-                            border: Border.all(color: theme.appColors.primarySwatch, width: 2),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
+                      child: IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: MalaCountCard(
+                                label: localizations.mala,
+                                value: formatNumberLocalized(provider.completedMalas, locale),
                               ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                localizations.jap,
-                                style: TextStyle(
-                                  color: theme.appColors.primarySwatch,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  '${formatNumberLocalized(provider.currentCount, locale)} / ${formatNumberLocalized(JapMalaProvider.countsPerMala, locale, pad: false)}',
-                                  style: TextStyle(
-                                    color: theme.appColors.primarySwatch,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-          Expanded(
-            child: ClipRect(
-              child: Center(
-                // The Interactive Mala with Mandala Watermark
-                child: SizedBox(
-                  height: _beadHeight * 5,
-                  width: double.infinity,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Custom Image Watermark
-                      Positioned.fill(
-                        child: Opacity(
-                          opacity: 0.30,
-                          child: IgnorePointer(
-                            child: Image.asset(
-                              'resources/images/naamjap/Om.png',
-                              fit: BoxFit.contain,
-                              alignment: Alignment.center,
                             ),
-                          ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: MalaCountCard(
+                                label: localizations.jap,
+                                value:
+                                    '${formatNumberLocalized(provider.currentCount, locale)} / १०८',
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      // Animated Beads Area
-                      SizedBox(
-                        height: _beadHeight * 5,
-                        width: 100,
-                        child: AnimatedBuilder(
-                          animation: _animation,
-                          builder: (context, child) {
-                            return Stack(
-                              alignment: Alignment.center,
-                              children: List.generate(6, (index) {
-                                final topOffset =
-                                    (index - 1) * _beadHeight -
-                                    _animation.value;
-
-                                final centerPoint = (_beadHeight * 5) / 2;
-                                final distanceFromCenter =
-                                    (topOffset + _beadHeight / 2 - centerPoint)
-                                        .abs();
-                                final maxDistance = (_beadHeight * 5) / 2;
-                                final opacity =
-                                    (1 - (distanceFromCenter / maxDistance))
-                                        .clamp(0.0, 1.0);
-
-                                return Positioned(
-                                  top: topOffset,
-                                  child: Opacity(
-                                    opacity: opacity,
-                                    child: SizedBox(
-                                      width: 64,
-                                      height: 95,
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          // Thread runs full height through centre
-                                          Positioned(
-                                            top: 0,
-                                            bottom: 0,
-                                            left: 29,
-                                            right: 29,
-                                            child: CustomPaint(
-                                              painter: MalaThreadPainter(
-                                                primaryColor:
-                                                    theme.appColors.primarySwatch.shade800,
-                                                secondaryColor:
-                                                    theme.appColors.primarySwatch.shade400,
-                                                borderAlphaColor:
-                                                    theme.appColors.secondaryText.withValues(alpha: 0.3),
-                                              ),
-                                            ),
-                                          ),
-                                          // Bead overlaid — thread shows through
-                                          // transparent PNG edges, hiding the gap
-                                          Image.asset(
-                                            'resources/images/naamjap/Rudraksha.png',
-                                            height: 72,
-                                            width: 72,
-                                            fit: BoxFit.contain,
-                                            errorBuilder:
-                                                (context, error, stackTrace) {
-                                                  return Container(
-                                                    width: 48,
-                                                    height: 48,
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          theme.appColors.primarySwatch.shade800,
-                                                      shape: BoxShape.circle,
-                                                    ),
-                                                  );
-                                                },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Interaction Controls
-          Padding(
-            padding: const EdgeInsets.only(bottom: 40.0),
-            child: Column(
-              children: [
-                // Central Tap Button
-                ElevatedButton(
-                  onPressed: _onBeadPulled,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 48,
-                      vertical: 16,
                     ),
-                    shape: const StadiumBorder(),
+
+                  if (isScrollable)
+                    _buildBeadsArea()
+                  else
+                    Expanded(child: _buildBeadsArea()),
+
+                  // Control Buttons
+                  JapControlButtons(
+                    compact: widget.compact,
+                    enabled: widget.enabled,
+                    onIncrement: () {
+                      HapticFeedback.lightImpact();
+                      context.read<JapMalaProvider>().increment();
+                      _startAnimation();
+                    },
+                    onDecrement: () {
+                      HapticFeedback.lightImpact();
+                      context.read<JapMalaProvider>().decrement();
+                    },
+                    onReset: () {
+                      HapticFeedback.mediumImpact();
+                      context.read<JapMalaProvider>().reset();
+                    },
                   ),
-                  child: const Text(
-                    '+',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Secondary Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildSecondaryButton(Icons.remove, _decreaseCount, theme),
-                    const SizedBox(width: 60),
-                    _buildSecondaryButton(Icons.refresh, _resetCount, theme),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
-  Widget _buildSecondaryButton(
-    IconData icon,
-    VoidCallback onTap,
-    ThemeData theme,
-  ) {
-    return ElevatedButton(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        fixedSize: const Size(56, 56),
-        shape: CircleBorder(
-          side: BorderSide(color: theme.appColors.primarySwatch, width: 2),
-        ),
-        backgroundColor: theme.cardTheme.color ?? theme.cardColor,
-        foregroundColor: theme.appColors.primarySwatch,
-        padding: EdgeInsets.zero,
-        elevation: 4, // Matches the '+' button style
-      ),
-      child: Icon(icon, color: theme.appColors.primarySwatch, size: 28),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
-}
 
-class MalaThreadPainter extends CustomPainter {
-  final Color primaryColor;
-  final Color secondaryColor;
-  final Color borderAlphaColor;
-
-  MalaThreadPainter({
-    required this.primaryColor,
-    required this.secondaryColor,
-    required this.borderAlphaColor,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Fill background
-    final bgPaint = Paint()..color = primaryColor;
-    final rrect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      const Radius.circular(2),
+  Widget _buildBeadsArea() {
+    return RudrakshaAnimation(
+      animation: _animation,
+      beadHeight: _beadHeight,
+      visibleBeads: _visibleBeads,
+      compact: widget.compact,
+      enabled: widget.enabled,
     );
-    canvas.drawRRect(rrect, bgPaint);
-
-    // Draw diagonal lines to simulate a twisted cord
-    final dashPaint = Paint()
-      ..color = secondaryColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
-
-    final double spacing = 4.0;
-    canvas.save();
-    canvas.clipRRect(rrect);
-    for (double y = -size.width; y < size.height; y += spacing) {
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y + size.width),
-        dashPaint,
-      );
-    }
-    canvas.restore();
-
-    // Add a slight dark border to give it depth
-    final borderPaint = Paint()
-      ..color = borderAlphaColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.5;
-    canvas.drawRRect(rrect, borderPaint);
   }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
