@@ -3194,6 +3194,42 @@ abstract class AppLocalizations {
   /// **'Total Chants'**
   String get groupNamjapTableColTotalChants;
 
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signUp;
+
+  /// No description provided for @totalCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Count'**
+  String get totalCountLabel;
+
+  /// No description provided for @myTotalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'My Total'**
+  String get myTotalLabel;
+
+  /// No description provided for @manualEntryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Entry'**
+  String get manualEntryLabel;
+
+  /// No description provided for @mantraLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mantra'**
+  String get mantraLabel;
+
+  /// No description provided for @dateRangeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Range'**
+  String get dateRangeLabel;
+
   /// No description provided for @dashami.
   ///
   /// In en, this message translates to:

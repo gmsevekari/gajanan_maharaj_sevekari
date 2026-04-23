@@ -609,6 +609,13 @@
   "groupNamjapTableColName": "नाव",
   "groupNamjapTableColPhone": "फोन",
   "groupNamjapTableColTotalChants": "एकूण नामजप",
+  "signUp": "साईन-अप करा",
+  "totalCountLabel": "एकूण जप",
+  "myTotalLabel": "माझा जप",
+  "manualEntryLabel": "मॅन्युअल नोंदणी",
+  "mantraLabel": "मंत्र",
+  "dateRangeLabel": "कालावधी",
+  "statusLabel": "स्टेटस",
   "dashami": "दशमी",
   "ekadashi": "एकादशी",
   "dwadashi": "द्वादशी"

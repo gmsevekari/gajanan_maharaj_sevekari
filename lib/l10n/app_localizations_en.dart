@@ -1639,6 +1639,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupNamjapTableColTotalChants => 'Total Chants';
 
   @override
+  String get signUp => 'Sign Up';
+
+  @override
+  String get totalCountLabel => 'Total Count';
+
+  @override
+  String get myTotalLabel => 'My Total';
+
+  @override
+  String get manualEntryLabel => 'Manual Entry';
+
+  @override
+  String get mantraLabel => 'Mantra';
+
+  @override
+  String get dateRangeLabel => 'Date Range';
+
+  @override
   String get dashami => 'Dashami';
 
   @override

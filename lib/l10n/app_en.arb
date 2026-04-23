@@ -609,6 +609,13 @@
   "groupNamjapTableColName": "Name",
   "groupNamjapTableColPhone": "Phone",
   "groupNamjapTableColTotalChants": "Total Chants",
+  "signUp": "Sign Up",
+  "totalCountLabel": "Total Count",
+  "myTotalLabel": "My Total",
+  "manualEntryLabel": "Manual Entry",
+  "mantraLabel": "Mantra",
+  "dateRangeLabel": "Date Range",
+  "statusLabel": "Status",
   "dashami": "Dashami",
   "ekadashi": "Ekadashi",
   "dwadashi": "Dwadashi"

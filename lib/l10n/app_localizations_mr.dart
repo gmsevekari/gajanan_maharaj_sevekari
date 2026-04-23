@@ -1643,6 +1643,24 @@ class AppLocalizationsMr extends AppLocalizations {
   String get groupNamjapTableColTotalChants => 'एकूण नामजप';
 
   @override
+  String get signUp => 'साईन-अप करा';
+
+  @override
+  String get totalCountLabel => 'एकूण जप';
+
+  @override
+  String get myTotalLabel => 'माझा जप';
+
+  @override
+  String get manualEntryLabel => 'मॅन्युअल नोंदणी';
+
+  @override
+  String get mantraLabel => 'मंत्र';
+
+  @override
+  String get dateRangeLabel => 'कालावधी';
+
+  @override
   String get dashami => 'दशमी';
 
   @override
