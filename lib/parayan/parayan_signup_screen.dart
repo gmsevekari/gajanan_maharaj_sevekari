@@ -34,7 +34,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
     TextEditingController(),
   ];
   final _phoneController = TextEditingController();
-  String _selectedCountryCode = '+1';
+  final _countryCodeController = TextEditingController(text: '+1');
   bool _isLoading = false;
   String? _loadingMessage;
 
@@ -57,7 +57,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
       final countryCodes = ['+91', '+1', '+44', '+61', '+971'];
       for (var code in countryCodes) {
         if (rawPhone.startsWith(code)) {
-          _selectedCountryCode = code;
+          _countryCodeController.text = code;
           rawPhone = rawPhone.substring(code.length).trim();
           break;
         }
@@ -72,6 +72,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
       controller.dispose();
     }
     _phoneController.dispose();
+    _countryCodeController.dispose();
     super.dispose();
   }
 
@@ -133,7 +134,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
         type: widget.event.type,
         deviceId: deviceId,
         names: names,
-        phone: '$_selectedCountryCode${_phoneController.text.trim()}',
+        phone: '${_countryCodeController.text.trim()}${_phoneController.text.trim()}',
       );
 
       // Subscribe to topics
@@ -410,49 +411,62 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
                   const SizedBox(height: 24),
 
                   const SizedBox(height: 24),
-                  TextFormField(
-                    controller: _phoneController,
-                    decoration: InputDecoration(
-                      labelText: localizations.phoneNumberLabel,
-                      icon: const Icon(Icons.phone),
-                      hintText: isMarathi ? "१०-अंकी नंबर" : "10-digit number",
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: _selectedCountryCode,
-                            items: ['+91', '+1', '+44', '+61', '+971'].map((
-                              String value,
-                            ) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            onChanged: (newValue) {
-                              if (newValue != null) {
-                                setState(() {
-                                  _selectedCountryCode = newValue;
-                                });
-                              }
-                            },
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 70,
+                        child: TextFormField(
+                          controller: _countryCodeController,
+                          decoration: const InputDecoration(
+                            labelText: 'Code',
+                            hintText: '+1',
                           ),
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return '!';
+                            final codeRegex = RegExp(r'^\+[0-9]{1,4}$');
+                            if (!codeRegex.hasMatch(value.trim())) return '!';
+                            return null;
+                          },
                         ),
                       ),
-                    ),
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return localizations.phoneRequired;
-                      }
-                      final phoneRegex = RegExp(r'^[0-9]{10}$');
-                      if (!phoneRegex.hasMatch(
-                        value.trim().replaceAll(RegExp(r'[\s\-\(\)]'), ''),
-                      )) {
-                        return localizations.invalidPhone;
-                      }
-                      return null;
-                    },
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _phoneController,
+                          decoration: InputDecoration(
+                            labelText: localizations.phoneNumberLabel,
+                            icon: const Icon(Icons.phone),
+                            hintText: isMarathi ? "फोन नंबर" : "Phone number",
+                          ),
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return localizations.phoneRequired;
+                            }
+
+                            final code = _countryCodeController.text.trim();
+                            int minLength = 10;
+
+                            if (code == '+65') {
+                              minLength = 8;
+                            } else if (code == '+27' || code == '+971') {
+                              minLength = 9;
+                            }
+
+                            // Strip non-digits just in case user added spaces
+                            final digitCount =
+                                value.replaceAll(RegExp(r'\D'), '').length;
+
+                            if (digitCount < minLength) {
+                              return localizations.invalidPhone;
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton(
