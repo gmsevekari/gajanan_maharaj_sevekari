@@ -13,9 +13,10 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
-import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/shared/typo_report_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
+
+enum _MenuAction { favorite, home, settings }
 
 enum ContentType { granth, aarti, bhajan, stotra, namavali, song, story }
 
@@ -188,7 +189,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false, // We will handle navigation manually
+        automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
@@ -198,12 +199,12 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
           children: [
             if (widget.currentIndex > 0)
               IconButton(
-                icon: const Icon(Icons.arrow_back_ios),
+                icon: const Icon(Icons.arrow_back_ios, size: 20),
                 onPressed:
                     () => _navigateToItem(widget.currentIndex - 1, isNext: false),
               )
             else
-              const SizedBox(width: 48), // Placeholder for alignment
+              const SizedBox(width: 40),
             Expanded(
               child: FutureBuilder<Map<String, dynamic>>(
                 future: _contentFuture,
@@ -217,79 +218,142 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                       title,
                       textAlign: TextAlign.center,
                       maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
                     );
                   } else {
-                    return const Text(''); // Placeholder while loading
+                    return const Text('');
                   }
                 },
               ),
             ),
             if (widget.currentIndex < widget.contentList.length - 1)
               IconButton(
-                icon: const Icon(Icons.arrow_forward_ios),
+                icon: const Icon(Icons.arrow_forward_ios, size: 20),
                 onPressed:
                     () => _navigateToItem(widget.currentIndex + 1, isNext: true),
               )
             else
-              const SizedBox(width: 48), // Placeholder for alignment
+              const SizedBox(width: 40),
           ],
         ),
+        centerTitle: true,
         actions: [
           Consumer<PlaylistProvider>(
             builder: (context, playlistProvider, child) {
               final isFavorite = playlistProvider.isFavorite(widget.assetPath);
-              return IconButton(
-                icon: Icon(
-                  isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? theme.colorScheme.error : null,
-                ),
-                onPressed: () async {
-                  final playlists = playlistProvider.playlists;
-                  if (playlists.length == 1) {
-                    final defaultPl = playlists.first;
-                    if (isFavorite) {
-                      await playlistProvider.removeAarti(
-                        defaultPl.id,
-                        widget.assetPath,
-                      );
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(localizations.removedFromPlaylist),
-                          ),
-                        );
+              return PopupMenuButton<_MenuAction>(
+                icon: const Icon(Icons.more_vert),
+                color: theme.cardTheme.color,
+                shape: theme.cardTheme.shape,
+                elevation: theme.cardTheme.elevation,
+                onSelected: (action) async {
+                  switch (action) {
+                    case _MenuAction.favorite:
+                      final playlists = playlistProvider.playlists;
+                      if (playlists.length == 1) {
+                        final defaultPl = playlists.first;
+                        if (isFavorite) {
+                          await playlistProvider.removeAarti(
+                            defaultPl.id,
+                            widget.assetPath,
+                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content:
+                                    Text(localizations.removedFromPlaylist),
+                              ),
+                            );
+                          }
+                        } else {
+                          await playlistProvider.addAarti(
+                            defaultPl.id,
+                            widget.assetPath,
+                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(localizations.addedToPlaylist),
+                              ),
+                            );
+                          }
+                        }
+                      } else {
+                        showAddToPlaylistModal(context, widget.assetPath);
                       }
-                    } else {
-                      await playlistProvider.addAarti(
-                        defaultPl.id,
-                        widget.assetPath,
+                      break;
+                    case _MenuAction.home:
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        Routes.home,
+                        (route) => false,
                       );
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(localizations.addedToPlaylist),
-                          ),
-                        );
-                      }
-                    }
-                  } else {
-                    showAddToPlaylistModal(context, widget.assetPath);
+                      break;
+                    case _MenuAction.settings:
+                      Navigator.pushNamed(context, Routes.settings);
+                      break;
                   }
+                },
+                itemBuilder: (context) {
+                  return [
+                    PopupMenuItem(
+                      value: _MenuAction.favorite,
+                      child: ListTile(
+                        leading: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? theme.colorScheme.error : null,
+                          size: 18,
+                        ),
+                        title: Text(
+                          isFavorite
+                              ? localizations.removedFromPlaylist
+                              : localizations.addToPlaylist,
+                          style: TextStyle(color: theme.colorScheme.onSurface),
+                        ),
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: _MenuAction.home,
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.home,
+                          size: 18,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                        title: Text(
+                          localizations.home,
+                          style: TextStyle(color: theme.colorScheme.onSurface),
+                        ),
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: _MenuAction.settings,
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.settings,
+                          size: 18,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                        title: Text(
+                          localizations.settings,
+                          style: TextStyle(color: theme.colorScheme.onSurface),
+                        ),
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                      ),
+                    ),
+                  ];
                 },
               );
             },
-          ),
-          IconButton(
-            icon: const ThemedIcon(LogicalIcon.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context,
-              Routes.home,
-              (route) => false,
-            ),
-          ),
-          IconButton(
-            icon: const ThemedIcon(LogicalIcon.settings),
-            onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],
       ),

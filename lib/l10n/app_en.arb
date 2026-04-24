@@ -636,5 +636,8 @@
   "updateLabel": "Update Signup",
   "deleteSignupConfirmMessageNamjap": "Are you sure you want to delete your signup for this Namjap?",
   "groupNamjapTimezone": "Timezone",
-  "upcomingActiveTab": "Upcoming / Active"
+  "upcomingActiveTab": "Upcoming / Active",
+  "previous": "Previous",
+  "next": "Next",
+  "home": "Home"
 }

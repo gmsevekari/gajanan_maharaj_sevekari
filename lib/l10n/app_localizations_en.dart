@@ -1700,4 +1700,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get upcomingActiveTab => 'Upcoming / Active';
+
+  @override
+  String get previous => 'Previous';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get home => 'Home';
 }

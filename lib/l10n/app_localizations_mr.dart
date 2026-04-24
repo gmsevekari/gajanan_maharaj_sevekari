@@ -1704,4 +1704,13 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get upcomingActiveTab => 'आगामी / सक्रिय';
+
+  @override
+  String get previous => 'मागील';
+
+  @override
+  String get next => 'पुढील';
+
+  @override
+  String get home => 'होम';
 }

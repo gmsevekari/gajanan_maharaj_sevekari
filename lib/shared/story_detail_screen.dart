@@ -12,6 +12,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:gajanan_maharaj_sevekari/shared/typo_report_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 
+enum _MenuAction { home, settings }
+
 class StoryDetailScreen extends StatefulWidget {
   final DeityConfig deity;
   final List<Map<String, String>> contentList;
@@ -80,19 +82,32 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
     });
   }
 
-  void _navigateToItem(int index) {
+  void _navigateToItem(int index, {required bool isNext}) {
     final item = widget.contentList[index];
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => StoryDetailScreen(
-          deity: widget.deity,
-          contentList: widget.contentList,
-          currentIndex: index,
-          assetPath: item['assetPath']!,
-          imagePath: item['imagePath']!,
-          storyType: widget.storyType,
-        ),
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            StoryDetailScreen(
+              deity: widget.deity,
+              contentList: widget.contentList,
+              currentIndex: index,
+              assetPath: item['assetPath']!,
+              imagePath: item['imagePath']!,
+              storyType: widget.storyType,
+            ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final begin = Offset(isNext ? 1.0 : -1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+          var tween = Tween(
+            begin: begin,
+            end: end,
+          ).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+          return SlideTransition(position: offsetAnimation, child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 300),
       ),
     );
   }
@@ -123,7 +138,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
             if (widget.currentIndex > 0)
               IconButton(
                 icon: const Icon(Icons.arrow_back_ios),
-                onPressed: () => _navigateToItem(widget.currentIndex - 1),
+                onPressed: () => _navigateToItem(widget.currentIndex - 1, isNext: false),
               )
             else
               const SizedBox(width: 48), // Spacer to maintain alignment
@@ -153,42 +168,103 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
             if (widget.currentIndex < widget.contentList.length - 1)
               IconButton(
                 icon: const Icon(Icons.arrow_forward_ios),
-                onPressed: () => _navigateToItem(widget.currentIndex + 1),
+                onPressed: () => _navigateToItem(widget.currentIndex + 1, isNext: true),
               )
             else
               const SizedBox(width: 48), // Spacer to maintain alignment
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context,
-              Routes.home,
-              (route) => false,
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          PopupMenuButton<_MenuAction>(
+            icon: const Icon(Icons.more_vert),
+            color: theme.cardTheme.color,
+            shape: theme.cardTheme.shape,
+            elevation: theme.cardTheme.elevation,
+            onSelected: (action) {
+              switch (action) {
+                case _MenuAction.home:
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    Routes.home,
+                    (route) => false,
+                  );
+                  break;
+                case _MenuAction.settings:
+                  Navigator.pushNamed(context, Routes.settings);
+                  break;
+              }
+            },
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  value: _MenuAction.home,
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.home,
+                      size: 18,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    title: Text(
+                      localizations.home,
+                      style: TextStyle(color: theme.colorScheme.onSurface),
+                    ),
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                  ),
+                ),
+                PopupMenuItem(
+                  value: _MenuAction.settings,
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.settings,
+                      size: 18,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    title: Text(
+                      localizations.settings,
+                      style: TextStyle(color: theme.colorScheme.onSurface),
+                    ),
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                  ),
+                ),
+              ];
+            },
           ),
         ],
       ),
       body: Column(
         children: [
           Expanded(
-            child: FutureBuilder<Map<String, dynamic>>(
-              future: _contentFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (snapshot.hasData) {
-                  return _buildContent(snapshot.data!, locale, localizations);
+            child: GestureDetector(
+              onHorizontalDragEnd: (details) {
+                // Adjust sensitivity as needed
+                int sensitivity = 8;
+                if (details.primaryVelocity! > sensitivity) {
+                  // Swipe Right (Go to previous item)
+                  if (widget.currentIndex > 0) {
+                    _navigateToItem(widget.currentIndex - 1, isNext: false);
+                  }
+                } else if (details.primaryVelocity! < -sensitivity) {
+                  // Swipe Left (Go to next item)
+                  if (widget.currentIndex < widget.contentList.length - 1) {
+                    _navigateToItem(widget.currentIndex + 1, isNext: true);
+                  }
                 }
-                return const Center(child: Text('No data'));
               },
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: _contentFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (snapshot.hasData) {
+                    return _buildContent(snapshot.data!, locale, localizations);
+                  }
+                  return const Center(child: Text('No data'));
+                },
+              ),
             ),
           ),
         ],
@@ -388,7 +464,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                     onLaunchYoutube: () => _launchYoutube(videoId!),
                     onEnded: () {
                       if (widget.currentIndex < widget.contentList.length - 1) {
-                        _navigateToItem(widget.currentIndex + 1);
+                        _navigateToItem(widget.currentIndex + 1, isNext: true);
                       }
                     },
                   )

@@ -636,5 +636,8 @@
   "updateLabel": "साईन-अप अपडेट करा",
   "deleteSignupConfirmMessageNamjap": "तुम्ही खात्रीने या नामजपासाठी तुमचे साईन-अप डिलीट करू इच्छिता?",
   "groupNamjapTimezone": "टाइमझोन",
-  "upcomingActiveTab": "आगामी / सक्रिय"
+  "upcomingActiveTab": "आगामी / सक्रिय",
+  "previous": "मागील",
+  "next": "पुढील",
+  "home": "होम"
 }
