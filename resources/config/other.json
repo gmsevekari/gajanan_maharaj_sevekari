@@ -16,55 +16,42 @@
       "icon": "library_music_outlined",
       "contentType": "aarti",
       "textResourceDirectory": "resources/texts/other/other_aartis",
-      "imageResourceDirectory": "resources/images/other/other_aartis",
       "files": [
         {
-          "file": "gajanan_maharaj_aarti.json",
-          "image": "gajanan_maharaj_aarti.png"
+          "file": "gajanan_maharaj_aarti.json"
         },
         {
-          "file": "devi_aarti.json",
-          "image": "devi_aarti.png"
+          "file": "devi_aarti.json"
         },
         {
-          "file": "datta_maharaj_aarti.json",
-          "image": "datta_maharaj_aarti.png"
+          "file": "datta_maharaj_aarti.json"
         },
         {
-          "file": "shankar_aarti.json",
-          "image": "shankar_aarti.png"
+          "file": "shankar_aarti.json"
         },
         {
-          "file": "vitthal_aarti.json",
-          "image": "vitthal_aarti.png"
+          "file": "vitthal_aarti.json"
         },
         {
-          "file": "khandoba_aarti.json",
-          "image": "khandoba_aarti.png"
+          "file": "khandoba_aarti.json"
         },
         {
-          "file": "sai_baba_aarti.json",
-          "image": "sai_baba_aarti.png"
+          "file": "sai_baba_aarti.json"
         },
         {
-          "file": "dnyaneshwar_maharaj_aarti.json",
-          "image": "dnyaneshwar_maharaj_aarti.png"
+          "file": "dnyaneshwar_maharaj_aarti.json"
         },
         {
-          "file": "tukaram_maharaj_aarti.json",
-          "image": "tukaram_maharaj_aarti.png"
+          "file": "tukaram_maharaj_aarti.json"
         },
         {
-          "file": "karpur_aarti.json",
-          "image": "karpur_aarti.png"
+          "file": "karpur_aarti.json"
         },
         {
-          "file": "prarthana_ghalin_lotangan.json",
-          "image": "prarthana_ghalin_lotangan.png"
+          "file": "prarthana_ghalin_lotangan.json"
         },
         {
-          "file": "mantrapushpanjali.json",
-          "image": "mantrapushpanjali.png"
+          "file": "mantrapushpanjali.json"
         }
       ]
     },
@@ -73,39 +60,30 @@
       "icon": "queue_music",
       "contentType": "stotra",
       "textResourceDirectory": "resources/texts/other/other_stotras",
-      "imageResourceDirectory": "resources/images/other/other_stotras",
       "files": [
         {
-          "file": "gajanan_maharaj_vitthal_rakhumai_gayatri.json",
-          "image": "gajanan_maharaj_vitthal_rakhumai_gayatri.png"
+          "file": "gajanan_maharaj_vitthal_rakhumai_gayatri.json"
         },
         {
-          "file": "shree_vishnu_sahastranam.json",
-          "image": "shree_vishnu_sahastranam.png"
+          "file": "shree_vishnu_sahastranam.json"
         },
         {
-          "file": "purush_sukta.json",
-          "image": "purush_sukta.png"
+          "file": "purush_sukta.json"
         },
         {
-          "file": "shri_sukta.json",
-          "image": "shri_sukta.png"
+          "file": "shri_sukta.json"
         },
         {
-          "file": "pasaydan.json",
-          "image": "pasaydan.png"
+          "file": "pasaydan.json"
         },
         {
-          "file": "madhurashtak.json",
-          "image": "madhurashtak.png"
+          "file": "madhurashtak.json"
         },
         {
-          "file": "pandurang_ashtak.json",
-          "image": "pandurang_ashtak.png"
+          "file": "pandurang_ashtak.json"
         },
         {
-          "file": "vitthal_rakhumai_naamjap.json",
-          "image": "vitthal_rakhumai_naamjap.png"
+          "file": "vitthal_rakhumai_naamjap.json"
         }
       ]
     },
@@ -114,11 +92,9 @@
       "icon": "lyrics_outlined",
       "contentType": "bhajan",
       "textResourceDirectory": "resources/texts/other/other_bhajans",
-      "imageResourceDirectory": "resources/images/other/other_bhajans",
       "files": [
         {
-          "file": "chandan_chawal.json",
-          "image": "chandan_chawal.png"
+          "file": "chandan_chawal.json"
         }
       ]
     }

@@ -112,39 +112,30 @@
       "icon": "lyrics_outlined",
       "contentType": "bhajan",
       "textResourceDirectory": "resources/texts/gajanan_maharaj/bhajans",
-      "imageResourceDirectory": "resources/images/gajanan_maharaj/bhajans",
       "files": [
         {
-          "file": "gajananachya_charani_julavu.json",
-          "image": "gajananachya_charani_julavu.png"
+          "file": "gajananachya_charani_julavu.json"
         },
         {
-          "file": "murti_ahe_shegaonla.json",
-          "image": "murti_ahe_shegaonla.png"
+          "file": "murti_ahe_shegaonla.json"
         },
         {
-          "file": "mere_ghare_ke_aage_maharaj.json",
-          "image": "mere_ghare_ke_aage_maharaj.png"
+          "file": "mere_ghare_ke_aage_maharaj.json"
         },
         {
-          "file": "gajananachya_bhajanat_nahato.json",
-          "image": "gajananachya_bhajanat_nahato.png"
+          "file": "gajananachya_bhajanat_nahato.json"
         },
         {
-          "file": "gajanan_maharaj_ovya.json",
-          "image": "gajanan_maharaj_ovya.png"
+          "file": "gajanan_maharaj_ovya.json"
         },
         {
-          "file": "sansari_sukhi_kasa_vhayacha.json",
-          "image": "sansari_sukhi_kasa_vhayacha.png"
+          "file": "sansari_sukhi_kasa_vhayacha.json"
         },
         {
-          "file": "shegavicha_zenda_fadfadato_unch_ambara.json",
-          "image": "shegavicha_zenda_fadfadato_unch_ambara.png"
+          "file": "shegavicha_zenda_fadfadato_unch_ambara.json"
         },
         {
-          "file": "gan_gan_ganat_bote.json",
-          "image": "gan_gan_ganat_bote.png"
+          "file": "gan_gan_ganat_bote.json"
         }
       ]
     },
@@ -153,51 +144,39 @@
       "icon": "queue_music",
       "contentType": "stotra",
       "textResourceDirectory": "resources/texts/gajanan_maharaj/stotras",
-      "imageResourceDirectory": "resources/images/gajanan_maharaj/stotras",
       "files": [
         {
-          "file": "gajanan_maharaj_avahan.json",
-          "image": "gajanan_maharaj_avahan.png"
+          "file": "gajanan_maharaj_avahan.json"
         },
         {
-          "file": "gajanan_maharaj_ashtak.json",
-          "image": "gajanan_maharaj_ashtak.png"
+          "file": "gajanan_maharaj_ashtak.json"
         },
         {
-          "file": "gajanan_maharaj_bavanni.json",
-          "image": "gajanan_maharaj_bavanni.png"
+          "file": "gajanan_maharaj_bavanni.json"
         },
         {
-          "file": "gajananache_modak.json",
-          "image": "gajananache_modak.png"
+          "file": "gajananache_modak.json"
         },
         {
-          "file": "gajanan_maharaj_21_namaskar.json",
-          "image": "gajanan_maharaj_21_namaskar.png"
+          "file": "gajanan_maharaj_21_namaskar.json"
         },
         {
-          "file": "gajanan_maharaj_sumananjali.json",
-          "image": "gajanan_maharaj_sumananjali.png"
+          "file": "gajanan_maharaj_sumananjali.json"
         },
         {
-          "file": "gajanan_maharaj_stotra_yogi_rana.json",
-          "image": "gajanan_maharaj_stotra_yogi_rana.png"
+          "file": "gajanan_maharaj_stotra_yogi_rana.json"
         },
         {
-          "file": "gajanan_maharaj_stotra_kasturicha_mrug.json",
-          "image": "gajanan_maharaj_stotra_kasturicha_mrug.png"
+          "file": "gajanan_maharaj_stotra_kasturicha_mrug.json"
         },
         {
-          "file": "gajanan_maharaj_stotra_dasganu_maharaj_krut.json",
-          "image": "gajanan_maharaj_stotra_dasganu_maharaj_krut.png"
+          "file": "gajanan_maharaj_stotra_dasganu_maharaj_krut.json"
         },
         {
-          "file": "gajanan_maharaj_chalisa.json",
-          "image": "gajanan_maharaj_chalisa.png"
+          "file": "gajanan_maharaj_chalisa.json"
         },
         {
-          "file": "gajanan_maharaj_prachiti.json",
-          "image": "gajanan_maharaj_prachiti.png"
+          "file": "gajanan_maharaj_prachiti.json"
         }
       ]
     },
@@ -211,23 +190,18 @@
           "title_key": "dailyAartis",
           "contentType": "aarti",
           "textResourceDirectory": "resources/texts/gajanan_maharaj/aartis/daily",
-          "imageResourceDirectory": "resources/images/gajanan_maharaj/aartis/daily",
           "files": [
             {
-              "file": "kakad_aarti.json",
-              "image": "kakad_aarti.png"
+              "file": "kakad_aarti.json"
             },
             {
-              "file": "madhyan_aarti.json",
-              "image": "madhyan_aarti.png"
+              "file": "madhyan_aarti.json"
             },
             {
-              "file": "dhoop_aarti.json",
-              "image": "dhoop_aarti.png"
+              "file": "dhoop_aarti.json"
             },
             {
-              "file": "shej_aarti.json",
-              "image": "shej_aarti.png"
+              "file": "shej_aarti.json"
             }
           ]
         },
@@ -236,35 +210,27 @@
           "title_key": "eventAartis",
           "contentType": "aarti",
           "textResourceDirectory": "resources/texts/gajanan_maharaj/aartis/event",
-          "imageResourceDirectory": "resources/images/gajanan_maharaj/aartis/event",
           "files": [
             {
-              "file": "prakat_din_aarti.json",
-              "image": "prakat_din_aarti.png"
+              "file": "prakat_din_aarti.json"
             },
             {
-              "file": "akshay_tritiya_aarti.json",
-              "image": "akshay_tritiya_aarti.png"
+              "file": "akshay_tritiya_aarti.json"
             },
             {
-              "file": "ashadhi_ekadashi_aarti.json",
-              "image": "ashadhi_ekadashi_aarti.png"
+              "file": "ashadhi_ekadashi_aarti.json"
             },
             {
-              "file": "rushi_panchami_aarti.json",
-              "image": "rushi_panchami_aarti.png"
+              "file": "rushi_panchami_aarti.json"
             },
             {
-              "file": "diwali_prabhat_aarti.json",
-              "image": "diwali_prabhat_aarti.png"
+              "file": "diwali_prabhat_aarti.json"
             },
             {
-              "file": "ram_navami_aarti.json",
-              "image": "ram_navami_aarti.png"
+              "file": "ram_navami_aarti.json"
             },
             {
-              "file": "datta_jayanti_aarti.json",
-              "image": "datta_jayanti_aarti.png"
+              "file": "datta_jayanti_aarti.json"
             }
           ]
         }
@@ -275,9 +241,7 @@
       "icon": "format_list_numbered",
       "contentType": "namavali",
       "file": "namavali_108.json",
-      "image": "108_Namavali.png",
-      "textResourceDirectory": "resources/texts/gajanan_maharaj/namavali",
-      "imageResourceDirectory": "resources/images/gajanan_maharaj/namavali"
+      "textResourceDirectory": "resources/texts/gajanan_maharaj/namavali"
     },
     "kidsStories": {
       "videos": {
@@ -386,7 +350,7 @@
               }
             ]
           },
-        {
+          {
             "id": "adhyay_3",
             "title_en": "Adhyay 3",
             "title_mr": "अध्याय ३",

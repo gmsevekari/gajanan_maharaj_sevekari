@@ -304,28 +304,75 @@ class _NamavaliScreenState extends State<NamavaliScreen>
           final namavaliData = snapshot.data!;
           final videoId = namavaliData['youtube_video_id'];
 
+          final String imagePath =
+              'resources/images/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali!.image}';
+          final bool isImageMissing =
+              widget.deity.nityopasana.namavali!.image.isEmpty ||
+                  imagePath.endsWith('/') ||
+                  imagePath.endsWith('.json');
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Card(
-                  elevation: theme.cardTheme.elevation,
-                  shape: theme.cardTheme.shape,
-                  clipBehavior: Clip.antiAlias,
-                  child: Image.asset(
-                    'resources/images/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali!.image}',
-                    width: double.infinity,
-                    fit: BoxFit.cover, // Ensure the image covers the card area
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        'resources/images/gajanan_maharaj/default.jpg',
-                        width: double.infinity,
-                        fit: BoxFit.cover, // Also apply fit to the error image
-                      );
-                    },
+                if (isImageMissing)
+                  Card(
+                    elevation: theme.cardTheme.elevation,
+                    shape: theme.cardTheme.shape,
+                    color: theme.cardTheme.color,
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 180,
+                              height: 180,
+                              child: Image.asset(
+                                widget.deity.imagePath,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.image, size: 80);
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 24),
+                            Expanded(
+                              child: Text(
+                                localizations.namavaliTitle,
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary,
+                                ),
+                                maxLines: 4,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Card(
+                    elevation: theme.cardTheme.elevation,
+                    shape: theme.cardTheme.shape,
+                    clipBehavior: Clip.antiAlias,
+                    child: Image.asset(
+                      imagePath,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          widget.deity.imagePath,
+                          width: double.infinity,
+                          fit: BoxFit.contain,
+                        );
+                      },
+                    ),
                   ),
-                ),
                 const SizedBox(height: 16),
                 if (videoId != null && videoId.isNotEmpty)
                   Card(

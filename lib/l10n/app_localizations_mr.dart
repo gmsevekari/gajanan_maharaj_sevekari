@@ -21,7 +21,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get stotraTitle => 'स्तोत्र संग्रह';
 
   @override
-  String get namavaliTitle => 'अष्टोत्तरशतनामावली';
+  String get namavaliTitle => 'अष्टोत्तरशत नामावली';
 
   @override
   String get aartiTitle => 'आरती संग्रह';

@@ -15,11 +15,9 @@
       "icon": "library_music_outlined",
       "contentType": "aarti",
       "textResourceDirectory": "resources/texts/hanuman/aartis",
-      "imageResourceDirectory": "resources/images/hanuman/aartis",
       "files": [
         {
-          "file": "satrane_uddane.json",
-          "image": "satrane_uddane.png"
+          "file": "satrane_uddane.json"
         }
       ]
     },
@@ -28,19 +26,15 @@
       "icon": "queue_music",
       "contentType": "stotra",
       "textResourceDirectory": "resources/texts/hanuman/stotras",
-      "imageResourceDirectory": "resources/images/hanuman/stotras",
       "files": [
         {
-          "file": "bhimrupi_maharudra.json",
-          "image": "bhimrupi_maharudra.png"
+          "file": "bhimrupi_maharudra.json"
         },
         {
-          "file": "hanuman_chalisa.json",
-          "image": "hanuman_chalisa.png"
+          "file": "hanuman_chalisa.json"
         },
         {
-          "file": "manojavam_maruttulya_vegam.json",
-          "image": "manojavam_maruttulya_vegam.png"
+          "file": "manojavam_maruttulya_vegam.json"
         }
       ]
     }
@@ -48,11 +42,9 @@
   "songs": {
     "contentType": "song",
     "textResourceDirectory": "resources/texts/hanuman/songs",
-    "imageResourceDirectory": "resources/images/hanuman/songs",
     "files": [
       {
-        "file": "prabhu_ramchandra_ke_doota.json",
-        "image": "prabhu_ramchandra_ke_doota.png"
+        "file": "prabhu_ramchandra_ke_doota.json"
       }
     ]
   }

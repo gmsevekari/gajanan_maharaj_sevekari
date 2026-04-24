@@ -692,25 +692,67 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Card(
-                    elevation: theme.cardTheme.elevation,
-                    shape: theme.cardTheme.shape,
-                    clipBehavior: Clip.antiAlias,
-                    child: Image.asset(
-                      widget.imagePath,
-                      fit: BoxFit
-                          .cover, // Ensures the image covers the card area
-                      width: double.infinity,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          'resources/images/gajanan_maharaj/Gajanan_Maharaj.png', // A generic default
-                          fit:
-                              BoxFit.cover, // Also apply fit to the error image
-                          width: double.infinity,
-                        );
-                      },
+                  if (widget.imagePath.isEmpty ||
+                      widget.imagePath.endsWith('/') ||
+                      widget.imagePath.endsWith('.json'))
+                    Card(
+                      elevation: theme.cardTheme.elevation,
+                      shape: theme.cardTheme.shape,
+                      color: theme.cardTheme.color,
+                      child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 180,
+                                height: 180,
+                                child: Image.asset(
+                                  widget.deity.imagePath,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons.image, size: 80);
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 24),
+                              Expanded(
+                                child: Text(
+                                  title,
+                                  style: theme.textTheme.headlineSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                  maxLines: 4,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    Card(
+                      elevation: theme.cardTheme.elevation,
+                      shape: theme.cardTheme.shape,
+                      clipBehavior: Clip.antiAlias,
+                      child: Image.asset(
+                        widget.imagePath,
+                        fit: BoxFit
+                            .cover, // Ensures the image covers the card area
+                        width: double.infinity,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            widget.deity.imagePath,
+                            fit:
+                                BoxFit.cover,
+                            width: double.infinity,
+                          );
+                        },
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 16),
                   if (videoId != null && videoId.isNotEmpty)
                     Card(
@@ -746,14 +788,18 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                       ),
                     ),
                   const SizedBox(height: 16),
-                  Text(
-                    title,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: theme.colorScheme.secondary,
-                      fontWeight: FontWeight.bold,
+                  if (widget.imagePath.isNotEmpty &&
+                      !widget.imagePath.endsWith('/') &&
+                      !widget.imagePath.endsWith('.json')) ...[
+                    Text(
+                      title,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: theme.colorScheme.secondary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 24),
+                  ],
                   _buildDecorativeDivider(context),
                   const SizedBox(height: 24),
                   if (videoId != null && videoId.isNotEmpty)

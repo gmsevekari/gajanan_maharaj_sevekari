@@ -17,11 +17,9 @@
       "icon": "menu_book_outlined",
       "contentType": "granth",
       "textResourceDirectory": "resources/texts/datta_maharaj/granth",
-      "imageResourceDirectory": "resources/images/datta_maharaj/granth",
       "files": [
         {
-          "file": "adhyay_14.json",
-          "image": "adhyay_14.png"
+          "file": "adhyay_14.json"
         }
       ]
     },
@@ -30,11 +28,9 @@
       "icon": "lyrics_outlined",
       "contentType": "bhajan",
       "textResourceDirectory": "resources/texts/datta_maharaj/bhajans",
-      "imageResourceDirectory": "resources/images/datta_maharaj/bhajans",
       "files": [
         {
-          "file": "datta_rup_zale.json",
-          "image": "datta_rup_zale.png"
+          "file": "datta_rup_zale.json"
         }
       ]
     },
@@ -43,31 +39,24 @@
       "icon": "queue_music",
       "contentType": "stotra",
       "textResourceDirectory": "resources/texts/datta_maharaj/stotras",
-      "imageResourceDirectory": "resources/images/datta_maharaj/stotras",
       "files": [
         {
-          "file": "guru_geeta.json",
-          "image": "guru_geeta.png"
+          "file": "guru_geeta.json"
         },
         {
-          "file": "datta_majala.json",
-          "image": "datta_majala.png"
+          "file": "datta_majala.json"
         },
         {
-          "file": "karuna_tripadi.json",
-          "image": "karuna_tripadi.png"
+          "file": "karuna_tripadi.json"
         },
         {
-          "file": "siddha_mangal.json",
-          "image": "siddha_mangal.png"
+          "file": "siddha_mangal.json"
         },
         {
-          "file": "ghor_kashtodharan.json",
-          "image": "ghor_kashtodharan.png"
+          "file": "ghor_kashtodharan.json"
         },
         {
-          "file": "datta_stuti.json",
-          "image": "datta_stuti.png"
+          "file": "datta_stuti.json"
         }
       ]
     },
@@ -76,15 +65,12 @@
       "icon": "library_music_outlined",
       "contentType": "aarti",
       "textResourceDirectory": "resources/texts/datta_maharaj/aartis",
-      "imageResourceDirectory": "resources/images/datta_maharaj/aartis",
       "files": [
         {
-          "file": "trigunatmak_traymurti.json",
-          "image": "trigunatmak_traymurti.png"
+          "file": "trigunatmak_traymurti.json"
         },
         {
-          "file": "shri_guru_dattaraj_murti.json",
-          "image": "shri_guru_dattaraj_murti.png"
+          "file": "shri_guru_dattaraj_murti.json"
         }
       ]
     }

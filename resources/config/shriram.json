@@ -15,11 +15,9 @@
       "icon": "library_music_outlined",
       "contentType": "aarti",
       "textResourceDirectory": "resources/texts/shriram/aartis",
-      "imageResourceDirectory": "resources/images/shriram/aartis",
       "files": [
         {
-          "file": "aik_ba_ramraya.json",
-          "image": "aik_ba_ramraya.png"
+          "file": "aik_ba_ramraya.json"
         }
       ]
     },
@@ -28,15 +26,12 @@
       "icon": "queue_music",
       "contentType": "stotra",
       "textResourceDirectory": "resources/texts/shriram/stotras",
-      "imageResourceDirectory": "resources/images/shriram/stotras",
       "files": [
         {
-          "file": "shriramraksha_stotra.json",
-          "image": "shriramraksha_stotra.png"
+          "file": "shriramraksha_stotra.json"
         },
         {
-          "file": "manache_shlok.json",
-          "image": "manache_shlok.png"
+          "file": "manache_shlok.json"
         }
       ]
     }

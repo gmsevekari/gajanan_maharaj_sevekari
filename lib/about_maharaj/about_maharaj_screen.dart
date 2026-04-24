@@ -233,10 +233,10 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
           child: ClipOval(
             child: Image.asset(
               imagePath,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
               width: 140,
               height: 140,
-              alignment: Alignment.topCenter,
+              alignment: Alignment.center,
             ),
           ),
         ),
