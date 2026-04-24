@@ -207,7 +207,7 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
                                           const SizedBox(height: 12),
                                           SizedBox(
                                             width: double.infinity,
-                                            height: 50,
+                                            height: isLandscape ? 40 : 50,
                                             child: ElevatedButton(
                                               onPressed: canSubmit
                                                   ? () async {
@@ -234,6 +234,9 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(20),
+                                                ),
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: isLandscape ? 12 : 20,
                                                 ),
                                               ),
                                               child: FittedBox(
