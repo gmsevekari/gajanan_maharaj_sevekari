@@ -72,6 +72,16 @@ class GroupNamjapService extends ChangeNotifier {
         });
   }
 
+  /// Get a stream of the number of participants in an event.
+  Stream<int> getParticipantsCountStream(String eventId) {
+    return _firestore
+        .collection(eventsCollection)
+        .doc(eventId)
+        .collection(participantsSubcollection)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
+  }
+
   /// Create a new event.
   Future<void> createEvent(GroupNamjapEvent event) async {
     await _firestore

@@ -171,5 +171,41 @@ void main() {
       expect(result, isNotNull);
       expect(result?.memberName, 'User 1');
     });
+
+    test('getParticipantsCountStream should return correct count', () async {
+      await service.createEvent(testEvent);
+      final participant1 = GroupNamjapParticipant(
+        memberName: 'User 1',
+        deviceId: 'device_1',
+        phone: '1',
+        joinedAt: DateTime.now(),
+        totalCount: 0,
+      );
+      final participant2 = GroupNamjapParticipant(
+        memberName: 'User 2',
+        deviceId: 'device_2',
+        phone: '2',
+        joinedAt: DateTime.now(),
+        totalCount: 0,
+      );
+
+      final stream = service.getParticipantsCountStream('event_1');
+
+      expect(await stream.first, 0);
+
+      await service.joinEvent(
+        eventId: 'event_1',
+        joinCode: '123456',
+        participant: participant1,
+      );
+      expect(await stream.first, 1);
+
+      await service.joinEvent(
+        eventId: 'event_1',
+        joinCode: '123456',
+        participant: participant2,
+      );
+      expect(await stream.first, 2);
+    });
   });
 }

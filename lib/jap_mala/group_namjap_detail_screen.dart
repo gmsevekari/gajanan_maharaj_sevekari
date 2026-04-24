@@ -41,7 +41,9 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
     super.initState();
     final service = context.read<GroupNamjapService>();
     _eventStream = service.getEventStream(widget.eventId);
-    _participantsCountStream = Stream.value(0);
+    _participantsCountStream = service.getParticipantsCountStream(
+      widget.eventId,
+    );
     _initSync();
   }
 

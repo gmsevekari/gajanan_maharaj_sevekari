@@ -55,6 +55,9 @@ void main() {
     when(
       () => mockService.getParticipantStream(any(), any(), any()),
     ).thenAnswer((_) => Stream.value(null));
+    when(
+      () => mockService.getParticipantsCountStream(any()),
+    ).thenAnswer((_) => Stream.value(1));
 
     when(() => mockGroupProvider.loadLocalData()).thenAnswer((_) async {});
     when(
