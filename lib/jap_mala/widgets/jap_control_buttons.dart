@@ -27,32 +27,11 @@ class JapControlButtons extends StatelessWidget {
       child: Column(
         children: [
           // Large circular + button
-          GestureDetector(
-            onTap: isEnabled ? onIncrement : null,
-            child: Container(
-              width: compact ? 72 : 80,
-              height: compact ? 44 : 50,
-              decoration: BoxDecoration(
-                color: isEnabled
-                    ? theme.appColors.primarySwatch
-                    : theme.appColors.disabledBackground,
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: isEnabled
-                    ? [
-                        BoxShadow(
-                          color: theme.appColors.primarySwatch.withValues(alpha: 0.3),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ]
-                    : null,
-              ),
-              child: Icon(
-                Icons.add,
-                color: isEnabled ? Colors.white : theme.appColors.disabledText,
-                size: compact ? 28 : 32,
-              ),
-            ),
+          buildIncrementButton(
+            context: context,
+            isEnabled: isEnabled,
+            compact: compact,
+            onTap: onIncrement,
           ),
           SizedBox(height: compact ? 20 : 32),
           // Secondary control row
@@ -60,19 +39,21 @@ class JapControlButtons extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Minus button
-              _buildSecondaryButton(
-                theme,
-                Icons.remove,
-                isEnabled ? onDecrement : null,
-                compact,
+              buildSecondaryButton(
+                context: context,
+                icon: Icons.remove,
+                isEnabled: isEnabled,
+                compact: compact,
+                onTap: onDecrement,
               ),
               SizedBox(width: compact ? 40 : 48),
               // Reset button
-              _buildSecondaryButton(
-                theme,
-                Icons.refresh,
-                isEnabled ? onReset : null,
-                compact,
+              buildSecondaryButton(
+                context: context,
+                icon: Icons.refresh,
+                isEnabled: isEnabled,
+                compact: compact,
+                onTap: onReset,
               ),
             ],
           ),
@@ -81,22 +62,61 @@ class JapControlButtons extends StatelessWidget {
     );
   }
 
-  Widget _buildSecondaryButton(
-    ThemeData theme,
-    IconData icon,
-    VoidCallback? onPressed,
-    bool compact,
-  ) {
-    final isEnabled = onPressed != null;
+  static Widget buildIncrementButton({
+    required BuildContext context,
+    required bool isEnabled,
+    required bool compact,
+    VoidCallback? onTap,
+  }) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: isEnabled ? onTap : null,
+      child: Container(
+        width: compact ? 72 : 80,
+        height: compact ? 44 : 50,
+        decoration: BoxDecoration(
+          color: isEnabled
+              ? theme.appColors.primarySwatch
+              : theme.appColors.disabledBackground,
+          borderRadius: BorderRadius.circular(25),
+          boxShadow: isEnabled
+              ? [
+                  BoxShadow(
+                    color: theme.appColors.primarySwatch.withValues(alpha: 0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
+        ),
+        child: Icon(
+          Icons.add,
+          color: isEnabled ? Colors.white : theme.appColors.disabledText,
+          size: compact ? 28 : 32,
+        ),
+      ),
+    );
+  }
+
+  static Widget buildSecondaryButton({
+    required BuildContext context,
+    required IconData icon,
+    required bool isEnabled,
+    required bool compact,
+    VoidCallback? onTap,
+  }) {
+    final theme = Theme.of(context);
     final size = compact ? 40.0 : 48.0;
     return InkWell(
-      onTap: onPressed,
+      onTap: isEnabled ? onTap : null,
       borderRadius: BorderRadius.circular(size / 2),
       child: Container(
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: isEnabled ? null : theme.appColors.disabledBackground.withValues(alpha: 0.1),
+          color: isEnabled
+              ? null
+              : theme.appColors.disabledBackground.withValues(alpha: 0.1),
           border: Border.all(
             color: isEnabled
                 ? theme.appColors.primarySwatch.withValues(alpha: 0.3)
@@ -107,7 +127,9 @@ class JapControlButtons extends StatelessWidget {
         ),
         child: Icon(
           icon,
-          color: isEnabled ? theme.appColors.primarySwatch : theme.appColors.disabledText,
+          color: isEnabled
+              ? theme.appColors.primarySwatch
+              : theme.appColors.disabledText,
           size: compact ? 20 : 24,
         ),
       ),

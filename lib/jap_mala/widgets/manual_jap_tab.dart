@@ -23,7 +23,7 @@ class _ManualJapTabState extends State<ManualJapTab>
   late AnimationController _controller;
   late Animation<double> _animation;
   double get _beadHeight => widget.compact ? 80.0 : 95.0;
-  int get _visibleBeads => widget.compact ? 3 : 5;
+  int get _visibleBeads => widget.compact ? 5 : 5;
 
   @override
   void initState() {
@@ -105,35 +105,94 @@ class _ManualJapTabState extends State<ManualJapTab>
                       ),
                     ),
 
-                  if (isScrollable)
-                    _buildBeadsArea()
+                  if (widget.compact)
+                    _buildCompactLayout(context, provider)
                   else
                     Expanded(child: _buildBeadsArea()),
 
-                  // Control Buttons
-                  JapControlButtons(
-                    compact: widget.compact,
-                    enabled: widget.enabled,
-                    onIncrement: () {
-                      HapticFeedback.lightImpact();
-                      context.read<JapMalaProvider>().increment();
-                      _startAnimation();
-                    },
-                    onDecrement: () {
-                      HapticFeedback.lightImpact();
-                      context.read<JapMalaProvider>().decrement();
-                    },
-                    onReset: () {
-                      HapticFeedback.mediumImpact();
-                      context.read<JapMalaProvider>().reset();
-                    },
-                  ),
+                  // Control Buttons (Hidden in compact because they are in compact layout)
+                  if (!widget.compact)
+                    JapControlButtons(
+                      compact: widget.compact,
+                      enabled: widget.enabled,
+                      onIncrement: () {
+                        HapticFeedback.lightImpact();
+                        context.read<JapMalaProvider>().increment();
+                        _startAnimation();
+                      },
+                      onDecrement: () {
+                        HapticFeedback.lightImpact();
+                        context.read<JapMalaProvider>().decrement();
+                      },
+                      onReset: () {
+                        HapticFeedback.mediumImpact();
+                        context.read<JapMalaProvider>().reset();
+                      },
+                    ),
                 ],
               ),
             );
           },
         );
       },
+    );
+  }
+
+  Widget _buildCompactLayout(BuildContext context, JapMalaProvider provider) {
+    final isEnabled = widget.enabled;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      child: Row(
+        children: [
+          // Left Side: Minus and Reset buttons stacked
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              JapControlButtons.buildSecondaryButton(
+                context: context,
+                icon: Icons.remove,
+                isEnabled: isEnabled,
+                compact: true,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  provider.decrement();
+                },
+              ),
+              const SizedBox(height: 24),
+              JapControlButtons.buildSecondaryButton(
+                context: context,
+                icon: Icons.refresh,
+                isEnabled: isEnabled,
+                compact: true,
+                onTap: () {
+                  HapticFeedback.mediumImpact();
+                  provider.reset();
+                },
+              ),
+            ],
+          ),
+          // Spacing before animation
+          const SizedBox(width: 12),
+          // Center: Animation
+          Expanded(
+            child: _buildBeadsArea(),
+          ),
+          // Spacing after animation
+          const SizedBox(width: 12),
+          // Right Side: Large + button
+          JapControlButtons.buildIncrementButton(
+            context: context,
+            isEnabled: isEnabled,
+            compact: true,
+            onTap: () {
+              HapticFeedback.lightImpact();
+              provider.increment();
+              _startAnimation();
+            },
+          ),
+        ],
+      ),
     );
   }
 
