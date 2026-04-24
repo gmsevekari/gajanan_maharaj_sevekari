@@ -138,23 +138,37 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
     );
   }
 
-  void _navigateToItem(int index) {
+  void _navigateToItem(int index, {bool isNext = true}) {
     final item = widget.contentList[index];
     final newAssetPath = item['assetPath']!;
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => ContentDetailScreen(
-          deity: widget.deity,
-          contentType: widget.contentType,
-          contentList: widget.contentList,
-          currentIndex: index,
-          assetPath: newAssetPath,
-          initialTabIndex: _currentIndex,
-          autoPlay: false,
-          imagePath: widget.contentList[index]['imagePath']!,
-        ),
+      PageRouteBuilder(
+        pageBuilder:
+            (context, animation, secondaryAnimation) => ContentDetailScreen(
+              deity: widget.deity,
+              contentType: widget.contentType,
+              contentList: widget.contentList,
+              currentIndex: index,
+              assetPath: newAssetPath,
+              initialTabIndex: _currentIndex,
+              autoPlay: false,
+              imagePath: widget.contentList[index]['imagePath']!,
+            ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final begin = Offset(isNext ? 1.0 : -1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+
+          var tween = Tween(
+            begin: begin,
+            end: end,
+          ).chain(CurveTween(curve: curve));
+
+          return SlideTransition(position: animation.drive(tween), child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 300),
       ),
     );
   }
@@ -185,7 +199,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
             if (widget.currentIndex > 0)
               IconButton(
                 icon: const Icon(Icons.arrow_back_ios),
-                onPressed: () => _navigateToItem(widget.currentIndex - 1),
+                onPressed:
+                    () => _navigateToItem(widget.currentIndex - 1, isNext: false),
               )
             else
               const SizedBox(width: 48), // Placeholder for alignment
@@ -212,7 +227,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
             if (widget.currentIndex < widget.contentList.length - 1)
               IconButton(
                 icon: const Icon(Icons.arrow_forward_ios),
-                onPressed: () => _navigateToItem(widget.currentIndex + 1),
+                onPressed:
+                    () => _navigateToItem(widget.currentIndex + 1, isNext: true),
               )
             else
               const SizedBox(width: 48), // Placeholder for alignment
@@ -295,12 +311,12 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                 if (details.primaryVelocity! > sensitivity) {
                   // Swipe Right (Go to previous item)
                   if (widget.currentIndex > 0) {
-                    _navigateToItem(widget.currentIndex - 1);
+                    _navigateToItem(widget.currentIndex - 1, isNext: false);
                   }
                 } else if (details.primaryVelocity! < -sensitivity) {
                   // Swipe Left (Go to next item)
                   if (widget.currentIndex < widget.contentList.length - 1) {
-                    _navigateToItem(widget.currentIndex + 1);
+                    _navigateToItem(widget.currentIndex + 1, isNext: true);
                   }
                 }
               },
@@ -646,7 +662,10 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                         onEnded: () {
                           if (widget.currentIndex <
                               widget.contentList.length - 1) {
-                            _navigateToItem(widget.currentIndex + 1);
+                            _navigateToItem(
+                              widget.currentIndex + 1,
+                              isNext: true,
+                            );
                           }
                         },
                       ),
