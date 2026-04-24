@@ -172,32 +172,6 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
             icon: const Icon(Icons.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
-          if (widget.storyType == 'stories')
-            FutureBuilder<Map<String, dynamic>>(
-              future: _contentFuture,
-              builder: (context, snapshot) {
-                final title = snapshot.hasData
-                    ? (snapshot.data!['title_${locale.languageCode}'] ??
-                          snapshot.data!['title_en'] ??
-                          '')
-                    : '';
-                return IconButton(
-                  icon: const Icon(Icons.flag_outlined),
-                  tooltip: localizations.reportTypoTitle,
-                  onPressed: () {
-                    if (_selectedText.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(localizations.selectTextToReportHint),
-                        ),
-                      );
-                    } else {
-                      _showReportDialog(_selectedText, title, widget.assetPath);
-                    }
-                  },
-                );
-              },
-            ),
         ],
       ),
       body: Column(
@@ -223,6 +197,43 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
           ? Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                FutureBuilder<Map<String, dynamic>>(
+                  future: _contentFuture,
+                  builder: (context, snapshot) {
+                    final title = snapshot.hasData
+                        ? (snapshot.data!['title_${locale.languageCode}'] ??
+                            snapshot.data!['title_en'] ??
+                            '')
+                        : '';
+                    return FloatingActionButton(
+                      heroTag: 'report',
+                      mini: true,
+                      backgroundColor: theme.appColors.primarySwatch.withValues(
+                        alpha: 0.7,
+                      ),
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      tooltip: localizations.reportTypoTitle,
+                      onPressed: () {
+                        if (_selectedText.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text(localizations.selectTextToReportHint),
+                            ),
+                          );
+                        } else {
+                          _showReportDialog(
+                            _selectedText,
+                            title,
+                            widget.assetPath,
+                          );
+                        }
+                      },
+                      child: const Icon(Icons.flag_outlined, size: 20),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
                 FloatingActionButton(
                   heroTag: 'add',
                   mini: true,
@@ -231,7 +242,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                   ),
                   foregroundColor: theme.colorScheme.onPrimary,
                   onPressed: () => _changeFontSize(2.0),
-                  child: const Icon(Icons.add),
+                  child: const Icon(Icons.add, size: 20),
                 ),
                 const SizedBox(height: 8),
                 FloatingActionButton(
@@ -242,7 +253,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                   ),
                   foregroundColor: theme.colorScheme.onPrimary,
                   onPressed: () => _changeFontSize(-2.0),
-                  child: const Icon(Icons.remove),
+                  child: const Icon(Icons.remove, size: 20),
                 ),
               ],
             )

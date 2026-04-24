@@ -91,22 +91,6 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
-          IconButton(
-            icon: const Icon(Icons.flag_outlined),
-            tooltip: localizations.reportTypoTitle,
-            onPressed: () {
-              if (_selectedText.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(localizations.selectTextToReportHint)),
-                );
-              } else {
-                _showReportDialog(
-                  _selectedText,
-                  _getAboutTitle(localizations, widget.deity.aboutTitleKey),
-                );
-              }
-            },
-          ),
         ],
       ),
       body: FutureBuilder<AboutDeity>(
@@ -161,9 +145,34 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
+            heroTag: 'report',
+            mini: true,
+            backgroundColor: theme.appColors.primarySwatch.withValues(
+              alpha: 0.7,
+            ),
+            foregroundColor: theme.colorScheme.onPrimary,
+            tooltip: localizations.reportTypoTitle,
+            onPressed: () {
+              if (_selectedText.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(localizations.selectTextToReportHint)),
+                );
+              } else {
+                _showReportDialog(
+                  _selectedText,
+                  _getAboutTitle(localizations, widget.deity.aboutTitleKey),
+                );
+              }
+            },
+            child: const Icon(Icons.flag_outlined, size: 20),
+          ),
+          const SizedBox(height: 16),
+          FloatingActionButton(
             heroTag: 'add',
             mini: true,
-            backgroundColor: theme.appColors.primarySwatch.withAlpha(179),
+            backgroundColor: theme.appColors.primarySwatch.withValues(
+              alpha: 0.7,
+            ),
             foregroundColor: theme.colorScheme.onPrimary,
             onPressed: () => _changeFontSize(2.0),
             child: const Icon(Icons.add, size: 20),
@@ -172,7 +181,9 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
           FloatingActionButton(
             heroTag: 'remove',
             mini: true,
-            backgroundColor: theme.appColors.primarySwatch.withAlpha(179),
+            backgroundColor: theme.appColors.primarySwatch.withValues(
+              alpha: 0.7,
+            ),
             foregroundColor: theme.colorScheme.onPrimary,
             onPressed: () => _changeFontSize(-2.0),
             child: const Icon(Icons.remove, size: 20),

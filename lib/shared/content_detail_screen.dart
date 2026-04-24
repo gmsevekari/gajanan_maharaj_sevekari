@@ -275,31 +275,6 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
             icon: const ThemedIcon(LogicalIcon.settings),
             onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
-          FutureBuilder<Map<String, dynamic>>(
-            future: _contentFuture,
-            builder: (context, snapshot) {
-              final title = snapshot.hasData
-                  ? (snapshot.data!['title_${locale.languageCode}'] ??
-                        snapshot.data!['title_en'] ??
-                        '')
-                  : '';
-              return IconButton(
-                icon: const Icon(Icons.flag_outlined),
-                tooltip: localizations.reportTypoTitle,
-                onPressed: () {
-                  if (_selectedText.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(localizations.selectTextToReportHint),
-                      ),
-                    );
-                  } else {
-                    _showReportDialog(_selectedText, title, widget.assetPath);
-                  }
-                },
-              );
-            },
-          ),
         ],
       ),
       body: Column(
@@ -345,6 +320,43 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
           ? Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                FutureBuilder<Map<String, dynamic>>(
+                  future: _contentFuture,
+                  builder: (context, snapshot) {
+                    final title = snapshot.hasData
+                        ? (snapshot.data!['title_${locale.languageCode}'] ??
+                            snapshot.data!['title_en'] ??
+                            '')
+                        : '';
+                    return FloatingActionButton(
+                      heroTag: 'report',
+                      mini: true,
+                      backgroundColor: theme.appColors.primarySwatch.withValues(
+                        alpha: 0.7,
+                      ),
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      tooltip: localizations.reportTypoTitle,
+                      onPressed: () {
+                        if (_selectedText.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text(localizations.selectTextToReportHint),
+                            ),
+                          );
+                        } else {
+                          _showReportDialog(
+                            _selectedText,
+                            title,
+                            widget.assetPath,
+                          );
+                        }
+                      },
+                      child: const Icon(Icons.flag_outlined, size: 20),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
                 FloatingActionButton(
                   heroTag: 'add',
                   mini: true,
