@@ -59,6 +59,30 @@ void main() {
     });
   });
 
+  group('JapMalaProvider - Manual Entry', () {
+    test('should add malas and extra jap correctly', () {
+      provider.addManualCount(5, 10);
+      expect(provider.completedMalas, 5);
+      expect(provider.currentCount, 10);
+      expect(provider.totalCount, (5 * 108) + 10);
+    });
+
+    test('should normalize extra jap into malas', () {
+      provider.addManualCount(
+          1, 120); // 1 mala + 120 jap = 1 mala + (1 mala + 12 jap) = 2 malas + 12 jap
+      expect(provider.completedMalas, 2);
+      expect(provider.currentCount, 12);
+      expect(provider.totalCount, (1 * 108) + 120);
+    });
+
+    test('should add to existing count', () {
+      provider.addManualCount(1, 50);
+      provider.addManualCount(1, 60); // Total: 2 malas + 110 jap = 3 malas + 2 jap
+      expect(provider.completedMalas, 3);
+      expect(provider.currentCount, 2);
+    });
+  });
+
   group('JapMalaProvider - Time-Based Mode', () {
     test('startTimeBasedSession should initialize timer', () async {
       await provider.setDuration(0, 1); // 60 seconds

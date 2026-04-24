@@ -1655,7 +1655,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get myTotalLabel => 'माझा जप';
 
   @override
-  String get manualEntryLabel => 'मॅन्युअल नोंदणी';
+  String get manualEntryLabel => 'नामजप काउंट ॲड करा';
 
   @override
   String get mantraLabel => 'मंत्र';

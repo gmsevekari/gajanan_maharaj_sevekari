@@ -1651,7 +1651,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myTotalLabel => 'My Total';
 
   @override
-  String get manualEntryLabel => 'Manual Entry';
+  String get manualEntryLabel => 'Add Namjap Count';
 
   @override
   String get mantraLabel => 'Mantra';

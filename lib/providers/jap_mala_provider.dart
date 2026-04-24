@@ -95,6 +95,18 @@ class JapMalaProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void addManualCount(int malas, int extraJap) {
+    _completedMalas += malas;
+    _currentCount += extraJap;
+
+    // Normalize currentCount
+    if (_currentCount >= countsPerMala) {
+      _completedMalas += _currentCount ~/ countsPerMala;
+      _currentCount %= countsPerMala;
+    }
+    notifyListeners();
+  }
+
   void startCountingSession() {
     _isPlaying = true;
     _japsPlayedSinceStart = 0;

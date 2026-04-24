@@ -12,6 +12,7 @@ import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/manual_jap_tab.dart';
+import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/manual_count_entry_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/namjap_signup_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
@@ -99,6 +100,13 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
         ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
+  }
+
+  void _showManualEntryDialog(BuildContext context, JapMalaProvider provider) {
+    showDialog(
+      context: context,
+      builder: (context) => ManualCountEntryDialog(provider: provider),
+    );
   }
 
   @override
@@ -206,6 +214,12 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
                                             compact: true,
                                             enabled: isJoined && isOngoing,
                                           ),
+                                          if (isJoined && isOngoing)
+                                            TextButton.icon(
+                                              onPressed: () => _showManualEntryDialog(context, japProvider),
+                                              icon: const Icon(Icons.edit_note, size: 20),
+                                              label: Text(localizations.manualEntryLabel),
+                                            ),
                                           const SizedBox(height: 12),
                                           SizedBox(
                                             width: double.infinity,
@@ -436,8 +450,6 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
     String locale,
     bool isLandscape,
   ) {
-    final isActionEnabled =
-        (event.status == 'ongoing' || event.status == 'enrolling') && !kIsWeb;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
@@ -502,13 +514,15 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
                           } else if (result is Map &&
                               result['deleted'] == true) {
                             _updateParticipantStream();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  localizations.deleteSignupSuccess,
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    localizations.deleteSignupSuccess,
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            }
                           }
                         }
                       : null,

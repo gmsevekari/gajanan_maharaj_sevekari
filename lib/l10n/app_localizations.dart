@@ -3221,7 +3221,7 @@ abstract class AppLocalizations {
   /// No description provided for @manualEntryLabel.
   ///
   /// In en, this message translates to:
-  /// **'Manual Entry'**
+  /// **'Add Namjap Count'**
   String get manualEntryLabel;
 
   /// No description provided for @mantraLabel.
