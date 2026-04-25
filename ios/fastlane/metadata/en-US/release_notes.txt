@@ -1,5 +1,7 @@
-1. feat: implement multi-group support for Parayan management
-2. feat: implement local custom theme library and persistence
-3. feat: add hex code input and sync to custom color picker
-4. feat: implementation of comprehensive unit testing suite (70 tests)
-5. refactor(naamjap): centralize logic into JapMalaProvider and isolate tab state
+• Added manual Namjap count entry for group events.
+• Added smooth swipe navigation across content screens.
+• Modernized the Listen tabs and Jap counter UI.
+• Added event-specific timezones for Parayan creation.
+• Fixed permissions to allow deleting your own Parayan/Namjap data.
+• Resolved real-time participant counter bugs.
+• UI fixes for zoomed-in accessibility screens.
