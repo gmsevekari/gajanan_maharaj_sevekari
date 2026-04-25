@@ -17,7 +17,7 @@ class AdminParayanGroupScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final locale = Localizations.localeOf(context).languageCode;
     final configProvider = Provider.of<AppConfigProvider>(context);
-    final groups = configProvider.appConfig?.parayanGroups ?? [];
+    final groups = configProvider.appConfig?.gajananMaharajGroups ?? [];
 
     return Scaffold(
       appBar: AppBar(

@@ -26,6 +26,7 @@ class Event {
   final String? details_en;
   final String? address;
   final EventType event_type;
+  final String? groupId;
 
   Event({
     required this.title_mr,
@@ -38,6 +39,7 @@ class Event {
     this.details_en,
     this.address,
     this.event_type = EventType.other,
+    this.groupId,
   });
 
   factory Event.fromFirestore(DocumentSnapshot doc) {
@@ -53,6 +55,7 @@ class Event {
       details_en: data['details_en'] as String?,
       address: data['address'] as String?,
       event_type: _parseEventType(data['event_type'] as String?),
+      groupId: data['groupId'] as String?,
     );
   }
 

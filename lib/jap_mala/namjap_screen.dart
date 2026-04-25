@@ -62,6 +62,7 @@ class NamjapScreen extends StatelessWidget {
     required LogicalIcon icon,
     required IconData fallbackIcon,
     required String route,
+    Object? arguments,
   }) {
     final theme = Theme.of(context);
 
@@ -110,7 +111,7 @@ class NamjapScreen extends StatelessWidget {
           color: theme.colorScheme.primary,
           size: 16.0,
         ),
-        onTap: () => Navigator.pushNamed(context, route),
+        onTap: () => Navigator.pushNamed(context, route, arguments: arguments),
       ),
     );
   }

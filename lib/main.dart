@@ -19,7 +19,7 @@ import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/namavali/namavali_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_list_screen.dart';
-import 'package:gajanan_maharaj_sevekari/parayan/parayan_group_screen.dart';
+import 'package:gajanan_maharaj_sevekari/shared/gajanan_maharaj_group_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/preallocated_parayan_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
@@ -367,14 +367,14 @@ class _MyAppState extends State<MyApp> {
                       ModalRoute.of(context)?.settings.arguments as AdminUser?;
                   return CreateParayanScreen(adminUser: adminUser);
                 },
-                Routes.adminParayanGroups: (context) {
+                Routes.adminGajananMaharajGroups: (context) {
                   final adminUser =
                       ModalRoute.of(context)?.settings.arguments as AdminUser;
                   return AdminParayanGroupScreen(adminUser: adminUser);
                 },
                 Routes.userNotifications: (context) =>
                     const UserNotificationsScreen(),
-                Routes.parayanGroups: (context) => const ParayanGroupScreen(),
+                Routes.gajananMaharajGroups: (context) => const GajananMaharajGroupScreen(),
                 Routes.parayanList: (context) {
                   final args =
                       ModalRoute.of(context)?.settings.arguments as Map?;

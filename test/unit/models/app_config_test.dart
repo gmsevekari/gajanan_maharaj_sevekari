@@ -10,7 +10,7 @@ void main() {
       'playStoreUrl': 'https://google.com',
       'appStoreUrl': 'https://apple.com',
       'updateMessage': {'en': 'Test Message', 'mr': 'marathi update msg'},
-      'parayan_groups': [
+      'gajanan_maharaj_groups': [
         {'id': 'g1', 'name_en': 'Group 1', 'name_mr': 'गट १'}
       ],
       'social_media_links': [
@@ -36,16 +36,16 @@ void main() {
       expect(config.appName['en'], 'Test App');
       expect(config.latestVersion, '1.0.0');
       expect(config.forceUpdate, 'true');
-      expect(config.parayanGroups.length, 1);
-      expect(config.parayanGroups[0].id, 'g1');
+      expect(config.gajananMaharajGroups.length, 1);
+      expect(config.gajananMaharajGroups[0].id, 'g1');
       expect(config.socialMediaLinks.length, 1);
       expect(config.socialMediaLinks[0].platform, 'Facebook');
       expect(config.signupInfo?.regions, ['us', 'in']);
       expect(config.signupInfo?.links.first.platformKey, 'whatsapp');
     });
 
-    test('ParayanGroup fromJson', () {
-      final group = ParayanGroup.fromJson({'id': 'test', 'name_en': 'Test', 'name_mr': 'टेस्ट'});
+    test('GajananMaharajGroup fromJson', () {
+      final group = GajananMaharajGroup.fromJson({'id': 'test', 'name_en': 'Test', 'name_mr': 'टेस्ट'});
       expect(group.id, 'test');
       expect(group.nameEn, 'Test');
     });

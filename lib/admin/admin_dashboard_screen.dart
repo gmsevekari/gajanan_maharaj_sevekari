@@ -210,7 +210,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               } else {
                                 Navigator.pushNamed(
                                   context,
-                                  Routes.adminParayanGroups,
+                                  Routes.adminGajananMaharajGroups,
                                   arguments: adminUser,
                                 );
                               }

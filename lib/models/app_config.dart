@@ -13,7 +13,7 @@ abstract class ContentContainer {
 class AppConfig {
   final List<DeityConfig> deities;
   final SignupInfo? signupInfo;
-  final List<ParayanGroup> parayanGroups;
+  final List<GajananMaharajGroup> gajananMaharajGroups;
   final List<SocialMediaLink> socialMediaLinks;
   final Map<String, String> appName;
   final Map<String, String> updateMessage;
@@ -25,7 +25,7 @@ class AppConfig {
   AppConfig({
     required this.deities,
     this.signupInfo,
-    required this.parayanGroups,
+    required this.gajananMaharajGroups,
     required this.socialMediaLinks,
     required this.appName,
     required this.updateMessage,
@@ -39,9 +39,9 @@ class AppConfig {
     Map<String, dynamic> json, {
     List<DeityConfig>? deities,
   }) {
-    var parayanGroupList = json['parayan_groups'] as List? ?? [];
-    List<ParayanGroup> parayanGroups =
-        parayanGroupList.map((i) => ParayanGroup.fromJson(i)).toList();
+    var gajananGroupList = json['gajanan_maharaj_groups'] as List? ?? [];
+    List<GajananMaharajGroup> gajananMaharajGroups =
+        gajananGroupList.map((i) => GajananMaharajGroup.fromJson(i)).toList();
 
     var socialMediaList = json['social_media_links'] as List? ?? [];
     List<SocialMediaLink> socialMediaLinks =
@@ -52,7 +52,7 @@ class AppConfig {
       signupInfo: json['signup_links'] != null
           ? SignupInfo.fromJson(json['signup_links'])
           : null,
-      parayanGroups: parayanGroups,
+      gajananMaharajGroups: gajananMaharajGroups,
       socialMediaLinks: socialMediaLinks,
       appName: Map<String, String>.from(json['appName'] ?? {}),
       updateMessage: Map<String, String>.from(json['updateMessage'] ?? {}),
@@ -683,21 +683,21 @@ class StoryItem {
   }
 }
 
-class ParayanGroup {
+class GajananMaharajGroup {
   final String id;
   final String nameEn;
   final String nameMr;
   final String? icon;
 
-  ParayanGroup({
+  GajananMaharajGroup({
     required this.id,
     required this.nameEn,
     required this.nameMr,
     this.icon,
   });
 
-  factory ParayanGroup.fromJson(Map<String, dynamic> json) {
-    return ParayanGroup(
+  factory GajananMaharajGroup.fromJson(Map<String, dynamic> json) {
+    return GajananMaharajGroup(
       id: json['id'] ?? '',
       nameEn: json['name_en'] ?? '',
       nameMr: json['name_mr'] ?? '',

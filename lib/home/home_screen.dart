@@ -263,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ? 'resources/images/festive_icons/diwali/parayan.png'
             : 'resources/images/icon/Parayan.png',
         imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 100.0,
-        onTap: () => Navigator.pushNamed(context, Routes.parayanGroups),
+        onTap: () => Navigator.pushNamed(context, Routes.gajananMaharajGroups),
       ),
     );
     cards.add(

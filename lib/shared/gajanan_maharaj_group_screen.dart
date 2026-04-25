@@ -5,8 +5,20 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
-class ParayanGroupScreen extends StatelessWidget {
-  const ParayanGroupScreen({super.key});
+class GroupScreenConfig {
+  final String title;
+  final String emptyMessage;
+  final String targetRoute;
+
+  GroupScreenConfig({
+    required this.title,
+    required this.emptyMessage,
+    required this.targetRoute,
+  });
+}
+
+class GajananMaharajGroupScreen extends StatelessWidget {
+  const GajananMaharajGroupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +26,22 @@ class ParayanGroupScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final locale = Localizations.localeOf(context).languageCode;
     final configProvider = Provider.of<AppConfigProvider>(context);
-    final groups = configProvider.appConfig?.parayanGroups ?? [];
+    final groups = configProvider.appConfig?.gajananMaharajGroups ?? [];
+    
+    // Parse the config from arguments or fallback to defaults
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final config = args is GroupScreenConfig
+        ? args
+        : GroupScreenConfig(
+            title: localizations.parayanTitle,
+            emptyMessage: localizations.noActiveParayans,
+            targetRoute: Routes.parayanList,
+          );
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          localizations.parayanTitle,
+          config.title,
           style: theme.textTheme.titleLarge?.copyWith(
             color: theme.colorScheme.onPrimary,
             fontWeight: FontWeight.bold,
@@ -43,7 +65,7 @@ class ParayanGroupScreen extends StatelessWidget {
         ],
       ),
       body: groups.isEmpty
-          ? Center(child: Text(localizations.noActiveParayans))
+          ? Center(child: Text(config.emptyMessage))
           : ListView.builder(
               padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 100.0),
               itemCount: groups.length,
@@ -92,7 +114,7 @@ class ParayanGroupScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.pushNamed(
                         context,
-                        Routes.parayanList,
+                        config.targetRoute,
                         arguments: {'groupId': group.id, 'groupName': groupName},
                       );
                     },
@@ -103,3 +125,4 @@ class ParayanGroupScreen extends StatelessWidget {
     );
   }
 }
+
