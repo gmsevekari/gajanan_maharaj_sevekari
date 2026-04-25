@@ -187,8 +187,7 @@ class _PreallocatedParayanDetailScreenState
                                                 ? localizations.oneDayParayan
                                                 : _event!.type == ParayanType.threeDay
                                                     ? localizations.threeDayParayan
-                                                    : localizations.guruPushyaParayan)
-                                            .replaceAll(' ', '\u00A0'),
+                                                    : localizations.guruPushyaParayan),
                                         style: theme.textTheme.bodyMedium?.copyWith(
                                           color: theme.colorScheme.onSurfaceVariant,
                                           fontWeight: FontWeight.w600,

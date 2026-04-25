@@ -162,11 +162,13 @@ class _MyAllocationTabState extends State<MyAllocationTab>
                         color: theme.colorScheme.primary,
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        '${participant.name} (${localizations.groupLabel(groupNumber.toString())})',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.primary,
+                      Expanded(
+                        child: Text(
+                          '${participant.name} (${localizations.groupLabel(groupNumber.toString())})',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
+                          ),
                         ),
                       ),
                     ],
@@ -338,57 +340,73 @@ class _MyAllocationTabState extends State<MyAllocationTab>
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(
-                "$dayLabel - ${localizations.adhyay} ${_formatNumber(context, adhyay)}",
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: theme.colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8.0,
+                    runSpacing: 8.0,
+                    children: [
+                      Container(
+                        constraints: BoxConstraints(maxWidth: constraints.maxWidth),
+                        child: Text(
+                          "$dayLabel - ${localizations.adhyay} ${_formatNumber(context, adhyay)}",
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: theme.colorScheme.onSurface,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Wrap(
+                        spacing: 4.0,
+                        runSpacing: 4.0,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          _buildActionButton(
+                            icon: Icons.chrome_reader_mode_outlined,
+                            onPressed: () => handleReadTap(initialTabIndex: 0),
+                            isEnabled: canInteract,
+                            theme: theme,
+                            tooltip: localizations.read,
+                          ),
+                          _buildActionButton(
+                            icon: Icons.play_circle_outline_rounded,
+                            onPressed: () =>
+                                handleReadTap(initialTabIndex: 1, autoPlay: true),
+                            isEnabled: canInteract,
+                            theme: theme,
+                            tooltip: localizations.listen,
+                          ),
+                          const SizedBox(width: 8),
+                          if (isRead)
+                            Icon(Icons.check_circle, color: theme.appColors.success)
+                          else
+                            ElevatedButton(
+                              onPressed: canInteract
+                                  ? () => _showCompletionDialog(context, onComplete)
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: canInteract
+                                    ? theme.colorScheme.primary
+                                    : theme.appColors.disabledBackground,
+                                foregroundColor: canInteract
+                                    ? theme.colorScheme.onPrimary
+                                    : theme.appColors.disabledText,
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: Text(localizations.submitLabel),
+                            ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
-            // Action Icons
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildActionButton(
-                  icon: Icons.chrome_reader_mode_outlined,
-                  onPressed: () => handleReadTap(initialTabIndex: 0),
-                  isEnabled: canInteract,
-                  theme: theme,
-                  tooltip: localizations.read,
-                ),
-                _buildActionButton(
-                  icon: Icons.play_circle_outline_rounded,
-                  onPressed: () =>
-                      handleReadTap(initialTabIndex: 1, autoPlay: true),
-                  isEnabled: canInteract,
-                  theme: theme,
-                  tooltip: localizations.listen,
-                ),
-              ],
-            ),
-            const SizedBox(width: 8),
-            if (isRead)
-              Icon(Icons.check_circle, color: theme.appColors.success)
-            else
-              ElevatedButton(
-                onPressed: canInteract
-                    ? () => _showCompletionDialog(context, onComplete)
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: canInteract
-                      ? theme.colorScheme.primary
-                      : theme.appColors.disabledBackground,
-                  foregroundColor: canInteract
-                      ? theme.colorScheme.onPrimary
-                      : theme.appColors.disabledText,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: Text(localizations.submitLabel),
-              ),
           ],
         ),
       ),
