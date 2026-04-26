@@ -138,7 +138,9 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
             if (widget.currentIndex > 0)
               IconButton(
                 icon: const Icon(Icons.arrow_back_ios),
-                onPressed: () => _navigateToItem(widget.currentIndex - 1, isNext: false),
+                color: theme.colorScheme.onPrimary,
+                onPressed: () =>
+                    _navigateToItem(widget.currentIndex - 1, isNext: false),
               )
             else
               const SizedBox(width: 48), // Spacer to maintain alignment
@@ -148,8 +150,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final item = snapshot.data!;
-                    final title =
-                        item['title_${locale.languageCode}'] ??
+                    final title = item['title_${locale.languageCode}'] ??
                         item['title_en']!;
                     return Text(
                       title,
@@ -157,7 +158,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                       maxLines: 2,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
+                        color: theme.colorScheme.onPrimary,
                       ),
                     );
                   }
@@ -168,7 +169,9 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
             if (widget.currentIndex < widget.contentList.length - 1)
               IconButton(
                 icon: const Icon(Icons.arrow_forward_ios),
-                onPressed: () => _navigateToItem(widget.currentIndex + 1, isNext: true),
+                color: theme.colorScheme.onPrimary,
+                onPressed: () =>
+                    _navigateToItem(widget.currentIndex + 1, isNext: true),
               )
             else
               const SizedBox(width: 48), // Spacer to maintain alignment
