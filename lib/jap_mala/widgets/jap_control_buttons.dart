@@ -6,7 +6,6 @@ class JapControlButtons extends StatelessWidget {
   final bool enabled;
   final VoidCallback? onIncrement;
   final VoidCallback? onDecrement;
-  final VoidCallback? onReset;
 
   const JapControlButtons({
     super.key,
@@ -14,12 +13,10 @@ class JapControlButtons extends StatelessWidget {
     required this.enabled,
     this.onIncrement,
     this.onDecrement,
-    this.onReset,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final isEnabled = enabled;
 
     return Padding(
@@ -34,28 +31,13 @@ class JapControlButtons extends StatelessWidget {
             onTap: onIncrement,
           ),
           SizedBox(height: compact ? 20 : 32),
-          // Secondary control row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Minus button
-              buildSecondaryButton(
-                context: context,
-                icon: Icons.remove,
-                isEnabled: isEnabled,
-                compact: compact,
-                onTap: onDecrement,
-              ),
-              SizedBox(width: compact ? 40 : 48),
-              // Reset button
-              buildSecondaryButton(
-                context: context,
-                icon: Icons.refresh,
-                isEnabled: isEnabled,
-                compact: compact,
-                onTap: onReset,
-              ),
-            ],
+          // Secondary control row (just minus button)
+          buildSecondaryButton(
+            context: context,
+            icon: Icons.remove,
+            isEnabled: isEnabled,
+            compact: compact,
+            onTap: onDecrement,
           ),
         ],
       ),

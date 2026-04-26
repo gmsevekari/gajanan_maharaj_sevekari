@@ -124,10 +124,6 @@ class _ManualJapTabState extends State<ManualJapTab>
                         HapticFeedback.lightImpact();
                         context.read<JapMalaProvider>().decrement();
                       },
-                      onReset: () {
-                        HapticFeedback.mediumImpact();
-                        context.read<JapMalaProvider>().reset();
-                      },
                     ),
                 ],
               ),
@@ -145,32 +141,16 @@ class _ManualJapTabState extends State<ManualJapTab>
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: Row(
         children: [
-          // Left Side: Minus and Reset buttons stacked
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              JapControlButtons.buildSecondaryButton(
-                context: context,
-                icon: Icons.remove,
-                isEnabled: isEnabled,
-                compact: true,
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  provider.decrement();
-                },
-              ),
-              const SizedBox(height: 24),
-              JapControlButtons.buildSecondaryButton(
-                context: context,
-                icon: Icons.refresh,
-                isEnabled: isEnabled,
-                compact: true,
-                onTap: () {
-                  HapticFeedback.mediumImpact();
-                  provider.reset();
-                },
-              ),
-            ],
+          // Left Side: Minus button
+          JapControlButtons.buildSecondaryButton(
+            context: context,
+            icon: Icons.remove,
+            isEnabled: isEnabled,
+            compact: true,
+            onTap: () {
+              HapticFeedback.lightImpact();
+              provider.decrement();
+            },
           ),
           // Spacing before animation
           const SizedBox(width: 12),
