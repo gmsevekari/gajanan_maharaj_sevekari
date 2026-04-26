@@ -639,5 +639,12 @@
   "upcomingActiveTab": "आगामी / सक्रिय",
   "previous": "मागील",
   "next": "पुढील",
-  "home": "होम"
+  "home": "होम",
+  "manageGroups": "ग्रुप्स मॅनेज करा",
+  "activeGroups": "तुमचे ग्रुप्स",
+  "availableGroups": "उपलब्ध असलेले ग्रुप्स",
+  "dragToReorder": "ग्रुप्स क्रमवार लावण्यासाठी लाँग प्रेस करा",
+  "noActiveGroups": "तुम्ही कोणतेही ग्रुप निवडले नाही. खालील ग्रुप्स मधून निवडा",
+  "groupAdded": "ग्रुप ॲड झाला",
+  "groupRemoved": "ग्रुप काढला"
 }

@@ -3331,6 +3331,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Home'**
   String get home;
+
+  /// No description provided for @manageGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Groups'**
+  String get manageGroups;
+
+  /// No description provided for @activeGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Groups'**
+  String get activeGroups;
+
+  /// No description provided for @availableGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Groups'**
+  String get availableGroups;
+
+  /// No description provided for @dragToReorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Long press to drag and reorder'**
+  String get dragToReorder;
+
+  /// No description provided for @noActiveGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no active groups. Add one from below.'**
+  String get noActiveGroups;
+
+  /// No description provided for @groupAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Group added'**
+  String get groupAdded;
+
+  /// No description provided for @groupRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Group removed'**
+  String get groupRemoved;
 }
 
 class _AppLocalizationsDelegate

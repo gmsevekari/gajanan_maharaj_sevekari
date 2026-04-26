@@ -7,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/settings/font_selection_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/language_selection_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/notification_settings_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_selection_screen.dart';
+import 'package:gajanan_maharaj_sevekari/settings/manage_groups_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -57,6 +58,12 @@ class SettingsScreen extends StatelessWidget {
                   Icons.font_download,
                   localizations.font,
                   const FontSelectionScreen(),
+                ),
+                _buildSettingsCard(
+                  context,
+                  Icons.groups,
+                  localizations.manageGroups,
+                  const ManageGroupsScreen(),
                 ),
                 _buildSettingsCard(
                   context,

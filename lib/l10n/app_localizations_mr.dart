@@ -1713,4 +1713,26 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get home => 'होम';
+
+  @override
+  String get manageGroups => 'ग्रुप्स मॅनेज करा';
+
+  @override
+  String get activeGroups => 'तुमचे ग्रुप्स';
+
+  @override
+  String get availableGroups => 'उपलब्ध असलेले ग्रुप्स';
+
+  @override
+  String get dragToReorder => 'ग्रुप्स क्रमवार लावण्यासाठी लाँग प्रेस करा';
+
+  @override
+  String get noActiveGroups =>
+      'तुम्ही कोणतेही ग्रुप निवडले नाही. खालील ग्रुप्स मधून निवडा';
+
+  @override
+  String get groupAdded => 'ग्रुप ॲड झाला';
+
+  @override
+  String get groupRemoved => 'ग्रुप काढला';
 }

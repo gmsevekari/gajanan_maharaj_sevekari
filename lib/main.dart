@@ -26,6 +26,7 @@ import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
+import 'package:gajanan_maharaj_sevekari/providers/group_selection_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_namjap_service.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_namjap_provider.dart';
@@ -105,6 +106,7 @@ void main() async {
   final appConfigProvider = AppConfigProvider();
   final playlistProvider = PlaylistProvider();
   final festivalProvider = FestivalProvider();
+  final groupSelectionProvider = GroupSelectionProvider();
 
   await Future.wait([
     themeProvider.loadTheme(),
@@ -113,6 +115,7 @@ void main() async {
     appConfigProvider.loadAppConfig(),
     playlistProvider.init(),
     festivalProvider.loadFestivals(),
+    groupSelectionProvider.loadPreferences(),
   ]);
 
   // After loading, check if we need to auto-apply a festival theme
@@ -136,6 +139,7 @@ void main() async {
               previous ?? GroupNamjapProvider(service: service),
         ),
         ChangeNotifierProvider.value(value: festivalProvider),
+        ChangeNotifierProvider.value(value: groupSelectionProvider),
       ],
       child: const MyApp(),
     ),
@@ -214,8 +218,9 @@ class _MyAppState extends State<MyApp> {
 
     final bool isNamjap =
         uri.toString().contains('/namjap/') || uri.host == 'namjap';
-    final String routeName =
-        isNamjap ? Routes.groupNamjapDetail : Routes.parayanDetail;
+    final String routeName = isNamjap
+        ? Routes.groupNamjapDetail
+        : Routes.parayanDetail;
 
     if (id != null) {
       debugPrint(
@@ -374,7 +379,8 @@ class _MyAppState extends State<MyApp> {
                 },
                 Routes.userNotifications: (context) =>
                     const UserNotificationsScreen(),
-                Routes.gajananMaharajGroups: (context) => const GajananMaharajGroupScreen(),
+                Routes.gajananMaharajGroups: (context) =>
+                    const GajananMaharajGroupScreen(),
                 Routes.parayanList: (context) {
                   final args =
                       ModalRoute.of(context)?.settings.arguments as Map?;

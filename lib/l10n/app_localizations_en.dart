@@ -1709,4 +1709,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get home => 'Home';
+
+  @override
+  String get manageGroups => 'Manage Groups';
+
+  @override
+  String get activeGroups => 'Active Groups';
+
+  @override
+  String get availableGroups => 'Available Groups';
+
+  @override
+  String get dragToReorder => 'Long press to drag and reorder';
+
+  @override
+  String get noActiveGroups => 'You have no active groups. Add one from below.';
+
+  @override
+  String get groupAdded => 'Group added';
+
+  @override
+  String get groupRemoved => 'Group removed';
 }

@@ -639,5 +639,12 @@
   "upcomingActiveTab": "Upcoming / Active",
   "previous": "Previous",
   "next": "Next",
-  "home": "Home"
+  "home": "Home",
+  "manageGroups": "Manage Groups",
+  "activeGroups": "Active Groups",
+  "availableGroups": "Available Groups",
+  "dragToReorder": "Long press to drag and reorder",
+  "noActiveGroups": "You have no active groups. Add one from below.",
+  "groupAdded": "Group added",
+  "groupRemoved": "Group removed"
 }
