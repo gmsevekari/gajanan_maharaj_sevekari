@@ -200,8 +200,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
             if (widget.currentIndex > 0)
               IconButton(
                 icon: const Icon(Icons.arrow_back_ios, size: 20),
-                onPressed:
-                    () => _navigateToItem(widget.currentIndex - 1, isNext: false),
+                color: theme.colorScheme.onPrimary,
+                onPressed: () =>
+                    _navigateToItem(widget.currentIndex - 1, isNext: false),
               )
             else
               const SizedBox(width: 40),
@@ -211,8 +212,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final item = snapshot.data!;
-                    final title =
-                        item['title_${locale.languageCode}'] ??
+                    final title = item['title_${locale.languageCode}'] ??
                         item['title_en']!;
                     return Text(
                       title,
@@ -221,7 +221,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
+                        color: theme.colorScheme.onPrimary,
                       ),
                     );
                   } else {
@@ -233,8 +233,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
             if (widget.currentIndex < widget.contentList.length - 1)
               IconButton(
                 icon: const Icon(Icons.arrow_forward_ios, size: 20),
-                onPressed:
-                    () => _navigateToItem(widget.currentIndex + 1, isNext: true),
+                color: theme.colorScheme.onPrimary,
+                onPressed: () =>
+                    _navigateToItem(widget.currentIndex + 1, isNext: true),
               )
             else
               const SizedBox(width: 40),
