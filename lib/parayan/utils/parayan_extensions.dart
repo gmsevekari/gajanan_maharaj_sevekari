@@ -14,10 +14,10 @@ extension ParayanEventFormatting on ParayanEvent {
 
     String dateStr;
     if (isSameDay) {
-      dateStr = formatDateLong(startDate, locale);
+      dateStr = formatDateWithDay(startDate, locale);
     } else {
-      final start = formatDateShort(startDate, locale);
-      final end = formatDateLong(endDate, locale);
+      final start = formatDateShortWithDay(startDate, locale);
+      final end = formatDateWithDay(endDate, locale);
       dateStr = "$start - $end";
     }
 

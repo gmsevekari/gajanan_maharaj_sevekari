@@ -25,6 +25,14 @@ String formatDateShort(DateTime date, String locale) {
   return locale == 'mr' ? toMarathiNumerals(dateStr) : dateStr;
 }
 
+/// Formats a date into a short format with day: "EEEE, d MMMM" or "EEEE, MMMM d".
+String formatDateShortWithDay(DateTime date, String locale) {
+  final dateStr = locale == 'mr'
+      ? DateFormat('EEEE, d MMMM', 'mr').format(date)
+      : DateFormat('EEEE, MMMM d').format(date);
+  return locale == 'mr' ? toMarathiNumerals(dateStr) : dateStr;
+}
+
 /// Formats time in a localized format (e.g., "10:30 AM").
 String formatTimeLocalized(DateTime date, String locale) {
   final timeStr = DateFormat.jm(locale).format(date);
