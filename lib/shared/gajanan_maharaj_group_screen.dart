@@ -9,11 +9,13 @@ class GroupScreenConfig {
   final String title;
   final String emptyMessage;
   final String targetRoute;
+  final List<String>? filteredGroupIds;
 
   GroupScreenConfig({
     required this.title,
     required this.emptyMessage,
     required this.targetRoute,
+    this.filteredGroupIds,
   });
 }
 
@@ -26,17 +28,25 @@ class GajananMaharajGroupScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final locale = Localizations.localeOf(context).languageCode;
     final configProvider = Provider.of<AppConfigProvider>(context);
-    final groups = configProvider.appConfig?.gajananMaharajGroups ?? [];
-    
+    final allGroups = configProvider.appConfig?.gajananMaharajGroups ?? [];
+
     // Parse the config from arguments or fallback to defaults
     final args = ModalRoute.of(context)?.settings.arguments;
-    final config = args is GroupScreenConfig
-        ? args
-        : GroupScreenConfig(
-            title: localizations.parayanTitle,
-            emptyMessage: localizations.noActiveParayans,
-            targetRoute: Routes.parayanList,
-          );
+    final config =
+        args is GroupScreenConfig
+            ? args
+            : GroupScreenConfig(
+              title: localizations.parayanTitle,
+              emptyMessage: localizations.noActiveParayans,
+              targetRoute: Routes.parayanList,
+            );
+
+    final groups =
+        config.filteredGroupIds != null
+            ? allGroups
+                .where((g) => config.filteredGroupIds!.contains(g.id))
+                .toList()
+            : allGroups;
 
     return Scaffold(
       appBar: AppBar(
