@@ -23,6 +23,7 @@ import 'package:gajanan_maharaj_sevekari/utils/update_service.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_loading_indicator.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/festival_tap_effect.dart';
+import 'package:gajanan_maharaj_sevekari/models/event.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
-import 'package:gajanan_maharaj_sevekari/event_calendar/event_calendar_screen.dart';
+import 'package:gajanan_maharaj_sevekari/models/event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:intl/intl.dart';
