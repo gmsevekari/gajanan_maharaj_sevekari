@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
-import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
@@ -271,11 +270,13 @@ class _ParayanListScreenState extends State<ParayanListScreen>
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        typeLabel,
-                        style: TextStyle(
-                          color: theme.appColors.secondaryText,
-                          fontWeight: FontWeight.w500,
+                      Expanded(
+                        child: Text(
+                          typeLabel,
+                          style: TextStyle(
+                            color: theme.appColors.secondaryText,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ],
@@ -291,9 +292,11 @@ class _ParayanListScreenState extends State<ParayanListScreen>
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        dateRange,
-                        style: TextStyle(color: theme.appColors.secondaryText),
+                      Expanded(
+                        child: Text(
+                          dateRange,
+                          style: TextStyle(color: theme.appColors.secondaryText),
+                        ),
                       ),
                     ],
                   ),
