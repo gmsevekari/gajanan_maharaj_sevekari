@@ -6,6 +6,8 @@ import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/deeplink_manager.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/providers/group_selection_provider.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -22,7 +24,17 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(milliseconds: 500), () {
       if (!mounted) return;
 
-      // 1. Check for Pending Deep Link (High Priority)
+      final groupProvider =
+          Provider.of<GroupSelectionProvider>(context, listen: false);
+
+      // 1. Check for Onboarding (First Launch)
+      if (groupProvider.shouldShowOnboarding) {
+        debugPrint('[Onboarding] Redirecting to GroupSelectionScreen');
+        Navigator.of(context).pushReplacementNamed(Routes.onboarding);
+        return;
+      }
+
+      // 2. Check for Pending Deep Link (High Priority)
       final pendingDeepLink = DeepLinkManager.consumePendingRoute();
       if (pendingDeepLink != null) {
         debugPrint(
@@ -36,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       }
 
-      // 2. Check for Pending Push Notification
+      // 3. Check for Pending Push Notification
       final pendingRoute = NotificationManager.consumePendingRoute();
       if (pendingRoute != null) {
         debugPrint(
@@ -47,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       }
 
-      // 3. Fallback to Home
+      // 4. Fallback to Home
       Navigator.of(context).pushReplacementNamed(Routes.home);
     });
   }

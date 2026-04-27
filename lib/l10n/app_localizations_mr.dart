@@ -1735,4 +1735,14 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get groupRemoved => 'ग्रुप काढला';
+
+  @override
+  String get onboardingWelcome => 'श्री गजानन महाराज सेवेकरी';
+
+  @override
+  String get onboardingDescription =>
+      'कृपया तुमच्याशी संबंधित गजानन महाराज ग्रुप निवडा. तुम्ही हे नंतर कधीही सेटिंग्जमध्ये बदलू शकता.';
+
+  @override
+  String get finishOnboarding => 'सेव्ह करा';
 }

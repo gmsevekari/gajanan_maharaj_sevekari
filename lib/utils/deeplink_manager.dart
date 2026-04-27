@@ -29,6 +29,8 @@ class DeepLinkManager {
     return true;
   }
 
+  static bool get hasPendingRoute => _pendingRoute != null;
+
   static Map<String, dynamic>? consumePendingRoute() {
     if (_pendingRoute == null) return null;
 

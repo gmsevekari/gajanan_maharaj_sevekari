@@ -3373,6 +3373,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Group removed'**
   String get groupRemoved;
+
+  /// No description provided for @onboardingWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Shree Gajanan Maharaj Sevekari'**
+  String get onboardingWelcome;
+
+  /// No description provided for @onboardingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select the Gajanan Maharaj group(s) you are associated with. You can always change this later in Settings.'**
+  String get onboardingDescription;
+
+  /// No description provided for @finishOnboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get finishOnboarding;
 }
 
 class _AppLocalizationsDelegate

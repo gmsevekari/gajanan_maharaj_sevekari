@@ -4,17 +4,31 @@ import 'package:shared_preferences/shared_preferences.dart';
 class GroupSelectionProvider extends ChangeNotifier {
   static const String _storageKey = 'selected_groups';
   List<String> _selectedGroupIds = [];
+  bool _shouldShowOnboarding = false;
 
   List<String> get selectedGroupIds => List.unmodifiable(_selectedGroupIds);
+  bool get shouldShowOnboarding => _shouldShowOnboarding;
 
   Future<void> loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    _selectedGroupIds = prefs.getStringList(_storageKey) ?? [];
+    final storedGroups = prefs.getStringList(_storageKey);
+    if (storedGroups == null) {
+      _shouldShowOnboarding = true;
+      _selectedGroupIds = [];
+    } else {
+      _shouldShowOnboarding = false;
+      _selectedGroupIds = storedGroups;
+    }
     notifyListeners();
   }
 
   Future<void> setSelectedGroups(List<String> groupIds) async {
     _selectedGroupIds = List.from(groupIds);
+    await _savePreferences();
+  }
+
+  Future<void> completeOnboarding() async {
+    _shouldShowOnboarding = false;
     await _savePreferences();
   }
 

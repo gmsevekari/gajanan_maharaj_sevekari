@@ -58,6 +58,7 @@ import 'package:gajanan_maharaj_sevekari/admin/group_namjap/create_group_namjap_
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/user_notifications_screen.dart';
+import 'package:gajanan_maharaj_sevekari/onboarding/group_selection_screen.dart';
 import 'package:gajanan_maharaj_sevekari/other/favorites_screen.dart';
 import 'package:gajanan_maharaj_sevekari/other/favorite_item_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/story/story_type_picker_screen.dart';
@@ -400,6 +401,7 @@ class _MyAppState extends State<MyApp> {
                     const AdminGroupNamjapDashboard(),
                 Routes.adminCreateGroupNamjap: (context) =>
                     const CreateGroupNamjapScreen(),
+                Routes.onboarding: (context) => const GroupSelectionScreen(),
               },
               onGenerateRoute: (settings) {
                 final DeityConfig? deity = settings.arguments is DeityConfig
