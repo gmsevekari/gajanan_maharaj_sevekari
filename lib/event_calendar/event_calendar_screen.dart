@@ -226,7 +226,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        // Swiping is now enabled by default.
+        physics: const NeverScrollableScrollPhysics(),
         children: [
           _buildCalendarView(),
           _buildSpecialEventsView(),
