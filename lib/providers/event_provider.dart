@@ -9,13 +9,10 @@ class GroupEvents {
   final Event? specialEvent;
   final ParayanEvent? parayan;
 
-  const GroupEvents({
-    this.weeklyPooja,
-    this.specialEvent,
-    this.parayan,
-  });
+  const GroupEvents({this.weeklyPooja, this.specialEvent, this.parayan});
 
-  bool get isEmpty => weeklyPooja == null && specialEvent == null && parayan == null;
+  bool get isEmpty =>
+      weeklyPooja == null && specialEvent == null && parayan == null;
 }
 
 class EventProvider extends ChangeNotifier {
@@ -29,8 +26,8 @@ class EventProvider extends ChangeNotifier {
   EventProvider({
     FirebaseFirestore? firestore,
     required GroupSelectionProvider groupSelectionProvider,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _groupSelectionProvider = groupSelectionProvider {
+  }) : _firestore = firestore ?? FirebaseFirestore.instance,
+       _groupSelectionProvider = groupSelectionProvider {
     _groupSelectionProvider.addListener(_onGroupsChanged);
     fetchEvents();
   }
@@ -62,12 +59,16 @@ class EventProvider extends ChangeNotifier {
       final startOfToday = DateTime(now.year, now.month, now.day);
       final startOfTodayTimestamp = Timestamp.fromDate(startOfToday);
 
-      final results = await Future.wait(groupIds.map((groupId) => _fetchEventsForGroup(
+      final results = await Future.wait(
+        groupIds.map(
+          (groupId) => _fetchEventsForGroup(
             groupId,
             startOfTodayTimestamp,
             nowTimestamp,
             now,
-          )));
+          ),
+        ),
+      );
 
       final Map<String, GroupEvents> newGroupedEvents = {};
       for (int i = 0; i < groupIds.length; i++) {
@@ -91,59 +92,65 @@ class EventProvider extends ChangeNotifier {
     Timestamp nowTimestamp,
     DateTime now,
   ) async {
-    // 1. Fetch Generic Events (Weekly Pooja & Special Event)
-    final eventsSnapshot = await _firestore
-        .collection('events')
-        .where('groupId', isEqualTo: groupId)
-        .where('start_time', isGreaterThanOrEqualTo: startOfTodayTimestamp)
-        .orderBy('start_time')
-        .limit(20)
-        .get();
+    try {
+      // 1. Fetch Generic Events (Weekly Pooja & Special Event)
+      final eventsSnapshot = await _firestore
+          .collection('events')
+          .where('groupId', isEqualTo: groupId)
+          .where('start_time', isGreaterThanOrEqualTo: startOfTodayTimestamp)
+          .orderBy('start_time')
+          .limit(20)
+          .get();
 
-    Event? weeklyPooja;
-    Event? specialEvent;
+      Event? weeklyPooja;
+      Event? specialEvent;
 
-    for (var doc in eventsSnapshot.docs) {
-      final event = Event.fromFirestore(doc);
+      for (var doc in eventsSnapshot.docs) {
+        final event = Event.fromFirestore(doc);
 
-      // Check if event is still active (end_time > now)
-      final effectiveEndTime = event.end_time?.toDate() ??
-          event.start_time.toDate().add(const Duration(hours: 1));
+        // Check if event is still active (end_time > now)
+        final effectiveEndTime =
+            event.end_time?.toDate() ??
+            event.start_time.toDate().add(const Duration(hours: 1));
 
-      if (effectiveEndTime.isBefore(now)) continue;
+        if (effectiveEndTime.isBefore(now)) continue;
 
-      if (weeklyPooja == null && event.event_type == EventType.weeklyPooja) {
-        weeklyPooja = event;
+        if (weeklyPooja == null && event.event_type == EventType.weeklyPooja) {
+          weeklyPooja = event;
+        }
+        if (specialEvent == null &&
+            event.event_type == EventType.specialEvent) {
+          specialEvent = event;
+        }
+        if (weeklyPooja != null && specialEvent != null) break;
       }
-      if (specialEvent == null && event.event_type == EventType.specialEvent) {
-        specialEvent = event;
+
+      // 2. Fetch Parayan Events
+      final parayanSnapshot = await _firestore
+          .collection('parayan_events')
+          .where('groupId', isEqualTo: groupId)
+          .where('endDate', isGreaterThanOrEqualTo: nowTimestamp)
+          .orderBy('endDate')
+          .limit(5)
+          .get();
+
+      ParayanEvent? upcomingParayan;
+      for (var doc in parayanSnapshot.docs) {
+        final event = ParayanEvent.fromFirestore(doc);
+        if (event.endDate.isAfter(now) && event.status != 'completed') {
+          upcomingParayan = event;
+          break;
+        }
       }
-      if (weeklyPooja != null && specialEvent != null) break;
+
+      return GroupEvents(
+        weeklyPooja: weeklyPooja,
+        specialEvent: specialEvent,
+        parayan: upcomingParayan,
+      );
+    } catch (e) {
+      rethrow;
     }
-
-    // 2. Fetch Parayan Events
-    final parayanSnapshot = await _firestore
-        .collection('parayan_events')
-        .where('groupId', isEqualTo: groupId)
-        .where('endDate', isGreaterThanOrEqualTo: nowTimestamp)
-        .orderBy('endDate')
-        .limit(5)
-        .get();
-
-    ParayanEvent? upcomingParayan;
-    for (var doc in parayanSnapshot.docs) {
-      final event = ParayanEvent.fromFirestore(doc);
-      if (event.endDate.isAfter(now) && event.status != 'completed') {
-        upcomingParayan = event;
-        break;
-      }
-    }
-
-    return GroupEvents(
-      weeklyPooja: weeklyPooja,
-      specialEvent: specialEvent,
-      parayan: upcomingParayan,
-    );
   }
 
   bool _isDisposed = false;

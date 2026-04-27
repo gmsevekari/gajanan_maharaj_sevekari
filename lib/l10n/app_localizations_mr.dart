@@ -1745,4 +1745,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get finishOnboarding => 'सेव्ह करा';
+
+  @override
+  String get swipeHint => 'इतर ग्रुप्ससाठी स्वाइप करा';
 }

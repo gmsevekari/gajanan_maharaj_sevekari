@@ -649,5 +649,6 @@
   "groupRemoved": "ग्रुप काढला",
   "onboardingWelcome": "श्री गजानन महाराज सेवेकरी",
   "onboardingDescription": "कृपया तुमच्याशी संबंधित गजानन महाराज ग्रुप निवडा. तुम्ही हे नंतर कधीही सेटिंग्जमध्ये बदलू शकता.",
-  "finishOnboarding": "सेव्ह करा"
+  "finishOnboarding": "सेव्ह करा",
+  "swipeHint": "इतर ग्रुप्ससाठी स्वाइप करा"
 }

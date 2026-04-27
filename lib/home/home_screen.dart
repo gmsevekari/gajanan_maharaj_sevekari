@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/event_calendar/event_calendar_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
-import 'package:gajanan_maharaj_sevekari/parayan/parayan_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/utils/parayan_extensions.dart';
@@ -24,6 +23,10 @@ import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_loading_indicator.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/festival_tap_effect.dart';
 import 'package:gajanan_maharaj_sevekari/models/event.dart';
+import 'package:gajanan_maharaj_sevekari/providers/event_provider.dart';
+import 'package:gajanan_maharaj_sevekari/providers/group_selection_provider.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,18 +36,27 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
-  Future<Map<String, dynamic>>? _upcomingEventsFuture;
   String? _lastReadTimestamp;
   bool _showFestivalAnimation = false;
   FestivalAnimationType _activeAnimationType = FestivalAnimationType.fireworks;
   String _animationMessage = '';
 
+  late PageController _carouselPageController;
+  double _currentCarouselPage = 0;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _upcomingEventsFuture = _fetchUpcomingEvents();
     _loadUnreadStatus();
+    _carouselPageController = PageController();
+    _carouselPageController.addListener(() {
+      if (mounted) {
+        setState(() {
+          _currentCarouselPage = _carouselPageController.page ?? 0;
+        });
+      }
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
@@ -74,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _carouselPageController.dispose();
     super.dispose();
   }
 
@@ -125,65 +138,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     setState(() {
       _lastReadTimestamp = prefs.getString('last_read_notification_timestamp');
     });
-  }
-
-  Future<Map<String, dynamic>> _fetchUpcomingEvents() async {
-    final now = DateTime.now();
-    final nowTimestamp = Timestamp.fromDate(now);
-
-    // 1. Fetch from 'events' collection
-    final eventsSnapshot = await FirebaseFirestore.instance
-        .collection('events')
-        .where('start_time', isGreaterThanOrEqualTo: nowTimestamp)
-        .orderBy('start_time')
-        .limit(20)
-        .get();
-
-    DocumentSnapshot? weeklyPooja;
-    DocumentSnapshot? specialEvent;
-
-    for (var doc in eventsSnapshot.docs) {
-      final eventData = doc.data();
-      final eventType = eventData['event_type'] as String?;
-
-      if (weeklyPooja == null &&
-          (eventType == 'weekly_pooja' ||
-              eventType == 'weekly pooja' ||
-              eventType == 'weeklyPooja')) {
-        weeklyPooja = doc;
-      }
-      if (specialEvent == null &&
-          (eventType == 'special_event' ||
-              eventType == 'special event' ||
-              eventType == 'specialEvent')) {
-        specialEvent = doc;
-      }
-      if (weeklyPooja != null && specialEvent != null) break;
-    }
-
-    // Simplified query: Fetch events that haven't ended yet
-    final parayanSnapshot = await FirebaseFirestore.instance
-        .collection('parayan_events')
-        .where('endDate', isGreaterThanOrEqualTo: nowTimestamp)
-        .orderBy('endDate')
-        .limit(10)
-        .get();
-
-    ParayanEvent? upcomingParayan;
-    for (var doc in parayanSnapshot.docs) {
-      final event = ParayanEvent.fromFirestore(doc);
-      // We want the first event that hasn't ended yet and is not completed
-      if (event.endDate.isAfter(now) && event.status != 'completed') {
-        upcomingParayan = event;
-        break;
-      }
-    }
-
-    return {
-      'weeklyPooja': weeklyPooja,
-      'specialEvent': specialEvent,
-      'parayan': upcomingParayan,
-    };
   }
 
   void _launchAppStore() async {
@@ -307,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             },
           ),
           StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
+            stream: Provider.of<FirebaseFirestore>(context, listen: false)
                 .collection('notifications')
                 .orderBy('timestamp', descending: true)
                 .limit(1)
@@ -371,87 +325,86 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ],
       ),
-      body: Container(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _buildUpcomingEventCard(context, localizations),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Wrap(
-                        spacing: 8.0,
-                        runSpacing: 8.0,
-                        alignment: WrapAlignment.center,
-                        children: cards,
-                      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  _buildUpcomingEventCard(context, localizations),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Wrap(
+                      spacing: 8.0,
+                      runSpacing: 8.0,
+                      alignment: WrapAlignment.center,
+                      children: cards,
                     ),
-                    if (kIsWeb) _buildDownloadBanner(context, localizations),
-                    const SizedBox(
-                      height: 80,
-                    ), // Extra space to prevent bottom cards from cutting off on zoomed displays
-                  ],
-                ),
+                  ),
+                  if (kIsWeb) _buildDownloadBanner(context, localizations),
+                  const SizedBox(
+                    height: 80,
+                  ), // Extra space to prevent bottom cards from cutting off on zoomed displays
+                ],
               ),
             ),
-            if (isGaneshotsav) const MouseMarquee(),
+          ),
+          if (isGaneshotsav) const MouseMarquee(),
 
-            SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    (isGaneshotsav || isDiwali)
-                        ? Image.asset(
-                            isDiwali
-                                ? 'resources/images/festive_icons/diwali/list.png'
-                                : 'resources/images/festive_icons/ganesh_chaturthi/list.png',
-                            width: 24,
-                            height: 24,
-                          )
-                        : Icon(
-                            Icons.spa,
-                            color: theme.appColors.primarySwatch[300],
-                            size: 20,
-                          ),
-                    const SizedBox(width: 12),
-                    Text(
-                      isDiwali
-                          ? localizations.chantHappyDiwali
-                          : isGaneshotsav
-                          ? localizations.chantGanpatiBappa
-                          : localizations.gajananChant,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: theme.appColors.primarySwatch[600],
-                        letterSpacing: 1.2,
-                      ),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  (isGaneshotsav || isDiwali)
+                      ? Image.asset(
+                          isDiwali
+                              ? 'resources/images/festive_icons/diwali/list.png'
+                              : 'resources/images/festive_icons/ganesh_chaturthi/list.png',
+                          width: 24,
+                          height: 24,
+                        )
+                      : Icon(
+                          Icons.spa,
+                          color: theme.appColors.primarySwatch[300],
+                          size: 20,
+                        ),
+                  const SizedBox(width: 12),
+                  Text(
+                    isDiwali
+                        ? localizations.chantHappyDiwali
+                        : isGaneshotsav
+                        ? localizations.chantGanpatiBappa
+                        : localizations.gajananChant,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: theme.appColors.primarySwatch[600],
+                      letterSpacing: 1.2,
                     ),
-                    const SizedBox(width: 12),
-                    (isGaneshotsav || isDiwali)
-                        ? Image.asset(
-                            isDiwali
-                                ? 'resources/images/festive_icons/diwali/list.png'
-                                : 'resources/images/festive_icons/ganesh_chaturthi/list.png',
-                            width: 24,
-                            height: 24,
-                          )
-                        : Icon(
-                            Icons.spa,
-                            color: theme.appColors.primarySwatch[300],
-                            size: 20,
-                          ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 12),
+                  (isGaneshotsav || isDiwali)
+                      ? Image.asset(
+                          isDiwali
+                              ? 'resources/images/festive_icons/diwali/list.png'
+                              : 'resources/images/festive_icons/ganesh_chaturthi/list.png',
+                          width: 24,
+                          height: 24,
+                        )
+                      : Icon(
+                          Icons.spa,
+                          color: theme.appColors.primarySwatch[300],
+                          size: 20,
+                        ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
 
@@ -595,11 +548,206 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     BuildContext context,
     AppLocalizations localizations,
   ) {
+    final eventProvider = context.watch<EventProvider>();
+    final groupProvider = context.watch<GroupSelectionProvider>();
+    final configProvider = context.watch<AppConfigProvider>();
+    final selectedGroupIds = groupProvider.selectedGroupIds;
+
+    if (selectedGroupIds.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    if (eventProvider.isLoading) {
+      return Container(
+        height: 200,
+        margin: const EdgeInsets.all(8.0),
+        child: const Center(child: ThemedLoadingIndicator()),
+      );
+    }
+
+    // Filter out groups that have no upcoming events
+    final activeGroups = selectedGroupIds.where((groupId) {
+      final events = eventProvider.groupedEvents[groupId];
+      return events != null && !events.isEmpty;
+    }).toList();
+
+    if (activeGroups.isEmpty) {
+      return _buildEmptyStateCard(context, localizations);
+    }
+
+    // Calculate individual heights for each group
+    final List<double> groupHeights = activeGroups.map((groupId) {
+      final events = eventProvider.groupedEvents[groupId]!;
+      int count = 0;
+      if (events.weeklyPooja != null) count++;
+      if (events.specialEvent != null) count++;
+      if (events.parayan != null) count++;
+
+      double height = 160.0; // Base for 1 event
+      if (count == 2) height = 220.0;
+      if (count == 3) height = 280.0;
+
+      // Add space for the group header if carousel is active
+      if (activeGroups.length > 1) height += 24.0;
+      return height;
+    }).toList();
+
+    // Interpolate height based on the current scroll position
+    double interpolatedHeight;
+    if (activeGroups.length <= 1) {
+      interpolatedHeight = groupHeights.isNotEmpty ? groupHeights.first : 160.0;
+    } else {
+      final int index = _currentCarouselPage.floor().clamp(0, groupHeights.length - 1);
+      final double fraction = _currentCarouselPage - index;
+
+      final h1 = groupHeights[index];
+      final h2 = (index + 1 < groupHeights.length) ? groupHeights[index + 1] : h1;
+
+      interpolatedHeight = h1 + (h2 - h1) * fraction;
+    }
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final double viewportFraction = (screenWidth - 24) / screenWidth;
+    final double targetFraction = activeGroups.length > 1 ? viewportFraction : 1.0;
+
+    // Recreate controller if the fraction needs to change (e.g. 1 group vs multiple)
+    if (_carouselPageController.viewportFraction != targetFraction) {
+      final lastPage = _currentCarouselPage;
+      _carouselPageController.dispose();
+      _carouselPageController = PageController(
+        initialPage: lastPage.round(),
+        viewportFraction: targetFraction,
+      );
+      _carouselPageController.addListener(() {
+        if (mounted) {
+          setState(() {
+            _currentCarouselPage = _carouselPageController.page ?? 0;
+          });
+        }
+      });
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: interpolatedHeight,
+          child: PageView.builder(
+            itemCount: activeGroups.length,
+            controller: _carouselPageController,
+            itemBuilder: (context, index) {
+              final groupId = activeGroups[index];
+              final events = eventProvider.groupedEvents[groupId]!;
+              final allGroups =
+                  configProvider.appConfig?.gajananMaharajGroups ?? [];
+              final group = allGroups.firstWhere(
+                (g) => g.id == groupId,
+                orElse: () => GajananMaharajGroup(
+                  id: groupId,
+                  nameEn: groupId,
+                  nameMr: groupId,
+                ),
+              );
+
+              return _buildGroupEventPage(
+                context,
+                localizations,
+                group,
+                events,
+                activeGroups.length > 1,
+              );
+            },
+          ),
+        ),
+        if (activeGroups.length > 1)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.swipe,
+                  size: 14,
+                  color: Theme.of(context).appColors.primarySwatch[400],
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  localizations.swipeHint,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).appColors.primarySwatch[400],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyStateCard(
+    BuildContext context,
+    AppLocalizations localizations,
+  ) {
     final theme = Theme.of(context);
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.0),
+        boxShadow: [
+          BoxShadow(
+            color: theme.cardTheme.shadowColor ?? Colors.black12,
+            offset: const Offset(0, 4),
+            blurRadius: 0,
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Card(
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        color: theme.cardTheme.color,
+        shape: theme.cardTheme.shape,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                localizations.upcomingEvent,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.appColors.primarySwatch[600],
+                ),
+              ),
+              const SizedBox(height: 12.0),
+              Text(
+                localizations.eventOnDate,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: theme.appColors.primarySwatch[400]),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGroupEventPage(
+    BuildContext context,
+    AppLocalizations localizations,
+    GajananMaharajGroup group,
+    GroupEvents events,
+    bool showHeader,
+  ) {
+    final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
+    final groupName = locale == 'mr' ? group.nameMr : group.nameEn;
+
     final activeFestival = context.watch<FestivalProvider>().activeFestival;
     final themeProvider = context.watch<ThemeProvider>();
-
-    // Only show festive decor if a festival is active AND the matching theme is selected
     final isFestiveTheme =
         activeFestival != null &&
         themeProvider.themePreset == activeFestival.themePreset;
@@ -608,273 +756,207 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         isFestiveTheme && activeFestival.id == 'ganesh_chaturthi';
     final isDiwali = isFestiveTheme && activeFestival.id == 'diwali';
 
-    return FutureBuilder<Map<String, dynamic>>(
-      future: _upcomingEventsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          debugPrint("Error fetching upcoming events: ${snapshot.error}");
-          return Container(
-            margin: const EdgeInsets.all(8.0),
-            padding: const EdgeInsets.all(16.0),
-            child: const Center(
-              child: Icon(Icons.error_outline, color: Colors.red),
-            ),
-          );
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Card(child: Center(child: ThemedLoadingIndicator()));
-        }
-
-        final data = snapshot.data;
-        if (!snapshot.hasData ||
-            data == null ||
-            (data['weeklyPooja'] == null &&
-                data['specialEvent'] == null &&
-                data['parayan'] == null)) {
-          return Container(
-            margin: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.0),
-              boxShadow: [
-                BoxShadow(
-                  color: theme.cardTheme.shadowColor ?? Colors.black12,
-                  offset: const Offset(0, 4),
-                  blurRadius: 0,
-                  spreadRadius: 0,
+    final cardContent = Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      color: theme.cardTheme.color,
+      shape: theme.cardTheme.shape,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (showHeader) ...[
+                Text(
+                  groupName,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.appColors.primarySwatch[400],
+                    letterSpacing: 1.1,
+                  ),
                 ),
+                const SizedBox(height: 4),
               ],
-            ),
-            child: Card(
-              elevation: 0,
-              margin: EdgeInsets.zero,
-              color: theme.cardTheme.color,
-              shape: theme.cardTheme.shape,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      localizations.eventOnDate,
-                      style: TextStyle(
-                        color: theme.appColors.primarySwatch[600],
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+              Text(
+                localizations.upcomingEvent,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.appColors.primarySwatch[600],
                 ),
               ),
-            ),
-          );
-        }
-
-        final weeklyPoojaDoc = data['weeklyPooja'] as DocumentSnapshot?;
-        final specialEventDoc = data['specialEvent'] as DocumentSnapshot?;
-        final parayanEvent = data['parayan'] as ParayanEvent?;
-
-        List<Widget> children = [
-          Text(
-            localizations.upcomingEvent,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.appColors.primarySwatch[600],
-            ),
-          ),
-          const SizedBox(height: 4.0),
-          Divider(
-            color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
-            height: 8.0,
-          ),
-        ];
-
-        if (weeklyPoojaDoc != null) {
-          children.add(
-            _buildEventRow(
-              context,
-              weeklyPoojaDoc,
-              Icons.event_repeat,
-              theme.appColors.primarySwatch,
-              localizations.weeklyPooja,
-              theme,
-            ),
-          );
-        }
-
-        if (weeklyPoojaDoc != null && specialEventDoc != null) {
-          children.add(
-            Divider(
-              color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
-              height: 8.0,
-            ),
-          );
-        }
-
-        if (specialEventDoc != null) {
-          children.add(
-            _buildEventRow(
-              context,
-              specialEventDoc,
-              Icons.celebration,
-              theme.appColors.primarySwatch,
-              localizations.specialEvents,
-              theme,
-            ),
-          );
-        }
-
-        if (parayanEvent != null) {
-          if (weeklyPoojaDoc != null || specialEventDoc != null) {
-            children.add(
+              const SizedBox(height: 4.0),
               Divider(
                 color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
                 height: 8.0,
               ),
-            );
-          }
-          children.add(
-            _buildParayanRow(context, parayanEvent, theme, localizations),
-          );
-        }
-
-        final cardContent = Card(
-          elevation: 0,
-          margin: EdgeInsets.zero,
-          color: theme.cardTheme.color,
-          shape: theme.cardTheme.shape,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: children,
-            ),
-          ),
-        );
-
-        if (!isGaneshotsav && !isDiwali) {
-          return Container(
-            margin: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.0),
-              boxShadow: [
-                BoxShadow(
-                  color: theme.cardTheme.shadowColor ?? Colors.black12,
-                  offset: const Offset(0, 4),
-                  blurRadius: 0,
-                  spreadRadius: 0,
+              if (events.weeklyPooja != null)
+                _buildEventRow(
+                  context,
+                  events.weeklyPooja!,
+                  Icons.event_repeat,
+                  theme.appColors.primarySwatch,
+                  localizations.weeklyPooja,
+                  theme,
+                ),
+              if (events.weeklyPooja != null && events.specialEvent != null)
+                Divider(
+                  color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
+                  height: 8.0,
+                ),
+              if (events.specialEvent != null)
+                _buildEventRow(
+                  context,
+                  events.specialEvent!,
+                  Icons.celebration,
+                  theme.appColors.primarySwatch,
+                  localizations.specialEvents,
+                  theme,
+                ),
+              if (events.parayan != null) ...[
+                if (events.weeklyPooja != null || events.specialEvent != null)
+                  Divider(
+                    color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
+                    height: 8.0,
+                  ),
+                _buildParayanRow(
+                  context,
+                  events.parayan!,
+                  theme,
+                  localizations,
                 ),
               ],
-            ),
-            child: cardContent,
-          );
-        }
-
-        // Hibiscus Border Wrapper using Custom Imagery
-        return Container(
-          margin: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0),
-            border: Border.all(
-              color: isDiwali
-                  ? const Color(0xFFE52B7B).withValues(alpha: 0.8)
-                  : theme.appColors.primarySwatch.withValues(alpha: 0.3),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: theme.cardTheme.shadowColor ?? Colors.black12,
-                offset: const Offset(0, 4),
-                blurRadius: 0,
-                spreadRadius: 0,
-              ),
             ],
           ),
-          child: Stack(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  top: isDiwali ? 36.0 : 8.0,
-                  left: 8.0,
-                  right: 8.0,
-                  bottom: 8.0,
-                ),
-                child: cardContent,
+        ),
+      ),
+    );
+
+    Widget decoratedCard;
+    if (!isGaneshotsav && !isDiwali) {
+      decoratedCard = Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.0),
+          boxShadow: [
+            BoxShadow(
+              color: theme.cardTheme.shadowColor ?? Colors.black12,
+              offset: const Offset(0, 4),
+              blurRadius: 0,
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: cardContent,
+      );
+    } else {
+      decoratedCard = Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.0),
+          border: Border.all(
+            color: isDiwali
+                ? const Color(0xFFE52B7B).withValues(alpha: 0.8)
+                : theme.appColors.primarySwatch.withValues(alpha: 0.3),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: theme.cardTheme.shadowColor ?? Colors.black12,
+              offset: const Offset(0, 4),
+              blurRadius: 0,
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                top: isDiwali ? 36.0 : 8.0,
+                left: 8.0,
+                right: 8.0,
+                bottom: 8.0,
               ),
-              if (!isDiwali)
-                Positioned(
-                  top: 0,
-                  left: 0,
+              child: cardContent,
+            ),
+            if (!isDiwali)
+              Positioned(
+                top: 0,
+                left: 0,
+                child: Image.asset(
+                  'resources/images/festive_icons/ganesh_chaturthi/hibiscus.png',
+                  width: 32,
+                  height: 32,
+                ),
+              ),
+            if (!isDiwali)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.rotationY(3.14159),
                   child: Image.asset(
                     'resources/images/festive_icons/ganesh_chaturthi/hibiscus.png',
                     width: 32,
                     height: 32,
                   ),
                 ),
-              if (!isDiwali)
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.rotationY(3.14159), // math.pi
-                    child: Image.asset(
-                      'resources/images/festive_icons/ganesh_chaturthi/hibiscus.png',
-                      width: 32,
-                      height: 32,
-                    ),
-                  ),
+              ),
+            if (isDiwali)
+              Positioned(
+                top: -6,
+                left: 0,
+                right: 0,
+                child: Image.asset(
+                  'resources/images/festive_icons/diwali/toran_final_flat.png',
+                  height: 48,
+                  alignment: Alignment.topCenter,
+                  fit: BoxFit.fitWidth,
                 ),
-              if (isDiwali)
-                Positioned(
-                  top: -6,
-                  left: 0,
-                  right: 0,
+              ),
+            if (!isDiwali)
+              Positioned(
+                bottom: 0,
+                left: 0,
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.rotationX(3.14159),
                   child: Image.asset(
-                    'resources/images/festive_icons/diwali/toran_final_flat.png',
-                    height: 48,
-                    alignment: Alignment.topCenter,
-                    fit: BoxFit.fitWidth,
+                    'resources/images/festive_icons/ganesh_chaturthi/hibiscus.png',
+                    width: 32,
+                    height: 32,
                   ),
                 ),
-              if (!isDiwali)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  child: Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.rotationX(3.14159), // math.pi
-                    child: Image.asset(
-                      'resources/images/festive_icons/ganesh_chaturthi/hibiscus.png',
-                      width: 32,
-                      height: 32,
-                    ),
+              ),
+            if (!isDiwali)
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.rotationZ(3.14159),
+                  child: Image.asset(
+                    'resources/images/festive_icons/ganesh_chaturthi/hibiscus.png',
+                    width: 32,
+                    height: 32,
                   ),
                 ),
-              if (!isDiwali)
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.rotationZ(3.14159), // math.pi
-                    child: Image.asset(
-                      'resources/images/festive_icons/ganesh_chaturthi/hibiscus.png',
-                      width: 32,
-                      height: 32,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
-    );
+              ),
+          ],
+        ),
+      );
+    }
+
+    return decoratedCard;
   }
 
   Widget _buildEventRow(
     BuildContext context,
-    DocumentSnapshot doc,
+    Event event,
     IconData icon,
     Color iconColor,
     String eventTypeLabel,
@@ -890,11 +972,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final isGaneshotsav =
         isFestiveTheme && activeFestival.id == 'ganesh_chaturthi';
     final isDiwali = isFestiveTheme && activeFestival.id == 'diwali';
-    final eventData = doc.data() as Map<String, dynamic>;
-    final event = Event.fromFirestore(doc);
     final locale = Localizations.localeOf(context).languageCode;
     final eventTitle = locale == 'mr' ? event.title_mr : event.title_en;
-    final eventDate = (eventData['start_time'] as Timestamp).toDate();
+    final eventDate = event.start_time.toDate();
     final eventDateString = formatDateWithDay(eventDate, locale);
 
     return InkWell(
@@ -995,10 +1075,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final isDiwali = isFestiveTheme && activeFestival.id == 'diwali';
     final locale = Localizations.localeOf(context).languageCode;
     final title = locale == 'mr' ? event.titleMr : event.titleEn;
-    final isSameDay =
-        event.startDate.year == event.endDate.year &&
-        event.startDate.month == event.endDate.month &&
-        event.startDate.day == event.endDate.day;
     final dateRange = event.getSmartDate(locale, includeTime: false);
 
     return InkWell(
@@ -1114,20 +1190,25 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   children: [
                     const SizedBox(height: 8),
                     Flexible(
-                      child: customWidget != null
-                          ? customWidget
-                          : (imagePath != null
+                      child:
+                          customWidget ??
+                          (imagePath != null
                               ? Image.asset(
                                   imagePath,
                                   height: size,
                                   width: size,
-                                  errorBuilder: (context, error, stackTrace) => Icon(
-                                    Icons.error_outline,
-                                    size: size,
-                                    color: theme.iconTheme.color,
-                                  ),
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Icon(
+                                        Icons.error_outline,
+                                        size: size,
+                                        color: theme.iconTheme.color,
+                                      ),
                                 )
-                              : Icon(icon, size: size, color: theme.iconTheme.color)),
+                              : Icon(
+                                  icon,
+                                  size: size,
+                                  color: theme.iconTheme.color,
+                                )),
                     ),
                     const SizedBox(height: 8),
                     Padding(

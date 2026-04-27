@@ -1740,4 +1740,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finishOnboarding => 'Save';
+
+  @override
+  String get swipeHint => 'Swipe for other groups';
 }

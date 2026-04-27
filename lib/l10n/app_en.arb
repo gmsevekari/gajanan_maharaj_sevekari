@@ -649,5 +649,6 @@
   "groupRemoved": "Group removed",
   "onboardingWelcome": "Shree Gajanan Maharaj Sevekari",
   "onboardingDescription": "Please select the Gajanan Maharaj group(s) you are associated with. You can always change this later in Settings.",
-  "finishOnboarding": "Save"
+  "finishOnboarding": "Save",
+  "swipeHint": "Swipe for other groups"
 }

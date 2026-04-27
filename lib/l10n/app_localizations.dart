@@ -3391,6 +3391,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get finishOnboarding;
+
+  /// No description provided for @swipeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe for other groups'**
+  String get swipeHint;
 }
 
 class _AppLocalizationsDelegate
