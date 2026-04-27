@@ -328,25 +328,30 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       body: Column(
         children: [
           Expanded(
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                children: [
-                  _buildUpcomingEventCard(context, localizations),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Wrap(
-                      spacing: 8.0,
-                      runSpacing: 8.0,
-                      alignment: WrapAlignment.center,
-                      children: cards,
+            child: RefreshIndicator(
+              onRefresh: () => context.read<EventProvider>().fetchEvents(),
+              displacement: 20,
+              color: theme.appColors.primarySwatch,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    _buildUpcomingEventCard(context, localizations),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Wrap(
+                        spacing: 8.0,
+                        runSpacing: 8.0,
+                        alignment: WrapAlignment.center,
+                        children: cards,
+                      ),
                     ),
-                  ),
-                  if (kIsWeb) _buildDownloadBanner(context, localizations),
-                  const SizedBox(
-                    height: 80,
-                  ), // Extra space to prevent bottom cards from cutting off on zoomed displays
-                ],
+                    if (kIsWeb) _buildDownloadBanner(context, localizations),
+                    const SizedBox(
+                      height: 80,
+                    ), // Extra space to prevent bottom cards from cutting off on zoomed displays
+                  ],
+                ),
               ),
             ),
           ),
@@ -583,9 +588,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (events.specialEvent != null) count++;
       if (events.parayan != null) count++;
 
-      double height = 150.0; // Base for 1 event
-      if (count == 2) height = 205.0;
-      if (count == 3) height = 260.0;
+      double height = 155.0; // Base for 1 event
+      if (count == 2) height = 210.0;
+      if (count == 3) height = 265.0;
 
       // Add space for the group header if carousel is active
       if (activeGroups.length > 1) height += 20.0;
@@ -764,6 +769,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
