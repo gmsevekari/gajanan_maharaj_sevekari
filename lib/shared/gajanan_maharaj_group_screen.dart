@@ -75,7 +75,19 @@ class GajananMaharajGroupScreen extends StatelessWidget {
         ],
       ),
       body: groups.isEmpty
-          ? Center(child: Text(config.emptyMessage))
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: Text(
+                  config.emptyMessage,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            )
           : ListView.builder(
               padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 100.0),
               itemCount: groups.length,

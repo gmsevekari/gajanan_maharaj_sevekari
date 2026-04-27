@@ -94,4 +94,21 @@ void main() {
     expect(find.text('Group Two'), findsNothing);
     expect(find.text('Group Three'), findsOneWidget);
   });
+
+  testWidgets('renders empty message when no groups match filter', (
+    WidgetTester tester,
+  ) async {
+    final config = GroupScreenConfig(
+      title: 'Empty Groups',
+      emptyMessage: 'Please select groups',
+      targetRoute: '/dummy',
+      filteredGroupIds: [],
+    );
+
+    await tester.pumpWidget(createWidget(config: config));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Please select groups'), findsOneWidget);
+    expect(find.text('Group One'), findsNothing);
+  });
 }

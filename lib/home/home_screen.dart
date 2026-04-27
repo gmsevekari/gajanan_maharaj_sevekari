@@ -27,6 +27,7 @@ import 'package:gajanan_maharaj_sevekari/providers/event_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_selection_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
+import 'package:gajanan_maharaj_sevekari/shared/gajanan_maharaj_group_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -210,6 +211,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
     cards.add(
       _buildIconGridItem(
+        key: const Key('parayan_card'),
         context: context,
         title: localizations.parayanTitle,
         imagePath: isGaneshotsav
@@ -218,7 +220,38 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ? 'resources/images/festive_icons/diwali/parayan.png'
             : 'resources/images/icon/Parayan.png',
         imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 100.0,
-        onTap: () => Navigator.pushNamed(context, Routes.gajananMaharajGroups),
+        onTap: () {
+          final selectedGroupIds =
+              context.read<GroupSelectionProvider>().selectedGroupIds;
+
+          if (selectedGroupIds.length == 1) {
+            final groupId = selectedGroupIds.first;
+            final configProvider = context.read<AppConfigProvider>();
+            final group = configProvider.appConfig?.gajananMaharajGroups
+                .firstWhere((g) => g.id == groupId);
+            final locale = Localizations.localeOf(context).languageCode;
+            final groupName = locale == 'mr' ? group?.nameMr : group?.nameEn;
+
+            Navigator.pushNamed(
+              context,
+              Routes.parayanList,
+              arguments: {'groupId': groupId, 'groupName': groupName},
+            );
+          } else {
+            Navigator.pushNamed(
+              context,
+              Routes.gajananMaharajGroups,
+              arguments: GroupScreenConfig(
+                title: localizations.parayanTitle,
+                emptyMessage: selectedGroupIds.isEmpty
+                    ? localizations.noParayanGroupsSelectedMessage
+                    : localizations.noActiveParayans,
+                targetRoute: Routes.parayanList,
+                filteredGroupIds: selectedGroupIds,
+              ),
+            );
+          }
+        },
       ),
     );
     cards.add(
@@ -1156,6 +1189,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildIconGridItem({
+    Key? key,
     required BuildContext context,
     required String title,
     IconData? icon,
@@ -1190,6 +1224,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             shape: theme.cardTheme.shape,
             child: FestivalTapEffect(
               child: InkWell(
+                key: key,
                 onTap: onTap,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

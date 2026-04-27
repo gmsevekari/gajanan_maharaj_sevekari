@@ -18,6 +18,9 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/shared/gajanan_maharaj_group_screen.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_list_screen.dart';
 
 // Mock Providers
 class MockAppConfigProvider extends Mock implements AppConfigProvider {}
@@ -97,10 +100,16 @@ void main() {
     return MultiProvider(
       providers: [
         Provider<FirebaseFirestore>.value(value: fakeFirestore),
-        ChangeNotifierProvider<AppConfigProvider>.value(value: mockConfigProvider),
-        ChangeNotifierProvider<GroupSelectionProvider>.value(value: mockGroupProvider),
+        ChangeNotifierProvider<AppConfigProvider>.value(
+          value: mockConfigProvider,
+        ),
+        ChangeNotifierProvider<GroupSelectionProvider>.value(
+          value: mockGroupProvider,
+        ),
         ChangeNotifierProvider<EventProvider>.value(value: mockEventProvider),
-        ChangeNotifierProvider<FestivalProvider>.value(value: mockFestivalProvider),
+        ChangeNotifierProvider<FestivalProvider>.value(
+          value: mockFestivalProvider,
+        ),
         ChangeNotifierProvider<ThemeProvider>.value(value: mockThemeProvider),
         ChangeNotifierProvider<LocaleProvider>.value(value: mockLocaleProvider),
         ChangeNotifierProvider<FontProvider>.value(value: mockFontProvider),
@@ -110,6 +119,27 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.getTheme(ThemePreset.saffron, false),
         home: const HomeScreen(),
+        onGenerateRoute: (settings) {
+          if (settings.name == Routes.gajananMaharajGroups) {
+            return MaterialPageRoute(
+              settings: settings,
+              builder: (_) => const GajananMaharajGroupScreen(),
+            );
+          }
+          if (settings.name == Routes.parayanList) {
+            // Mock ParayanListScreen for navigation test
+            return MaterialPageRoute(
+              builder:
+                  (_) => Scaffold(
+                    appBar: AppBar(title: const Text('Parayan List')),
+                    body: Text(
+                      'Group: ${(settings.arguments as Map)['groupId']}',
+                    ),
+                  ),
+            );
+          }
+          return null;
+        },
       ),
     );
   }
@@ -230,4 +260,5 @@ void main() {
       expect(find.text('Seattle Pooja'), findsOneWidget);
     });
   });
+
 }

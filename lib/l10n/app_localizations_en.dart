@@ -1743,4 +1743,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get swipeHint => 'Swipe for other groups';
+
+  @override
+  String get noParayanGroupsSelectedMessage =>
+      'Please select one or more groups from Settings -> Manage Groups to view/participate in Parayans. Jai Gajanan 🙏🏻';
 }

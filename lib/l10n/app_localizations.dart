@@ -3397,6 +3397,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Swipe for other groups'**
   String get swipeHint;
+
+  /// No description provided for @noParayanGroupsSelectedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select one or more groups from Settings -> Manage Groups to view/participate in Parayans. Jai Gajanan 🙏🏻'**
+  String get noParayanGroupsSelectedMessage;
 }
 
 class _AppLocalizationsDelegate

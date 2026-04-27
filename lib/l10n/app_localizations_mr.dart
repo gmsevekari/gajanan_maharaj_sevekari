@@ -1748,4 +1748,8 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get swipeHint => 'इतर ग्रुप्ससाठी स्वाइप करा';
+
+  @override
+  String get noParayanGroupsSelectedMessage =>
+      'कृपया पारायण पाहण्यासाठी/सहभागी होण्यासाठी सेटिंग्ज -> ग्रुप्स मॅनेज करा मधून एक किंवा अधिक ग्रुप्स निवडा. जय गजानन 🙏🏻';
 }
