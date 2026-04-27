@@ -143,33 +143,56 @@ class ManageGroupsScreen extends StatelessWidget {
                   delegate: SliverChildBuilderDelegate((context, index) {
                     final group = availableGroups[index];
                     final name = locale == 'mr' ? group.nameMr : group.nameEn;
-                    return Card(
+                    return Padding(
                       key: ValueKey('available_${group.id}'),
-                      margin: const EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 16.0,
                         vertical: 6.0,
                       ),
-                      elevation: theme.cardTheme.elevation ?? 2.0,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 4.0,
-                        ),
-                        title: Text(
-                          name,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(
-                            Icons.add_circle,
-                            color: theme.colorScheme.primary,
+                      child: Card(
+                        margin: EdgeInsets.zero,
+                        elevation: theme.cardTheme.elevation ?? 2.0,
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12.0,
+                            vertical: 4.0,
                           ),
-                          onPressed: () {
-                            groupProvider.addGroup(group.id);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(localizations.groupAdded)),
-                            );
-                          },
+                          leading: CircleAvatar(
+                            backgroundColor:
+                                theme.colorScheme.surfaceContainerHighest,
+                            backgroundImage:
+                                group.icon != null && group.icon!.isNotEmpty
+                                    ? AssetImage(group.icon!)
+                                    : null,
+                            child:
+                                group.icon == null || group.icon!.isEmpty
+                                    ? Icon(
+                                      Icons.location_on_outlined,
+                                      color:
+                                          theme.colorScheme.onSurfaceVariant,
+                                    )
+                                    : null,
+                          ),
+                          title: Text(
+                            name,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(
+                              Icons.add_circle,
+                              color: theme.colorScheme.primary,
+                            ),
+                            onPressed: () {
+                              groupProvider.addGroup(group.id);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(localizations.groupAdded),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     );
@@ -202,18 +225,43 @@ class ManageGroupsScreen extends StatelessWidget {
         child: Card(
           margin: EdgeInsets.zero,
           elevation: theme.cardTheme.elevation ?? 2.0,
+          shape: (theme.cardTheme.shape as RoundedRectangleBorder?)?.copyWith(
+            side: BorderSide(color: theme.colorScheme.primary, width: 2),
+          ),
           child: ListTile(
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 12.0,
               vertical: 4.0,
             ),
+            leading: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ReorderableDragStartListener(
+                  index: index,
+                  child: Icon(Icons.drag_indicator, color: theme.hintColor),
+                ),
+                const SizedBox(width: 8),
+                CircleAvatar(
+                  backgroundColor: theme.colorScheme.primary,
+                  backgroundImage:
+                      group.icon != null && group.icon!.isNotEmpty
+                          ? AssetImage(group.icon!)
+                          : null,
+                  child:
+                      group.icon == null || group.icon!.isEmpty
+                          ? Icon(
+                            Icons.location_on_outlined,
+                            color: theme.colorScheme.onPrimary,
+                          )
+                          : null,
+                ),
+              ],
+            ),
             title: Text(
               name,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            leading: ReorderableDragStartListener(
-              index: index,
-              child: Icon(Icons.drag_indicator, color: theme.hintColor),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             trailing: IconButton(
               icon: const Icon(Icons.remove_circle, color: Colors.red),
