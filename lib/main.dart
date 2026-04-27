@@ -59,6 +59,7 @@ import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_d
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/user_notifications_screen.dart';
 import 'package:gajanan_maharaj_sevekari/onboarding/group_selection_screen.dart';
+import 'package:gajanan_maharaj_sevekari/providers/event_provider.dart';
 import 'package:gajanan_maharaj_sevekari/other/favorites_screen.dart';
 import 'package:gajanan_maharaj_sevekari/other/favorite_item_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/story/story_type_picker_screen.dart';
@@ -141,6 +142,11 @@ void main() async {
         ),
         ChangeNotifierProvider.value(value: festivalProvider),
         ChangeNotifierProvider.value(value: groupSelectionProvider),
+        ChangeNotifierProvider(
+          create: (context) => EventProvider(
+            groupSelectionProvider: context.read<GroupSelectionProvider>(),
+          ),
+        ),
       ],
       child: const MyApp(),
     ),
