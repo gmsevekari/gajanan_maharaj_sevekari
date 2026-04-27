@@ -3,45 +3,45 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum EventType { weeklyPooja, specialEvent, other }
 
 class Event {
-  final String title_mr;
-  final String title_en;
-  final Timestamp start_time;
-  final Timestamp? end_time;
-  final String? location_mr;
-  final String? location_en;
-  final String? details_mr;
-  final String? details_en;
+  final String titleMr;
+  final String titleEn;
+  final Timestamp startTime;
+  final Timestamp? endTime;
+  final String? locationMr;
+  final String? locationEn;
+  final String? detailsMr;
+  final String? detailsEn;
   final String? address;
-  final EventType event_type;
+  final EventType eventType;
   final String? groupId;
 
   const Event({
-    required this.title_mr,
-    required this.title_en,
-    required this.start_time,
-    this.end_time,
-    this.location_mr,
-    this.location_en,
-    this.details_mr,
-    this.details_en,
+    required this.titleMr,
+    required this.titleEn,
+    required this.startTime,
+    this.endTime,
+    this.locationMr,
+    this.locationEn,
+    this.detailsMr,
+    this.detailsEn,
     this.address,
-    this.event_type = EventType.other,
+    this.eventType = EventType.other,
     this.groupId,
   });
 
   factory Event.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data() as Map<String, dynamic>;
     return Event(
-      title_mr: data['title_mr'] ?? '',
-      title_en: data['title_en'] ?? '',
-      start_time: data['start_time'] ?? Timestamp.now(),
-      end_time: data['end_time'] as Timestamp?,
-      location_mr: data['location_mr'] as String?,
-      location_en: data['location_en'] as String?,
-      details_mr: data['details_mr'] as String?,
-      details_en: data['details_en'] as String?,
+      titleMr: data['title_mr'] ?? '',
+      titleEn: data['title_en'] ?? '',
+      startTime: data['start_time'] ?? Timestamp.now(),
+      endTime: data['end_time'] as Timestamp?,
+      locationMr: data['location_mr'] as String?,
+      locationEn: data['location_en'] as String?,
+      detailsMr: data['details_mr'] as String?,
+      detailsEn: data['details_en'] as String?,
       address: data['address'] as String?,
-      event_type: _parseEventType(data['event_type'] as String?),
+      eventType: _parseEventType(data['event_type'] as String?),
       groupId: data['groupId'] as String?,
     );
   }

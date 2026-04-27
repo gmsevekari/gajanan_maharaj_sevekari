@@ -1,14 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/calendar_export_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
@@ -20,7 +17,7 @@ class EventCalendarScreen extends StatefulWidget {
   const EventCalendarScreen({super.key, this.initialDate});
 
   @override
-  _EventCalendarScreenState createState() => _EventCalendarScreenState();
+  State<EventCalendarScreen> createState() => _EventCalendarScreenState();
 }
 
 class _EventCalendarScreenState extends State<EventCalendarScreen>
@@ -68,12 +65,12 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
           final List<Event> specialEvents = [];
           for (var doc in snapshot.docs) {
             final event = Event.fromFirestore(doc);
-            if (event.start_time.toDate().isBefore(today)) continue;
+            if (event.startTime.toDate().isBefore(today)) continue;
             allEvents.add(event);
-            if (event.event_type == EventType.specialEvent) {
+            if (event.eventType == EventType.specialEvent) {
               specialEvents.add(event);
             }
-            final date = event.start_time.toDate();
+            final date = event.startTime.toDate();
             final day = DateTime.utc(date.year, date.month, date.day);
             if (events[day] == null) {
               events[day] = [];
@@ -94,7 +91,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
     setState(() {
       _filteredEvents = _allEvents.where((event) {
         final title =
-            event.title_mr.toLowerCase() + event.title_en.toLowerCase();
+            event.titleMr.toLowerCase() + event.titleEn.toLowerCase();
         return title.contains(query);
       }).toList();
     });
@@ -118,7 +115,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
     final locale = Localizations.localeOf(context).languageCode;
 
     for (var event in events) {
-      final date = event.start_time.toDate();
+      final date = event.startTime.toDate();
       final monthYear = formatMonthYear(date, locale);
 
       if (monthYear != currentMonth) {
@@ -160,7 +157,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
           final event = item as Event;
           final isSelected =
               selectedDate != null &&
-              isSameDay(event.start_time.toDate(), selectedDate);
+              isSameDay(event.startTime.toDate(), selectedDate);
           return _buildEventCard(event, isSelected: isSelected);
         }
       },
@@ -323,7 +320,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
       const Duration(days: 90),
     ); // Show 3 months of upcoming events from selected day
     final eventsToShow = _allEvents.where((event) {
-      final eventDate = event.start_time.toDate();
+      final eventDate = event.startTime.toDate();
       return (eventDate.isAfter(_selectedDay!) ||
               isSameDay(eventDate, _selectedDay)) &&
           eventDate.isBefore(endDate);
@@ -336,19 +333,19 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
     final locale = Localizations.localeOf(context).languageCode;
     final theme = Theme.of(context);
 
-    final title = locale == 'mr' ? event.title_mr : event.title_en;
+    final title = locale == 'mr' ? event.titleMr : event.titleEn;
     final location =
-        (locale == 'mr' ? event.location_mr : event.location_en) ?? '';
+        (locale == 'mr' ? event.locationMr : event.locationEn) ?? '';
     final details =
-        (locale == 'mr' ? event.details_mr : event.details_en) ?? '';
+        (locale == 'mr' ? event.detailsMr : event.detailsEn) ?? '';
 
-    final startTime = formatTimeDetailed(event.start_time.toDate(), locale);
-    final String? endTime = event.end_time != null
-        ? formatTimeDetailed(event.end_time!.toDate(), locale)
+    final startTime = formatTimeDetailed(event.startTime.toDate(), locale);
+    final String? endTime = event.endTime != null
+        ? formatTimeDetailed(event.endTime!.toDate(), locale)
         : null;
 
     final eventDateString = formatDateWithDay(
-      event.start_time.toDate(),
+      event.startTime.toDate(),
       locale,
     );
 

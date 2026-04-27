@@ -56,7 +56,7 @@ void main() {
 
       expect(provider.groupedEvents.containsKey('g1'), isTrue);
       expect(
-        provider.groupedEvents['g1']?.weeklyPooja?.title_en,
+        provider.groupedEvents['g1']?.weeklyPooja?.titleEn,
         'Weekly Pooja',
       );
     });
@@ -112,7 +112,7 @@ void main() {
       await provider.fetchEvents();
 
       expect(
-        provider.groupedEvents['g1']?.specialEvent?.title_en,
+        provider.groupedEvents['g1']?.specialEvent?.titleEn,
         'Ongoing Event',
       );
     });
@@ -181,7 +181,7 @@ void main() {
           .fetchEvents(); // Manually trigger since we are mocking the provider listener
       await Future.delayed(Duration.zero);
 
-      expect(provider.groupedEvents['g1']?.weeklyPooja?.title_en, 'New Event');
+      expect(provider.groupedEvents['g1']?.weeklyPooja?.titleEn, 'New Event');
     });
 
     test('should handle Firestore errors gracefully', () async {
@@ -207,9 +207,9 @@ void main() {
 
       final notEmpty = GroupEvents(
         weeklyPooja: Event(
-          title_mr: '',
-          title_en: '',
-          start_time: Timestamp.now(),
+          titleMr: '',
+          titleEn: '',
+          startTime: Timestamp.now(),
         ),
       );
       expect(notEmpty.isEmpty, isFalse);
@@ -239,11 +239,11 @@ void main() {
       await provider.fetchEvents();
 
       expect(
-        provider.groupedEvents['g1']?.weeklyPooja?.title_en,
+        provider.groupedEvents['g1']?.weeklyPooja?.titleEn,
         'Group 1 Event',
       );
       expect(
-        provider.groupedEvents['g2']?.weeklyPooja?.title_en,
+        provider.groupedEvents['g2']?.weeklyPooja?.titleEn,
         'Group 2 Event',
       );
     });

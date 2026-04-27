@@ -131,10 +131,10 @@ void main() {
       when(() => mockEventProvider.groupedEvents).thenReturn({
         'g1': GroupEvents(
           weeklyPooja: Event(
-            title_en: 'Weekly Pooja',
-            title_mr: 'पूजा',
-            start_time: now,
-            event_type: EventType.weeklyPooja,
+            titleEn: 'Weekly Pooja',
+            titleMr: 'पूजा',
+            startTime: now,
+            eventType: EventType.weeklyPooja,
           ),
         ),
       });
@@ -156,18 +156,18 @@ void main() {
       when(() => mockEventProvider.groupedEvents).thenReturn({
         'g1': GroupEvents(
           weeklyPooja: Event(
-            title_en: 'Seattle Pooja',
-            title_mr: 'पूजा',
-            start_time: now,
-            event_type: EventType.weeklyPooja,
+            titleEn: 'Seattle Pooja',
+            titleMr: 'पूजा',
+            startTime: now,
+            eventType: EventType.weeklyPooja,
           ),
         ),
         'g2': GroupEvents(
           weeklyPooja: Event(
-            title_en: 'Chicago Pooja',
-            title_mr: 'पूजा',
-            start_time: now,
-            event_type: EventType.weeklyPooja,
+            titleEn: 'Chicago Pooja',
+            titleMr: 'पूजा',
+            startTime: now,
+            eventType: EventType.weeklyPooja,
           ),
         ),
       });
@@ -200,10 +200,10 @@ void main() {
       when(() => mockEventProvider.groupedEvents).thenReturn({
         'g1': GroupEvents(
           weeklyPooja: Event(
-            title_en: 'Seattle Pooja',
-            title_mr: 'पूजा',
-            start_time: now,
-            event_type: EventType.weeklyPooja,
+            titleEn: 'Seattle Pooja',
+            titleMr: 'पूजा',
+            startTime: now,
+            eventType: EventType.weeklyPooja,
           ),
         ),
         'g2': const GroupEvents(), // Empty group

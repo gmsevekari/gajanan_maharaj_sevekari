@@ -50,9 +50,9 @@ class CalendarExportService {
     buffer.write('X-WR-TIMEZONE:UTC\r\n');
 
     for (final event in events) {
-      final start = event.start_time.toDate().toUtc();
+      final start = event.startTime.toDate().toUtc();
       final end =
-          event.end_time?.toDate().toUtc() ??
+          event.endTime?.toDate().toUtc() ??
           start.add(const Duration(hours: 1));
 
       final stamp = DateFormat(
@@ -63,15 +63,15 @@ class CalendarExportService {
 
       buffer.write('BEGIN:VEVENT\r\n');
       buffer.write(
-        _fold('UID:${start.millisecondsSinceEpoch}_${event.title_en.hashCode}@gmsevekari.com') + '\r\n',
+        _fold('UID:${start.millisecondsSinceEpoch}_${event.titleEn.hashCode}@gmsevekari.com') + '\r\n',
       );
       buffer.write('DTSTAMP:$stamp\r\n');
       buffer.write('DTSTART:$dtStart\r\n');
       buffer.write('DTEND:$dtEnd\r\n');
-      buffer.write(_fold('SUMMARY:${_escapeIcs(event.title_en)}') + '\r\n');
-      buffer.write(_fold('DESCRIPTION:${_escapeIcs(event.details_en ?? "")}') + '\r\n');
-      if (event.location_en != null) {
-        buffer.write(_fold('LOCATION:${_escapeIcs(event.location_en!)}') + '\r\n');
+      buffer.write(_fold('SUMMARY:${_escapeIcs(event.titleEn)}') + '\r\n');
+      buffer.write(_fold('DESCRIPTION:${_escapeIcs(event.detailsEn ?? "")}') + '\r\n');
+      if (event.locationEn != null) {
+        buffer.write(_fold('LOCATION:${_escapeIcs(event.locationEn!)}') + '\r\n');
       }
       buffer.write('END:VEVENT\r\n');
     }

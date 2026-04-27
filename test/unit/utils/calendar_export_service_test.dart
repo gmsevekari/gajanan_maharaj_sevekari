@@ -11,10 +11,10 @@ void main() {
       final start = Timestamp.fromDate(DateTime(2024, 5, 1, 10, 0));
       final events = [
         Event(
-          title_en: 'Test Event 1',
-          title_mr: 'चाचणी',
-          start_time: start,
-          details_en: 'Location 1',
+          titleEn: 'Test Event 1',
+          titleMr: 'चाचणी',
+          startTime: start,
+          detailsEn: 'Location 1',
         ),
       ];
 
@@ -60,9 +60,9 @@ void main() {
     test('ICS should escape special characters', () {
       final events = [
         Event(
-          title_en: 'Escape; Me, Now\\',
-          title_mr: '',
-          start_time: Timestamp.now(),
+          titleEn: 'Escape; Me, Now\\',
+          titleMr: '',
+          startTime: Timestamp.now(),
         ),
       ];
 

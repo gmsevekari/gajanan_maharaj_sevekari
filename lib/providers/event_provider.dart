@@ -108,18 +108,18 @@ class EventProvider extends ChangeNotifier {
       for (var doc in eventsSnapshot.docs) {
         final event = Event.fromFirestore(doc);
 
-        // Check if event is still active (end_time > now)
+        // Check if event is still active (endTime > now)
         final effectiveEndTime =
-            event.end_time?.toDate() ??
-            event.start_time.toDate().add(const Duration(hours: 1));
+            event.endTime?.toDate() ??
+            event.startTime.toDate().add(const Duration(hours: 1));
 
         if (effectiveEndTime.isBefore(now)) continue;
 
-        if (weeklyPooja == null && event.event_type == EventType.weeklyPooja) {
+        if (weeklyPooja == null && event.eventType == EventType.weeklyPooja) {
           weeklyPooja = event;
         }
         if (specialEvent == null &&
-            event.event_type == EventType.specialEvent) {
+            event.eventType == EventType.specialEvent) {
           specialEvent = event;
         }
         if (weeklyPooja != null && specialEvent != null) break;

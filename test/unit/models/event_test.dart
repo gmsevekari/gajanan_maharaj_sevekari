@@ -37,16 +37,16 @@ void main() {
       final doc = FakeDocumentSnapshot('test_id', data);
       final event = Event.fromFirestore(doc);
 
-      expect(event.title_mr, 'शीर्षक');
-      expect(event.title_en, 'Title');
-      expect(event.start_time, now);
-      expect(event.end_time, now);
-      expect(event.location_mr, 'स्थान');
-      expect(event.location_en, 'Location');
-      expect(event.details_mr, 'तपशील');
-      expect(event.details_en, 'Details');
+      expect(event.titleMr, 'शीर्षक');
+      expect(event.titleEn, 'Title');
+      expect(event.startTime, now);
+      expect(event.endTime, now);
+      expect(event.locationMr, 'स्थान');
+      expect(event.locationEn, 'Location');
+      expect(event.detailsMr, 'तपशील');
+      expect(event.detailsEn, 'Details');
       expect(event.address, '123 Street');
-      expect(event.event_type, EventType.specialEvent);
+      expect(event.eventType, EventType.specialEvent);
       expect(event.groupId, 'group_1');
     });
 
@@ -55,26 +55,26 @@ void main() {
       final doc = FakeDocumentSnapshot('test_id', data);
       final event = Event.fromFirestore(doc);
 
-      expect(event.title_mr, '');
-      expect(event.title_en, '');
-      expect(event.start_time, isA<Timestamp>());
-      expect(event.end_time, isNull);
-      expect(event.event_type, EventType.other);
+      expect(event.titleMr, '');
+      expect(event.titleEn, '');
+      expect(event.startTime, isA<Timestamp>());
+      expect(event.endTime, isNull);
+      expect(event.eventType, EventType.other);
       expect(event.groupId, isNull);
     });
 
     test('EventType parsing handles various formats', () {
-      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'weekly pooja'})).event_type, EventType.weeklyPooja);
-      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'weekly_pooja'})).event_type, EventType.weeklyPooja);
-      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'weeklypooja'})).event_type, EventType.weeklyPooja);
-      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'WEEKLY POOJA'})).event_type, EventType.weeklyPooja);
+      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'weekly pooja'})).eventType, EventType.weeklyPooja);
+      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'weekly_pooja'})).eventType, EventType.weeklyPooja);
+      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'weeklypooja'})).eventType, EventType.weeklyPooja);
+      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'WEEKLY POOJA'})).eventType, EventType.weeklyPooja);
       
-      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'special event'})).event_type, EventType.specialEvent);
-      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'special_event'})).event_type, EventType.specialEvent);
-      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'specialevent'})).event_type, EventType.specialEvent);
+      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'special event'})).eventType, EventType.specialEvent);
+      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'special_event'})).eventType, EventType.specialEvent);
+      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'specialevent'})).eventType, EventType.specialEvent);
       
-      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'other'})).event_type, EventType.other);
-      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': null})).event_type, EventType.other);
+      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': 'other'})).eventType, EventType.other);
+      expect(Event.fromFirestore(FakeDocumentSnapshot('1', {'event_type': null})).eventType, EventType.other);
     });
   });
 }

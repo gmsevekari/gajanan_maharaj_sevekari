@@ -583,19 +583,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (events.specialEvent != null) count++;
       if (events.parayan != null) count++;
 
-      double height = 160.0; // Base for 1 event
-      if (count == 2) height = 220.0;
-      if (count == 3) height = 280.0;
+      double height = 150.0; // Base for 1 event
+      if (count == 2) height = 205.0;
+      if (count == 3) height = 260.0;
 
       // Add space for the group header if carousel is active
-      if (activeGroups.length > 1) height += 24.0;
+      if (activeGroups.length > 1) height += 20.0;
       return height;
     }).toList();
 
     // Interpolate height based on the current scroll position
     double interpolatedHeight;
     if (activeGroups.length <= 1) {
-      interpolatedHeight = groupHeights.isNotEmpty ? groupHeights.first : 160.0;
+      interpolatedHeight = groupHeights.isNotEmpty ? groupHeights.first : 150.0;
     } else {
       final int index = _currentCarouselPage.floor().clamp(0, groupHeights.length - 1);
       final double fraction = _currentCarouselPage - index;
@@ -973,8 +973,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         isFestiveTheme && activeFestival.id == 'ganesh_chaturthi';
     final isDiwali = isFestiveTheme && activeFestival.id == 'diwali';
     final locale = Localizations.localeOf(context).languageCode;
-    final eventTitle = locale == 'mr' ? event.title_mr : event.title_en;
-    final eventDate = event.start_time.toDate();
+    final eventTitle = locale == 'mr' ? event.titleMr : event.titleEn;
+    final eventDate = event.startTime.toDate();
     final eventDateString = formatDateWithDay(eventDate, locale);
 
     return InkWell(
