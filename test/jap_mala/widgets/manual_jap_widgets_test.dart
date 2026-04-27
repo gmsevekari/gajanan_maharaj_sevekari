@@ -39,7 +39,6 @@ void main() {
     testWidgets('triggers callbacks when enabled', (tester) async {
       bool incrementCalled = false;
       bool decrementCalled = false;
-      bool resetCalled = false;
 
       await tester.pumpWidget(wrap(
         JapControlButtons(
@@ -47,17 +46,14 @@ void main() {
           enabled: true,
           onIncrement: () => incrementCalled = true,
           onDecrement: () => decrementCalled = true,
-          onReset: () => resetCalled = true,
         ),
       ));
 
       await tester.tap(find.byIcon(Icons.add));
       await tester.tap(find.byIcon(Icons.remove));
-      await tester.tap(find.byIcon(Icons.refresh));
 
       expect(incrementCalled, isTrue);
       expect(decrementCalled, isTrue);
-      expect(resetCalled, isTrue);
     });
 
     testWidgets('does not trigger callbacks when disabled', (tester) async {
