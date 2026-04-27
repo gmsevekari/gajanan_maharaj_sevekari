@@ -91,5 +91,34 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getStringList('selected_groups'), ['g2', 'g1', 'g3']);
     });
+
+    test('shouldShowOnboarding should be true if no groups were ever set', () async {
+      SharedPreferences.setMockInitialValues({});
+      provider = GroupSelectionProvider();
+      await provider.loadPreferences();
+      expect(provider.shouldShowOnboarding, isTrue);
+    });
+
+    test('shouldShowOnboarding should be false if groups were already set (even if empty)', () async {
+      SharedPreferences.setMockInitialValues({
+        'selected_groups': [],
+      });
+      provider = GroupSelectionProvider();
+      await provider.loadPreferences();
+      expect(provider.shouldShowOnboarding, isFalse);
+    });
+
+    test('completeOnboarding should set shouldShowOnboarding to false and persist', () async {
+      SharedPreferences.setMockInitialValues({});
+      provider = GroupSelectionProvider();
+      await provider.loadPreferences();
+      expect(provider.shouldShowOnboarding, isTrue);
+
+      await provider.completeOnboarding();
+      expect(provider.shouldShowOnboarding, isFalse);
+
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getStringList('selected_groups'), isNotNull);
+    });
   });
 }
