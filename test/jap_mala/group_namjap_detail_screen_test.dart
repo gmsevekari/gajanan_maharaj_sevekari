@@ -12,6 +12,7 @@ import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/namjap_signup_dialog.dart';
+import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/manual_jap_tab.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockGroupNamjapService extends Mock implements GroupNamjapService {}
@@ -163,5 +164,37 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.widgetWithText(ElevatedButton, 'Edit Signup'), findsOneWidget);
+  });
+
+  testWidgets('Order of components: Manual Entry -> Submit -> Mala Tab', (tester) async {
+    when(() => mockGroupProvider.isJoined('test_event')).thenReturn(true);
+    when(() => mockGroupProvider.memberName).thenReturn('Test User');
+    when(() => mockJapProvider.totalCount).thenReturn(0);
+
+    await tester.pumpWidget(createWidget('test_event'));
+    await tester.pumpAndSettle();
+
+    final manualEntry = find.byIcon(Icons.edit_note);
+    final submitButton = find.widgetWithText(ElevatedButton, 'Submit Namjap Count: 0');
+    final malaTab = find.byType(ManualJapTab);
+
+    expect(manualEntry, findsOneWidget);
+    expect(submitButton, findsOneWidget);
+    expect(malaTab, findsOneWidget);
+
+    final manualEntryY = tester.getCenter(manualEntry).dy;
+    final submitButtonY = tester.getCenter(submitButton).dy;
+    final malaTabY = tester.getCenter(malaTab).dy;
+
+    expect(
+      manualEntryY < submitButtonY,
+      isTrue,
+      reason: 'Manual Entry should be above Submit',
+    );
+    expect(
+      submitButtonY < malaTabY,
+      isTrue,
+      reason: 'Submit should be above Mala Tab',
+    );
   });
 }

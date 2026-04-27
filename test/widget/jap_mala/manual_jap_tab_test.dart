@@ -88,4 +88,35 @@ void main() {
     await tester.pumpAndSettle();
     // Verification is implicit by triggering the code path
   });
+
+  testWidgets('Mala animation is horizontally centered in compact mode', (tester) async {
+    await tester.pumpWidget(createTab(compact: true));
+    
+    final minusButton = find.byIcon(Icons.remove);
+    final plusButton = find.byIcon(Icons.add);
+    
+    // Check their parent SizedBox widths
+    final minusSizedBox = tester.widget<SizedBox>(
+      find.ancestor(
+        of: minusButton,
+        matching: find.byType(SizedBox),
+      ).first,
+    );
+    
+    expect(minusSizedBox.width, 72.0);
+  });
+
+  testWidgets('Increment button has increased height in compact mode', (tester) async {
+    await tester.pumpWidget(createTab(compact: true));
+    
+    final plusContainer = tester.widget<Container>(
+      find.ancestor(
+        of: find.byIcon(Icons.add),
+        matching: find.byType(Container),
+      ).first,
+    );
+    
+    expect(plusContainer.constraints?.minHeight, 100.0);
+    expect(plusContainer.constraints?.minWidth, 72.0);
+  });
 }

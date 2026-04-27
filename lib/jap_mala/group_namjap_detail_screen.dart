@@ -210,17 +210,15 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
 
                                       return Column(
                                         children: [
-                                          ManualJapTab(
-                                            compact: true,
-                                            enabled: isJoined && isOngoing,
-                                          ),
-                                          if (isJoined && isOngoing)
-                                            TextButton.icon(
-                                              onPressed: () => _showManualEntryDialog(context, japProvider),
-                                              icon: const Icon(Icons.edit_note, size: 20),
-                                              label: Text(localizations.manualEntryLabel),
-                                            ),
                                           const SizedBox(height: 12),
+                                          if (isJoined && isOngoing)
+                                            Center(
+                                              child: TextButton.icon(
+                                                onPressed: () => _showManualEntryDialog(context, japProvider),
+                                                icon: const Icon(Icons.edit_note, size: 20),
+                                                label: Text(localizations.manualEntryLabel),
+                                              ),
+                                            ),
                                           SizedBox(
                                             width: double.infinity,
                                             height: isLandscape ? 40 : 50,
@@ -272,6 +270,11 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
                                                 ),
                                               ),
                                             ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          ManualJapTab(
+                                            compact: true,
+                                            enabled: isJoined && isOngoing,
                                           ),
                                         ],
                                       );

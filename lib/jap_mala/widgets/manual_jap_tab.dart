@@ -141,16 +141,19 @@ class _ManualJapTabState extends State<ManualJapTab>
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: Row(
         children: [
-          // Left Side: Minus button
-          JapControlButtons.buildSecondaryButton(
-            context: context,
-            icon: Icons.remove,
-            isEnabled: isEnabled,
-            compact: true,
-            onTap: () {
-              HapticFeedback.lightImpact();
-              provider.decrement();
-            },
+          // Left Side: Minus button (Balanced width for centering)
+          SizedBox(
+            width: 72,
+            child: JapControlButtons.buildSecondaryButton(
+              context: context,
+              icon: Icons.remove,
+              isEnabled: isEnabled,
+              compact: true,
+              onTap: () {
+                HapticFeedback.lightImpact();
+                provider.decrement();
+              },
+            ),
           ),
           // Spacing before animation
           const SizedBox(width: 12),

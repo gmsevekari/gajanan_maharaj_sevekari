@@ -55,7 +55,7 @@ class JapControlButtons extends StatelessWidget {
       onTap: isEnabled ? onTap : null,
       child: Container(
         width: compact ? 72 : 80,
-        height: compact ? 44 : 50,
+        height: compact ? 100 : 50,
         decoration: BoxDecoration(
           color: isEnabled
               ? theme.appColors.primarySwatch
