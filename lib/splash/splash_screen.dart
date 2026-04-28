@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
@@ -11,6 +12,10 @@ import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
+  /// Allows overriding the web platform check for testing purposes.
+  @visibleForTesting
+  static bool isWebOverride = kIsWeb;
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -27,8 +32,8 @@ class _SplashScreenState extends State<SplashScreen> {
       final groupProvider =
           Provider.of<GroupSelectionProvider>(context, listen: false);
 
-      // 1. Check for Onboarding (First Launch)
-      if (groupProvider.shouldShowOnboarding) {
+      // 1. Check for Onboarding (First Launch) - Disable on Web
+      if (groupProvider.shouldShowOnboarding && !SplashScreen.isWebOverride) {
         debugPrint('[Onboarding] Redirecting to GroupSelectionScreen');
         Navigator.of(context).pushReplacementNamed(Routes.onboarding);
         return;

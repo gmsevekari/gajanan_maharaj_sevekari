@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
@@ -10,6 +11,10 @@ import 'package:gajanan_maharaj_sevekari/utils/deeplink_manager.dart';
 class GroupSelectionScreen extends StatefulWidget {
   const GroupSelectionScreen({super.key});
 
+  /// Allows overriding the web platform check for testing purposes.
+  @visibleForTesting
+  static bool isWebOverride = kIsWeb;
+
   @override
   State<GroupSelectionScreen> createState() => _GroupSelectionScreenState();
 }
@@ -19,6 +24,13 @@ class _GroupSelectionScreenState extends State<GroupSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (GroupSelectionScreen.isWebOverride) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacementNamed(Routes.home);
+      });
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     final localizations = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
     final theme = Theme.of(context);
