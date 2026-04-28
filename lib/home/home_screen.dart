@@ -28,6 +28,7 @@ import 'package:gajanan_maharaj_sevekari/providers/group_selection_provider.dart
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/shared/gajanan_maharaj_group_screen.dart';
+import 'package:expandable_page_view/expandable_page_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -613,40 +614,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       return _buildEmptyStateCard(context, localizations);
     }
 
-    // Calculate individual heights for each group
-    final List<double> groupHeights = activeGroups.map((groupId) {
-      final events = eventProvider.groupedEvents[groupId]!;
-      int count = 0;
-      if (events.weeklyPooja != null) count++;
-      if (events.specialEvent != null) count++;
-      if (events.parayan != null) count++;
-
-      double height = 155.0; // Base for 1 event
-      if (count == 2) height = 210.0;
-      if (count == 3) height = 265.0;
-
-      // Add space for the group header if carousel is active
-      if (activeGroups.length > 1) height += 20.0;
-      return height;
-    }).toList();
-
-    // Interpolate height based on the current scroll position
-    double interpolatedHeight;
-    if (activeGroups.length <= 1) {
-      interpolatedHeight = groupHeights.isNotEmpty ? groupHeights.first : 150.0;
-    } else {
-      final int index = _currentCarouselPage.floor().clamp(0, groupHeights.length - 1);
-      final double fraction = _currentCarouselPage - index;
-
-      final h1 = groupHeights[index];
-      final h2 = (index + 1 < groupHeights.length) ? groupHeights[index + 1] : h1;
-
-      interpolatedHeight = h1 + (h2 - h1) * fraction;
-    }
+    final activeFestival = context.watch<FestivalProvider>().activeFestival;
+    final themeProvider = context.watch<ThemeProvider>();
+    final isFestiveTheme = activeFestival != null &&
+        themeProvider.themePreset == activeFestival.themePreset;
+    final isDiwali = isFestiveTheme && activeFestival.id == 'diwali';
 
     final screenWidth = MediaQuery.of(context).size.width;
     final double viewportFraction = (screenWidth - 24) / screenWidth;
-    final double targetFraction = activeGroups.length > 1 ? viewportFraction : 1.0;
+    final double targetFraction =
+        activeGroups.length > 1 ? viewportFraction : 1.0;
 
     // Recreate controller if the fraction needs to change (e.g. 1 group vs multiple)
     if (_carouselPageController.viewportFraction != targetFraction) {
@@ -668,34 +645,31 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
-          height: interpolatedHeight,
-          child: PageView.builder(
-            itemCount: activeGroups.length,
-            controller: _carouselPageController,
-            itemBuilder: (context, index) {
-              final groupId = activeGroups[index];
-              final events = eventProvider.groupedEvents[groupId]!;
-              final allGroups =
-                  configProvider.appConfig?.gajananMaharajGroups ?? [];
-              final group = allGroups.firstWhere(
-                (g) => g.id == groupId,
-                orElse: () => GajananMaharajGroup(
-                  id: groupId,
-                  nameEn: groupId,
-                  nameMr: groupId,
-                ),
-              );
+        ExpandablePageView.builder(
+          itemCount: activeGroups.length,
+          controller: _carouselPageController,
+          itemBuilder: (context, index) {
+            final groupId = activeGroups[index];
+            final events = eventProvider.groupedEvents[groupId]!;
+            final allGroups =
+                configProvider.appConfig?.gajananMaharajGroups ?? [];
+            final group = allGroups.firstWhere(
+              (g) => g.id == groupId,
+              orElse: () => GajananMaharajGroup(
+                id: groupId,
+                nameEn: groupId,
+                nameMr: groupId,
+              ),
+            );
 
-              return _buildGroupEventPage(
-                context,
-                localizations,
-                group,
-                events,
-                activeGroups.length > 1,
-              );
-            },
-          ),
+            return _buildGroupEventPage(
+              context,
+              localizations,
+              group,
+              events,
+              activeGroups.length > 1,
+            );
+          },
         ),
         if (activeGroups.length > 1)
           Padding(
@@ -801,10 +775,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       shape: theme.cardTheme.shape,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (showHeader) ...[
                 Text(
@@ -870,8 +843,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ],
           ),
         ),
-      ),
-    );
+      );
 
     Widget decoratedCard;
     if (!isGaneshotsav && !isDiwali) {

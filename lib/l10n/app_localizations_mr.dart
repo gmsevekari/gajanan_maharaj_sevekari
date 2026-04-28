@@ -1741,7 +1741,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get onboardingDescription =>
-      'कृपया तुमच्याशी संबंधित गजानन महाराज ग्रुप निवडा. तुम्ही हे नंतर कधीही सेटिंग्जमध्ये बदलू शकता.';
+      'तुमच्या ग्रुपचे पारायण आणि नामजप पाहण्यासाठी/सहभागी होण्यासाठी, कृपया तुमच्याशी संबंधित गजानन महाराज ग्रुप निवडा. तुम्ही हे नंतर कधीही सेटिंग्जमध्ये बदलू शकता.';
 
   @override
   String get finishOnboarding => 'सेव्ह करा';

@@ -3383,7 +3383,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingDescription.
   ///
   /// In en, this message translates to:
-  /// **'Please select the Gajanan Maharaj group(s) you are associated with. You can always change this later in Settings.'**
+  /// **'Please select the Gajanan Maharaj group(s) to view/participate in your group\'s Parayan and Namjap. You can always change this later in Settings.'**
   String get onboardingDescription;
 
   /// No description provided for @finishOnboarding.

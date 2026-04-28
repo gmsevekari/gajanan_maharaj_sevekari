@@ -1736,7 +1736,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingDescription =>
-      'Please select the Gajanan Maharaj group(s) you are associated with. You can always change this later in Settings.';
+      'Please select the Gajanan Maharaj group(s) to view/participate in your group\'s Parayan and Namjap. You can always change this later in Settings.';
 
   @override
   String get finishOnboarding => 'Save';

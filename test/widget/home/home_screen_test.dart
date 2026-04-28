@@ -21,6 +21,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/shared/gajanan_maharaj_group_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_list_screen.dart';
+import 'package:expandable_page_view/expandable_page_view.dart';
 
 // Mock Providers
 class MockAppConfigProvider extends Mock implements AppConfigProvider {}
@@ -153,7 +154,7 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
 
       expect(find.text('No upcoming events'), findsOneWidget);
-      expect(find.byType(PageView), findsNothing);
+      expect(find.byType(ExpandablePageView), findsNothing);
     });
 
     testWidgets('renders PageView and event rows for a single group', (tester) async {
@@ -207,7 +208,7 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
 
       // PageView should be present
-      expect(find.byType(PageView), findsOneWidget);
+      expect(find.byType(ExpandablePageView), findsOneWidget);
       
       // Group Header for the first page should be visible
       expect(find.text('Seattle'), findsOneWidget);
@@ -217,7 +218,7 @@ void main() {
       expect(find.text('Swipe for other groups'), findsOneWidget);
 
       // Swipe to next group
-      await tester.drag(find.byType(PageView), const Offset(-400, 0));
+      await tester.drag(find.byType(ExpandablePageView), const Offset(-400, 0));
       await tester.pumpAndSettle();
 
       // Now Chicago header should be visible
@@ -253,7 +254,7 @@ void main() {
       expect(find.byIcon(Icons.swipe), findsNothing);
 
       // Attempt to swipe
-      await tester.drag(find.byType(PageView), const Offset(-400, 0));
+      await tester.drag(find.byType(ExpandablePageView), const Offset(-400, 0));
       await tester.pumpAndSettle();
 
       // Still Seattle Pooja (no second page)
