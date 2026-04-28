@@ -1747,4 +1747,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noParayanGroupsSelectedMessage =>
       'Please select one or more groups from Settings -> Manage Groups to view/participate in Parayans. Jai Gajanan 🙏🏻';
+
+  @override
+  String get noNamjapGroupsSelectedMessage =>
+      'Please select one or more groups from Settings -> Manage Groups to view/participate in Group Namjap. Jai Gajanan 🙏🏻';
 }
