@@ -53,11 +53,15 @@ class _ParayanListScreenState extends State<ParayanListScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.groupName ?? localizations.parayanListTitle,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.colorScheme.onPrimary,
-            fontWeight: FontWeight.bold,
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            widget.groupName ?? localizations.parayanListTitle,
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: theme.colorScheme.onPrimary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         backgroundColor: theme.appColors.primarySwatch,

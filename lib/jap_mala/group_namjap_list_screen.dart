@@ -50,11 +50,15 @@ class _GroupNamjapListScreenState extends State<GroupNamjapListScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          localizations.groupNamjapLabel,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.colorScheme.onPrimary,
-            fontWeight: FontWeight.bold,
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            localizations.groupNamjapLabel,
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: theme.colorScheme.onPrimary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         backgroundColor: theme.appColors.primarySwatch,
