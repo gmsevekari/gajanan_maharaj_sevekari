@@ -59,7 +59,7 @@ class _ClaimAllocationDialogState extends State<ClaimAllocationDialog> {
         '${_countryCodeController.text.trim()}${_phoneController.text.trim()}';
 
     // Validate Join Code if applicable
-    if (widget.groupId == 'gajanan_maharaj_seattle') {
+    if (widget.groupId == GroupConstants.seattle) {
       final enteredCode = _joinCodeController.text.trim();
       if (enteredCode != widget.expectedJoinCode) {
         setState(() => _isLoading = false);
@@ -217,7 +217,7 @@ class _ClaimAllocationDialogState extends State<ClaimAllocationDialog> {
                 ),
               ],
             ),
-            if (widget.groupId == 'gajanan_maharaj_seattle') ...[
+            if (widget.groupId == GroupConstants.seattle) ...[
               const SizedBox(height: 16),
               TextFormField(
                 controller: _joinCodeController,

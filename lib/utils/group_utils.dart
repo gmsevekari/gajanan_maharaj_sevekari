@@ -1,3 +1,8 @@
+class GroupConstants {
+  static const String seattle = 'gajanan_maharaj_seattle';
+  static const String gunjan = 'gajanan_gunjan';
+}
+
 class GroupUtils {
   /// Returns the default country code based on the [groupId].
   ///
@@ -8,9 +13,9 @@ class GroupUtils {
   /// Default fallback is '+1'.
   static String getDefaultCountryCode(String? groupId) {
     switch (groupId) {
-      case 'gajanan_maharaj_seattle':
+      case GroupConstants.seattle:
         return '+1';
-      case 'gajanan_gunjan':
+      case GroupConstants.gunjan:
         return '+91';
       default:
         return '+1';

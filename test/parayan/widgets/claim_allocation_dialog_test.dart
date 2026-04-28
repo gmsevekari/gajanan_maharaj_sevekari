@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 import '../../mocks.dart';
 
 void main() {
@@ -87,6 +88,7 @@ void main() {
               deviceId: 'd1',
               daysCount: 3,
               parayanService: mockService,
+              groupId: GroupConstants.gunjan,
             ),
           ),
         ),
@@ -127,6 +129,7 @@ void main() {
               deviceId: 'd1',
               daysCount: 3,
               parayanService: mockService,
+              groupId: GroupConstants.gunjan,
             ),
           ),
         ),
@@ -192,6 +195,7 @@ void main() {
               deviceId: 'd1',
               daysCount: 3,
               parayanService: mockService,
+              groupId: GroupConstants.gunjan,
             ),
           ),
         ),
@@ -240,6 +244,7 @@ void main() {
               deviceId: 'd1',
               daysCount: 3,
               parayanService: mockService,
+              groupId: GroupConstants.gunjan,
             ),
           ),
         ),
@@ -279,6 +284,7 @@ void main() {
               deviceId: 'd1',
               daysCount: 3,
               parayanService: mockService,
+              groupId: GroupConstants.gunjan,
             ),
           ),
         ),
@@ -308,6 +314,7 @@ void main() {
               deviceId: 'd1',
               daysCount: 3,
               parayanService: mockService,
+              groupId: GroupConstants.gunjan,
             ),
           ),
         ),
@@ -360,6 +367,7 @@ void main() {
                       deviceId: 'd1',
                       daysCount: 3,
                       parayanService: mockService,
+                      groupId: GroupConstants.gunjan,
                     ),
                   ),
                   child: const Text('Open Dialog'),

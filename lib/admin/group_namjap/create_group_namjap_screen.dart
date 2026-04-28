@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/group_namjap_event.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_namjap_service.dart';
-import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 
 class CreateGroupNamjapScreen extends StatefulWidget {
   const CreateGroupNamjapScreen({super.key});
@@ -72,7 +72,7 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
 
     try {
       final dateStr = DateFormat('yyyyMMdd').format(_startDate);
-      const groupId = 'gajanan_maharaj_seattle';
+      const groupId = GroupConstants.seattle;
       final target = _targetCountController.text.trim();
       final docId = '${groupId}_${dateStr}_$target';
 

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 
 class ParayanEvent {
   final String id;
@@ -66,7 +67,7 @@ class ParayanEvent {
           ? Map<String, dynamic>.from(data['sentReminders'] as Map)
           : {},
       joinCode: data['joinCode'],
-      groupId: data['groupId'] ?? 'gajanan_maharaj_seattle',
+      groupId: data['groupId'] ?? GroupConstants.seattle,
       timezone: data['timezone'] ?? 'America/Los_Angeles',
     );
   }

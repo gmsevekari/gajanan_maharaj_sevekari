@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
-import 'package:gajanan_maharaj_sevekari/parayan/utils/parayan_extensions.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
@@ -13,13 +12,13 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_add_participants_screen.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 
 enum _ParticipantFilter { all, completed, pending, unclaimed }
 
@@ -508,7 +507,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                 opacity: _isStatusLocked ? 0.6 : 1.0,
                 child: Column(
                   children: [
-                    if (event.groupId == 'gajanan_gunjan')
+                    if (event.groupId == GroupConstants.gunjan)
                       SizedBox(
                         width: double.infinity,
                         child: SegmentedButton<String>(
@@ -2038,7 +2037,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
       final isLastGroup = gi == batchGroups.length - 1;
 
       // ── Full-width group separator row ──
-      if (event.id.startsWith('gajanan_gunjan') ||
+      if (event.id.startsWith(GroupConstants.gunjan) ||
           (event.status != 'upcoming' && event.status != 'enrolling')) {
         rows.add(
           Container(

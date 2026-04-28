@@ -68,6 +68,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/navigator_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/deeplink_manager.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:app_links/app_links.dart';
@@ -470,7 +471,7 @@ class _MyAppState extends State<MyApp> {
                     }
 
                     if (eventId != null &&
-                        eventId.startsWith('gajanan_gunjan')) {
+                        eventId.startsWith(GroupConstants.gunjan)) {
                       return MaterialPageRoute(
                         builder: (context) => PreallocatedParayanDetailScreen(
                           event: event,

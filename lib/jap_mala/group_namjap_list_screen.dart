@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 import 'package:provider/provider.dart';
 
 class GroupNamjapListScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ class _GroupNamjapListScreenState extends State<GroupNamjapListScreen>
 
     // Cache streams in initState to avoid flickering (Rule 35)
     final service = context.read<GroupNamjapService>();
-    final effectiveGroupId = widget.groupId ?? 'gajanan_maharaj_seattle';
+    final effectiveGroupId = widget.groupId ?? GroupConstants.seattle;
     _activeEventsStream = service.getActiveEvents(effectiveGroupId);
     _completedEventsStream = service.getCompletedEvents(effectiveGroupId);
   }
