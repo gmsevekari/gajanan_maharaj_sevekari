@@ -11,29 +11,34 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
-  const AdminDashboardScreen({super.key});
+  final FirebaseAuth? auth;
+  final FirebaseFirestore? firestore;
+
+  const AdminDashboardScreen({super.key, this.auth, this.firestore});
 
   @override
   State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   late final Stream<DocumentSnapshot> _adminStream;
 
   @override
   void initState() {
     super.initState();
-    final user = _auth.currentUser;
-    _adminStream = FirebaseFirestore.instance
+    final auth = widget.auth ?? FirebaseAuth.instance;
+    final firestore = widget.firestore ?? FirebaseFirestore.instance;
+    final user = auth.currentUser;
+    _adminStream = firestore
         .collection('admin_allowlist')
         .doc(user?.email)
         .snapshots();
   }
 
   Future<void> _logout() async {
+    final auth = widget.auth ?? FirebaseAuth.instance;
     AdminSessionService.clearSession();
-    await _auth.signOut();
+    await auth.signOut();
     await GoogleSignIn.instance.signOut();
     if (!mounted) return;
     // Pop back to the settings screen where they came from
@@ -41,11 +46,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Future<void> _toggleTypoNotifications(bool enabled) async {
-    final user = _auth.currentUser;
+    final auth = widget.auth ?? FirebaseAuth.instance;
+    final firestore = widget.firestore ?? FirebaseFirestore.instance;
+    final user = auth.currentUser;
     if (user == null || user.email == null) return;
 
     try {
-      await FirebaseFirestore.instance
+      await firestore
           .collection('admin_allowlist')
           .doc(user.email)
           .update({'typoNotificationsEnabled': enabled});
@@ -62,16 +69,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final User? user = _auth.currentUser;
+    final auth = widget.auth ?? FirebaseAuth.instance;
+    final User? user = auth.currentUser;
     final theme = Theme.of(context);
 
     final localizations = AppLocalizations.of(context)!;
 
     // Wrap the entire scaffold in a Listener to capture any touch events and reset the timer
     return Listener(
-      onPointerDown: (_) => AdminSessionService.registerInteraction(),
-      onPointerMove: (_) => AdminSessionService.registerInteraction(),
-      onPointerUp: (_) => AdminSessionService.registerInteraction(),
+      onPointerDown: (_) => AdminSessionService.registerInteraction(auth: auth),
+      onPointerMove: (_) => AdminSessionService.registerInteraction(auth: auth),
+      onPointerUp: (_) => AdminSessionService.registerInteraction(auth: auth),
       child: Scaffold(
         appBar: AppBar(
           title: Text(localizations.adminDashboardTitle),
@@ -227,6 +235,24 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               Navigator.pushNamed(
                                 context,
                                 Routes.adminGroupNamjapDashboard,
+                              );
+                            },
+                          ),
+                        if (adminUser.roles.contains('super_admin') ||
+                            (adminUser.roles.contains('group_admin') &&
+                                adminUser.groupId != null))
+                          _buildModuleCard(
+                            context: context,
+                            title: localizations.manageGroupAdminsModuleTitle,
+                            subtitle:
+                                localizations.manageGroupAdminsModuleSubtitle,
+                            icon: Icons.manage_accounts,
+                            color: theme.appColors.primarySwatch[600]!,
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                Routes.adminManageGroupAdmins,
+                                arguments: adminUser,
                               );
                             },
                           ),
