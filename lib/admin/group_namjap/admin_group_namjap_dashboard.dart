@@ -410,46 +410,48 @@ class _UpcomingCard extends StatelessWidget {
     final theme = Theme.of(context);
     final langCode = Localizations.localeOf(context).languageCode;
     final isEnglish = langCode == 'en';
-    final dateStr = formatDateShort(event.startDate, langCode).toUpperCase();
 
-    return Card(
-      margin: EdgeInsets.zero,
-      child: InkWell(
-        onTap: () => Navigator.pushNamed(
-          context,
-          Routes.adminGroupNamjapDetail,
-          arguments: event.id,
-        ),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                isEnglish ? event.nameEn : event.nameMr,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: InkWell(
+          onTap: () => Navigator.pushNamed(
+            context,
+            Routes.adminGroupNamjapDetail,
+            arguments: event.id,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isEnglish ? event.nameEn : event.nameMr,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                "${formatDateShort(event.startDate, langCode)} - ${formatDateShort(event.endDate, langCode)}",
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.appColors.secondaryText,
+                const SizedBox(height: 4),
+                Text(
+                  "${formatDateShort(event.startDate, langCode)} - ${formatDateShort(event.endDate, langCode)}",
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.appColors.secondaryText,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                "${AppLocalizations.of(context)!.groupNamjapTargetPrefix}${formatNumberLocalized(event.targetCount, langCode, pad: false)}",
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
+                const SizedBox(height: 4),
+                Text(
+                  "${AppLocalizations.of(context)!.groupNamjapTargetPrefix}${formatNumberLocalized(event.targetCount, langCode, pad: false)}",
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
