@@ -1,165 +1,173 @@
-const test = require('firebase-functions-test')();
-const chai = require('chai');
-const sinon = require('sinon');
+const test = require("firebase-functions-test")();
+const chai = require("chai");
+const sinon = require("sinon");
 const expect = chai.expect;
-const admin = require('firebase-admin');
-const { DateTime, Settings } = require('luxon');
+const admin = require("firebase-admin");
+const {DateTime, Settings} = require("luxon");
 
-describe('Namjap Cloud Functions', () => {
-    let myFunctions;
-    let firestoreMock;
+describe("Namjap Cloud Functions", () => {
+  let myFunctions;
+  let firestoreMock;
 
-    before(() => {
-        if (admin.initializeApp.restore) admin.initializeApp.restore();
-        sinon.stub(admin, 'initializeApp');
-        
-        myFunctions = require('../index.js');
+  before(() => {
+    if (admin.initializeApp.restore) admin.initializeApp.restore();
+    sinon.stub(admin, "initializeApp");
+
+    myFunctions = require("../index.js");
+  });
+
+  after(() => {
+    sinon.restore();
+    test.cleanup();
+    Settings.now = () => Date.now(); // Reset luxon time
+  });
+
+  describe("updateNamjapStatuses", () => {
+    let enrollingGetStub; let ongoingGetStub;
+
+    beforeEach(() => {
+      firestoreMock = {
+        collection: sinon.stub(),
+      };
+
+      if (admin.app.restore) admin.app.restore();
+      sinon.stub(admin, "app").returns({
+        firestore: () => firestoreMock,
+      });
+
+      if (admin.firestore.restore) admin.firestore.restore();
+      sinon.stub(admin, "firestore").returns(firestoreMock);
+
+      enrollingGetStub = sinon.stub();
+      ongoingGetStub = sinon.stub();
+
+      firestoreMock.collection.withArgs("group_namjap_events").returns({
+        where: sinon.stub().callsFake((field, op, value) => {
+          if (value === "enrolling") return {get: enrollingGetStub};
+          if (value === "ongoing") return {get: ongoingGetStub};
+          return {get: sinon.stub().resolves({docs: []})};
+        }),
+      });
     });
 
-    after(() => {
-        sinon.restore();
-        test.cleanup();
-        Settings.now = () => Date.now(); // Reset luxon time
+    afterEach(() => {
+      sinon.restore();
     });
 
-    describe('updateNamjapStatuses', () => {
-        let dbStub, enrollingGetStub, ongoingGetStub;
+    it("should transition enrolling to ongoing if start time is reached",
+        async () => {
+          // Set "now" to April 25, 2026 11:30 AM IST
+          const now = DateTime.fromISO("2026-04-25T11:30:00",
+              {zone: "Asia/Kolkata"});
+          Settings.now = () => now.toMillis();
 
-        beforeEach(() => {
-            firestoreMock = {
-                collection: sinon.stub(),
-            };
+          const startDate = now; // Exactly 11:30 AM
+          const updateStub = sinon.stub().resolves();
 
-            if (admin.app.restore) admin.app.restore();
-            sinon.stub(admin, 'app').returns({
-                firestore: () => firestoreMock
-            });
+          enrollingGetStub.resolves({
+            docs: [{
+              id: "event_1",
+              data: () => ({
+                startDate: {toDate: () => startDate.toJSDate()},
+                timezone: "Asia/Kolkata",
+                status: "enrolling",
+              }),
+              ref: {update: updateStub},
+            }],
+          });
+          ongoingGetStub.resolves({docs: []});
 
-            if (admin.firestore.restore) admin.firestore.restore();
-            dbStub = sinon.stub(admin, 'firestore').returns(firestoreMock);
+          const wrapped = test.wrap(myFunctions.updateNamjapStatuses);
+          await wrapped({});
 
-            enrollingGetStub = sinon.stub();
-            ongoingGetStub = sinon.stub();
-
-            // Setup for the two queries in the function
-            firestoreMock.collection.withArgs('group_namjap_events').returns({
-                where: sinon.stub().callsFake((field, op, value) => {
-                    if (value === 'enrolling') return { get: enrollingGetStub };
-                    if (value === 'ongoing') return { get: ongoingGetStub };
-                    return { get: sinon.stub().resolves({ docs: [] }) };
-                })
-            });
+          expect(updateStub.calledWith({status: "ongoing"})).to.be.true;
         });
 
-        afterEach(() => {
-            sinon.restore();
+    it("should NOT transition enrolling if start time is not reached",
+        async () => {
+          // Set "now" to April 25, 2026 11:29 AM IST
+          const now = DateTime.fromISO("2026-04-25T11:29:00",
+              {zone: "Asia/Kolkata"});
+          Settings.now = () => now.toMillis();
+
+          const startDate = now.plus({minutes: 1}); // Scheduled for 11:30 AM
+          const updateStub = sinon.stub().resolves();
+
+          enrollingGetStub.resolves({
+            docs: [{
+              id: "event_2",
+              data: () => ({
+                startDate: {toDate: () => startDate.toJSDate()},
+                timezone: "Asia/Kolkata",
+                status: "enrolling",
+              }),
+              ref: {update: updateStub},
+            }],
+          });
+          ongoingGetStub.resolves({docs: []});
+
+          const wrapped = test.wrap(myFunctions.updateNamjapStatuses);
+          await wrapped({});
+
+          expect(updateStub.called).to.be.false;
         });
 
-        it('should transition enrolling to ongoing if start date is reached (Seattle)', async () => {
-            // Set "now" to April 23, 2026 10:00 AM Seattle
-            const now = DateTime.fromISO('2026-04-23T10:00:00', { zone: 'America/Los_Angeles' });
-            Settings.now = () => now.toMillis();
+    it("should transition ongoing to completed after end time has passed",
+        async () => {
+          // Set "now" to April 25, 2026 12:00 PM
+          const now = DateTime.fromISO("2026-04-25T12:00:00",
+              {zone: "America/Los_Angeles"});
+          Settings.now = () => now.toMillis();
 
-            const startDate = now.startOf('day'); // April 23
-            const updateStub = sinon.stub().resolves();
+          const endDate = now.minus({minutes: 1}); // Ended at 11:59 AM
+          const updateStub = sinon.stub().resolves();
 
-            enrollingGetStub.resolves({
-                docs: [{
-                    id: 'event_seattle',
-                    data: () => ({
-                        startDate: { toDate: () => startDate.toJSDate() },
-                        timezone: 'America/Los_Angeles',
-                        status: 'enrolling'
-                    }),
-                    ref: { update: updateStub }
-                }]
-            });
-            ongoingGetStub.resolves({ docs: [] });
+          enrollingGetStub.resolves({docs: []});
+          ongoingGetStub.resolves({
+            docs: [{
+              id: "event_3",
+              data: () => ({
+                endDate: {toDate: () => endDate.toJSDate()},
+                timezone: "America/Los_Angeles",
+                status: "ongoing",
+              }),
+              ref: {update: updateStub},
+            }],
+          });
 
-            const wrapped = test.wrap(myFunctions.updateNamjapStatuses);
-            await wrapped({});
+          const wrapped = test.wrap(myFunctions.updateNamjapStatuses);
+          await wrapped({});
 
-            expect(updateStub.calledWith({ status: 'ongoing' })).to.be.true;
+          expect(updateStub.calledWith({status: "completed"})).to.be.true;
         });
 
-        it('should transition enrolling to ongoing if start date is reached (India)', async () => {
-            // Set "now" to April 24, 2026 02:00 AM India
-            // At this time, it's still April 23 in Seattle, but April 24 in India.
-            const nowIndia = DateTime.fromISO('2026-04-24T02:00:00', { zone: 'Asia/Kolkata' });
-            Settings.now = () => nowIndia.toMillis();
+    it("should NOT transition ongoing to completed if end time is NOW",
+        async () => {
+          const now = DateTime.fromISO("2026-04-25T12:00:00",
+              {zone: "America/Los_Angeles"});
+          Settings.now = () => now.toMillis();
 
-            const startDate = nowIndia.startOf('day'); // April 24
-            const updateStub = sinon.stub().resolves();
+          const endDate = now; // Ends exactly at 12:00 PM
+          const updateStub = sinon.stub().resolves();
 
-            enrollingGetStub.resolves({
-                docs: [{
-                    id: 'event_india',
-                    data: () => ({
-                        startDate: { toDate: () => startDate.toJSDate() },
-                        timezone: 'Asia/Kolkata',
-                        status: 'enrolling'
-                    }),
-                    ref: { update: updateStub }
-                }]
-            });
-            ongoingGetStub.resolves({ docs: [] });
+          enrollingGetStub.resolves({docs: []});
+          ongoingGetStub.resolves({
+            docs: [{
+              id: "event_4",
+              data: () => ({
+                endDate: {toDate: () => endDate.toJSDate()},
+                timezone: "America/Los_Angeles",
+                status: "ongoing",
+              }),
+              ref: {update: updateStub},
+            }],
+          });
 
-            const wrapped = test.wrap(myFunctions.updateNamjapStatuses);
-            await wrapped({});
+          const wrapped = test.wrap(myFunctions.updateNamjapStatuses);
+          await wrapped({});
 
-            expect(updateStub.calledWith({ status: 'ongoing' })).to.be.true;
+          // Should only complete AFTER endDate
+          expect(updateStub.called).to.be.false;
         });
-
-        it('should transition ongoing to completed if end date has passed', async () => {
-            const now = DateTime.fromISO('2026-04-25T10:00:00', { zone: 'America/Los_Angeles' });
-            Settings.now = () => now.toMillis();
-
-            const endDate = now.minus({ days: 1 }).startOf('day'); // April 24
-            const updateStub = sinon.stub().resolves();
-
-            enrollingGetStub.resolves({ docs: [] });
-            ongoingGetStub.resolves({
-                docs: [{
-                    id: 'event_completed',
-                    data: () => ({
-                        endDate: { toDate: () => endDate.toJSDate() },
-                        timezone: 'America/Los_Angeles',
-                        status: 'ongoing'
-                    }),
-                    ref: { update: updateStub }
-                }]
-            });
-
-            const wrapped = test.wrap(myFunctions.updateNamjapStatuses);
-            await wrapped({});
-
-            expect(updateStub.calledWith({ status: 'completed' })).to.be.true;
-        });
-
-        it('should not transition enrolling if start date is in the future', async () => {
-            const now = DateTime.fromISO('2026-04-23T10:00:00', { zone: 'America/Los_Angeles' });
-            Settings.now = () => now.toMillis();
-
-            const startDate = now.plus({ days: 1 }).startOf('day'); // April 24
-            const updateStub = sinon.stub().resolves();
-
-            enrollingGetStub.resolves({
-                docs: [{
-                    id: 'event_future',
-                    data: () => ({
-                        startDate: { toDate: () => startDate.toJSDate() },
-                        timezone: 'America/Los_Angeles',
-                        status: 'enrolling'
-                    }),
-                    ref: { update: updateStub }
-                }]
-            });
-            ongoingGetStub.resolves({ docs: [] });
-
-            const wrapped = test.wrap(myFunctions.updateNamjapStatuses);
-            await wrapped({});
-
-            expect(updateStub.called).to.be.false;
-        });
-    });
+  });
 });

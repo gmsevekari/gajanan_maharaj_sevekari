@@ -1,31 +1,33 @@
-const { onCall, HttpsError } = require("firebase-functions/v2/https");
-const { onSchedule } = require("firebase-functions/v2/scheduler");
+const {onCall, HttpsError} = require("firebase-functions/v2/https");
+const {onSchedule} = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
-const { DateTime } = require("luxon");
+const {DateTime} = require("luxon");
 
 /**
  * Auto-transition Parayan statuses based on dates
  */
-exports.updateParayanStatuses = onSchedule("0 * * * *", async (event) => {
+exports.updateParayanStatuses = onSchedule("*/30 * * * *", async (event) => {
   const db = admin.firestore();
   logger.info(`Running Parayan status update at ${DateTime.now().toISO()}`);
 
   const parayansRef = db.collection("parayan_events");
 
   // 1. Allocated -> Ongoing (On start date)
-  const allocatedQuery = await parayansRef.where("status", "==", "allocated").get();
+  const allocatedQuery = await parayansRef
+      .where("status", "==", "allocated").get();
   for (const doc of allocatedQuery.docs) {
     const data = doc.data();
     const timezone = data.timezone || "America/Los_Angeles";
     const nowInZone = DateTime.now().setZone(timezone);
-    const todayInZone = nowInZone.startOf("day");
 
-    const startDate = DateTime.fromJSDate(data.startDate.toDate()).setZone(timezone).startOf("day");
+    const startDate = DateTime.fromJSDate(data.startDate.toDate())
+        .setZone(timezone);
 
-    if (todayInZone >= startDate) {
-      await doc.ref.update({ status: "ongoing" });
-      logger.info(`Auto-transitioned Parayan ${doc.id} to ongoing. Zone: ${timezone}, Now: ${nowInZone.toISO()}`);
+    if (nowInZone >= startDate) {
+      await doc.ref.update({status: "ongoing"});
+      logger.info(`Auto-transitioned Parayan ${doc.id} to ongoing. ` +
+          `Zone: ${timezone}, Now: ${nowInZone.toISO()}`);
     }
   }
 
@@ -35,13 +37,14 @@ exports.updateParayanStatuses = onSchedule("0 * * * *", async (event) => {
     const data = doc.data();
     const timezone = data.timezone || "America/Los_Angeles";
     const nowInZone = DateTime.now().setZone(timezone);
-    const todayInZone = nowInZone.startOf("day");
 
-    const endDate = DateTime.fromJSDate(data.endDate.toDate()).setZone(timezone).startOf("day");
+    const endDate = DateTime.fromJSDate(data.endDate.toDate())
+        .setZone(timezone);
 
-    if (todayInZone > endDate) {
-      await doc.ref.update({ status: "completed" });
-      logger.info(`Auto-transitioned Parayan ${doc.id} to completed. Zone: ${timezone}, Now: ${nowInZone.toISO()}`);
+    if (nowInZone > endDate) {
+      await doc.ref.update({status: "completed"});
+      logger.info(`Auto-transitioned Parayan ${doc.id} to completed. ` +
+          `Zone: ${timezone}, Now: ${nowInZone.toISO()}`);
     }
   }
 });
@@ -50,7 +53,7 @@ exports.updateParayanStatuses = onSchedule("0 * * * *", async (event) => {
  * Phase 4: Cloud Allocation & Data Flattening
  */
 exports.allocateParayanAdhyays = onCall(async (request) => {
-  const { eventId } = request.data;
+  const {eventId} = request.data;
   const auth = request.auth;
 
   if (!auth) {
@@ -75,7 +78,7 @@ exports.allocateParayanAdhyays = onCall(async (request) => {
     const snapshot = await participantsRef.get();
 
     if (snapshot.empty) {
-      return { success: false, message: "No participants to allocate." };
+      return {success: false, message: "No participants to allocate."};
     }
 
     const allMembers = snapshot.docs.map((doc) => ({
@@ -113,7 +116,7 @@ exports.allocateParayanAdhyays = onCall(async (request) => {
         const day3 = (day2 % 21) + 1;
 
         assigned = [day1, day2, day3];
-        completions = { "1": false, "2": false, "3": false };
+        completions = {"1": false, "2": false, "3": false};
         groupNumber = Math.floor(i / groupSize) + 1;
       } else {
         const adhyay = (i % 21) + 1;
@@ -138,8 +141,9 @@ exports.allocateParayanAdhyays = onCall(async (request) => {
 
     await batch.commit();
 
-    logger.info(`Successfully allocated adhyays for ${allMembers.length} members in event ${eventId}`);
-    return { success: true, count: allMembers.length };
+    logger.info(`Successfully allocated adhyays for ${allMembers.length} ` +
+        `members in event ${eventId}`);
+    return {success: true, count: allMembers.length};
   } catch (error) {
     logger.error(`Error in allocateParayanAdhyays: ${error}`);
     throw new HttpsError("internal", error.message);
@@ -150,7 +154,7 @@ exports.allocateParayanAdhyays = onCall(async (request) => {
  * Admin Adding Participants (Incremental Allocation)
  */
 exports.adminAddParticipants = onCall(async (request) => {
-  const { eventId, groups } = request.data;
+  const {eventId, groups} = request.data;
   const auth = request.auth;
 
   if (!auth) {
@@ -169,7 +173,8 @@ exports.adminAddParticipants = onCall(async (request) => {
 
     const eventData = eventDoc.data();
     const type = eventData.type;
-    const isAllocatedOrOngoing = eventData.status === "allocated" || eventData.status === "ongoing";
+    const isAllocatedOrOngoing = eventData.status === "allocated" ||
+        eventData.status === "ongoing";
 
     const participantsRef = eventRef.collection("participants");
     const snapshot = await transaction.get(participantsRef);
@@ -179,7 +184,7 @@ exports.adminAddParticipants = onCall(async (request) => {
     const results = [];
 
     for (const group of groups) {
-      const { phone, names } = group;
+      const {phone, names} = group;
 
       for (const name of names) {
         let assigned = [];
@@ -202,7 +207,7 @@ exports.adminAddParticipants = onCall(async (request) => {
             const day3 = (day2 % 21) + 1;
 
             assigned = [day1, day2, day3];
-            completions = { "1": false, "2": false, "3": false };
+            completions = {"1": false, "2": false, "3": false};
             groupNumber = Math.floor(nextIndex / grpSize) + 1;
           } else {
             const adhyay = (nextIndex % 21) + 1;
@@ -230,13 +235,14 @@ exports.adminAddParticipants = onCall(async (request) => {
         };
 
         transaction.set(memberRef, memberData);
-        results.push({ name: name, index: nextIndex });
+        results.push({name: name, index: nextIndex});
         nextIndex++;
       }
     }
 
-    logger.info(`Admin added ${results.length} participants to event ${eventId}`);
-    return { success: true, count: results.length };
+    logger.info(`Admin added ${results.length} participants to ` +
+        `event ${eventId}`);
+    return {success: true, count: results.length};
   });
 });
 
@@ -244,23 +250,27 @@ exports.adminAddParticipants = onCall(async (request) => {
  * Phase 1: Secure Claim Flow
  */
 exports.claimParayanAllocation = onCall(async (request) => {
-  const { eventId, phone, deviceId, overwrite = false } = request.data;
+  const {eventId, phone, deviceId, overwrite = false} = request.data;
 
   if (!eventId || !phone || !deviceId) {
-    throw new HttpsError("invalid-argument", "Missing required fields.");
+    throw new HttpsError("invalid-argument",
+        "Missing required fields.");
   }
 
   const db = admin.firestore();
   const sanitizedInputPhone = phone.replace(/[^\d+]/g, "");
-  logger.info(`Claim request for event: ${eventId}, phone: ${sanitizedInputPhone}, device: ${deviceId}`);
+  logger.info(`Claim request for event: ${eventId}, ` +
+      `phone: ${sanitizedInputPhone}, device: ${deviceId}`);
 
   try {
-    const participantsRef = db.collection("parayan_events").doc(eventId).collection("participants");
+    const participantsRef = db.collection("parayan_events").doc(eventId)
+        .collection("participants");
 
-    // Standardized lookup: the phone number is expected to be in +<CountryCode><10_Digit_Number> format
+    // Standardized lookup: the phone number is expected to be in
+    // +<CountryCode><10_Digit_Number> format
     const snapshot = await participantsRef
-      .where("phone", "==", sanitizedInputPhone)
-      .get();
+        .where("phone", "==", sanitizedInputPhone)
+        .get();
 
     if (snapshot.empty) {
       return {
@@ -282,24 +292,24 @@ exports.claimParayanAllocation = onCall(async (request) => {
       ) {
         conflictFound = true;
       }
-      participants.push({ id: doc.id, ...data });
+      participants.push({id: doc.id, ...data});
     });
 
     if (conflictFound && !overwrite) {
       return {
         status: "CONFLICT",
         message: "This phone number is already linked to another device.",
-        count: participants.length
+        count: participants.length,
       };
     }
 
     // Perform updates
     const batch = db.batch();
     const now = admin.firestore.Timestamp.now();
-    participants.forEach(p => {
+    participants.forEach((p) => {
       batch.update(participantsRef.doc(p.id), {
         deviceId: deviceId,
-        claimedAt: now
+        claimedAt: now,
       });
     });
 
@@ -307,12 +317,11 @@ exports.claimParayanAllocation = onCall(async (request) => {
 
     return {
       status: "SUCCESS",
-      participants: participants.map(p => ({
+      participants: participants.map((p) => ({
         name: p.name,
-        assignedAdhyays: p.assignedAdhyays || []
-      }))
+        assignedAdhyays: p.assignedAdhyays || [],
+      })),
     };
-
   } catch (error) {
     logger.error(`Error in claimParayanAllocation: ${error}`);
     throw new HttpsError("internal", error.message);

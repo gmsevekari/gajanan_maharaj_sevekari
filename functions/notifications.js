@@ -1,69 +1,69 @@
-const { onDocumentCreated } = require("firebase-functions/v2/firestore");
-const { onSchedule } = require("firebase-functions/v2/scheduler");
+const {onDocumentCreated} = require("firebase-functions/v2/firestore");
+const {onSchedule} = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
-const { DateTime } = require("luxon");
+const {DateTime} = require("luxon");
 
 /**
  * Handle general temple notifications via FCM topic
  */
 exports.sendTempleNotification = onDocumentCreated(
-  "notifications/{notificationId}",
-  async (event) => {
-    const snapshot = event.data;
-    if (!snapshot) {
-      logger.error("No data associated with the event.");
-      return;
-    }
+    "notifications/{notificationId}",
+    async (event) => {
+      const snapshot = event.data;
+      if (!snapshot) {
+        logger.error("No data associated with the event.");
+        return;
+      }
 
-    const data = snapshot.data();
-    if (data.type !== "TEMPLE_NOTIFICATION") {
-      logger.info("Ignoring non-temple notification type:", data.type);
-      return;
-    }
+      const data = snapshot.data();
+      if (data.type !== "TEMPLE_NOTIFICATION") {
+        logger.info("Ignoring non-temple notification type:", data.type);
+        return;
+      }
 
-    const title = data.title || "Temple Notification";
-    const body = data.body || "";
+      const title = data.title || "Temple Notification";
+      const body = data.body || "";
 
-    const message = {
-      notification: { title, body },
-      data: {
-        type: "TEMPLE_NOTIFICATION",
-        notification_id: event.params.notificationId,
-      },
-      android: {
-        priority: "high",
-        notification: {
-          channelId: "temple_notifications",
+      const message = {
+        notification: {title, body},
+        data: {
+          type: "TEMPLE_NOTIFICATION",
+          notification_id: event.params.notificationId,
+        },
+        android: {
           priority: "high",
-          defaultSound: true,
-        },
-      },
-      apns: {
-        headers: {
-          "apns-push-type": "alert",
-          "apns-priority": "10",
-        },
-        payload: {
-          aps: {
-            alert: { title, body },
-            sound: "default",
-            badge: 1,
+          notification: {
+            channelId: "temple_notifications",
+            priority: "high",
+            defaultSound: true,
           },
         },
-      },
-      topic: "temple_notifications",
-    };
+        apns: {
+          headers: {
+            "apns-push-type": "alert",
+            "apns-priority": "10",
+          },
+          payload: {
+            aps: {
+              alert: {title, body},
+              sound: "default",
+              badge: 1,
+            },
+          },
+        },
+        topic: "temple_notifications",
+      };
 
-    logger.info("Sending FCM message:", JSON.stringify(message));
+      logger.info("Sending FCM message:", JSON.stringify(message));
 
-    try {
-      const response = await admin.messaging().send(message);
-      logger.info("Successfully sent Temple Notification. Response ID:", response);
-    } catch (error) {
-      logger.error("Error sending Temple Notification:", error);
-    }
-  },
+      try {
+        const response = await admin.messaging().send(message);
+        logger.info("Successfully sent Temple Notification. ID:", response);
+      } catch (error) {
+        logger.error("Error sending Temple Notification:", error);
+      }
+    },
 );
 
 /**
@@ -71,26 +71,27 @@ exports.sendTempleNotification = onDocumentCreated(
  */
 exports.sendParayanReminders = onSchedule("0 * * * *", async (event) => {
   const db = admin.firestore();
-  const nowSeattle = DateTime.now().setZone("America/Los_Angeles");
-  const todaySeattle = nowSeattle.startOf("day");
-  const currentHourString = nowSeattle.toFormat("HH:00");
-
-  logger.info(`Running Parayan reminders check. Seattle: ${nowSeattle.toISO()}`);
+  logger.info("Running Parayan reminders check.");
 
   const ongoingQuery = await db.collection("parayan_events")
-    .where("status", "==", "ongoing")
-    .get();
+      .where("status", "==", "ongoing")
+      .get();
 
   for (const doc of ongoingQuery.docs) {
     const data = doc.data();
+    const timezone = data.timezone || "America/Los_Angeles";
+    const nowLocal = DateTime.now().setZone(timezone);
+    const todayLocal = nowLocal.startOf("day");
+    const currentHourString = nowLocal.toFormat("HH:00");
+
     const reminderTimes = data.reminderTimes || [];
     if (!reminderTimes.includes(currentHourString)) continue;
 
     const startDate = DateTime.fromJSDate(data.startDate.toDate())
-      .setZone("America/Los_Angeles")
-      .startOf("day");
+        .setZone(timezone)
+        .startOf("day");
 
-    const diffInDays = todaySeattle.diff(startDate, "days").days;
+    const diffInDays = todayLocal.diff(startDate, "days").days;
     const currentDay = Math.floor(diffInDays) + 1;
 
     if (currentDay < 1) continue;
@@ -103,10 +104,11 @@ exports.sendParayanReminders = onSchedule("0 * * * *", async (event) => {
     const topic = `parayan_${doc.id}_day${currentDay}`;
     const title = "Parayan Reminder";
     const eventName = data.title_en || data.title || "Parayan";
-    const body = `Reminder for ${eventName}. Please read your assigned adhyays for Day ${currentDay}.`;
+    const body = `Reminder for ${eventName}. ` +
+        `Please read your assigned adhyays for Day ${currentDay}.`;
 
     const message = {
-      notification: { title, body },
+      notification: {title, body},
       data: {
         type: "PARAYAN_REMINDER",
         event_id: doc.id,
@@ -126,7 +128,7 @@ exports.sendParayanReminders = onSchedule("0 * * * *", async (event) => {
         },
         payload: {
           aps: {
-            alert: { title, body },
+            alert: {title, body},
             sound: "default",
           },
         },
@@ -134,15 +136,15 @@ exports.sendParayanReminders = onSchedule("0 * * * *", async (event) => {
       topic,
     };
 
-    logger.info(`Sending reminder to topic: ${topic}`);
+    logger.info(`Sending reminder to topic: ${topic} (Zone: ${timezone})`);
 
     try {
       await db.collection("notifications").add({
         title,
         body,
-        timestamp: nowSeattle.toISO(),
+        timestamp: nowLocal.toISO(),
         expires_at: admin.firestore.Timestamp.fromDate(
-          nowSeattle.plus({ days: 2 }).toJSDate(),
+            nowLocal.plus({days: 2}).toJSDate(),
         ),
         type: "PARAYAN_REMINDER",
         eventId: doc.id,
@@ -166,63 +168,64 @@ exports.sendParayanReminders = onSchedule("0 * * * *", async (event) => {
  * Sends a notification to the admin typo reports topic.
  */
 exports.onTypoReportCreated = onDocumentCreated(
-  "typo_reports/{reportId}",
-  async (event) => {
-    const snapshot = event.data;
-    if (!snapshot) {
-      logger.error("No data associated with the typo report creation event.");
-      return;
-    }
+    "typo_reports/{reportId}",
+    async (event) => {
+      const snapshot = event.data;
+      if (!snapshot) {
+        logger.error("No data associated with the typo report creation event.");
+        return;
+      }
 
-    const data = snapshot.data();
-    const contentTitle = data.contentTitle || "Content";
-    const title = "New Typo Report";
-    const body = `A typo was reported in: "${contentTitle}"`;
+      const data = snapshot.data();
+      const contentTitle = data.contentTitle || "Content";
+      const title = "New Typo Report";
+      const body = `A typo was reported in: "${contentTitle}"`;
 
-    const message = {
-      notification: {
-        title: title,
-        body: body,
-      },
-      data: {
-        type: "TYPO_REPORT",
-        reportId: event.params.reportId,
-        contentPath: data.contentPath || "",
-      },
-      android: {
-        priority: "high",
+      const message = {
         notification: {
-          channelId: "admin_notifications",
+          title: title,
+          body: body,
+        },
+        data: {
+          type: "TYPO_REPORT",
+          reportId: event.params.reportId,
+          contentPath: data.contentPath || "",
+        },
+        android: {
           priority: "high",
-          defaultSound: true,
-        },
-      },
-      apns: {
-        headers: {
-          "apns-push-type": "alert",
-          "apns-priority": "10",
-        },
-        payload: {
-          aps: {
-            alert: {
-              title: title,
-              body: body,
-            },
-            sound: "default",
-            badge: 1,
+          notification: {
+            channelId: "admin_notifications",
+            priority: "high",
+            defaultSound: true,
           },
         },
-      },
-      topic: "admin_typo_reports",
-    };
+        apns: {
+          headers: {
+            "apns-push-type": "alert",
+            "apns-priority": "10",
+          },
+          payload: {
+            aps: {
+              alert: {
+                title: title,
+                body: body,
+              },
+              sound: "default",
+              badge: 1,
+            },
+          },
+        },
+        topic: "admin_typo_reports",
+      };
 
-    logger.info(`Sending Typo Report notification for ${event.params.reportId} to admin topic.`);
+      logger.info(`Sending Typo Report notification for ` +
+          `${event.params.reportId} to admin topic.`);
 
-    try {
-      const response = await admin.messaging().send(message);
-      logger.info("Successfully sent typo report notification:", response);
-    } catch (error) {
-      logger.error("Error sending typo report notification:", error);
-    }
-  },
+      try {
+        const response = await admin.messaging().send(message);
+        logger.info("Successfully sent typo report notification:", response);
+      } catch (error) {
+        logger.error("Error sending typo report notification:", error);
+      }
+    },
 );
