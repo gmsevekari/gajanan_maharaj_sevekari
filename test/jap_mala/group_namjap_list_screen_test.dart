@@ -72,4 +72,27 @@ void main() {
     // Verify AppBar Icons
     expect(find.byType(ThemedIcon), findsAtLeastNWidgets(2));
   });
+
+  testWidgets('GroupNamjapListScreen displays custom group name in AppBar', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
+          ChangeNotifierProvider(create: (_) => FestivalProvider()),
+          ChangeNotifierProvider<GroupNamjapService>.value(value: mockService),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('en'),
+          home: GroupNamjapListScreen(groupName: 'Seattle Group'),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.text('Seattle Group'), findsOneWidget);
+  });
 }

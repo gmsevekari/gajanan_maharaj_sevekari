@@ -11,8 +11,9 @@ import 'package:provider/provider.dart';
 
 class GroupNamjapListScreen extends StatefulWidget {
   final String? groupId;
+  final String? groupName;
 
-  const GroupNamjapListScreen({super.key, this.groupId});
+  const GroupNamjapListScreen({super.key, this.groupId, this.groupName});
 
   @override
   State<GroupNamjapListScreen> createState() => _GroupNamjapListScreenState();
@@ -54,7 +55,7 @@ class _GroupNamjapListScreenState extends State<GroupNamjapListScreen>
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,
           child: Text(
-            localizations.groupNamjapLabel,
+            widget.groupName ?? localizations.groupNamjapLabel,
             style: theme.textTheme.titleLarge?.copyWith(
               color: theme.colorScheme.onPrimary,
               fontWeight: FontWeight.bold,

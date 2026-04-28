@@ -349,7 +349,14 @@ class _MyAppState extends State<MyApp> {
                 Routes.naamjap: (context) => const NamjapScreen(),
                 Routes.individualNamjap: (context) =>
                     const IndividualNamjapScreen(),
-                Routes.groupNamjap: (context) => const GroupNamjapListScreen(),
+                Routes.groupNamjap: (context) {
+                  final args =
+                      ModalRoute.of(context)?.settings.arguments as Map?;
+                  return GroupNamjapListScreen(
+                    groupId: args?['groupId'],
+                    groupName: args?['groupName'],
+                  );
+                },
                 Routes.groupNamjapDetail: (context) {
                   final args = ModalRoute.of(context)!.settings.arguments;
                   String? eventId;
