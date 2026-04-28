@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
+import 'package:gajanan_maharaj_sevekari/providers/group_selection_provider.dart';
+import 'package:gajanan_maharaj_sevekari/shared/gajanan_maharaj_group_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:provider/provider.dart';
 
 class NamjapScreen extends StatelessWidget {
   const NamjapScreen({super.key});
@@ -15,6 +19,9 @@ class NamjapScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.namjapTitle),
+        centerTitle: true,
+        backgroundColor: theme.appColors.primarySwatch,
+        foregroundColor: theme.colorScheme.onPrimary,
         actions: [
           IconButton(
             icon: const ThemedIcon(LogicalIcon.home),
@@ -34,34 +41,67 @@ class NamjapScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         children: [
           _buildSelectionCard(
-            context,
+            context: context,
             title: localizations.individualNamjapLabel,
             description: localizations.individualNamjapDescription,
             icon: LogicalIcon.person,
             fallbackIcon: Icons.person,
             route: Routes.individualNamjap,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 16.0),
           _buildSelectionCard(
-            context,
+            context: context,
             title: localizations.groupNamjapLabel,
             description: localizations.groupNamjapDescription,
             icon: LogicalIcon.groups,
             fallbackIcon: Icons.groups,
-            route: Routes.groupNamjap,
+            onTap: () {
+              final selectedGroupIds =
+                  context.read<GroupSelectionProvider>().selectedGroupIds;
+
+              if (selectedGroupIds.length == 1) {
+                final groupId = selectedGroupIds.first;
+                final configProvider = context.read<AppConfigProvider>();
+                final group = configProvider.appConfig?.gajananMaharajGroups
+                    .firstWhere((g) => g.id == groupId);
+                final locale = Localizations.localeOf(context).languageCode;
+                final groupName =
+                    locale == 'mr' ? group?.nameMr : group?.nameEn;
+
+                Navigator.pushNamed(
+                  context,
+                  Routes.groupNamjap,
+                  arguments: {'groupId': groupId, 'groupName': groupName},
+                );
+              } else {
+                Navigator.pushNamed(
+                  context,
+                  Routes.gajananMaharajGroups,
+                  arguments: GroupScreenConfig(
+                    title: localizations.groupNamjapLabel,
+                    emptyMessage: selectedGroupIds.isEmpty
+                        ? localizations.noNamjapGroupsSelectedMessage
+                        : localizations.groupNamjapNoOngoing,
+                    targetRoute: Routes.groupNamjap,
+                    filteredGroupIds: selectedGroupIds,
+                  ),
+                );
+              }
+            },
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSelectionCard(
-    BuildContext context, {
+  Widget _buildSelectionCard({
+    required BuildContext context,
     required String title,
     required String description,
     required LogicalIcon icon,
     required IconData fallbackIcon,
-    required String route,
+    String? route,
+    VoidCallback? onTap,
     Object? arguments,
   }) {
     final theme = Theme.of(context);
@@ -111,7 +151,9 @@ class NamjapScreen extends StatelessWidget {
           color: theme.colorScheme.primary,
           size: 16.0,
         ),
-        onTap: () => Navigator.pushNamed(context, route, arguments: arguments),
+        onTap:
+            onTap ??
+            () => Navigator.pushNamed(context, route!, arguments: arguments),
       ),
     );
   }
