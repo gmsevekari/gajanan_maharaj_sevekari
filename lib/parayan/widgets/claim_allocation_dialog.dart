@@ -196,19 +196,11 @@ class _ClaimAllocationDialogState extends State<ClaimAllocationDialog> {
                         return localizations.invalidPhoneError;
                       }
 
-                      final code = _countryCodeController.text.trim();
-                      int minLength = 10;
-
-                      if (code == '+65') {
-                        minLength = 8;
-                      } else if (code == '+27' || code == '+971') {
-                        minLength = 9;
-                      }
-
-                      // Strip non-digits just in case user added spaces
+                      // Strip non-digits to count actual numbers
                       final digitCount = value.replaceAll(RegExp(r'\D'), '').length;
 
-                      if (digitCount < minLength) {
+                      // Global minimum length of 8 digits for all countries
+                      if (digitCount < 8) {
                         return localizations.invalidPhoneError;
                       }
                       return null;

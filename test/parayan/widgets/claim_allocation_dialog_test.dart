@@ -397,5 +397,54 @@ void main() {
       expect(find.textContaining('already linked'), findsNothing);
       expect(find.text('Find My Adhyays').first, findsOneWidget);
     });
+
+    testWidgets('universal 8-digit phone validation', (tester) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          _wrapDialog(
+            ClaimAllocationDialog(
+              eventId: 'e1',
+              deviceId: 'd1',
+              daysCount: 3,
+              parayanService: mockService,
+              groupId: GroupConstants.gunjan,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
+
+      // Test with +91 (Default)
+      await tester.enterText(find.byType(TextFormField).first, '+91');
+      
+      // 7 digits should fail
+      await tester.enterText(find.byType(TextFormField).last, '1234567');
+      await tester.tap(find.text('Submit'));
+      await tester.pump();
+      expect(find.text('Please enter a valid phone number'), findsOneWidget);
+
+      // 8 digits should pass
+      await tester.enterText(find.byType(TextFormField).last, '12345678');
+      await tester.tap(find.text('Submit'));
+      await tester.pump();
+      expect(find.text('Please enter a valid phone number'), findsNothing);
+
+      // Test with +64 (New Zealand)
+      await tester.enterText(find.byType(TextFormField).first, '+64');
+      
+      // 7 digits should fail
+      await tester.enterText(find.byType(TextFormField).last, '1234567');
+      await tester.tap(find.text('Submit'));
+      await tester.pump();
+      expect(find.text('Please enter a valid phone number'), findsOneWidget);
+
+      // 8 digits should pass
+      await tester.enterText(find.byType(TextFormField).last, '12345678');
+      await tester.tap(find.text('Submit'));
+      await tester.pump();
+      expect(find.text('Please enter a valid phone number'), findsNothing);
+    });
   });
 }
