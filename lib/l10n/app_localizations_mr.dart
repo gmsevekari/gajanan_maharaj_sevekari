@@ -1756,4 +1756,38 @@ class AppLocalizationsMr extends AppLocalizations {
   @override
   String get noNamjapGroupsSelectedMessage =>
       'कृपया ग्रुप नामजप पाहण्यासाठी/सहभागी होण्यासाठी सेटिंग्ज -> ग्रुप्स मॅनेज करा मधून एक किंवा अधिक ग्रुप्स निवडा. जय गजानन 🙏🏻';
+
+  @override
+  String get manageGroupAdminsModuleTitle => 'मॅनेज ग्रुप ॲडमिनस्';
+
+  @override
+  String get manageGroupAdminsModuleSubtitle => 'ग्रुप ॲडमिनस् मॅनेज करा';
+
+  @override
+  String get manageGroupAdminsTitle => 'मॅनेज ग्रुप ॲडमिनस्';
+
+  @override
+  String get addGroupAdminTitle => 'ग्रुप ॲडमिन ॲड करा';
+
+  @override
+  String get adminEmailLabel => 'ॲडमिन ईमेल';
+
+  @override
+  String get rolesLabel => 'रोलस्';
+
+  @override
+  String get addAdminButton => 'ॲडमिन ॲड करा';
+
+  @override
+  String get deleteAdminConfirm =>
+      'तुम्हाला खात्री आहे की तुम्हाला हा ॲडमिन काढायचा आहे?';
+
+  @override
+  String get adminDeleteSuccess => 'ॲडमिन यशस्वीरित्या काढला गेला';
+
+  @override
+  String get adminAddSuccess => 'ॲडमिन यशस्वीरित्या ॲड झाला';
+
+  @override
+  String get selectGroupLabel => 'ग्रुप निवडा';
 }

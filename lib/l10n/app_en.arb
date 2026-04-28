@@ -652,5 +652,16 @@
   "finishOnboarding": "Save",
   "swipeHint": "Swipe for other groups",
   "noParayanGroupsSelectedMessage": "Please select one or more groups from Settings -> Manage Groups to view/participate in Parayans. Jai Gajanan 🙏🏻",
-  "noNamjapGroupsSelectedMessage": "Please select one or more groups from Settings -> Manage Groups to view/participate in Group Namjap. Jai Gajanan 🙏🏻"
+  "noNamjapGroupsSelectedMessage": "Please select one or more groups from Settings -> Manage Groups to view/participate in Group Namjap. Jai Gajanan 🙏🏻",
+  "manageGroupAdminsModuleTitle": "Manage Group Admins",
+  "manageGroupAdminsModuleSubtitle": "Add or remove admins for your group",
+  "manageGroupAdminsTitle": "Manage Group Admins",
+  "addGroupAdminTitle": "Add Group Admin",
+  "adminEmailLabel": "Admin Email",
+  "rolesLabel": "Roles",
+  "addAdminButton": "Add Admin",
+  "deleteAdminConfirm": "Are you sure you want to remove this admin?",
+  "adminDeleteSuccess": "Admin removed successfully",
+  "adminAddSuccess": "Admin added successfully",
+  "selectGroupLabel": "Select Group"
 }

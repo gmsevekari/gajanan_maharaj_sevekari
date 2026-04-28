@@ -1751,4 +1751,39 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noNamjapGroupsSelectedMessage =>
       'Please select one or more groups from Settings -> Manage Groups to view/participate in Group Namjap. Jai Gajanan 🙏🏻';
+
+  @override
+  String get manageGroupAdminsModuleTitle => 'Manage Group Admins';
+
+  @override
+  String get manageGroupAdminsModuleSubtitle =>
+      'Add or remove admins for your group';
+
+  @override
+  String get manageGroupAdminsTitle => 'Manage Group Admins';
+
+  @override
+  String get addGroupAdminTitle => 'Add Group Admin';
+
+  @override
+  String get adminEmailLabel => 'Admin Email';
+
+  @override
+  String get rolesLabel => 'Roles';
+
+  @override
+  String get addAdminButton => 'Add Admin';
+
+  @override
+  String get deleteAdminConfirm =>
+      'Are you sure you want to remove this admin?';
+
+  @override
+  String get adminDeleteSuccess => 'Admin removed successfully';
+
+  @override
+  String get adminAddSuccess => 'Admin added successfully';
+
+  @override
+  String get selectGroupLabel => 'Select Group';
 }

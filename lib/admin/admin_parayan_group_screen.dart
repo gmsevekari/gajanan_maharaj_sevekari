@@ -95,7 +95,7 @@ class AdminParayanGroupScreen extends StatelessWidget {
                             final selectedAdmin = AdminUser(
                               email: adminUser.email,
                               roles: adminUser.roles,
-                              parayanGroupId: group.id,
+                              groupId: group.id,
                               typoNotificationsEnabled:
                                   adminUser.typoNotificationsEnabled,
                             );

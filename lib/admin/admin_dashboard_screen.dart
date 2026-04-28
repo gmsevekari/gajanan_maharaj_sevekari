@@ -201,7 +201,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             icon: Icons.event_note,
                             color: theme.appColors.primarySwatch[600]!,
                             onTap: () {
-                              if (adminUser.parayanGroupId != null) {
+                              if (adminUser.groupId != null) {
                                 Navigator.pushNamed(
                                   context,
                                   Routes.adminParayanCoordination,

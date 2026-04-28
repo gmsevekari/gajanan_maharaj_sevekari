@@ -578,8 +578,8 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
     ThemeData theme,
   ) {
     // If admin has a fixed group, show it as a label
-    if (widget.adminUser?.parayanGroupId != null) {
-      final groupId = widget.adminUser!.parayanGroupId!;
+    if (widget.adminUser?.groupId != null) {
+      final groupId = widget.adminUser!.groupId!;
       _selectedGroupId = groupId; // Set it once
 
       return Container(

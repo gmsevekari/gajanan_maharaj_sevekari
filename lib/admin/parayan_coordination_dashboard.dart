@@ -29,7 +29,7 @@ class _ParayanCoordinationDashboardState
   void initState() {
     super.initState();
     _eventsStream =
-        _parayanService.getAllEvents(widget.adminUser!.parayanGroupId!);
+        _parayanService.getAllEvents(widget.adminUser!.groupId!);
   }
 
   @override
@@ -94,7 +94,7 @@ class _ParayanCoordinationDashboardState
                       onPressed: () => setState(() {
                         // Re-initialize stream on retry
                         _eventsStream = _parayanService.getAllEvents(
-                          widget.adminUser!.parayanGroupId!,
+                          widget.adminUser!.groupId!,
                         );
                       }),
                       child: const Text('Retry'),
@@ -160,7 +160,7 @@ class _ParayanCoordinationDashboardState
                             'title':
                                 localizations.recentlyCompletedParayanLabel,
                             'statusFilter': 'completed',
-                            'groupId': widget.adminUser?.parayanGroupId,
+                            'groupId': widget.adminUser?.groupId,
                           },
                         ),
                       ),
@@ -226,7 +226,7 @@ class _ParayanCoordinationDashboardState
                         arguments: {
                           'title': localizations.nextParayanLabel,
                           'statusFilter': 'upcoming',
-                          'groupId': widget.adminUser?.parayanGroupId,
+                          'groupId': widget.adminUser?.groupId,
                         },
                       ),
                     ),

@@ -3409,6 +3409,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please select one or more groups from Settings -> Manage Groups to view/participate in Group Namjap. Jai Gajanan 🙏🏻'**
   String get noNamjapGroupsSelectedMessage;
+
+  /// No description provided for @manageGroupAdminsModuleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Group Admins'**
+  String get manageGroupAdminsModuleTitle;
+
+  /// No description provided for @manageGroupAdminsModuleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add or remove admins for your group'**
+  String get manageGroupAdminsModuleSubtitle;
+
+  /// No description provided for @manageGroupAdminsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Group Admins'**
+  String get manageGroupAdminsTitle;
+
+  /// No description provided for @addGroupAdminTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Group Admin'**
+  String get addGroupAdminTitle;
+
+  /// No description provided for @adminEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Email'**
+  String get adminEmailLabel;
+
+  /// No description provided for @rolesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Roles'**
+  String get rolesLabel;
+
+  /// No description provided for @addAdminButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Admin'**
+  String get addAdminButton;
+
+  /// No description provided for @deleteAdminConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove this admin?'**
+  String get deleteAdminConfirm;
+
+  /// No description provided for @adminDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin removed successfully'**
+  String get adminDeleteSuccess;
+
+  /// No description provided for @adminAddSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin added successfully'**
+  String get adminAddSuccess;
+
+  /// No description provided for @selectGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Group'**
+  String get selectGroupLabel;
 }
 
 class _AppLocalizationsDelegate

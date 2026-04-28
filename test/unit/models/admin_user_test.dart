@@ -7,7 +7,7 @@ void main() {
       final data = {
         'roles': ['admin', 'coordinator'],
         'typoNotificationsEnabled': true,
-        'parayanGroupId': 'group_1',
+        'groupId': 'group_1',
       };
       final email = 'test@example.com';
 
@@ -16,14 +16,14 @@ void main() {
       expect(user.email, email);
       expect(user.roles, ['admin', 'coordinator']);
       expect(user.typoNotificationsEnabled, true);
-      expect(user.parayanGroupId, 'group_1');
+      expect(user.groupId, 'group_1');
     });
 
     test('fromFirestore should handle missing fields', () {
       final user = AdminUser.fromFirestore({}, 'test@test.com');
       expect(user.roles, []);
       expect(user.typoNotificationsEnabled, false);
-      expect(user.parayanGroupId, isNull);
+      expect(user.groupId, isNull);
     });
 
     test('hasRole should respect super_admin', () {

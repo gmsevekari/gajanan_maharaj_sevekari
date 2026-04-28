@@ -652,5 +652,16 @@
   "finishOnboarding": "सेव्ह करा",
   "swipeHint": "इतर ग्रुप्ससाठी स्वाइप करा",
   "noParayanGroupsSelectedMessage": "कृपया पारायण पाहण्यासाठी/सहभागी होण्यासाठी सेटिंग्ज -> ग्रुप्स मॅनेज करा मधून एक किंवा अधिक ग्रुप्स निवडा. जय गजानन 🙏🏻",
-  "noNamjapGroupsSelectedMessage": "कृपया ग्रुप नामजप पाहण्यासाठी/सहभागी होण्यासाठी सेटिंग्ज -> ग्रुप्स मॅनेज करा मधून एक किंवा अधिक ग्रुप्स निवडा. जय गजानन 🙏🏻"
+  "noNamjapGroupsSelectedMessage": "कृपया ग्रुप नामजप पाहण्यासाठी/सहभागी होण्यासाठी सेटिंग्ज -> ग्रुप्स मॅनेज करा मधून एक किंवा अधिक ग्रुप्स निवडा. जय गजानन 🙏🏻",
+  "manageGroupAdminsModuleTitle": "मॅनेज ग्रुप ॲडमिनस्",
+  "manageGroupAdminsModuleSubtitle": "ग्रुप ॲडमिनस् मॅनेज करा",
+  "manageGroupAdminsTitle": "मॅनेज ग्रुप ॲडमिनस्",
+  "addGroupAdminTitle": "ग्रुप ॲडमिन ॲड करा",
+  "adminEmailLabel": "ॲडमिन ईमेल",
+  "rolesLabel": "रोलस्",
+  "addAdminButton": "ॲडमिन ॲड करा",
+  "deleteAdminConfirm": "तुम्हाला खात्री आहे की तुम्हाला हा ॲडमिन काढायचा आहे?",
+  "adminDeleteSuccess": "ॲडमिन यशस्वीरित्या काढला गेला",
+  "adminAddSuccess": "ॲडमिन यशस्वीरित्या ॲड झाला",
+  "selectGroupLabel": "ग्रुप निवडा"
 }

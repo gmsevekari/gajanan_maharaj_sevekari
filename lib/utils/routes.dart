@@ -47,4 +47,6 @@ class Routes {
   static const String adminGroupNamjapDetail = '/admin_group_namjap_detail';
   static const String adminGroupNamjapList = '/admin_group_namjap_list';
   static const String onboarding = '/onboarding';
+  static const String adminManageGroupAdmins = '/admin_manage_group_admins';
+  static const String adminAddGroupAdmin = '/admin_add_group_admin';
 }

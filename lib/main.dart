@@ -418,6 +418,10 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminCreateGroupNamjap: (context) =>
                     const CreateGroupNamjapScreen(),
                 Routes.onboarding: (context) => const GroupSelectionScreen(),
+                Routes.adminManageGroupAdmins: (context) =>
+                    const Scaffold(body: Center(child: Text('Manage Group Admins Placeholder'))),
+                Routes.adminAddGroupAdmin: (context) =>
+                    const Scaffold(body: Center(child: Text('Add Group Admin Placeholder'))),
               },
               onGenerateRoute: (settings) {
                 final DeityConfig? deity = settings.arguments is DeityConfig
