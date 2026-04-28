@@ -197,4 +197,40 @@ void main() {
       reason: 'Submit should be above Mala Tab',
     );
   });
+
+  testWidgets('ManualJapTab is hidden when status is completed', (tester) async {
+    final completedEvent = testEvent.copyWith(id: 'completed_1', status: 'completed');
+    when(() => mockService.getEventStream('completed_1')).thenAnswer((_) => Stream.value(completedEvent));
+    when(() => mockGroupProvider.isJoined('completed_1')).thenReturn(true);
+    when(() => mockGroupProvider.memberName).thenReturn('Test User');
+
+    await tester.pumpWidget(createWidget('completed_1'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ManualJapTab), findsNothing);
+  });
+
+  testWidgets('ManualJapTab is hidden when status is upcoming', (tester) async {
+    final upcomingEvent = testEvent.copyWith(id: 'upcoming_1', status: 'upcoming');
+    when(() => mockService.getEventStream('upcoming_1')).thenAnswer((_) => Stream.value(upcomingEvent));
+    when(() => mockGroupProvider.isJoined('upcoming_1')).thenReturn(true);
+    when(() => mockGroupProvider.memberName).thenReturn('Test User');
+
+    await tester.pumpWidget(createWidget('upcoming_1'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ManualJapTab), findsNothing);
+  });
+
+  testWidgets('ManualJapTab is visible when status is enrolling', (tester) async {
+    final enrollingEvent = testEvent.copyWith(id: 'enrolling_1', status: 'enrolling');
+    when(() => mockService.getEventStream('enrolling_1')).thenAnswer((_) => Stream.value(enrollingEvent));
+    when(() => mockGroupProvider.isJoined('enrolling_1')).thenReturn(true);
+    when(() => mockGroupProvider.memberName).thenReturn('Test User');
+
+    await tester.pumpWidget(createWidget('enrolling_1'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ManualJapTab), findsOneWidget);
+  });
 }

@@ -271,11 +271,14 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(height: 12),
-                                          ManualJapTab(
-                                            compact: true,
-                                            enabled: isJoined && isOngoing,
-                                          ),
+                                          if (event.status == 'ongoing' ||
+                                              event.status == 'enrolling') ...[
+                                            const SizedBox(height: 12),
+                                            ManualJapTab(
+                                              compact: true,
+                                              enabled: isJoined && isOngoing,
+                                            ),
+                                          ],
                                         ],
                                       );
                                     },
