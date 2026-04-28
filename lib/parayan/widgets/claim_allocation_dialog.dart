@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 
 class ClaimAllocationDialog extends StatefulWidget {
   final String eventId;
@@ -29,10 +30,25 @@ class ClaimAllocationDialog extends StatefulWidget {
 
 class _ClaimAllocationDialogState extends State<ClaimAllocationDialog> {
   final _formKey = GlobalKey<FormState>();
-  final _countryCodeController = TextEditingController(text: '+91');
+  late final TextEditingController _countryCodeController;
   final _phoneController = TextEditingController();
   final _joinCodeController = TextEditingController();
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final defaultCode = GroupUtils.getDefaultCountryCode(widget.groupId);
+    _countryCodeController = TextEditingController(text: defaultCode);
+  }
+
+  @override
+  void dispose() {
+    _countryCodeController.dispose();
+    _phoneController.dispose();
+    _joinCodeController.dispose();
+    super.dispose();
+  }
 
   Future<void> _handleClaim({bool overwrite = false}) async {
     if (!_formKey.currentState!.validate()) return;
@@ -142,7 +158,6 @@ class _ClaimAllocationDialogState extends State<ClaimAllocationDialog> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
     return AlertDialog(
       title: Text(localizations.findMyAllocationLabel),

@@ -5,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 
 class NamjapSignupDialog extends StatefulWidget {
   final GroupNamjapEvent event;
@@ -34,6 +35,11 @@ class _NamjapSignupDialogState extends State<NamjapSignupDialog> {
   void initState() {
     super.initState();
     final provider = context.read<GroupNamjapProvider>();
+
+    // Set default based on groupId
+    final defaultCode = GroupUtils.getDefaultCountryCode(widget.event.groupId);
+    _countryCodeController.text = defaultCode;
+
     if (provider.hasProfile) {
       _nameController.text = provider.memberName ?? '';
 

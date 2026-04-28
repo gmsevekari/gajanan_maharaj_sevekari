@@ -9,6 +9,7 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 
 class ParayanSignupScreen extends StatefulWidget {
   final ParayanEvent event;
@@ -42,6 +43,11 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
   void initState() {
     super.initState();
     _parayanService = widget.parayanService ?? ParayanService();
+
+    // Set default based on groupId
+    final defaultCode = GroupUtils.getDefaultCountryCode(widget.event.groupId);
+    _countryCodeController.text = defaultCode;
+
     if (widget.existingEnrollment != null) {
       final household = widget.existingEnrollment!;
       _nameControllers.clear();
