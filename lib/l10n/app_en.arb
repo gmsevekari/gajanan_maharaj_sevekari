@@ -663,5 +663,10 @@
   "deleteAdminConfirm": "Are you sure you want to remove this admin?",
   "adminDeleteSuccess": "Admin removed successfully",
   "adminAddSuccess": "Admin added successfully",
-  "selectGroupLabel": "Select Group"
+  "selectGroupLabel": "Select Group",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "adminGroupLabel": "Group",
+  "errorLabel": "Error",
+  "noAdminsFound": "No admins found"
 }

@@ -1790,4 +1790,16 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get selectGroupLabel => 'ग्रुप निवडा';
+
+  @override
+  String get delete => 'डिलीट करा';
+
+  @override
+  String get adminGroupLabel => 'ग्रुप';
+
+  @override
+  String get errorLabel => 'त्रुटी';
+
+  @override
+  String get noAdminsFound => 'कोणतेही ॲडमिन सापडले नाहीत';
 }

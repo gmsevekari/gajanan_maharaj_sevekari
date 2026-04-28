@@ -50,6 +50,7 @@ import 'package:gajanan_maharaj_sevekari/admin/admin_dashboard_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_temple_notifications_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_typo_reports_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_coordination_dashboard.dart';
+import 'package:gajanan_maharaj_sevekari/admin/manage_group_admins_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_group_screen.dart';
@@ -418,8 +419,10 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminCreateGroupNamjap: (context) =>
                     const CreateGroupNamjapScreen(),
                 Routes.onboarding: (context) => const GroupSelectionScreen(),
-                Routes.adminManageGroupAdmins: (context) =>
-                    const Scaffold(body: Center(child: Text('Manage Group Admins Placeholder'))),
+                Routes.adminManageGroupAdmins: (context) {
+                  final admin = ModalRoute.of(context)!.settings.arguments as AdminUser;
+                  return ManageGroupAdminsScreen(currentAdmin: admin);
+                },
                 Routes.adminAddGroupAdmin: (context) =>
                     const Scaffold(body: Center(child: Text('Add Group Admin Placeholder'))),
               },

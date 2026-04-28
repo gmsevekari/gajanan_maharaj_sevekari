@@ -1786,4 +1786,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectGroupLabel => 'Select Group';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get adminGroupLabel => 'Group';
+
+  @override
+  String get errorLabel => 'Error';
+
+  @override
+  String get noAdminsFound => 'No admins found';
 }

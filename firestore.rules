@@ -2,11 +2,19 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Helper function to check if the user is an authorized admin
+
+    // Helper functions for role-based access
     function isAdmin() {
       return request.auth != null &&
              exists(/databases/$(database)/documents/admin_allowlist/$(request.auth.token.email));
+    }
+
+    function getAdminData() {
+      return get(/databases/$(database)/documents/admin_allowlist/$(request.auth.token.email)).data;
+    }
+
+    function isSuperAdmin() {
+      return isAdmin() && getAdminData().roles.hasAny(['super_admin']);
     }
 
     // App Config: Publicly readable; Admin writable
@@ -15,13 +23,31 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Admin Allowlist: Read-only for admins (to verify themselves)
+    // Admin Allowlist: Read/Write rules for administrators
     match /admin_allowlist/{email} {
-      allow read: if request.auth != null && request.auth.token.email == email;
-      // Allow admins to toggle their own typo notifications
-      allow update: if request.auth != null && request.auth.token.email == email
-                    && (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['typoNotificationsEnabled']));
-      allow write: if false; // Security preference: Keep this manual in console
+      // Individual document access
+      allow get: if request.auth != null && (request.auth.token.email == email || isAdmin());
+
+      // Secure listing: Allow super_admin to see all, group_admin to see their own group
+      // Using direct get() in list rule is more robust for query verification
+      allow list: if request.auth != null && (
+        get(/databases/$(database)/documents/admin_allowlist/$(request.auth.token.email)).data.roles.hasAny(['super_admin']) ||
+        (
+          get(/databases/$(database)/documents/admin_allowlist/$(request.auth.token.email)).data.roles.hasAny(['group_admin']) &&
+          resource.data.groupId == get(/databases/$(database)/documents/admin_allowlist/$(request.auth.token.email)).data.groupId
+        )
+      );
+
+      // Allow create/update/delete (write)
+      allow write: if isSuperAdmin() || (
+        isAdmin() &&
+        getAdminData().roles.hasAny(['group_admin']) &&
+        (
+          (request.method == 'create' && request.resource.data.groupId == getAdminData().groupId) ||
+          (request.method == 'update' && resource.data.groupId == getAdminData().groupId && request.resource.data.groupId == getAdminData().groupId) ||
+          (request.method == 'delete' && resource.data.groupId == getAdminData().groupId)
+        )
+      );
     }
 
     // Typo Reports: Authenticated create; Admin readable/deletable

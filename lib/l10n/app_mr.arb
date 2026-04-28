@@ -663,5 +663,10 @@
   "deleteAdminConfirm": "तुम्हाला खात्री आहे की तुम्हाला हा ॲडमिन काढायचा आहे?",
   "adminDeleteSuccess": "ॲडमिन यशस्वीरित्या काढला गेला",
   "adminAddSuccess": "ॲडमिन यशस्वीरित्या ॲड झाला",
-  "selectGroupLabel": "ग्रुप निवडा"
+  "selectGroupLabel": "ग्रुप निवडा",
+  "cancel": "रद्द करा",
+  "delete": "डिलीट करा",
+  "adminGroupLabel": "ग्रुप",
+  "errorLabel": "त्रुटी",
+  "noAdminsFound": "कोणतेही ॲडमिन सापडले नाहीत"
 }

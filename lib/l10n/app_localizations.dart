@@ -3475,6 +3475,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select Group'**
   String get selectGroupLabel;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @adminGroupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get adminGroupLabel;
+
+  /// No description provided for @errorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get errorLabel;
+
+  /// No description provided for @noAdminsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No admins found'**
+  String get noAdminsFound;
 }
 
 class _AppLocalizationsDelegate
