@@ -35,4 +35,19 @@ class AdminUser {
     if (roles.contains('super_admin')) return true;
     return requiredRoles.any((role) => roles.contains(role));
   }
+
+  AdminUser copyWith({
+    String? email,
+    List<String>? roles,
+    bool? typoNotificationsEnabled,
+    String? groupId,
+  }) {
+    return AdminUser(
+      email: email ?? this.email,
+      roles: roles ?? this.roles,
+      typoNotificationsEnabled:
+          typoNotificationsEnabled ?? this.typoNotificationsEnabled,
+      groupId: groupId ?? this.groupId,
+    );
+  }
 }

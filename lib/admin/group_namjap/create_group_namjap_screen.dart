@@ -6,8 +6,17 @@ import 'package:gajanan_maharaj_sevekari/models/group_namjap_event.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_namjap_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
+
 class CreateGroupNamjapScreen extends StatefulWidget {
-  const CreateGroupNamjapScreen({super.key});
+  final AdminUser adminUser;
+  final FirebaseFirestore? firestore;
+  const CreateGroupNamjapScreen({
+    super.key,
+    required this.adminUser,
+    this.firestore,
+  });
 
   @override
   State<CreateGroupNamjapScreen> createState() =>
@@ -33,7 +42,15 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
     {'label': 'India (IST)', 'value': 'Asia/Kolkata'},
   ];
 
-  final GroupNamjapService _service = GroupNamjapService();
+  late final FirebaseFirestore _firestore;
+  late final GroupNamjapService _service;
+
+  @override
+  void initState() {
+    super.initState();
+    _firestore = widget.firestore ?? FirebaseFirestore.instance;
+    _service = GroupNamjapService(firestore: _firestore);
+  }
 
   String _generateJoinCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -72,7 +89,10 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
 
     try {
       final dateStr = DateFormat('yyyyMMdd').format(_startDate);
-      const groupId = GroupConstants.seattle;
+      final groupId = widget.adminUser.groupId;
+      if (groupId == null) {
+        throw Exception('Group ID is required to create an event');
+      }
       final target = _targetCountController.text.trim();
       final docId = '${groupId}_${dateStr}_$target';
 

@@ -8,10 +8,19 @@ import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 
+import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
+
 class AdminGroupNamjapListScreen extends StatefulWidget {
   final String status;
+  final AdminUser adminUser;
+  final FirebaseFirestore? firestore;
 
-  const AdminGroupNamjapListScreen({super.key, required this.status});
+  const AdminGroupNamjapListScreen({
+    super.key,
+    required this.status,
+    required this.adminUser,
+    this.firestore,
+  });
 
   @override
   State<AdminGroupNamjapListScreen> createState() =>
@@ -20,22 +29,26 @@ class AdminGroupNamjapListScreen extends StatefulWidget {
 
 class _AdminGroupNamjapListScreenState
     extends State<AdminGroupNamjapListScreen> {
+  late final FirebaseFirestore _firestore;
   late Stream<QuerySnapshot> _eventsStream;
 
   @override
   void initState() {
     super.initState();
+    _firestore = widget.firestore ?? FirebaseFirestore.instance;
+    Query query = _firestore.collection('group_namjap_events');
+
     if (widget.status == 'upcoming') {
-      _eventsStream = FirebaseFirestore.instance
-          .collection('group_namjap_events')
-          .where('status', whereIn: ['upcoming', 'enrolling'])
-          .snapshots();
+      query = query.where('status', whereIn: ['upcoming', 'enrolling']);
     } else {
-      _eventsStream = FirebaseFirestore.instance
-          .collection('group_namjap_events')
-          .where('status', isEqualTo: widget.status)
-          .snapshots();
+      query = query.where('status', isEqualTo: widget.status);
     }
+
+    if (widget.adminUser.groupId != null) {
+      query = query.where('groupId', isEqualTo: widget.adminUser.groupId);
+    }
+
+    _eventsStream = query.snapshots();
   }
 
   @override
@@ -145,7 +158,10 @@ class _AdminGroupNamjapListScreenState
                     Navigator.pushNamed(
                       context,
                       Routes.adminGroupNamjapDetail,
-                      arguments: event.id,
+                      arguments: {
+                        'eventId': event.id,
+                        'adminUser': widget.adminUser,
+                      },
                     );
                   },
                 ),

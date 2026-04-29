@@ -7,22 +7,26 @@ import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_l
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/create_group_namjap_screen.dart';
 
 void main() {
+  const testAdmin = AdminUser(
+    email: 'test@example.com',
+    roles: ['super_admin'],
+  );
+
   group('Admin Group Namjap UI Integrity', () {
     testWidgets('CreateGroupNamjapScreen is structurally sound', (
       WidgetTester tester,
     ) async {
-      // We can instantiate the widget locally to test its compilation and structure,
-      // without pumping it into a frame which would trip the Firebase Core uninitialized exception.
-      expect(const CreateGroupNamjapScreen(), isA<StatefulWidget>());
+      expect(
+        const CreateGroupNamjapScreen(adminUser: testAdmin),
+        isA<StatefulWidget>(),
+      );
     });
 
     testWidgets('AdminGroupNamjapDashboard is structurally sound', (
       WidgetTester tester,
     ) async {
       expect(
-        const AdminGroupNamjapDashboard(
-          adminUser: AdminUser(email: 'test@example.com', roles: ['super_admin']),
-        ),
+        const AdminGroupNamjapDashboard(adminUser: testAdmin),
         isA<StatefulWidget>(),
       );
     });
@@ -30,9 +34,8 @@ void main() {
     testWidgets('AdminGroupNamjapListScreen is structurally sound', (
       WidgetTester tester,
     ) async {
-      // Converted to StatefulWidget to cache Firestore streams and prevent UI flickering
       expect(
-        const AdminGroupNamjapListScreen(status: 'completed'),
+        const AdminGroupNamjapListScreen(status: 'completed', adminUser: testAdmin),
         isA<StatefulWidget>(),
       );
     });
@@ -40,9 +43,8 @@ void main() {
     testWidgets('AdminGroupNamjapDetailScreen is structurally sound', (
       WidgetTester tester,
     ) async {
-      // Converted to StatefulWidget to cache Firestore streams and prevent UI flickering
       expect(
-        const AdminGroupNamjapDetailScreen(eventId: 'test_123'),
+        const AdminGroupNamjapDetailScreen(eventId: 'test_123', adminUser: testAdmin),
         isA<StatefulWidget>(),
       );
     });

@@ -18,10 +18,19 @@ import 'package:gajanan_maharaj_sevekari/admin/widgets/admin_stats_widgets.dart'
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/widgets/group_namjap_export_card.dart';
 
+import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
+
 class AdminGroupNamjapDetailScreen extends StatefulWidget {
   final String eventId;
+  final AdminUser adminUser;
+  final FirebaseFirestore? firestore;
 
-  const AdminGroupNamjapDetailScreen({super.key, required this.eventId});
+  const AdminGroupNamjapDetailScreen({
+    super.key,
+    required this.eventId,
+    required this.adminUser,
+    this.firestore,
+  });
 
   @override
   State<AdminGroupNamjapDetailScreen> createState() =>
@@ -30,6 +39,7 @@ class AdminGroupNamjapDetailScreen extends StatefulWidget {
 
 class _AdminGroupNamjapDetailScreenState
     extends State<AdminGroupNamjapDetailScreen> {
+  late final FirebaseFirestore _firestore;
   late Stream<DocumentSnapshot> _eventStream;
   late Stream<QuerySnapshot> _participantsStream;
   final ScreenshotController _screenshotController = ScreenshotController();
@@ -40,11 +50,12 @@ class _AdminGroupNamjapDetailScreenState
   @override
   void initState() {
     super.initState();
-    _eventStream = FirebaseFirestore.instance
+    _firestore = widget.firestore ?? FirebaseFirestore.instance;
+    _eventStream = _firestore
         .collection('group_namjap_events')
         .doc(widget.eventId)
         .snapshots();
-    _participantsStream = FirebaseFirestore.instance
+    _participantsStream = _firestore
         .collection('group_namjap_events')
         .doc(widget.eventId)
         .collection('participants')
@@ -90,7 +101,7 @@ class _AdminGroupNamjapDetailScreenState
     );
 
     try {
-      await FirebaseFirestore.instance
+      await _firestore
           .collection('group_namjap_events')
           .doc(event.id)
           .update({'status': newStatus});
@@ -170,6 +181,23 @@ class _AdminGroupNamjapDetailScreenState
           snapshot.data!.id,
           snapshot.data!.data() as Map<String, dynamic>,
         );
+
+        // Authorization check
+        if (!widget.adminUser.roles.contains('super_admin') &&
+            event.groupId != widget.adminUser.groupId) {
+          return Scaffold(
+            body: Center(
+              child: Text(
+                'Access Denied: You do not have permission to view this event.',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.error,
+                ),
+              ),
+            ),
+          );
+        }
+
         final eventName = isEnglish ? event.nameEn : event.nameMr;
         final sankalpText = isEnglish
             ? event.sankalpEn

@@ -13,7 +13,13 @@ import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 
 class AdminGroupNamjapDashboard extends StatefulWidget {
   final AdminUser adminUser;
-  const AdminGroupNamjapDashboard({super.key, required this.adminUser});
+  final FirebaseFirestore? firestore;
+
+  const AdminGroupNamjapDashboard({
+    super.key,
+    required this.adminUser,
+    this.firestore,
+  });
 
   @override
   State<AdminGroupNamjapDashboard> createState() =>
@@ -21,14 +27,19 @@ class AdminGroupNamjapDashboard extends StatefulWidget {
 }
 
 class _AdminGroupNamjapDashboardState extends State<AdminGroupNamjapDashboard> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late final FirebaseFirestore _firestore;
   late Stream<QuerySnapshot> _eventsStream;
 
   @override
   void initState() {
     super.initState();
+    _firestore = widget.firestore ?? FirebaseFirestore.instance;
     // Cache stream in initState instead of build to prevent flickering natively
-    _eventsStream = _firestore.collection('group_namjap_events').snapshots();
+    Query query = _firestore.collection('group_namjap_events');
+    if (widget.adminUser.groupId != null) {
+      query = query.where('groupId', isEqualTo: widget.adminUser.groupId);
+    }
+    _eventsStream = query.snapshots();
   }
 
   @override
@@ -146,12 +157,18 @@ class _AdminGroupNamjapDashboardState extends State<AdminGroupNamjapDashboard> {
                         onViewAll: () => Navigator.pushNamed(
                           context,
                           Routes.adminGroupNamjapList,
-                          arguments: 'completed',
+                          arguments: {
+                            'status': 'completed',
+                            'adminUser': widget.adminUser,
+                          },
                         ),
                       ),
                       const SizedBox(height: 12),
                       if (completedEvents.isNotEmpty)
-                        _UpcomingCard(event: completedEvents.first)
+                        _UpcomingCard(
+                          event: completedEvents.first,
+                          adminUser: widget.adminUser,
+                        )
                       else
                         Text(
                           localizations.groupNamjapNoCompleted,
@@ -190,8 +207,10 @@ class _AdminGroupNamjapDashboardState extends State<AdminGroupNamjapDashboard> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
-                      (context, index) =>
-                          _OngoingCard(event: activeEvents[index]),
+                      (context, index) => _OngoingCard(
+                        event: activeEvents[index],
+                        adminUser: widget.adminUser,
+                      ),
                       childCount: activeEvents.length > 5
                           ? 5
                           : activeEvents.length,
@@ -215,7 +234,10 @@ class _AdminGroupNamjapDashboardState extends State<AdminGroupNamjapDashboard> {
                       onViewAll: () => Navigator.pushNamed(
                         context,
                         Routes.adminGroupNamjapList,
-                        arguments: 'upcoming',
+                        arguments: {
+                          'status': 'upcoming',
+                          'adminUser': widget.adminUser,
+                        },
                       ),
                     ),
                   ),
@@ -223,7 +245,10 @@ class _AdminGroupNamjapDashboardState extends State<AdminGroupNamjapDashboard> {
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   sliver: SliverToBoxAdapter(
-                    child: _UpcomingCard(event: upcomingEvents.first),
+                    child: _UpcomingCard(
+                      event: upcomingEvents.first,
+                      adminUser: widget.adminUser,
+                    ),
                   ),
                 ),
               ],
@@ -234,6 +259,7 @@ class _AdminGroupNamjapDashboardState extends State<AdminGroupNamjapDashboard> {
                     onPressed: () => Navigator.pushNamed(
                       context,
                       Routes.adminCreateGroupNamjap,
+                      arguments: widget.adminUser,
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
@@ -326,7 +352,8 @@ class _AdminGroupNamjapDashboardState extends State<AdminGroupNamjapDashboard> {
 
 class _OngoingCard extends StatelessWidget {
   final GroupNamjapEvent event;
-  const _OngoingCard({required this.event});
+  final AdminUser adminUser;
+  const _OngoingCard({required this.event, required this.adminUser});
 
   @override
   Widget build(BuildContext context) {
@@ -340,7 +367,10 @@ class _OngoingCard extends StatelessWidget {
         onTap: () => Navigator.pushNamed(
           context,
           Routes.adminGroupNamjapDetail,
-          arguments: event.id,
+          arguments: {
+            'eventId': event.id,
+            'adminUser': adminUser,
+          },
         ),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
@@ -401,7 +431,8 @@ class _OngoingCard extends StatelessWidget {
 
 class _UpcomingCard extends StatelessWidget {
   final GroupNamjapEvent event;
-  const _UpcomingCard({required this.event});
+  final AdminUser adminUser;
+  const _UpcomingCard({required this.event, required this.adminUser});
 
   @override
   Widget build(BuildContext context) {
@@ -417,7 +448,10 @@ class _UpcomingCard extends StatelessWidget {
           onTap: () => Navigator.pushNamed(
             context,
             Routes.adminGroupNamjapDetail,
-            arguments: event.id,
+            arguments: {
+              'eventId': event.id,
+              'adminUser': adminUser,
+            },
           ),
           borderRadius: BorderRadius.circular(12),
           child: Padding(

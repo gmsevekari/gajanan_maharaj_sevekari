@@ -439,8 +439,15 @@ class _MyAppState extends State<MyApp> {
                     body: Center(child: Text('Error: Missing AdminUser arguments')),
                   );
                 },
-                Routes.adminCreateGroupNamjap: (context) =>
-                    const CreateGroupNamjapScreen(),
+                Routes.adminCreateGroupNamjap: (context) {
+                  final args = ModalRoute.of(context)!.settings.arguments;
+                  if (args is AdminUser) {
+                    return CreateGroupNamjapScreen(adminUser: args);
+                  }
+                  return const Scaffold(
+                    body: Center(child: Text('Error: Missing AdminUser arguments')),
+                  );
+                },
                 Routes.onboarding: (context) => const GroupSelectionScreen(),
                 Routes.adminManageGroupAdmins: (context) {
                   final admin = ModalRoute.of(context)!.settings.arguments as AdminUser;
@@ -555,16 +562,42 @@ class _MyAppState extends State<MyApp> {
                       ),
                     );
                   case Routes.adminGroupNamjapDetail:
-                    final eventId = settings.arguments as String;
+                    final args = settings.arguments;
+                    if (args is Map<String, dynamic>) {
+                      return MaterialPageRoute(
+                        builder: (context) => AdminGroupNamjapDetailScreen(
+                          eventId: args['eventId'] as String,
+                          adminUser: args['adminUser'] as AdminUser,
+                        ),
+                      );
+                    }
                     return MaterialPageRoute(
-                      builder: (context) =>
-                          AdminGroupNamjapDetailScreen(eventId: eventId),
+                      builder: (context) => const Scaffold(
+                        body: Center(
+                          child: Text(
+                            'Error: Missing AdminGroupNamjapDetailScreen arguments',
+                          ),
+                        ),
+                      ),
                     );
                   case Routes.adminGroupNamjapList:
-                    final status = settings.arguments as String;
+                    final args = settings.arguments;
+                    if (args is Map<String, dynamic>) {
+                      return MaterialPageRoute(
+                        builder: (context) => AdminGroupNamjapListScreen(
+                          status: args['status'] as String,
+                          adminUser: args['adminUser'] as AdminUser,
+                        ),
+                      );
+                    }
                     return MaterialPageRoute(
-                      builder: (context) =>
-                          AdminGroupNamjapListScreen(status: status),
+                      builder: (context) => const Scaffold(
+                        body: Center(
+                          child: Text(
+                            'Error: Missing AdminGroupNamjapListScreen arguments',
+                          ),
+                        ),
+                      ),
                     );
                   default:
                     return null;
