@@ -3571,6 +3571,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Admin updated successfully'**
   String get adminUpdateSuccess;
+
+  /// No description provided for @adminNamjapGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Namjap Groups'**
+  String get adminNamjapGroupTitle;
 }
 
 class _AppLocalizationsDelegate

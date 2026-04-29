@@ -1834,4 +1834,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminUpdateSuccess => 'Admin updated successfully';
+
+  @override
+  String get adminNamjapGroupTitle => 'Namjap Groups';
 }

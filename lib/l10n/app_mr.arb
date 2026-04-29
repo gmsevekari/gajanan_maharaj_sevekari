@@ -683,5 +683,6 @@
   "deleteAdminButton": "ॲडमिन डिलीट करा",
   "adminAlreadyExists": "या ईमेलचा ॲडमिन आधीच अस्तित्वात आहे",
   "adminAddSuccess": "ॲडमिन यशस्वीरित्या ॲड झाला",
-  "adminUpdateSuccess": "ॲडमिन यशस्वीरित्या अपडेट झाला"
+  "adminUpdateSuccess": "ॲडमिन यशस्वीरित्या अपडेट झाला",
+  "adminNamjapGroupTitle": "नामजप ग्रुप्स"
 }

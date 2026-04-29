@@ -683,5 +683,6 @@
   "deleteAdminButton": "Delete Admin",
   "adminAlreadyExists": "Admin with this email already exists",
   "adminAddSuccess": "Admin added successfully",
-  "adminUpdateSuccess": "Admin updated successfully"
+  "adminUpdateSuccess": "Admin updated successfully",
+  "adminNamjapGroupTitle": "Namjap Groups"
 }
