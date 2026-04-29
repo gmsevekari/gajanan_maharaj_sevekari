@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/widgets/claim_allocation_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
@@ -39,6 +40,21 @@ void main() {
     when(
       () => mockFirebaseMessaging.subscribeToTopic(any()),
     ).thenAnswer((_) async => {});
+
+    final mockConfig = AppConfig.fromJson({
+      'appName': {'en': 'Test', 'mr': 'Test'},
+      'latestVersion': '1.0.0',
+      'forceUpdate': 'false',
+      'gajanan_maharaj_groups': [
+        {
+          'id': GroupConstants.gunjan,
+          'name_en': 'Gunjan',
+          'name_mr': 'गुंजन',
+          'default_country_code': '+91'
+        }
+      ]
+    });
+    when(() => mockAppConfigProvider.appConfig).thenReturn(mockConfig);
 
     NotificationServiceHelper.overrideMessaging = mockFirebaseMessaging;
 
@@ -348,31 +364,14 @@ void main() {
       ).thenAnswer((_) async => {'status': 'CONFLICT'});
 
       await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [Locale('en'), Locale('mr')],
-          home: Scaffold(
-            body: Builder(
-              builder: (context) {
-                return ElevatedButton(
-                  onPressed: () => showDialog(
-                    context: context,
-                    builder: (_) => ClaimAllocationDialog(
-                      eventId: 'e1',
-                      deviceId: 'd1',
-                      daysCount: 3,
-                      parayanService: mockService,
-                      groupId: GroupConstants.gunjan,
-                    ),
-                  ),
-                  child: const Text('Open Dialog'),
-                );
-              },
+        createTestWidget(
+          _wrapDialog(
+            ClaimAllocationDialog(
+              eventId: 'e1',
+              deviceId: 'd1',
+              daysCount: 3,
+              parayanService: mockService,
+              groupId: GroupConstants.gunjan,
             ),
           ),
         ),

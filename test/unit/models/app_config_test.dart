@@ -11,7 +11,8 @@ void main() {
       'appStoreUrl': 'https://apple.com',
       'updateMessage': {'en': 'Test Message', 'mr': 'marathi update msg'},
       'gajanan_maharaj_groups': [
-        {'id': 'g1', 'name_en': 'Group 1', 'name_mr': 'गट १'}
+        {'id': 'g1', 'name_en': 'Group 1', 'name_mr': 'गट १'},
+        {'id': 'g2', 'name_en': 'Group 2', 'name_mr': 'गट २', 'default_country_code': '+91'}
       ],
       'social_media_links': [
         {'platform': 'Facebook', 'url': 'fb.com', 'icon': 'fbIcon', 'color': 'blue'}
@@ -36,7 +37,7 @@ void main() {
       expect(config.appName['en'], 'Test App');
       expect(config.latestVersion, '1.0.0');
       expect(config.forceUpdate, 'true');
-      expect(config.gajananMaharajGroups.length, 1);
+      expect(config.gajananMaharajGroups.length, 2);
       expect(config.gajananMaharajGroups[0].id, 'g1');
       expect(config.socialMediaLinks.length, 1);
       expect(config.socialMediaLinks[0].platform, 'Facebook');
@@ -59,6 +60,22 @@ void main() {
       });
       expect(link.platform, 'Twitter');
       expect(link.color, 'cyan');
+    });
+
+    test('getDefaultCountryCode returns correct code or fallback', () {
+      final config = AppConfig.fromJson(mockJson);
+      
+      // Known group (g1) - should return default fallback +1 as it's not in mockJson
+      expect(config.getDefaultCountryCode('g1'), '+1');
+
+      // Known group (g2) - should return configured code +91
+      expect(config.getDefaultCountryCode('g2'), '+91');
+      
+      // Unknown group - should return fallback +1
+      expect(config.getDefaultCountryCode('unknown'), '+1');
+      
+      // Null group - should return fallback +1
+      expect(config.getDefaultCountryCode(null), '+1');
     });
   });
 }

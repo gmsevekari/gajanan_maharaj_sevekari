@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 
 abstract class ContentContainer {
   String get titleKey;
@@ -61,6 +62,17 @@ class AppConfig {
       playStoreUrl: json['playStoreUrl'] ?? '',
       appStoreUrl: json['appStoreUrl'] ?? '',
     );
+  }
+
+  String getDefaultCountryCode(String? groupId) {
+    if (groupId == null) return GroupConstants.defaultCountryCode;
+    try {
+      return gajananMaharajGroups
+          .firstWhere((g) => g.id == groupId)
+          .defaultCountryCode;
+    } catch (_) {
+      return GroupConstants.defaultCountryCode;
+    }
   }
 }
 
@@ -690,6 +702,7 @@ class GajananMaharajGroup {
   final String? parayanNameEn;
   final String? parayanNameMr;
   final String? icon;
+  final String defaultCountryCode;
 
   GajananMaharajGroup({
     required this.id,
@@ -698,6 +711,7 @@ class GajananMaharajGroup {
     this.parayanNameEn,
     this.parayanNameMr,
     this.icon,
+    this.defaultCountryCode = GroupConstants.defaultCountryCode,
   });
 
   factory GajananMaharajGroup.fromJson(Map<String, dynamic> json) {
@@ -708,6 +722,7 @@ class GajananMaharajGroup {
       parayanNameEn: json['parayan_name_en'],
       parayanNameMr: json['parayan_name_mr'],
       icon: json['icon'],
+      defaultCountryCode: json['default_country_code'] ?? GroupConstants.defaultCountryCode,
     );
   }
 }

@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/namjap_signup_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/widgets/manual_jap_tab.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockGroupNamjapService extends Mock implements GroupNamjapService {}
@@ -21,10 +22,13 @@ class MockGroupNamjapProvider extends Mock implements GroupNamjapProvider {}
 
 class MockJapMalaProvider extends Mock implements JapMalaProvider {}
 
+class MockAppConfigProvider extends Mock implements AppConfigProvider {}
+
 void main() {
   late MockGroupNamjapService mockService;
   late MockGroupNamjapProvider mockGroupProvider;
   late MockJapMalaProvider mockJapProvider;
+  late MockAppConfigProvider mockAppConfigProvider;
   late GroupNamjapEvent testEvent;
 
   setUp(() {
@@ -32,6 +36,9 @@ void main() {
     mockService = MockGroupNamjapService();
     mockGroupProvider = MockGroupNamjapProvider();
     mockJapProvider = MockJapMalaProvider();
+    mockAppConfigProvider = MockAppConfigProvider();
+
+    when(() => mockAppConfigProvider.appConfig).thenReturn(null);
 
     testEvent = GroupNamjapEvent(
       id: 'test_event',
@@ -85,6 +92,9 @@ void main() {
           value: mockGroupProvider,
         ),
         ChangeNotifierProvider<JapMalaProvider>.value(value: mockJapProvider),
+        ChangeNotifierProvider<AppConfigProvider>.value(
+          value: mockAppConfigProvider,
+        ),
       ],
       child: MaterialApp(
         localizationsDelegates: const [
@@ -140,7 +150,7 @@ void main() {
 
     expect(find.byType(NamjapSignupDialog), findsOneWidget);
     expect(
-      find.text('+91'),
+      find.text('+1'),
       findsAtLeastNWidgets(1),
     ); // Initial value in TextFormField
   });

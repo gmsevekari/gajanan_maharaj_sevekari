@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/models/group_namjap_event.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_namjap_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
@@ -26,7 +27,7 @@ class NamjapSignupDialog extends StatefulWidget {
 class _NamjapSignupDialogState extends State<NamjapSignupDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _countryCodeController = TextEditingController(text: '+91');
+  final _countryCodeController = TextEditingController(text: GroupConstants.defaultCountryCode);
   final _phoneController = TextEditingController();
   final _codeController = TextEditingController();
   bool _isLoading = false;
@@ -36,9 +37,11 @@ class _NamjapSignupDialogState extends State<NamjapSignupDialog> {
     super.initState();
     final provider = context.read<GroupNamjapProvider>();
 
-    // Set default based on groupId
-    final defaultCode = GroupUtils.getDefaultCountryCode(widget.event.groupId);
-    _countryCodeController.text = defaultCode;
+    final appConfig = context.read<AppConfigProvider>().appConfig;
+    final defaultCode = appConfig?.getDefaultCountryCode(widget.event.groupId);
+    if (defaultCode != null) {
+      _countryCodeController.text = defaultCode;
+    }
 
     if (provider.hasProfile) {
       _nameController.text = provider.memberName ?? '';

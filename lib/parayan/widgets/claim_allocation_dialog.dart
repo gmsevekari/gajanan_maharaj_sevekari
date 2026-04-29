@@ -4,6 +4,8 @@ import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 
 class ClaimAllocationDialog extends StatefulWidget {
@@ -38,8 +40,11 @@ class _ClaimAllocationDialogState extends State<ClaimAllocationDialog> {
   @override
   void initState() {
     super.initState();
-    final defaultCode = GroupUtils.getDefaultCountryCode(widget.groupId);
-    _countryCodeController = TextEditingController(text: defaultCode);
+    final appConfig = context.read<AppConfigProvider>().appConfig;
+    final defaultCode = appConfig?.getDefaultCountryCode(widget.groupId);
+    _countryCodeController = TextEditingController(
+      text: defaultCode ?? GroupConstants.defaultCountryCode,
+    );
   }
 
   @override

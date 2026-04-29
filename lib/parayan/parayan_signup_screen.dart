@@ -9,7 +9,9 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
+import 'package:provider/provider.dart';
 
 class ParayanSignupScreen extends StatefulWidget {
   final ParayanEvent event;
@@ -35,7 +37,7 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
     TextEditingController(),
   ];
   final _phoneController = TextEditingController();
-  final _countryCodeController = TextEditingController(text: '+1');
+  final _countryCodeController = TextEditingController(text: GroupConstants.defaultCountryCode);
   bool _isLoading = false;
   String? _loadingMessage;
 
@@ -45,8 +47,11 @@ class _ParayanSignupScreenState extends State<ParayanSignupScreen> {
     _parayanService = widget.parayanService ?? ParayanService();
 
     // Set default based on groupId
-    final defaultCode = GroupUtils.getDefaultCountryCode(widget.event.groupId);
-    _countryCodeController.text = defaultCode;
+    final appConfig = context.read<AppConfigProvider>().appConfig;
+    final defaultCode = appConfig?.getDefaultCountryCode(widget.event.groupId);
+    if (defaultCode != null) {
+      _countryCodeController.text = defaultCode;
+    }
 
     if (widget.existingEnrollment != null) {
       final household = widget.existingEnrollment!;
