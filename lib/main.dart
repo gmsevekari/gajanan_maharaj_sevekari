@@ -426,7 +426,14 @@ class _MyAppState extends State<MyApp> {
                   return ManageGroupAdminsScreen(currentAdmin: admin);
                 },
                 Routes.adminAddGroupAdmin: (context) {
-                  final admin = ModalRoute.of(context)!.settings.arguments as AdminUser;
+                  final args = ModalRoute.of(context)!.settings.arguments;
+                  if (args is Map<String, dynamic>) {
+                    return AddGroupAdminScreen(
+                      currentAdmin: args['currentAdmin'] as AdminUser,
+                      adminToEdit: args['adminToEdit'] as AdminUser?,
+                    );
+                  }
+                  final admin = args as AdminUser;
                   return AddGroupAdminScreen(currentAdmin: admin);
                 },
               },

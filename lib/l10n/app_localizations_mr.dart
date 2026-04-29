@@ -1823,4 +1823,19 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get savingLabel => 'सेव्ह करत आहे...';
+
+  @override
+  String get editAdminTitle => 'ॲडमिन संपादन करा';
+
+  @override
+  String get updateAdminButton => 'ॲडमिन अपडेट करा';
+
+  @override
+  String get deleteAdminButton => 'ॲडमिन डिलीट करा';
+
+  @override
+  String get adminAlreadyExists => 'या ईमेलचा ॲडमिन आधीच अस्तित्वात आहे';
+
+  @override
+  String get adminUpdateSuccess => 'ॲडमिन यशस्वीरित्या अपडेट झाला';
 }

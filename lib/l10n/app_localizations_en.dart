@@ -1819,4 +1819,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get savingLabel => 'Saving...';
+
+  @override
+  String get editAdminTitle => 'Edit Admin';
+
+  @override
+  String get updateAdminButton => 'Update Admin';
+
+  @override
+  String get deleteAdminButton => 'Delete Admin';
+
+  @override
+  String get adminAlreadyExists => 'Admin with this email already exists';
+
+  @override
+  String get adminUpdateSuccess => 'Admin updated successfully';
 }

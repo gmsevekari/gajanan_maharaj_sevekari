@@ -56,7 +56,6 @@ void main() {
     ).thenAnswer((_) async => false);
     registerFallbackValue(AdminUser(email: '', roles: []));
   });
-
   Widget createTestWidget(AdminUser admin) {
     return MultiProvider(
       providers: [
@@ -93,6 +92,43 @@ void main() {
           Routes.home: (context) => const Scaffold(body: Text('Home')),
           Routes.settings: (context) => const Scaffold(body: Text('Settings')),
         },
+      ),
+    );
+  }
+
+  Widget createEditTestWidget(AdminUser currentAdmin, AdminUser adminToEdit) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeProvider>.value(value: mockThemeProvider),
+        ChangeNotifierProvider<FontProvider>.value(value: mockFontProvider),
+        ChangeNotifierProvider<FestivalProvider>.value(
+          value: mockFestivalProvider,
+        ),
+        ChangeNotifierProvider<AppConfigProvider>.value(
+          value: mockAppConfigProvider,
+        ),
+      ],
+      child: MaterialApp(
+        theme: AppTheme.lightTheme,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: ElevatedButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AddGroupAdminScreen(
+                    currentAdmin: currentAdmin,
+                    adminToEdit: adminToEdit,
+                    managementService: mockAdminManagementService,
+                  ),
+                ),
+              ),
+              child: const Text('Launch Edit'),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -458,6 +494,85 @@ void main() {
 
       expect(find.text('Admin with this email already exists'), findsOneWidget);
       verifyNever(() => mockAdminManagementService.saveAdmin(any()));
+    });
+  });
+
+  group('AddGroupAdminScreen - Edit Mode', () {
+    testWidgets('renders pre-filled fields and locks email', (tester) async {
+      final currentAdmin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
+      final adminToEdit = AdminUser(
+        email: 'edit@test.com',
+        roles: ['group_admin'],
+        groupId: 'seattle',
+      );
+
+      await tester.pumpWidget(createEditTestWidget(currentAdmin, adminToEdit));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch Edit'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Edit Admin'), findsOneWidget);
+      expect(find.text('edit@test.com'), findsOneWidget);
+      
+      // Check if email field is disabled
+      final emailField = tester.widget<TextFormField>(find.byType(TextFormField).first);
+      expect(emailField.enabled, isFalse);
+
+      // Check roles
+      final groupAdminCheckbox = tester.widget<CheckboxListTile>(find.widgetWithText(CheckboxListTile, 'Group Admin'));
+      expect(groupAdminCheckbox.value, isTrue);
+
+      expect(find.text('UPDATE ADMIN'), findsOneWidget);
+      expect(find.text('Delete Admin'), findsOneWidget);
+    });
+
+    testWidgets('successfully updates admin', (tester) async {
+      final currentAdmin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
+      final adminToEdit = AdminUser(
+        email: 'edit@test.com',
+        roles: ['group_admin'],
+        groupId: 'seattle',
+      );
+
+      when(() => mockAdminManagementService.saveAdmin(any())).thenAnswer((_) async => {});
+
+      await tester.pumpWidget(createEditTestWidget(currentAdmin, adminToEdit));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch Edit'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('UPDATE ADMIN'));
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      verify(() => mockAdminManagementService.saveAdmin(any())).called(1);
+      expect(find.text('Admin updated successfully'), findsOneWidget);
+    });
+
+    testWidgets('successfully deletes admin', (tester) async {
+      final currentAdmin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
+      final adminToEdit = AdminUser(
+        email: 'edit@test.com',
+        roles: ['group_admin'],
+        groupId: 'seattle',
+      );
+
+      when(() => mockAdminManagementService.deleteAdmin(any())).thenAnswer((_) async => {});
+
+      await tester.pumpWidget(createEditTestWidget(currentAdmin, adminToEdit));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch Edit'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.widgetWithText(TextButton, 'Delete Admin'));
+      await tester.pumpAndSettle();
+
+      expect(find.widgetWithText(AlertDialog, 'Delete Admin'), findsOneWidget);
+      await tester.tap(find.text('Delete'));
+      await tester.pumpAndSettle();
+
+      verify(() => mockAdminManagementService.deleteAdmin('edit@test.com')).called(1);
+      expect(find.text('Admin removed successfully'), findsOneWidget);
     });
   });
 }

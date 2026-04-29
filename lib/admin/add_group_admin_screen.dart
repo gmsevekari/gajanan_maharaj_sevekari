@@ -11,11 +11,13 @@ import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 
 class AddGroupAdminScreen extends StatefulWidget {
   final AdminUser currentAdmin;
+  final AdminUser? adminToEdit;
   final AdminManagementService? managementService;
 
   const AddGroupAdminScreen({
     super.key,
     required this.currentAdmin,
+    this.adminToEdit,
     this.managementService,
   });
 
@@ -35,12 +37,17 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
   void initState() {
     super.initState();
     _managementService = widget.managementService ?? AdminManagementService();
-    if (!_isSuperAdmin) {
+    if (widget.adminToEdit != null) {
+      _emailController.text = widget.adminToEdit!.email;
+      _selectedRoles.addAll(widget.adminToEdit!.roles);
+      _selectedGroupId = widget.adminToEdit!.groupId;
+    } else if (!_isSuperAdmin) {
       _selectedGroupId = widget.currentAdmin.groupId;
     }
   }
 
   bool get _isSuperAdmin => widget.currentAdmin.roles.contains('super_admin');
+  bool get _isEditing => widget.adminToEdit != null;
 
   @override
   void dispose() {
@@ -53,16 +60,21 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
       setState(() => _isLoading = true);
       try {
         final email = _emailController.text.trim();
-        final exists = await _managementService.isAdminExists(email);
-        if (exists) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Admin with this email already exists'),
-              ),
-            );
+
+        // Check if admin already exists (only for new admins)
+        if (!_isEditing) {
+          final exists = await _managementService.isAdminExists(email);
+          if (exists) {
+            if (mounted) {
+              final localizations = AppLocalizations.of(context)!;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(localizations.adminAlreadyExists),
+                ),
+              );
+            }
+            return;
           }
-          return;
         }
 
         final newAdmin = AdminUser(
@@ -74,16 +86,71 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
         await _managementService.saveAdmin(newAdmin);
 
         if (mounted) {
+          final localizations = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Admin added successfully')),
+            SnackBar(
+              content: Text(
+                _isEditing
+                    ? localizations.adminUpdateSuccess
+                    : localizations.adminAddSuccess,
+              ),
+            ),
           );
           Navigator.of(context).pop();
         }
       } catch (e) {
         if (mounted) {
+          final localizations = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+          ).showSnackBar(SnackBar(content: Text('${localizations.errorLabel}: $e')));
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
+    }
+  }
+
+  Future<void> _deleteAdmin() async {
+    final localizations = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(localizations.deleteAdminButton),
+        content: Text(localizations.deleteAdminConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(localizations.cancel ?? 'Cancel'),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(localizations.delete ?? 'DELETE'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      setState(() => _isLoading = true);
+      try {
+        await _managementService.deleteAdmin(_emailController.text.trim());
+        if (mounted) {
+          final localizations = AppLocalizations.of(context)!;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(localizations.adminDeleteSuccess)),
+          );
+          Navigator.of(context).pop();
+        }
+      } catch (e) {
+        if (mounted) {
+          final localizations = AppLocalizations.of(context)!;
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${localizations.errorLabel}: $e')));
         }
       } finally {
         if (mounted) {
@@ -112,7 +179,11 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.addGroupAdminTitle),
+        title: Text(
+          _isEditing
+              ? localizations.editAdminTitle
+              : localizations.addGroupAdminTitle,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -191,10 +262,12 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
                       children: [
                         TextFormField(
                           controller: _emailController,
+                          enabled: !_isEditing,
                           decoration: InputDecoration(
                             labelText: localizations.adminEmailLabel,
                             border: const OutlineInputBorder(),
                             prefixIcon: const Icon(Icons.email_outlined),
+                            filled: _isEditing,
                           ),
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
@@ -327,7 +400,7 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
                         ],
                         const SizedBox(height: 32),
                         ElevatedButton(
-                          onPressed: _submitForm,
+                          onPressed: _isLoading ? null : _submitForm,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: theme.colorScheme.primary,
                             foregroundColor: theme.colorScheme.onPrimary,
@@ -348,13 +421,28 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
                                   ),
                                 )
                               : Text(
-                                  localizations.addAdminButton.toUpperCase(),
+                                  (_isEditing
+                                          ? localizations.updateAdminButton
+                                          : localizations.addAdminButton)
+                                      .toUpperCase(),
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                         ),
+                        if (_isEditing) ...[
+                          const SizedBox(height: 16),
+                          TextButton.icon(
+                            onPressed: _isLoading ? null : _deleteAdmin,
+                            icon: const Icon(Icons.delete_outline),
+                            label: Text(localizations.deleteAdminButton),
+                            style: TextButton.styleFrom(
+                              foregroundColor: theme.colorScheme.error,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

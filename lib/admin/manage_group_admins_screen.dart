@@ -222,6 +222,23 @@ class _ManageGroupAdminsScreenState extends State<ManageGroupAdminsScreen> {
                     spacing: 8,
                     runSpacing: 4,
                     children: admin.roles.map((role) {
+                      String localizedRole;
+                      switch (role) {
+                        case 'super_admin':
+                          localizedRole = localizations.roleSuperAdmin;
+                          break;
+                        case 'group_admin':
+                          localizedRole = localizations.roleGroupAdmin;
+                          break;
+                        case 'parayan_coordinator':
+                          localizedRole = localizations.roleParayanCoordinator;
+                          break;
+                        case 'namjap_coordinator':
+                          localizedRole = localizations.roleNamjapCoordinator;
+                          break;
+                        default:
+                          localizedRole = role.replaceAll('_', ' ').toUpperCase();
+                      }
                       return Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
@@ -241,7 +258,7 @@ class _ManageGroupAdminsScreenState extends State<ManageGroupAdminsScreen> {
                           ),
                         ),
                         child: Text(
-                          role.replaceAll('_', ' ').toUpperCase(),
+                          localizedRole.toUpperCase(),
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: _getRoleColor(theme, role),
                             fontSize: 10,
@@ -267,14 +284,21 @@ class _ManageGroupAdminsScreenState extends State<ManageGroupAdminsScreen> {
               icon: Icon(
                 admin.email == widget.currentAdmin.email
                     ? Icons.person_outline
-                    : Icons.delete_outline,
+                    : Icons.edit_outlined,
                 color: admin.email == widget.currentAdmin.email
                     ? theme.appColors.secondaryText
-                    : theme.colorScheme.error,
+                    : theme.colorScheme.primary,
               ),
               onPressed: admin.email == widget.currentAdmin.email
                   ? null
-                  : () => _confirmDelete(admin),
+                  : () => Navigator.pushNamed(
+                        context,
+                        Routes.adminAddGroupAdmin,
+                        arguments: {
+                          'currentAdmin': widget.currentAdmin,
+                          'adminToEdit': admin,
+                        },
+                      ),
             ),
           ],
         ),
@@ -320,7 +344,7 @@ class _ManageGroupAdminsScreenState extends State<ManageGroupAdminsScreen> {
 
     for (var groupId in sortedGroupIds) {
       String title = groupId == 'super_admins'
-          ? 'Super Admins'
+          ? localizations.roleSuperAdmin
           : '${localizations.adminGroupLabel}: $groupId';
       result.add(title);
       result.addAll(groups[groupId]!);
@@ -335,42 +359,4 @@ class _ManageGroupAdminsScreenState extends State<ManageGroupAdminsScreen> {
     return theme.appColors.secondaryText;
   }
 
-  Future<void> _confirmDelete(AdminUser admin) async {
-    final localizations = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(localizations.manageGroupAdminsTitle),
-        content: Text(localizations.deleteAdminConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(localizations.cancel ?? 'Cancel'),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(localizations.delete ?? 'Delete'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      try {
-        await _managementService.deleteAdmin(admin.email);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(localizations.adminDeleteSuccess)),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Error deleting admin: $e')));
-        }
-      }
-    }
-  }
 }

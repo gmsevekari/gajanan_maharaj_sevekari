@@ -677,5 +677,11 @@
   "invalidEmail": "कृपया योग्य ईमेल आयडी टाका",
   "atLeastOneRoleRequired": "किमान एक रोल निवडणे आवश्यक आहे",
   "groupRequired": "कृपया एक ग्रुप निवडा",
-  "savingLabel": "सेव्ह करत आहे..."
+  "savingLabel": "सेव्ह करत आहे...",
+  "editAdminTitle": "ॲडमिन संपादन करा",
+  "updateAdminButton": "ॲडमिन अपडेट करा",
+  "deleteAdminButton": "ॲडमिन डिलीट करा",
+  "adminAlreadyExists": "या ईमेलचा ॲडमिन आधीच अस्तित्वात आहे",
+  "adminAddSuccess": "ॲडमिन यशस्वीरित्या ॲड झाला",
+  "adminUpdateSuccess": "ॲडमिन यशस्वीरित्या अपडेट झाला"
 }

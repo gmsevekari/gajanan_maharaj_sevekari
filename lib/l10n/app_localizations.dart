@@ -3541,6 +3541,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saving...'**
   String get savingLabel;
+
+  /// No description provided for @editAdminTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Admin'**
+  String get editAdminTitle;
+
+  /// No description provided for @updateAdminButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Admin'**
+  String get updateAdminButton;
+
+  /// No description provided for @deleteAdminButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Admin'**
+  String get deleteAdminButton;
+
+  /// No description provided for @adminAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin with this email already exists'**
+  String get adminAlreadyExists;
+
+  /// No description provided for @adminUpdateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin updated successfully'**
+  String get adminUpdateSuccess;
 }
 
 class _AppLocalizationsDelegate

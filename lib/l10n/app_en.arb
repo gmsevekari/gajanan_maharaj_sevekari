@@ -677,5 +677,11 @@
   "invalidEmail": "Please enter a valid email address",
   "atLeastOneRoleRequired": "At least one role must be selected",
   "groupRequired": "Please select a group",
-  "savingLabel": "Saving..."
+  "savingLabel": "Saving...",
+  "editAdminTitle": "Edit Admin",
+  "updateAdminButton": "Update Admin",
+  "deleteAdminButton": "Delete Admin",
+  "adminAlreadyExists": "Admin with this email already exists",
+  "adminAddSuccess": "Admin added successfully",
+  "adminUpdateSuccess": "Admin updated successfully"
 }
