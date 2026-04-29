@@ -6,10 +6,15 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
-class AdminParayanGroupScreen extends StatelessWidget {
+class AdminGajananMaharajGroupScreen extends StatelessWidget {
   final AdminUser adminUser;
+  final String mode;
 
-  const AdminParayanGroupScreen({super.key, required this.adminUser});
+  const AdminGajananMaharajGroupScreen({
+    super.key,
+    required this.adminUser,
+    this.mode = 'parayan',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +26,11 @@ class AdminParayanGroupScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.adminParayanGroupTitle),
+        title: Text(
+          mode == 'namjap'
+              ? localizations.adminNamjapGroupTitle
+              : localizations.adminParayanGroupTitle,
+        ),
         backgroundColor: theme.appColors.primarySwatch,
         iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
         actions: [
@@ -102,7 +111,9 @@ class AdminParayanGroupScreen extends StatelessWidget {
 
                             Navigator.pushNamed(
                               context,
-                              Routes.adminParayanCoordination,
+                              mode == 'namjap'
+                                  ? Routes.adminGroupNamjapDashboard
+                                  : Routes.adminParayanCoordination,
                               arguments: selectedAdmin,
                             );
                           },

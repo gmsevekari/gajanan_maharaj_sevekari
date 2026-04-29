@@ -55,7 +55,7 @@ import 'package:gajanan_maharaj_sevekari/admin/parayan_coordination_dashboard.da
 import 'package:gajanan_maharaj_sevekari/admin/manage_group_admins_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_list_screen.dart';
-import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_group_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_gajanan_maharaj_group_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/create_parayan_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_dashboard.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/create_group_namjap_screen.dart';
@@ -395,7 +395,7 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminGajananMaharajGroups: (context) {
                   final adminUser =
                       ModalRoute.of(context)?.settings.arguments as AdminUser;
-                  return AdminParayanGroupScreen(adminUser: adminUser);
+                  return AdminGajananMaharajGroupScreen(adminUser: adminUser);
                 },
                 Routes.userNotifications: (context) =>
                     const UserNotificationsScreen(),
