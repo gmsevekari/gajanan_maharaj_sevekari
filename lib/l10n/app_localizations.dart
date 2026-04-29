@@ -3499,6 +3499,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No admins found'**
   String get noAdminsFound;
+
+  /// No description provided for @roleSuperAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Admin'**
+  String get roleSuperAdmin;
+
+  /// No description provided for @roleGroupAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Admin'**
+  String get roleGroupAdmin;
+
+  /// No description provided for @atLeastOneRoleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one role must be selected'**
+  String get atLeastOneRoleRequired;
+
+  /// No description provided for @groupRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a group'**
+  String get groupRequired;
+
+  /// No description provided for @savingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get savingLabel;
 }
 
 class _AppLocalizationsDelegate

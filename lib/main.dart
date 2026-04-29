@@ -45,6 +45,8 @@ import 'package:gajanan_maharaj_sevekari/jap_mala/namjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/individual_namjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/group_namjap_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/group_namjap_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/add_group_admin_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_login_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_dashboard_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_temple_notifications_screen.dart';
@@ -423,8 +425,10 @@ class _MyAppState extends State<MyApp> {
                   final admin = ModalRoute.of(context)!.settings.arguments as AdminUser;
                   return ManageGroupAdminsScreen(currentAdmin: admin);
                 },
-                Routes.adminAddGroupAdmin: (context) =>
-                    const Scaffold(body: Center(child: Text('Add Group Admin Placeholder'))),
+                Routes.adminAddGroupAdmin: (context) {
+                  final admin = ModalRoute.of(context)!.settings.arguments as AdminUser;
+                  return AddGroupAdminScreen(currentAdmin: admin);
+                },
               },
               onGenerateRoute: (settings) {
                 final DeityConfig? deity = settings.arguments is DeityConfig

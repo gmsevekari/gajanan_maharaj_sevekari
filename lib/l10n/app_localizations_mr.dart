@@ -1069,10 +1069,10 @@ class AppLocalizationsMr extends AppLocalizations {
   String get completedLabel => 'पूर्ण पारायण #';
 
   @override
-  String get emailRequired => 'ईमेल आवश्यक आहे';
+  String get emailRequired => 'ईमेल आयडी आवश्यक आहे';
 
   @override
-  String get invalidEmail => 'कृपया योग्य ईमेल पत्ता प्रविष्ट करा';
+  String get invalidEmail => 'कृपया योग्य ईमेल आयडी टाका';
 
   @override
   String get phoneRequired => 'फोन नंबर आवश्यक आहे';
@@ -1802,4 +1802,19 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get noAdminsFound => 'कोणतेही ॲडमिन सापडले नाहीत';
+
+  @override
+  String get roleSuperAdmin => 'सुपर ॲडमिन';
+
+  @override
+  String get roleGroupAdmin => 'ग्रुप ॲडमिन';
+
+  @override
+  String get atLeastOneRoleRequired => 'किमान एक रोल निवडणे आवश्यक आहे';
+
+  @override
+  String get groupRequired => 'कृपया एक ग्रुप निवडा';
+
+  @override
+  String get savingLabel => 'सेव्ह करत आहे...';
 }

@@ -1798,4 +1798,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noAdminsFound => 'No admins found';
+
+  @override
+  String get roleSuperAdmin => 'Super Admin';
+
+  @override
+  String get roleGroupAdmin => 'Group Admin';
+
+  @override
+  String get atLeastOneRoleRequired => 'At least one role must be selected';
+
+  @override
+  String get groupRequired => 'Please select a group';
+
+  @override
+  String get savingLabel => 'Saving...';
 }

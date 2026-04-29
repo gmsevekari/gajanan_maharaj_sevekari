@@ -668,5 +668,12 @@
   "delete": "डिलीट करा",
   "adminGroupLabel": "ग्रुप",
   "errorLabel": "त्रुटी",
-  "noAdminsFound": "कोणतेही ॲडमिन सापडले नाहीत"
+  "noAdminsFound": "कोणतेही ॲडमिन सापडले नाहीत",
+  "roleSuperAdmin": "सुपर ॲडमिन",
+  "roleGroupAdmin": "ग्रुप ॲडमिन",
+  "emailRequired": "ईमेल आयडी आवश्यक आहे",
+  "invalidEmail": "कृपया योग्य ईमेल आयडी टाका",
+  "atLeastOneRoleRequired": "किमान एक रोल निवडणे आवश्यक आहे",
+  "groupRequired": "कृपया एक ग्रुप निवडा",
+  "savingLabel": "सेव्ह करत आहे..."
 }

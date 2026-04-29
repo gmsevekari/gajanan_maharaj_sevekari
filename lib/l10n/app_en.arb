@@ -668,5 +668,12 @@
   "delete": "Delete",
   "adminGroupLabel": "Group",
   "errorLabel": "Error",
-  "noAdminsFound": "No admins found"
+  "noAdminsFound": "No admins found",
+  "roleSuperAdmin": "Super Admin",
+  "roleGroupAdmin": "Group Admin",
+  "emailRequired": "Email is required",
+  "invalidEmail": "Please enter a valid email address",
+  "atLeastOneRoleRequired": "At least one role must be selected",
+  "groupRequired": "Please select a group",
+  "savingLabel": "Saving..."
 }
