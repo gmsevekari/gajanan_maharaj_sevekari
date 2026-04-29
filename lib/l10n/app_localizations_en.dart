@@ -1806,6 +1806,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roleGroupAdmin => 'Group Admin';
 
   @override
+  String get roleParayanCoordinator => 'Parayan Admin';
+
+  @override
+  String get roleNamjapCoordinator => 'Namjap Admin';
+
+  @override
   String get atLeastOneRoleRequired => 'At least one role must be selected';
 
   @override

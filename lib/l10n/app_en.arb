@@ -671,6 +671,8 @@
   "noAdminsFound": "No admins found",
   "roleSuperAdmin": "Super Admin",
   "roleGroupAdmin": "Group Admin",
+  "roleParayanCoordinator": "Parayan Admin",
+  "roleNamjapCoordinator": "Namjap Admin",
   "emailRequired": "Email is required",
   "invalidEmail": "Please enter a valid email address",
   "atLeastOneRoleRequired": "At least one role must be selected",

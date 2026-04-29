@@ -671,6 +671,8 @@
   "noAdminsFound": "कोणतेही ॲडमिन सापडले नाहीत",
   "roleSuperAdmin": "सुपर ॲडमिन",
   "roleGroupAdmin": "ग्रुप ॲडमिन",
+  "roleParayanCoordinator": "पारायण ॲडमिन",
+  "roleNamjapCoordinator": "नामजप ॲडमिन",
   "emailRequired": "ईमेल आयडी आवश्यक आहे",
   "invalidEmail": "कृपया योग्य ईमेल आयडी टाका",
   "atLeastOneRoleRequired": "किमान एक रोल निवडणे आवश्यक आहे",

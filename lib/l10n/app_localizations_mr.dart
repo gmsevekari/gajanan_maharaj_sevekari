@@ -1810,6 +1810,12 @@ class AppLocalizationsMr extends AppLocalizations {
   String get roleGroupAdmin => 'ग्रुप ॲडमिन';
 
   @override
+  String get roleParayanCoordinator => 'पारायण ॲडमिन';
+
+  @override
+  String get roleNamjapCoordinator => 'नामजप ॲडमिन';
+
+  @override
   String get atLeastOneRoleRequired => 'किमान एक रोल निवडणे आवश्यक आहे';
 
   @override

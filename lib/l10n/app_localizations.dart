@@ -3512,6 +3512,18 @@ abstract class AppLocalizations {
   /// **'Group Admin'**
   String get roleGroupAdmin;
 
+  /// No description provided for @roleParayanCoordinator.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan Admin'**
+  String get roleParayanCoordinator;
+
+  /// No description provided for @roleNamjapCoordinator.
+  ///
+  /// In en, this message translates to:
+  /// **'Namjap Admin'**
+  String get roleNamjapCoordinator;
+
   /// No description provided for @atLeastOneRoleRequired.
   ///
   /// In en, this message translates to:
