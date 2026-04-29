@@ -41,10 +41,16 @@ exports.updateParayanStatuses = onSchedule("*/30 * * * *", async (event) => {
     const endDate = DateTime.fromJSDate(data.endDate.toDate())
         .setZone(timezone);
 
-    if (nowInZone > endDate) {
+    let effectiveEndDate = endDate;
+    if (data.groupId === "gajanan_gunjan") {
+      effectiveEndDate = endDate.plus({days: 2});
+    }
+
+    if (nowInZone > effectiveEndDate) {
       await doc.ref.update({status: "completed"});
       logger.info(`Auto-transitioned Parayan ${doc.id} to completed. ` +
-          `Zone: ${timezone}, Now: ${nowInZone.toISO()}`);
+          `Zone: ${timezone}, Now: ${nowInZone.toISO()}, ` +
+          `Effective End: ${effectiveEndDate.toISO()}`);
     }
   }
 });

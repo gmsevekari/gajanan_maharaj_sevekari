@@ -140,6 +140,45 @@ describe("Parayan Cloud Functions", () => {
 
           expect(updateStub.calledWith({status: "completed"})).to.be.true;
         });
+
+    it("should delay transition for gajanan_gunjan by 2 days",
+        async () => {
+          const now = DateTime.fromISO("2026-04-25T12:00:00",
+              {zone: "America/Los_Angeles"});
+          Settings.now = () => now.toMillis();
+
+          // End date is 1 day ago (less than 2 days delay)
+          const endDate = now.minus({days: 1});
+          const updateStub = sinon.stub().resolves();
+
+          allocatedGetStub.resolves({docs: []});
+          ongoingGetStub.resolves({
+            docs: [{
+              id: "p_gunjan",
+              data: () => ({
+                endDate: {toDate: () => endDate.toJSDate()},
+                timezone: "America/Los_Angeles",
+                status: "ongoing",
+                groupId: "gajanan_gunjan",
+              }),
+              ref: {update: updateStub},
+            }],
+          });
+
+          const wrapped = test.wrap(myFunctions.updateParayanStatuses);
+          await wrapped({});
+
+          // Should NOT be completed yet
+          expect(updateStub.called).to.be.false;
+
+          // Move time forward past 2 days from endDate
+          // endDate was now - 1 day, so we need to move past now + 1 day
+          const later = now.plus({days: 1, minutes: 1});
+          Settings.now = () => later.toMillis();
+
+          await wrapped({});
+          expect(updateStub.calledWith({status: "completed"})).to.be.true;
+        });
   });
 
   describe("claimParayanAllocation", () => {
