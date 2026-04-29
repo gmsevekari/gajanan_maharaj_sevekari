@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_dashboard.dart';
+import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/create_group_namjap_screen.dart';
@@ -18,7 +19,12 @@ void main() {
     testWidgets('AdminGroupNamjapDashboard is structurally sound', (
       WidgetTester tester,
     ) async {
-      expect(const AdminGroupNamjapDashboard(), isA<StatefulWidget>());
+      expect(
+        const AdminGroupNamjapDashboard(
+          adminUser: AdminUser(email: 'test@example.com', roles: ['super_admin']),
+        ),
+        isA<StatefulWidget>(),
+      );
     });
 
     testWidgets('AdminGroupNamjapListScreen is structurally sound', (

@@ -232,10 +232,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             icon: Icons.group_add,
                             color: theme.appColors.primarySwatch[600]!,
                             onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                Routes.adminGroupNamjapDashboard,
-                              );
+                              if (adminUser.groupId != null) {
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.adminGroupNamjapDashboard,
+                                  arguments: adminUser,
+                                );
+                              } else {
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.adminGajananMaharajGroups,
+                                  arguments: {
+                                    'adminUser': adminUser,
+                                    'mode': 'namjap',
+                                  },
+                                );
+                              }
                             },
                           ),
                         if (adminUser.roles.contains('super_admin') ||
@@ -294,7 +306,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                 ),
                               ),
                               value: adminUser.typoNotificationsEnabled,
-                              activeColor: theme.colorScheme.primary,
+                              activeThumbColor: theme.colorScheme.primary,
                               onChanged: _toggleTypoNotifications,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 16,

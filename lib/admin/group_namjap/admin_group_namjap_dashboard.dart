@@ -5,13 +5,15 @@ import 'package:gajanan_maharaj_sevekari/models/group_namjap_event.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
-import 'package:intl/intl.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/admin/widgets/admin_stats_widgets.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 
+import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
+
 class AdminGroupNamjapDashboard extends StatefulWidget {
-  const AdminGroupNamjapDashboard({super.key});
+  final AdminUser adminUser;
+  const AdminGroupNamjapDashboard({super.key, required this.adminUser});
 
   @override
   State<AdminGroupNamjapDashboard> createState() =>
@@ -331,10 +333,6 @@ class _OngoingCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isEnglish = Localizations.localeOf(context).languageCode == 'en';
     final title = isEnglish ? event.nameEn : event.nameMr;
-
-    double progress = event.targetCount > 0
-        ? (event.totalCount / event.targetCount).clamp(0.0, 1.0)
-        : 0;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),

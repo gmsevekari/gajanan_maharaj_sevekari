@@ -46,7 +46,6 @@ import 'package:gajanan_maharaj_sevekari/jap_mala/individual_namjap_screen.dart'
 import 'package:gajanan_maharaj_sevekari/jap_mala/group_namjap_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/group_namjap_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/add_group_admin_screen.dart';
-import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_login_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_dashboard_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_temple_notifications_screen.dart';
@@ -393,9 +392,19 @@ class _MyAppState extends State<MyApp> {
                   return CreateParayanScreen(adminUser: adminUser);
                 },
                 Routes.adminGajananMaharajGroups: (context) {
-                  final adminUser =
-                      ModalRoute.of(context)?.settings.arguments as AdminUser;
-                  return AdminGajananMaharajGroupScreen(adminUser: adminUser);
+                  final args = ModalRoute.of(context)?.settings.arguments;
+                  if (args is Map<String, dynamic>) {
+                    return AdminGajananMaharajGroupScreen(
+                      adminUser: args['adminUser'] as AdminUser,
+                      mode: args['mode'] as String,
+                    );
+                  }
+                  if (args is AdminUser) {
+                    return AdminGajananMaharajGroupScreen(adminUser: args);
+                  }
+                  return const Scaffold(
+                    body: Center(child: Text('Error: Missing AdminUser arguments')),
+                  );
                 },
                 Routes.userNotifications: (context) =>
                     const UserNotificationsScreen(),
@@ -416,8 +425,20 @@ class _MyAppState extends State<MyApp> {
                     const FavoriteItemListScreen(),
                 Routes.adminTypoReports: (context) =>
                     const AdminTypoReportsScreen(),
-                Routes.adminGroupNamjapDashboard: (context) =>
-                    const AdminGroupNamjapDashboard(),
+                Routes.adminGroupNamjapDashboard: (context) {
+                  final args = ModalRoute.of(context)?.settings.arguments;
+                  if (args is Map<String, dynamic>) {
+                    return AdminGroupNamjapDashboard(
+                      adminUser: args['adminUser'] as AdminUser,
+                    );
+                  }
+                  if (args is AdminUser) {
+                    return AdminGroupNamjapDashboard(adminUser: args);
+                  }
+                  return const Scaffold(
+                    body: Center(child: Text('Error: Missing AdminUser arguments')),
+                  );
+                },
                 Routes.adminCreateGroupNamjap: (context) =>
                     const CreateGroupNamjapScreen(),
                 Routes.onboarding: (context) => const GroupSelectionScreen(),
