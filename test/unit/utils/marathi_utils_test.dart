@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 
@@ -64,6 +65,23 @@ void main() {
       test('returns empty string for null input', () {
         expect(formatNumberLocalized(null, 'en'), '');
       });
+    });
+  });
+
+  group('formatLocalizedText', () {
+    test('converts to Marathi numerals for mr locale', () {
+      expect(formatLocalizedText('Adhyay 1', const Locale('mr')), 'Adhyay १');
+    });
+
+    test('converts to Marathi numerals for en_MR locale', () {
+      expect(
+        formatLocalizedText('Adhyay 1', const Locale('en', 'MR')),
+        'Adhyay १',
+      );
+    });
+
+    test('keeps English numerals for en locale', () {
+      expect(formatLocalizedText('Adhyay 1', const Locale('en')), 'Adhyay 1');
     });
   });
 }

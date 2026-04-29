@@ -1,4 +1,6 @@
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
+import 'locale_extensions.dart';
 
 String toMarathiNumerals(String input) {
   const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -37,4 +39,11 @@ String formatNumberLocalized(
 
   if (languageCode != 'mr') return numStr;
   return toMarathiNumerals(numStr);
+}
+
+String formatLocalizedText(String text, Locale locale) {
+  if (locale.useMarathiContent) {
+    return toMarathiNumerals(text);
+  }
+  return text;
 }
