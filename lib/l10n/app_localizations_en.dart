@@ -162,6 +162,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get marathi => 'Marathi';
 
   @override
+  String get minglish => 'Minglish (Marathi-English)';
+
+  @override
   String get adhyay => 'Adhyay';
 
   @override
@@ -1837,4 +1840,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminNamjapGroupTitle => 'Namjap Groups';
+}
+
+/// The translations for English, as used in Mauritania (`en_MR`).
+class AppLocalizationsEnMr extends AppLocalizationsEn {
+  AppLocalizationsEnMr() : super('en_MR');
+
+  @override
+  String get minglish => 'Minglish (Marathi-English)';
 }

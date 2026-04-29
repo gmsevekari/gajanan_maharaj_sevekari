@@ -36,7 +36,8 @@ class LanguageSelectionScreen extends StatelessWidget {
                 _buildLanguageOption(
                   context,
                   localizations.english,
-                  localeProvider.locale.languageCode == 'en',
+                  localeProvider.locale.languageCode == 'en' &&
+                      localeProvider.locale.countryCode == null,
                   () => localeProvider.setLocale(const Locale('en')),
                 ),
                 _buildLanguageOption(
@@ -44,6 +45,13 @@ class LanguageSelectionScreen extends StatelessWidget {
                   localizations.marathi,
                   localeProvider.locale.languageCode == 'mr',
                   () => localeProvider.setLocale(const Locale('mr')),
+                ),
+                _buildLanguageOption(
+                  context,
+                  localizations.minglish,
+                  localeProvider.locale.languageCode == 'en' &&
+                      localeProvider.locale.countryCode == 'MR',
+                  () => localeProvider.setLocale(const Locale('en', 'MR')),
                 ),
               ],
             ),

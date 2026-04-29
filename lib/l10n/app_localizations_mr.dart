@@ -162,6 +162,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get marathi => 'मराठी';
 
   @override
+  String get minglish => 'मिंग्लिश (मराठी-इंग्लिश)';
+
+  @override
   String get adhyay => 'अध्याय';
 
   @override

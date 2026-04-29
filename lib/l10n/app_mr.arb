@@ -1,4 +1,5 @@
 {
+  "@@locale": "mr",
   "font": "फॉन्ट",
   "granthTitle": "गजानन विजय ग्रंथ",
   "guruCharitraTitle": "श्री गुरु चरित्र",
@@ -50,6 +51,10 @@
   "hexLabel": "हेक्स कोड",
   "english": "इंग्रजी",
   "marathi": "मराठी",
+  "minglish": "मिंग्लिश (मराठी-इंग्लिश)",
+  "@minglish": {
+    "description": "मराठी आणि इंग्लिश मिक्स"
+  },
   "adhyay": "अध्याय",
   "read": "वाचा",
   "listen": "ऐका",
