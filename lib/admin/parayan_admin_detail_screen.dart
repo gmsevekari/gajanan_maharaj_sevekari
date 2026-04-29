@@ -19,6 +19,8 @@ import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
+import 'package:provider/provider.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 
 enum _ParticipantFilter { all, completed, pending, unclaimed }
 
@@ -137,6 +139,26 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
           context,
         ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
+    }
+  }
+
+  String _getParayanGroupName(ParayanEvent event, AppLocalizations l10n) {
+    final appConfig = context.read<AppConfigProvider>().appConfig;
+    if (appConfig == null) return l10n.appName;
+
+    try {
+      final group = appConfig.gajananMaharajGroups.firstWhere(
+        (g) => g.id == event.groupId,
+      );
+
+      final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+      final parayanName = isMarathi ? group.parayanNameMr : group.parayanNameEn;
+      final groupName =
+          parayanName ?? (isMarathi ? group.nameMr : group.nameEn);
+
+      return groupName.isNotEmpty ? "${l10n.appName} - $groupName" : l10n.appName;
+    } catch (_) {
+      return l10n.appName;
     }
   }
 
@@ -1508,7 +1530,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n.seattleGajananMaharajParivar,
+                        _getParayanGroupName(event, l10n),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -2124,7 +2146,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n.seattleGajananMaharajParivar,
+                        _getParayanGroupName(event, l10n),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,

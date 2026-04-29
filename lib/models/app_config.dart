@@ -687,12 +687,16 @@ class GajananMaharajGroup {
   final String id;
   final String nameEn;
   final String nameMr;
+  final String? parayanNameEn;
+  final String? parayanNameMr;
   final String? icon;
 
   GajananMaharajGroup({
     required this.id,
     required this.nameEn,
     required this.nameMr,
+    this.parayanNameEn,
+    this.parayanNameMr,
     this.icon,
   });
 
@@ -701,6 +705,8 @@ class GajananMaharajGroup {
       id: json['id'] ?? '',
       nameEn: json['name_en'] ?? '',
       nameMr: json['name_mr'] ?? '',
+      parayanNameEn: json['parayan_name_en'],
+      parayanNameMr: json['parayan_name_mr'],
       icon: json['icon'],
     );
   }
