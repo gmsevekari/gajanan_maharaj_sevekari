@@ -13,6 +13,7 @@ import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_selection_provider.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_management_service.dart';
 
 class MockFirestore extends Mock implements FirebaseFirestore {}
 
@@ -74,3 +75,6 @@ class MockQuery extends Mock implements Query<Map<String, dynamic>> {}
 
 class MockGroupSelectionProvider extends Mock
     implements GroupSelectionProvider {}
+
+class MockAdminManagementService extends Mock
+    implements AdminManagementService {}

@@ -21,18 +21,43 @@ void main() {
     mockQuerySnapshot = MockQuerySnapshot();
     mockDocSnapshot = MockQueryDocumentSnapshot();
 
-    service = AdminManagementService(
-      firestore: mockFirestore,
-      auth: mockAuth,
-    );
+    service = AdminManagementService(firestore: mockFirestore, auth: mockAuth);
 
-    when(() => mockFirestore.collection('admin_allowlist')).thenReturn(mockCollection);
+    when(
+      () => mockFirestore.collection('admin_allowlist'),
+    ).thenReturn(mockCollection);
     when(() => mockCollection.doc(any())).thenReturn(mockDoc);
-    when(() => mockCollection.where(any(), isEqualTo: any(named: 'isEqualTo'))).thenReturn(mockCollection);
-    when(() => mockCollection.snapshots()).thenAnswer((_) => Stream.value(mockQuerySnapshot));
+    when(
+      () => mockCollection.where(any(), isEqualTo: any(named: 'isEqualTo')),
+    ).thenReturn(mockCollection);
+    when(
+      () => mockCollection.snapshots(),
+    ).thenAnswer((_) => Stream.value(mockQuerySnapshot));
   });
 
   group('AdminManagementService Tests', () {
+    test('isAdminExists returns true if document exists', () async {
+      final mockSnapshot = MockDocumentSnapshot();
+      when(() => mockSnapshot.exists).thenReturn(true);
+      when(() => mockDoc.get()).thenAnswer((_) async => mockSnapshot);
+
+      final exists = await service.isAdminExists('test@test.com');
+
+      expect(exists, isTrue);
+      verify(() => mockCollection.doc('test@test.com')).called(1);
+      verify(() => mockDoc.get()).called(1);
+    });
+
+    test('isAdminExists returns false if document does not exist', () async {
+      final mockSnapshot = MockDocumentSnapshot();
+      when(() => mockSnapshot.exists).thenReturn(false);
+      when(() => mockDoc.get()).thenAnswer((_) async => mockSnapshot);
+
+      final exists = await service.isAdminExists('unknown@test.com');
+
+      expect(exists, isFalse);
+    });
+
     test('getAllAdmins returns list of admins', () async {
       when(() => mockQuerySnapshot.docs).thenReturn([mockDocSnapshot]);
       when(() => mockDocSnapshot.id).thenReturn('admin@test.com');
@@ -67,11 +92,15 @@ void main() {
       when(() => mockAuth.currentUser).thenReturn(mockUser);
       when(() => mockUser.email).thenReturn('super@test.com');
       when(() => mockDoc.delete()).thenAnswer((_) async => {});
-      
+
       // For logging
       final mockAuditCollection = MockCollectionReference();
-      when(() => mockFirestore.collection('admin_audit_logs')).thenReturn(mockAuditCollection);
-      when(() => mockAuditCollection.add(any())).thenAnswer((_) async => mockDoc);
+      when(
+        () => mockFirestore.collection('admin_audit_logs'),
+      ).thenReturn(mockAuditCollection);
+      when(
+        () => mockAuditCollection.add(any()),
+      ).thenAnswer((_) async => mockDoc);
 
       await service.deleteAdmin('target@test.com');
 
@@ -84,7 +113,7 @@ void main() {
       final mockUser = MockUser();
       when(() => mockAuth.currentUser).thenReturn(mockUser);
       when(() => mockUser.email).thenReturn('super@test.com');
-      
+
       final admin = AdminUser(
         email: 'new@test.com',
         roles: ['group_admin'],
@@ -92,19 +121,25 @@ void main() {
       );
 
       when(() => mockDoc.set(any())).thenAnswer((_) async => {});
-      
+
       final mockAuditCollection = MockCollectionReference();
-      when(() => mockFirestore.collection('admin_audit_logs')).thenReturn(mockAuditCollection);
-      when(() => mockAuditCollection.add(any())).thenAnswer((_) async => mockDoc);
+      when(
+        () => mockFirestore.collection('admin_audit_logs'),
+      ).thenReturn(mockAuditCollection);
+      when(
+        () => mockAuditCollection.add(any()),
+      ).thenAnswer((_) async => mockDoc);
 
       await service.saveAdmin(admin);
 
       verify(() => mockCollection.doc('new@test.com')).called(1);
-      verify(() => mockDoc.set({
-            'roles': ['group_admin'],
-            'groupId': 'g1',
-            'typoNotificationsEnabled': false,
-          })).called(1);
+      verify(
+        () => mockDoc.set({
+          'roles': ['group_admin'],
+          'groupId': 'g1',
+          'typoNotificationsEnabled': false,
+        }),
+      ).called(1);
       verify(() => mockFirestore.collection('admin_audit_logs')).called(1);
     });
   });

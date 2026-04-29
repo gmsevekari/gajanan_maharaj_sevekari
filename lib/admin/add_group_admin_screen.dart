@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
-import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_management_service.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 
 class AddGroupAdminScreen extends StatefulWidget {
   final AdminUser currentAdmin;
+  final AdminManagementService? managementService;
 
-  const AddGroupAdminScreen({super.key, required this.currentAdmin});
+  const AddGroupAdminScreen({
+    super.key,
+    required this.currentAdmin,
+    this.managementService,
+  });
 
   @override
   State<AddGroupAdminScreen> createState() => _AddGroupAdminScreenState();
@@ -21,6 +28,17 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
   final _emailController = TextEditingController();
   final Set<String> _selectedRoles = {};
   String? _selectedGroupId;
+  bool _isLoading = false;
+  late final AdminManagementService _managementService;
+
+  @override
+  void initState() {
+    super.initState();
+    _managementService = widget.managementService ?? AdminManagementService();
+    if (!_isSuperAdmin) {
+      _selectedGroupId = widget.currentAdmin.groupId;
+    }
+  }
 
   bool get _isSuperAdmin => widget.currentAdmin.roles.contains('super_admin');
 
@@ -30,9 +48,48 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
     super.dispose();
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Logic for saving will come in Phase 3
+      setState(() => _isLoading = true);
+      try {
+        final email = _emailController.text.trim();
+        final exists = await _managementService.isAdminExists(email);
+        if (exists) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Admin with this email already exists'),
+              ),
+            );
+          }
+          return;
+        }
+
+        final newAdmin = AdminUser(
+          email: email,
+          roles: _selectedRoles.toList(),
+          groupId: _selectedGroupId,
+        );
+
+        await _managementService.saveAdmin(newAdmin);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Admin added successfully')),
+          );
+          Navigator.of(context).pop();
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
     }
   }
 
@@ -279,13 +336,24 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: Text(
-                            localizations.addAdminButton.toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : Text(
+                                  localizations.addAdminButton.toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                         ),
                       ],
                     ),

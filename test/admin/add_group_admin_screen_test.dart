@@ -12,6 +12,7 @@ import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_management_service.dart';
 import '../mocks.dart';
 
 void main() {
@@ -19,6 +20,7 @@ void main() {
   late MockFontProvider mockFontProvider;
   late MockFestivalProvider mockFestivalProvider;
   late MockAppConfigProvider mockAppConfigProvider;
+  late MockAdminManagementService mockAdminManagementService;
 
   final testGroups = [
     GajananMaharajGroup(id: 'seattle', nameEn: 'Seattle', nameMr: 'सिएटल'),
@@ -30,6 +32,7 @@ void main() {
     mockFontProvider = MockFontProvider();
     mockFestivalProvider = MockFestivalProvider();
     mockAppConfigProvider = MockAppConfigProvider();
+    mockAdminManagementService = MockAdminManagementService();
 
     when(() => mockThemeProvider.themePreset).thenReturn(ThemePreset.tulsi);
     when(() => mockThemeProvider.themeMode).thenReturn(ThemeMode.light);
@@ -48,6 +51,10 @@ void main() {
       appStoreUrl: '',
     );
     when(() => mockAppConfigProvider.appConfig).thenReturn(mockAppConfig);
+    when(
+      () => mockAdminManagementService.isAdminExists(any()),
+    ).thenAnswer((_) async => false);
+    registerFallbackValue(AdminUser(email: '', roles: []));
   });
 
   Widget createTestWidget(AdminUser admin) {
@@ -66,7 +73,22 @@ void main() {
         theme: AppTheme.lightTheme,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: AddGroupAdminScreen(currentAdmin: admin),
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: ElevatedButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AddGroupAdminScreen(
+                    currentAdmin: admin,
+                    managementService: mockAdminManagementService,
+                  ),
+                ),
+              ),
+              child: const Text('Launch'),
+            ),
+          ),
+        ),
         routes: {
           Routes.home: (context) => const Scaffold(body: Text('Home')),
           Routes.settings: (context) => const Scaffold(body: Text('Settings')),
@@ -79,6 +101,8 @@ void main() {
     testWidgets('renders all form fields for super_admin', (tester) async {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
       await tester.pumpWidget(createTestWidget(admin));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
       await tester.pumpAndSettle();
 
       expect(find.byType(TextFormField), findsOneWidget); // Email
@@ -105,6 +129,8 @@ void main() {
       );
       await tester.pumpWidget(createTestWidget(admin));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
+      await tester.pumpAndSettle();
 
       expect(find.text('Select Group'), findsNothing);
       expect(
@@ -120,6 +146,8 @@ void main() {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
       await tester.pumpWidget(createTestWidget(admin));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('ADD ADMIN'));
       await tester.pumpAndSettle();
@@ -131,6 +159,8 @@ void main() {
     testWidgets('validates email format', (tester) async {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
       await tester.pumpWidget(createTestWidget(admin));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextFormField), 'invalid-email');
@@ -145,6 +175,8 @@ void main() {
     ) async {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
       await tester.pumpWidget(createTestWidget(admin));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextFormField), 'valid@test.com');
@@ -165,6 +197,8 @@ void main() {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
       await tester.pumpWidget(createTestWidget(admin));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
+      await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextFormField), 'new@test.com');
 
@@ -183,6 +217,8 @@ void main() {
     ) async {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
       await tester.pumpWidget(createTestWidget(admin));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
       await tester.pumpAndSettle();
 
       // Select Group Admin and a group
@@ -211,6 +247,8 @@ void main() {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
       await tester.pumpWidget(createTestWidget(admin));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
+      await tester.pumpAndSettle();
 
       // Toggle Super Admin
       await tester.tap(find.text('Super Admin'));
@@ -235,6 +273,8 @@ void main() {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
       await tester.pumpWidget(createTestWidget(admin));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
+      await tester.pumpAndSettle();
 
       // Pumping a different widget triggers dispose on the previous one
       await tester.pumpWidget(const SizedBox.shrink());
@@ -244,6 +284,8 @@ void main() {
     testWidgets('navigates to home when home icon is tapped', (tester) async {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
       await tester.pumpWidget(createTestWidget(admin));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(Icons.home));
@@ -255,6 +297,8 @@ void main() {
     ) async {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
       await tester.pumpWidget(createTestWidget(admin));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(Icons.settings));
@@ -281,13 +325,31 @@ void main() {
             ChangeNotifierProvider<AppConfigProvider>.value(
               value: mockAppConfigProvider,
             ),
+            Provider<AdminManagementService>.value(
+              value: mockAdminManagementService,
+            ),
           ],
           child: MaterialApp(
             theme: AppTheme.lightTheme,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             locale: const Locale('mr'),
-            home: AddGroupAdminScreen(currentAdmin: admin),
+            home: Builder(
+              builder: (context) => Scaffold(
+                body: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AddGroupAdminScreen(
+                        currentAdmin: admin,
+                        managementService: mockAdminManagementService,
+                      ),
+                    ),
+                  ),
+                  child: const Text('Launch'),
+                ),
+              ),
+            ),
             routes: {
               Routes.home: (context) => const Scaffold(body: Text('Home')),
               Routes.settings: (context) =>
@@ -296,6 +358,8 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
       await tester.pumpAndSettle();
 
       // 'Group Admin' in Marathi is 'ग्रुप ॲडमिन'
@@ -316,8 +380,84 @@ void main() {
       );
       await tester.pumpWidget(createTestWidget(admin));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
+      await tester.pumpAndSettle();
 
       expect(find.text('unknown_group'), findsOneWidget);
+    });
+
+    testWidgets('calls saveAdmin and shows success snackbar on success', (
+      tester,
+    ) async {
+      final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
+      await tester.pumpWidget(createTestWidget(admin));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
+      await tester.pumpAndSettle();
+
+      when(
+        () => mockAdminManagementService.saveAdmin(any()),
+      ).thenAnswer((_) async => {});
+
+      await tester.enterText(find.byType(TextFormField), 'new@test.com');
+      await tester.tap(find.text('Super Admin'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('ADD ADMIN'));
+      await tester.pump(); // Start of async call
+
+      await tester.pumpAndSettle();
+
+      verify(() => mockAdminManagementService.saveAdmin(any())).called(1);
+
+      // Verify we are back on previous screen (showing Launch button)
+      expect(find.text('Launch'), findsOneWidget);
+
+      // Verify snackbar
+      expect(find.text('Admin added successfully'), findsOneWidget);
+    });
+
+    testWidgets('shows error snackbar on failure', (tester) async {
+      final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
+      await tester.pumpWidget(createTestWidget(admin));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
+      await tester.pumpAndSettle();
+
+      when(
+        () => mockAdminManagementService.saveAdmin(any()),
+      ).thenThrow(Exception('Failed to save'));
+
+      await tester.enterText(find.byType(TextFormField), 'new@test.com');
+      await tester.tap(find.text('Super Admin'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('ADD ADMIN'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Error: Exception: Failed to save'), findsOneWidget);
+    });
+
+    testWidgets('shows error when admin already exists', (tester) async {
+      final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
+      await tester.pumpWidget(createTestWidget(admin));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Launch'));
+      await tester.pumpAndSettle();
+
+      when(
+        () => mockAdminManagementService.isAdminExists(any()),
+      ).thenAnswer((_) async => true);
+
+      await tester.enterText(find.byType(TextFormField), 'existing@test.com');
+      await tester.tap(find.text('Super Admin'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('ADD ADMIN'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Admin with this email already exists'), findsOneWidget);
+      verifyNever(() => mockAdminManagementService.saveAdmin(any()));
     });
   });
 }

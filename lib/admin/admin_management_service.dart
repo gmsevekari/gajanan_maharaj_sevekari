@@ -7,11 +7,15 @@ class AdminManagementService {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
 
-  AdminManagementService({
-    FirebaseFirestore? firestore,
-    FirebaseAuth? auth,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _auth = auth ?? FirebaseAuth.instance;
+  AdminManagementService({FirebaseFirestore? firestore, FirebaseAuth? auth})
+    : _firestore = firestore ?? FirebaseFirestore.instance,
+      _auth = auth ?? FirebaseAuth.instance;
+
+  /// Check if an admin exists by email.
+  Future<bool> isAdminExists(String email) async {
+    final doc = await _firestore.collection('admin_allowlist').doc(email).get();
+    return doc.exists;
+  }
 
   /// Get a stream of all admins in the system.
   Stream<List<AdminUser>> getAllAdmins() {
@@ -29,10 +33,10 @@ class AdminManagementService {
         .where('groupId', isEqualTo: groupId)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        return AdminUser.fromFirestore(doc.data(), doc.id);
-      }).toList();
-    });
+          return snapshot.docs.map((doc) {
+            return AdminUser.fromFirestore(doc.data(), doc.id);
+          }).toList();
+        });
   }
 
   /// Delete an admin from the allowlist.
