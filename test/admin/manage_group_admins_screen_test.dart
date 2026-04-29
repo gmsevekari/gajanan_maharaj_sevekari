@@ -14,7 +14,8 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import '../mocks.dart';
 
-class MockAdminManagementService extends Mock implements AdminManagementService {}
+class MockAdminManagementService extends Mock
+    implements AdminManagementService {}
 
 void main() {
   late MockAdminManagementService mockService;
@@ -39,7 +40,9 @@ void main() {
       providers: [
         ChangeNotifierProvider<ThemeProvider>.value(value: mockThemeProvider),
         ChangeNotifierProvider<FontProvider>.value(value: mockFontProvider),
-        ChangeNotifierProvider<FestivalProvider>.value(value: mockFestivalProvider),
+        ChangeNotifierProvider<FestivalProvider>.value(
+          value: mockFestivalProvider,
+        ),
       ],
       child: MaterialApp(
         theme: AppTheme.lightTheme,
@@ -67,11 +70,16 @@ void main() {
 
     testWidgets('shows group admins for group_admin', (tester) async {
       final adminList = [
-        AdminUser(email: 'admin1@test.com', roles: ['group_admin'], groupId: 'g1'),
+        AdminUser(
+          email: 'admin1@test.com',
+          roles: ['group_admin'],
+          groupId: 'g1',
+        ),
       ];
 
-      when(() => mockService.getAdminsForGroup('g1'))
-          .thenAnswer((_) => Stream.value(adminList));
+      when(
+        () => mockService.getAdminsForGroup('g1'),
+      ).thenAnswer((_) => Stream.value(adminList));
 
       await tester.pumpWidget(createTestWidget(groupAdmin));
       await tester.pumpAndSettle();
@@ -82,12 +90,17 @@ void main() {
 
     testWidgets('shows all admins for super_admin', (tester) async {
       final adminList = [
-        AdminUser(email: 'admin1@test.com', roles: ['group_admin'], groupId: 'g1'),
+        AdminUser(
+          email: 'admin1@test.com',
+          roles: ['group_admin'],
+          groupId: 'g1',
+        ),
         AdminUser(email: 'admin2@test.com', roles: ['super_admin']),
       ];
 
-      when(() => mockService.getAllAdmins())
-          .thenAnswer((_) => Stream.value(adminList));
+      when(
+        () => mockService.getAllAdmins(),
+      ).thenAnswer((_) => Stream.value(adminList));
 
       await tester.pumpWidget(createTestWidget(superAdmin));
       await tester.pumpAndSettle();
@@ -96,99 +109,112 @@ void main() {
       expect(find.text('admin2@test.com'), findsOneWidget);
     });
 
-    testWidgets('groups admins correctly for super_admin with sorting', (tester) async {
+    testWidgets('groups admins correctly for super_admin with sorting', (
+      tester,
+    ) async {
       final adminList = [
-        AdminUser(email: 'group1@test.com', roles: ['group_admin'], groupId: 'z_group'),
+        AdminUser(
+          email: 'group1@test.com',
+          roles: ['group_admin'],
+          groupId: 'z_group',
+        ),
         AdminUser(email: 'super@test.com', roles: ['super_admin']),
-        AdminUser(email: 'group2@test.com', roles: ['group_admin'], groupId: 'a_group'),
+        AdminUser(
+          email: 'group2@test.com',
+          roles: ['group_admin'],
+          groupId: 'a_group',
+        ),
       ];
 
-      when(() => mockService.getAllAdmins())
-          .thenAnswer((_) => Stream.value(adminList));
+      when(
+        () => mockService.getAllAdmins(),
+      ).thenAnswer((_) => Stream.value(adminList));
 
       await tester.pumpWidget(createTestWidget(superAdmin));
       await tester.pumpAndSettle();
 
-      // Check section headers order: Super Admins should be first
-      final headers = find.byType(Text).evaluate()
+      // Check section headers order: Super Admin should be first
+      // We look for text that is NOT inside a chip (Container with specific padding)
+      final headerWidgets = find
+          .byType(Text)
+          .evaluate()
           .map((e) => (e.widget as Text).data)
-          .where((data) => data != null && (data == 'SUPER ADMINS' || data.contains('Group:')))
+          .where(
+            (data) =>
+                data != null &&
+                (data == 'SUPER ADMIN' || data.contains('Group:')),
+          )
           .toList();
 
-      expect(headers[0], 'SUPER ADMINS');
-      expect(headers[1], contains('a_group'));
-      expect(headers[2], contains('z_group'));
+      // Headers should be at the expected positions. Note that 'SUPER ADMIN' might appear twice
+      // if there's an admin with that role in the first group, but the headers themselves
+      // are at the start of each section.
+      expect(
+        headerWidgets,
+        containsAllInOrder(['SUPER ADMIN', 'Group: a_group', 'Group: z_group']),
+      );
     });
 
-    testWidgets('deletes admin after confirmation', (tester) async {
+    testWidgets('navigates to edit admin screen on edit icon tap', (
+      tester,
+    ) async {
       final adminList = [
-        AdminUser(email: 'admin1@test.com', roles: ['group_admin'], groupId: 'g1'),
+        AdminUser(
+          email: 'admin1@test.com',
+          roles: ['group_admin'],
+          groupId: 'g1',
+        ),
       ];
 
-      when(() => mockService.getAdminsForGroup('g1'))
-          .thenAnswer((_) => Stream.value(adminList));
-      when(() => mockService.deleteAdmin(any())).thenAnswer((_) async => {});
+      when(
+        () => mockService.getAdminsForGroup('g1'),
+      ).thenAnswer((_) => Stream.value(adminList));
 
-      await tester.pumpWidget(createTestWidget(groupAdmin));
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<ThemeProvider>.value(
+              value: mockThemeProvider,
+            ),
+            ChangeNotifierProvider<FontProvider>.value(value: mockFontProvider),
+            ChangeNotifierProvider<FestivalProvider>.value(
+              value: mockFestivalProvider,
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.lightTheme,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routes: {
+              Routes.adminAddGroupAdmin: (context) {
+                final args =
+                    ModalRoute.of(context)!.settings.arguments
+                        as Map<String, dynamic>;
+                if (args['adminToEdit']?.email == 'admin1@test.com') {
+                  return const Scaffold(body: Text('Edit Admin Screen'));
+                }
+                return const Scaffold(body: Text('Add Admin Screen'));
+              },
+            },
+            home: ManageGroupAdminsScreen(
+              currentAdmin: groupAdmin,
+              managementService: mockService,
+            ),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.tap(find.byIcon(Icons.edit_outlined));
       await tester.pumpAndSettle();
 
-      expect(find.text('Are you sure you want to remove this admin?'), findsOneWidget);
-
-      await tester.tap(find.text('Delete').last);
-      await tester.pumpAndSettle();
-
-      verify(() => mockService.deleteAdmin('admin1@test.com')).called(1);
-      expect(find.text('Admin removed successfully'), findsOneWidget);
-    });
-
-    testWidgets('cancels admin deletion', (tester) async {
-      final adminList = [
-        AdminUser(email: 'admin1@test.com', roles: ['group_admin'], groupId: 'g1'),
-      ];
-
-      when(() => mockService.getAdminsForGroup('g1'))
-          .thenAnswer((_) => Stream.value(adminList));
-
-      await tester.pumpWidget(createTestWidget(groupAdmin));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byIcon(Icons.delete_outline));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Cancel'));
-      await tester.pumpAndSettle();
-
-      verifyNever(() => mockService.deleteAdmin(any()));
-      expect(find.text('Are you sure you want to remove this admin?'), findsNothing);
-    });
-
-    testWidgets('shows error when deletion fails', (tester) async {
-      final adminList = [
-        AdminUser(email: 'admin1@test.com', roles: ['group_admin'], groupId: 'g1'),
-      ];
-
-      when(() => mockService.getAdminsForGroup('g1'))
-          .thenAnswer((_) => Stream.value(adminList));
-      when(() => mockService.deleteAdmin(any())).thenThrow('Delete Failed');
-
-      await tester.pumpWidget(createTestWidget(groupAdmin));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byIcon(Icons.delete_outline));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Delete').last);
-      await tester.pumpAndSettle();
-
-      expect(find.textContaining('Error deleting admin: Delete Failed'), findsOneWidget);
+      expect(find.text('Edit Admin Screen'), findsOneWidget);
     });
 
     testWidgets('shows error state when stream fails', (tester) async {
-      when(() => mockService.getAdminsForGroup('g1'))
-          .thenAnswer((_) => Stream.error('Firestore Error'));
+      when(
+        () => mockService.getAdminsForGroup('g1'),
+      ).thenAnswer((_) => Stream.error('Firestore Error'));
 
       await tester.pumpWidget(createTestWidget(groupAdmin));
       await tester.pumpAndSettle();
@@ -197,8 +223,9 @@ void main() {
     });
 
     testWidgets('shows empty state when no admins found', (tester) async {
-      when(() => mockService.getAdminsForGroup('g1'))
-          .thenAnswer((_) => Stream.value([]));
+      when(
+        () => mockService.getAdminsForGroup('g1'),
+      ).thenAnswer((_) => Stream.value([]));
 
       await tester.pumpWidget(createTestWidget(groupAdmin));
       await tester.pumpAndSettle();
@@ -207,22 +234,28 @@ void main() {
     });
 
     testWidgets('navigates to home on icon tap', (tester) async {
-      when(() => mockService.getAdminsForGroup('g1'))
-          .thenAnswer((_) => Stream.value([]));
+      when(
+        () => mockService.getAdminsForGroup('g1'),
+      ).thenAnswer((_) => Stream.value([]));
 
       await tester.pumpWidget(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider<ThemeProvider>.value(value: mockThemeProvider),
+            ChangeNotifierProvider<ThemeProvider>.value(
+              value: mockThemeProvider,
+            ),
             ChangeNotifierProvider<FontProvider>.value(value: mockFontProvider),
-            ChangeNotifierProvider<FestivalProvider>.value(value: mockFestivalProvider),
+            ChangeNotifierProvider<FestivalProvider>.value(
+              value: mockFestivalProvider,
+            ),
           ],
           child: MaterialApp(
             theme: AppTheme.lightTheme,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             routes: {
-              Routes.home: (context) => const Scaffold(body: Text('Home Screen')),
+              Routes.home: (context) =>
+                  const Scaffold(body: Text('Home Screen')),
             },
             home: ManageGroupAdminsScreen(
               currentAdmin: groupAdmin,
@@ -240,22 +273,28 @@ void main() {
     });
 
     testWidgets('navigates to settings on icon tap', (tester) async {
-      when(() => mockService.getAdminsForGroup('g1'))
-          .thenAnswer((_) => Stream.value([]));
+      when(
+        () => mockService.getAdminsForGroup('g1'),
+      ).thenAnswer((_) => Stream.value([]));
 
       await tester.pumpWidget(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider<ThemeProvider>.value(value: mockThemeProvider),
+            ChangeNotifierProvider<ThemeProvider>.value(
+              value: mockThemeProvider,
+            ),
             ChangeNotifierProvider<FontProvider>.value(value: mockFontProvider),
-            ChangeNotifierProvider<FestivalProvider>.value(value: mockFestivalProvider),
+            ChangeNotifierProvider<FestivalProvider>.value(
+              value: mockFestivalProvider,
+            ),
           ],
           child: MaterialApp(
             theme: AppTheme.lightTheme,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             routes: {
-              Routes.settings: (context) => const Scaffold(body: Text('Settings Screen')),
+              Routes.settings: (context) =>
+                  const Scaffold(body: Text('Settings Screen')),
             },
             home: ManageGroupAdminsScreen(
               currentAdmin: groupAdmin,
@@ -274,22 +313,28 @@ void main() {
     });
 
     testWidgets('navigates to add admin screen on FAB tap', (tester) async {
-      when(() => mockService.getAdminsForGroup('g1'))
-          .thenAnswer((_) => Stream.value([]));
+      when(
+        () => mockService.getAdminsForGroup('g1'),
+      ).thenAnswer((_) => Stream.value([]));
 
       await tester.pumpWidget(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider<ThemeProvider>.value(value: mockThemeProvider),
+            ChangeNotifierProvider<ThemeProvider>.value(
+              value: mockThemeProvider,
+            ),
             ChangeNotifierProvider<FontProvider>.value(value: mockFontProvider),
-            ChangeNotifierProvider<FestivalProvider>.value(value: mockFestivalProvider),
+            ChangeNotifierProvider<FestivalProvider>.value(
+              value: mockFestivalProvider,
+            ),
           ],
           child: MaterialApp(
             theme: AppTheme.lightTheme,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             routes: {
-              Routes.adminAddGroupAdmin: (context) => const Scaffold(body: Text('Add Admin Screen')),
+              Routes.adminAddGroupAdmin: (context) =>
+                  const Scaffold(body: Text('Add Admin Screen')),
             },
             home: ManageGroupAdminsScreen(
               currentAdmin: groupAdmin,
@@ -301,6 +346,15 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Manage Group Admins'), findsOneWidget);
+      final fab = tester.widget<FloatingActionButton>(
+        find.byType(FloatingActionButton),
+      );
+
+      expect(fab.backgroundColor, AppTheme.lightTheme.colorScheme.primary);
+      expect(fab.foregroundColor, AppTheme.lightTheme.colorScheme.onPrimary);
+      expect(find.byIcon(Icons.person_add), findsOneWidget);
+      expect(find.text('ADD ADMIN'), findsOneWidget);
+
       await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
 

@@ -167,7 +167,7 @@ class _ManageGroupAdminsScreenState extends State<ManageGroupAdminsScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.pushNamed(
             context,
@@ -175,7 +175,13 @@ class _ManageGroupAdminsScreenState extends State<ManageGroupAdminsScreen> {
             arguments: widget.currentAdmin,
           );
         },
-        child: const Icon(Icons.add),
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
+        icon: const Icon(Icons.person_add),
+        label: Text(
+          localizations.addAdminButton.toUpperCase(),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
