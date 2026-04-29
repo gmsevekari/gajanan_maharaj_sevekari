@@ -11,8 +11,16 @@ class LocaleProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final localeCode =
         prefs.getString(_localePrefKey) ?? 'mr'; // Default to Marathi
-    _locale = Locale(localeCode);
+    _locale = _parseLocale(localeCode);
     notifyListeners();
+  }
+
+  Locale _parseLocale(String code) {
+    final parts = code.split('_');
+    if (parts.length > 1) {
+      return Locale(parts[0], parts[1]);
+    }
+    return Locale(parts[0]);
   }
 
   Future<void> setLocale(Locale locale) async {
@@ -22,6 +30,6 @@ class LocaleProvider with ChangeNotifier {
     notifyListeners();
 
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_localePrefKey, locale.languageCode);
+    await prefs.setString(_localePrefKey, locale.toString());
   }
 }

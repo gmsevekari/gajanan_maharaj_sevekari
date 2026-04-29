@@ -10,31 +10,62 @@ void main() {
     test('loadLocale should default to Marathi (mr)', () async {
       SharedPreferences.setMockInitialValues({});
       final provider = LocaleProvider();
-      
+
       await provider.loadLocale();
-      
+
       expect(provider.locale.languageCode, 'mr');
     });
 
-    test('loadLocale should load saved locale from SharedPreferences', () async {
-      SharedPreferences.setMockInitialValues({'locale_code': 'en'});
-      final provider = LocaleProvider();
-      
-      await provider.loadLocale();
-      
-      expect(provider.locale.languageCode, 'en');
-    });
+    test(
+      'loadLocale should load saved locale from SharedPreferences',
+      () async {
+        SharedPreferences.setMockInitialValues({'locale_code': 'en'});
+        final provider = LocaleProvider();
 
-    test('setLocale should update state and save to SharedPreferences', () async {
-      SharedPreferences.setMockInitialValues({});
+        await provider.loadLocale();
+
+        expect(provider.locale.languageCode, 'en');
+      },
+    );
+
+    test(
+      'setLocale should update state and save to SharedPreferences',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final provider = LocaleProvider();
+
+        await provider.setLocale(const Locale('en'));
+
+        expect(provider.locale.languageCode, 'en');
+
+        final prefs = await SharedPreferences.getInstance();
+        expect(prefs.getString('locale_code'), 'en');
+      },
+    );
+
+    test(
+      'setLocale should persist full locale string including country code',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final provider = LocaleProvider();
+
+        const minglish = Locale('en', 'MR');
+        await provider.setLocale(minglish);
+
+        expect(provider.locale, minglish);
+
+        final prefs = await SharedPreferences.getInstance();
+        expect(prefs.getString('locale_code'), 'en_MR');
+      },
+    );
+
+    test('loadLocale should restore full locale from string', () async {
+      SharedPreferences.setMockInitialValues({'locale_code': 'en_MR'});
       final provider = LocaleProvider();
-      
-      await provider.setLocale(const Locale('en'));
-      
-      expect(provider.locale.languageCode, 'en');
-      
-      final prefs = await SharedPreferences.getInstance();
-      expect(prefs.getString('locale_code'), 'en');
+
+      await provider.loadLocale();
+
+      expect(provider.locale, const Locale('en', 'MR'));
     });
   });
 }
