@@ -77,11 +77,23 @@ def test_assetlinks_json():
         print(f"FAIL: Error parsing {path}: {e}")
         return False
 
+def test_adb_script_exists():
+    path = 'scripts/verify_links.sh'
+    if not os.path.exists(path):
+        print(f"FAIL: {path} not found")
+        return False
+    if not os.access(path, os.X_OK):
+        print(f"FAIL: {path} is not executable")
+        return False
+    print("PASS: ADB verification script exists and is executable.")
+    return True
+
 if __name__ == "__main__":
     m_pass = test_manifest_autoverify()
     a_pass = test_assetlinks_json()
+    s_pass = test_adb_script_exists()
     
-    if m_pass and a_pass:
+    if m_pass and a_pass and s_pass:
         print("\nALL TESTS PASSED")
         sys.exit(0)
     else:
