@@ -541,7 +541,9 @@ class AppLocalizationsMr extends AppLocalizations {
       'गजानन महाराज अष्टोत्तरशतनामावली नक्की ऐका';
 
   @override
-  String get contentShareMessage => 'हे नक्की ऐका';
+  String contentShareMessage(Object url) {
+    return 'हे पहा: $url';
+  }
 
   @override
   String copyrightMessage(String year) {
@@ -1028,6 +1030,12 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get notAllocated => 'वाटप अद्याप झाले नाही';
+
+  @override
+  String get videoUnavailable => 'व्हिडिओ उपलब्ध नाही';
+
+  @override
+  String get noDataAvailable => 'माहिती उपलब्ध नाही';
 
   @override
   String statusUpcomingOneDay(Object date) {

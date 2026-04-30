@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/deity/deity_dashboard_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
-import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
@@ -17,7 +17,6 @@ class NityopasanaConsolidatedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final appConfigProvider = Provider.of<AppConfigProvider>(context);
-    final theme = Theme.of(context);
 
     final List<Widget> cards = [];
 
@@ -86,8 +85,8 @@ class NityopasanaConsolidatedScreen extends StatelessWidget {
 
   Widget _buildDeityGridItem(BuildContext context, DeityConfig deity) {
     final theme = Theme.of(context);
-    final locale = Localizations.localeOf(context).languageCode;
-    final name = locale == 'mr' ? deity.nameMr : deity.nameEn;
+    final useMarathi = Localizations.localeOf(context).useMarathiContent;
+    final name = useMarathi ? deity.nameMr : deity.nameEn;
 
 
     return SizedBox(

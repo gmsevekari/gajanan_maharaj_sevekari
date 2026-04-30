@@ -15,6 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/shared/typo_report_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 
 enum _MenuAction { favorite, home, settings }
 
@@ -212,8 +213,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final item = snapshot.data!;
-                    final title = item['title_${locale.languageCode}'] ??
-                        item['title_en']!;
+                    final title = locale.localizedContent(
+                        item['title_en'] ?? '',
+                        item['title_mr'] ?? '');
                     return Text(
                       title,
                       textAlign: TextAlign.center,
@@ -405,9 +407,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                   future: _contentFuture,
                   builder: (context, snapshot) {
                     final title = snapshot.hasData
-                        ? (snapshot.data!['title_${locale.languageCode}'] ??
-                            snapshot.data!['title_en'] ??
-                            '')
+                        ? locale.localizedContent(
+                            snapshot.data!['title_en'] ?? '',
+                            snapshot.data!['title_mr'] ?? '')
                         : '';
                     return FloatingActionButton(
                       heroTag: 'report',
@@ -579,8 +581,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
           final data = snapshot.data!;
-          final langCode = locale.languageCode;
-          final text = data['content_$langCode'] ?? data['content_en']!;
+          final text = locale.localizedContent(
+              data['content_en'] ?? '',
+              data['content_mr'] ?? '');
 
           return NotificationListener<ScrollNotification>(
             onNotification: (notification) {
@@ -599,9 +602,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                 future: _contentFuture,
                 builder: (context, titleSnapshot) {
                   final title = titleSnapshot.hasData
-                      ? (titleSnapshot.data!['title_${locale.languageCode}'] ??
-                            titleSnapshot.data!['title_en'] ??
-                            '')
+                      ? locale.localizedContent(
+                          titleSnapshot.data!['title_en'] ?? '',
+                          titleSnapshot.data!['title_mr'] ?? '')
                       : '';
                   return SelectableText(
                     text,
@@ -674,8 +677,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
         } else if (snapshot.hasData) {
           final data = snapshot.data!;
           final videoId = data['youtube_video_id'];
-          final title =
-              data['title_${locale.languageCode}'] ?? data['title_en']!;
+          final title = locale.localizedContent(
+              data['title_en'] ?? '',
+              data['title_mr'] ?? '');
 
           return NotificationListener<ScrollNotification>(
             onNotification: (notification) {
@@ -783,9 +787,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ),
-                      child: const SizedBox(
+                      child: SizedBox(
                         height: 200,
-                        child: Center(child: Text('Video unavailable')),
+                        child: Center(child: Text(localizations.videoUnavailable)),
                       ),
                     ),
                   const SizedBox(height: 16),
@@ -828,8 +832,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                               onPressed: () {
                                 SharePlus.instance.share(
                                   ShareParams(
-                                    text:
-                                        'Check out this content: https://www.youtube.com/watch?v=$videoId',
+                                    text: localizations.contentShareMessage(
+                                        'https://www.youtube.com/watch?v=$videoId'),
                                   ),
                                 );
                               },
@@ -876,7 +880,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
             ),
           );
         } else {
-          return const Center(child: Text('No data available'));
+          return Center(child: Text(localizations.noDataAvailable));
         }
       },
     );

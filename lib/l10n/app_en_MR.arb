@@ -3,5 +3,43 @@
   "minglish": "Minglish (Marathi-English)",
   "@minglish": {
     "description": "Marathi - English Mixed"
-  }
+  },
+
+  "appName": "गजानन महाराज सेवेकरी",
+  "searchHint": "स्तोत्रे, भजने शोधा...",
+  "upcomingEvent": "आगामी कार्यक्रम",
+  "eventOnDate": "कोणतेही आगामी कार्यक्रम नाहीत",
+  "noParayanGroupsSelectedMessage": "कृपया पारायण पाहण्यासाठी/सहभागी होण्यासाठी सेटिंग्ज -> ग्रुप्स मॅनेज करा मधून एक किंवा अधिक ग्रुप्स निवडा. जय गजानन 🙏🏻",
+  "noActiveParayans": "सध्या कोणतेही सक्रिय पारायण नाहीत.",
+  "gajananChant": "गण गण गणात बोते",
+  "chantHappyDiwali": "शुभ दीपावली",
+  "chantGanpatiBappa": "गणपती बाप्पा मोरया",
+
+  "granthTitle": "गजानन विजय ग्रंथ",
+  "guruCharitraTitle": "श्री गुरु चरित्र",
+  "stotraTitle": "स्तोत्र संग्रह",
+  "namavaliTitle": "अष्टोत्तरशत नामावली",
+  "aartiTitle": "आरती संग्रह",
+  "bhajanTitle": "भजन संग्रह",
+  "sankalpTitle": "साप्ताहिक अभिषेक आणि पूजा संकल्प",
+  "parayanTitle": "पारायण",
+  "parayanListTitle": "पारायण सूची",
+  "songTitle": "गाणी",
+  "aboutMaharajTitle": "महाराजांविषयी",
+  "aboutGanapatiTitle": "गणपती बाप्पाविषयी",
+  "aboutShriramTitle": "प्रभु श्रीरामांविषयी",
+  "aboutBabaTitle": "बाबांविषयी",
+  "aboutHanumanTitle": "श्री हनुमानाविषयी",
+  "aboutDattaMaharajTitle": "श्री दत्त महाराजांविषयी",
+
+  "nityopasanaTitle": "नित्योपासना",
+  "namjapTitle": "नामजप",
+  "calendarTitle": "कार्यक्रम दिनदर्शिका",
+  "videoUnavailable": "व्हिडिओ उपलब्ध नाही",
+  "noDataAvailable": "माहिती उपलब्ध नाही",
+  "contentShareMessage": "हे पहा: {url}",
+  "otherAartis": "इतर आरत्या",
+  "otherStotras": "इतर स्तोत्रं",
+  "otherBhajans": "इतर भजन",
+  "donationsTitle": "देणगी"
 }

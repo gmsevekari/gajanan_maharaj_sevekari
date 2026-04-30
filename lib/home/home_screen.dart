@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/event_calendar/event_calendar_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
@@ -230,8 +231,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             final configProvider = context.read<AppConfigProvider>();
             final group = configProvider.appConfig?.gajananMaharajGroups
                 .firstWhere((g) => g.id == groupId);
-            final locale = Localizations.localeOf(context).languageCode;
-            final groupName = locale == 'mr' ? group?.nameMr : group?.nameEn;
+            final useMarathi = Localizations.localeOf(context).useMarathiContent;
+            final groupName = useMarathi ? group?.nameMr : group?.nameEn;
 
             Navigator.pushNamed(
               context,
@@ -614,11 +615,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       return _buildEmptyStateCard(context, localizations);
     }
 
-    final activeFestival = context.watch<FestivalProvider>().activeFestival;
-    final themeProvider = context.watch<ThemeProvider>();
-    final isFestiveTheme = activeFestival != null &&
-        themeProvider.themePreset == activeFestival.themePreset;
-    final isDiwali = isFestiveTheme && activeFestival.id == 'diwali';
+
 
     final screenWidth = MediaQuery.of(context).size.width;
     final double viewportFraction = (screenWidth - 24) / screenWidth;
@@ -755,8 +752,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     bool showHeader,
   ) {
     final theme = Theme.of(context);
-    final locale = Localizations.localeOf(context).languageCode;
-    final groupName = locale == 'mr' ? group.nameMr : group.nameEn;
+    final useMarathi = Localizations.localeOf(context).useMarathiContent;
+    final groupName = useMarathi ? group.nameMr : group.nameEn;
 
     final activeFestival = context.watch<FestivalProvider>().activeFestival;
     final themeProvider = context.watch<ThemeProvider>();
@@ -983,10 +980,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final isGaneshotsav =
         isFestiveTheme && activeFestival.id == 'ganesh_chaturthi';
     final isDiwali = isFestiveTheme && activeFestival.id == 'diwali';
-    final locale = Localizations.localeOf(context).languageCode;
-    final eventTitle = locale == 'mr' ? event.titleMr : event.titleEn;
+    final locale = Localizations.localeOf(context);
+    final useMarathi = locale.useMarathiContent;
+    final eventTitle = useMarathi ? event.titleMr : event.titleEn;
     final eventDate = event.startTime.toDate();
-    final eventDateString = formatDateWithDay(eventDate, locale);
+    final eventDateString = formatDateWithDay(eventDate, useMarathi ? 'mr' : 'en');
 
     return InkWell(
       onTap: () {
@@ -1084,9 +1082,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final isGaneshotsav =
         isFestiveTheme && activeFestival.id == 'ganesh_chaturthi';
     final isDiwali = isFestiveTheme && activeFestival.id == 'diwali';
-    final locale = Localizations.localeOf(context).languageCode;
-    final title = locale == 'mr' ? event.titleMr : event.titleEn;
-    final dateRange = event.getSmartDate(locale, includeTime: false);
+    final locale = Localizations.localeOf(context);
+    final useMarathi = locale.useMarathiContent;
+    final title = useMarathi ? event.titleMr : event.titleEn;
+    final dateRange = event.getSmartDate(useMarathi ? 'mr' : 'en', includeTime: false);
 
     return InkWell(
       onTap: () {

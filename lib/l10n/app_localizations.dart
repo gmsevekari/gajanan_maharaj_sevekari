@@ -1134,8 +1134,8 @@ abstract class AppLocalizations {
   /// No description provided for @contentShareMessage.
   ///
   /// In en, this message translates to:
-  /// **'Check out this content'**
-  String get contentShareMessage;
+  /// **'Check out this content: {url}'**
+  String contentShareMessage(Object url);
 
   /// No description provided for @copyrightMessage.
   ///
@@ -2028,7 +2028,7 @@ abstract class AppLocalizations {
   /// No description provided for @noSignupsFound.
   ///
   /// In en, this message translates to:
-  /// **'No participants found yet'**
+  /// **'No participants yet'**
   String get noSignupsFound;
 
   /// No description provided for @notAllocated.
@@ -2036,6 +2036,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not allocated'**
   String get notAllocated;
+
+  /// No description provided for @videoUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Video unavailable'**
+  String get videoUnavailable;
+
+  /// No description provided for @noDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No data available'**
+  String get noDataAvailable;
 
   /// No description provided for @statusUpcomingOneDay.
   ///

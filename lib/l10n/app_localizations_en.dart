@@ -542,7 +542,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Check out the Gajanan Maharaj 108 Namavali';
 
   @override
-  String get contentShareMessage => 'Check out this content';
+  String contentShareMessage(Object url) {
+    return 'Check out this content: $url';
+  }
 
   @override
   String copyrightMessage(String year) {
@@ -1023,10 +1025,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Adhyays will be allocated once the Parayan enrollment starts';
 
   @override
-  String get noSignupsFound => 'No participants found yet';
+  String get noSignupsFound => 'No participants yet';
 
   @override
   String get notAllocated => 'Not allocated';
+
+  @override
+  String get videoUnavailable => 'Video unavailable';
+
+  @override
+  String get noDataAvailable => 'No data available';
 
   @override
   String statusUpcomingOneDay(Object date) {
@@ -1850,5 +1858,113 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   AppLocalizationsEnMr() : super('en_MR');
 
   @override
+  String get granthTitle => 'गजानन विजय ग्रंथ';
+
+  @override
+  String get guruCharitraTitle => 'श्री गुरु चरित्र';
+
+  @override
+  String get stotraTitle => 'स्तोत्र संग्रह';
+
+  @override
+  String get namavaliTitle => 'अष्टोत्तरशत नामावली';
+
+  @override
+  String get aartiTitle => 'आरती संग्रह';
+
+  @override
+  String get bhajanTitle => 'भजन संग्रह';
+
+  @override
+  String get sankalpTitle => 'साप्ताहिक अभिषेक आणि पूजा संकल्प';
+
+  @override
+  String get parayanTitle => 'पारायण';
+
+  @override
+  String get parayanListTitle => 'पारायण सूची';
+
+  @override
+  String get songTitle => 'गाणी';
+
+  @override
+  String get aboutMaharajTitle => 'महाराजांविषयी';
+
+  @override
+  String get aboutGanapatiTitle => 'गणपती बाप्पाविषयी';
+
+  @override
+  String get aboutShriramTitle => 'प्रभु श्रीरामांविषयी';
+
+  @override
+  String get aboutBabaTitle => 'बाबांविषयी';
+
+  @override
+  String get aboutHanumanTitle => 'श्री हनुमानाविषयी';
+
+  @override
+  String get aboutDattaMaharajTitle => 'श्री दत्त महाराजांविषयी';
+
+  @override
+  String get calendarTitle => 'कार्यक्रम दिनदर्शिका';
+
+  @override
+  String get donationsTitle => 'देणगी';
+
+  @override
+  String get appName => 'गजानन महाराज सेवेकरी';
+
+  @override
   String get minglish => 'Minglish (Marathi-English)';
+
+  @override
+  String get otherAartis => 'इतर आरत्या';
+
+  @override
+  String get otherStotras => 'इतर स्तोत्रं';
+
+  @override
+  String get otherBhajans => 'इतर भजन';
+
+  @override
+  String get eventOnDate => 'कोणतेही आगामी कार्यक्रम नाहीत';
+
+  @override
+  String get upcomingEvent => 'आगामी कार्यक्रम';
+
+  @override
+  String get nityopasanaTitle => 'नित्योपासना';
+
+  @override
+  String contentShareMessage(Object url) {
+    return 'हे पहा: $url';
+  }
+
+  @override
+  String get gajananChant => 'गण गण गणात बोते';
+
+  @override
+  String get chantGanpatiBappa => 'गणपती बाप्पा मोरया';
+
+  @override
+  String get chantHappyDiwali => 'शुभ दीपावली';
+
+  @override
+  String get namjapTitle => 'नामजप';
+
+  @override
+  String get searchHint => 'स्तोत्रे, भजने शोधा...';
+
+  @override
+  String get noActiveParayans => 'सध्या कोणतेही सक्रिय पारायण नाहीत.';
+
+  @override
+  String get videoUnavailable => 'व्हिडिओ उपलब्ध नाही';
+
+  @override
+  String get noDataAvailable => 'माहिती उपलब्ध नाही';
+
+  @override
+  String get noParayanGroupsSelectedMessage =>
+      'कृपया पारायण पाहण्यासाठी/सहभागी होण्यासाठी सेटिंग्ज -> ग्रुप्स मॅनेज करा मधून एक किंवा अधिक ग्रुप्स निवडा. जय गजानन 🙏🏻';
 }

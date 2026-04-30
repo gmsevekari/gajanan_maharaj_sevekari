@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/shared/global_search_delegate.dart';
@@ -9,8 +10,6 @@ import 'package:gajanan_maharaj_sevekari/shared/content_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/shared/content_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/story/story_type_picker_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
-import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 
@@ -22,12 +21,12 @@ class DeityDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).languageCode;
     final String? deviceCountryCode = View.of(
       context,
     ).platformDispatcher.locale.countryCode;
 
-    final deityName = locale == 'mr' ? deity.nameMr : deity.nameEn;
+    final useMarathi = Localizations.localeOf(context).useMarathiContent;
+    final deityName = useMarathi ? deity.nameMr : deity.nameEn;
 
     final List<Widget> featureCards = [];
 
@@ -44,7 +43,6 @@ class DeityDashboardScreen extends StatelessWidget {
       }
 
       String title;
-      IconData? fallbackIcon;
       dynamic icon;
       if (id == 'kidsStories') {
         title = localizations.homeStoriesTitle;

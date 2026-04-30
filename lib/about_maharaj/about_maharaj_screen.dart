@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
@@ -64,7 +65,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final locale = Localizations.localeOf(context).languageCode;
+    final useMarathi = Localizations.localeOf(context).useMarathiContent;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -110,22 +111,22 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
                     context,
                     about,
                     widget.deity.imagePath,
-                    locale,
+                    useMarathi,
                   ),
                   const SizedBox(height: 24),
                   ...about.sections.map(
                     (section) => _buildExpansionCard(
                       context,
                       icon: _getIconForSection(section.titleEn),
-                      title: locale == 'mr' ? section.titleMr : section.titleEn,
-                      content: locale == 'mr'
+                      title: useMarathi ? section.titleMr : section.titleEn,
+                      content: useMarathi
                           ? section.contentMr
                           : section.contentEn,
                     ),
                   ),
                   const SizedBox(height: 32),
                   Text(
-                    locale == 'mr' ? about.footerQuoteMr : about.footerQuoteEn,
+                    useMarathi ? about.footerQuoteMr : about.footerQuoteEn,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16,
@@ -216,7 +217,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
     BuildContext context,
     AboutDeity about,
     String imagePath,
-    String locale,
+    bool useMarathi,
   ) {
     final theme = Theme.of(context);
 
@@ -242,7 +243,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          locale == 'mr' ? about.titleMr : about.titleEn,
+          useMarathi ? about.titleMr : about.titleEn,
           style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.colorScheme.primary,
@@ -259,7 +260,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             ),
             const SizedBox(width: 4),
             Text(
-              locale == 'mr' ? about.locationMr : about.locationEn,
+              useMarathi ? about.locationMr : about.locationEn,
               style: theme.textTheme.titleMedium?.copyWith(
                 color: theme.colorScheme.secondary,
               ),
@@ -268,7 +269,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
         ),
         const SizedBox(height: 4),
         Text(
-          locale == 'mr' ? about.pragatDinMr : about.pragatDinEn,
+          useMarathi ? about.pragatDinMr : about.pragatDinEn,
           style: theme.textTheme.titleSmall?.copyWith(
             color: theme.colorScheme.secondary,
           ),
@@ -281,7 +282,7 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
             borderRadius: BorderRadius.circular(30),
           ),
           child: Text(
-            locale == 'mr' ? about.chantMr : about.chantEn,
+            useMarathi ? about.chantMr : about.chantEn,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 22,
@@ -315,7 +316,6 @@ class _AboutMaharajScreenState extends State<AboutMaharajScreen> {
     required String content,
   }) {
     final theme = Theme.of(context);
-    final locale = Localizations.localeOf(context).languageCode;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: theme.cardTheme.shape,
