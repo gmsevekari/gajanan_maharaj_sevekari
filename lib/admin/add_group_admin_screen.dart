@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_management_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
@@ -166,7 +167,7 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
     final theme = Theme.of(context);
     final appConfig = context.watch<AppConfigProvider>().appConfig;
     final groups = appConfig?.gajananMaharajGroups ?? [];
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    final isMarathi = Localizations.localeOf(context).useMarathiContent;
 
     final currentGroup = groups.firstWhere(
       (g) => g.id == widget.currentAdmin.groupId,

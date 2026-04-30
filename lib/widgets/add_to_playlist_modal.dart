@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
 import 'package:provider/provider.dart';
@@ -44,7 +45,7 @@ class AddToPlaylistModal extends StatelessWidget {
                       title: Text(
                         playlist.isDefault
                             ? localizations.myFavorites
-                            : (Localizations.localeOf(context).languageCode == 'mr' ? playlist.name_mr : playlist.name_en),
+                            : (Localizations.localeOf(context).useMarathiContent ? playlist.name_mr : playlist.name_en),
                       ),
                       value: isAdded,
                       onChanged: (bool? value) {

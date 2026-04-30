@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
@@ -60,7 +61,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           final disclaimerData = snapshot.data ?? {};
-          final isMarathi = locale.languageCode == 'mr';
+          final isMarathi = locale.useMarathiContent;
           final title = isMarathi
               ? disclaimerData['title_mr']
               : disclaimerData['title_en'];

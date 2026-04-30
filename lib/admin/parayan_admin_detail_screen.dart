@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
@@ -151,7 +152,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
         (g) => g.id == event.groupId,
       );
 
-      final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+      final isMarathi = Localizations.localeOf(context).useMarathiContent;
       final parayanName = isMarathi ? group.parayanNameMr : group.parayanNameEn;
       final groupName =
           parayanName ?? (isMarathi ? group.nameMr : group.nameEn);
@@ -178,7 +179,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
               child: Text(
-                Localizations.localeOf(context).languageCode == 'mr'
+                Localizations.localeOf(context).useMarathiContent
                     ? event.titleMr
                     : event.titleEn,
               ),
@@ -725,7 +726,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                           label: Expanded(
                             child: Center(
                               child: Text(
-                                Localizations.localeOf(context).languageCode == 'mr'
+                                Localizations.localeOf(context).useMarathiContent
                                     ? toMarathiNumerals(time)
                                     : time,
                                 style: theme.textTheme.labelSmall?.copyWith(
@@ -1307,7 +1308,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
     ParayanEvent event,
     AppLocalizations l10n,
   ) async {
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    final isMarathi = Localizations.localeOf(context).useMarathiContent;
     final title = isMarathi ? event.titleMr : event.titleEn;
     final locale = Localizations.localeOf(context).languageCode;
     final dateString = formatDateLong(event.startDate, locale);

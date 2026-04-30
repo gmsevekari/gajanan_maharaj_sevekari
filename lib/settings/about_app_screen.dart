@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
@@ -59,7 +60,7 @@ class _AboutAppScreenState extends State<AboutAppScreen> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final aboutData = snapshot.data!;
-            final isMarathi = locale.languageCode == 'mr';
+            final isMarathi = locale.useMarathiContent;
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),

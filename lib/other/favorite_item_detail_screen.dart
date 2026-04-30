@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
@@ -91,7 +92,7 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
     final fontProvider = Provider.of<FontProvider>(context);
 
     final currentItem = widget.contentList[_currentIndex];
-    final currentTitle = locale.languageCode == 'mr'
+    final currentTitle = locale.useMarathiContent
         ? ((currentItem['title_mr']?.toString().isNotEmpty == true) ? currentItem['title_mr']! : '')
         : ((currentItem['title_en']?.toString().isNotEmpty == true) ? currentItem['title_en']! : '');
 
@@ -238,7 +239,7 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {
           final item = widget.contentList[index];
-          final title = locale.languageCode == 'mr'
+          final title = locale.useMarathiContent
               ? item['title_mr']
               : item['title_en'];
           final isPlaying = index == _currentIndex;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
@@ -232,7 +233,7 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
       );
       if (!mounted) return;
 
-      final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+      final isMarathi = Localizations.localeOf(context).useMarathiContent;
       final eventTitle = isMarathi ? event.titleMr : event.titleEn;
 
       // Navigate to detail screen and show snackbar

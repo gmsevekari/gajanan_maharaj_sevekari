@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class AdhyaysAllocationTab extends StatefulWidget {
@@ -30,16 +32,12 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
   }
 
   String _formatNumber(BuildContext context, int number, {bool pad = false}) {
-    String numStr = pad ? number.toString().padLeft(2, '0') : number.toString();
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
-    if (!isMarathi) return numStr;
-
-    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    const marathi = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
-    for (int i = 0; i < english.length; i++) {
-      numStr = numStr.replaceAll(english[i], marathi[i]);
-    }
-    return numStr;
+    final numStr = pad
+        ? number.toString().padLeft(2, '0')
+        : number.toString();
+    return Localizations.localeOf(context).useMarathiContent
+        ? toMarathiNumerals(numStr)
+        : numStr;
   }
 
   @override
@@ -47,7 +45,6 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
     super.build(context); // Required for AutomaticKeepAliveClientMixin
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).languageCode;
 
     return StreamBuilder<List<ParayanMember>>(
       stream: _participantsStream,
@@ -292,11 +289,11 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                                             children: [
                                               nameWidget,
                                               if (isThreeDay) ...[
-                                                _buildStatusCell(locale, theme),
-                                                _buildStatusCell(locale, theme),
-                                                _buildStatusCell(locale, theme),
+                                                _buildStatusCell(context, theme),
+                                                _buildStatusCell(context, theme),
+                                                _buildStatusCell(context, theme),
                                               ] else
-                                                _buildStatusCell(locale, theme),
+                                                _buildStatusCell(context, theme),
                                             ],
                                           );
                                         }
@@ -414,14 +411,15 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
     );
   }
 
-  Widget _buildStatusCell(String locale, ThemeData theme) {
+  Widget _buildStatusCell(BuildContext context, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: Center(child: _buildNotAllocated(locale, theme)),
+      child: Center(child: _buildNotAllocated(context, theme)),
     );
   }
 
-  Widget _buildNotAllocated(String locale, ThemeData theme) {
+  Widget _buildNotAllocated(BuildContext context, ThemeData theme) {
+    final localizations = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -430,7 +428,7 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
         border: Border.all(color: theme.appColors.secondaryText.withValues(alpha: 0.1)),
       ),
       child: Text(
-        locale == 'mr' ? "वाटप अद्याप झाले नाही" : "Not allocated",
+        localizations.notAllocated,
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.appColors.secondaryText,
           fontSize: 10,

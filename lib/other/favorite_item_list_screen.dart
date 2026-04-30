@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
@@ -76,7 +77,7 @@ class _FavoriteItemListScreenState extends State<FavoriteItemListScreen> {
           deity: defaultDeity,
           contentList: contentList,
           initialIndex: startIndex,
-          playlistName: playlist.isDefault ? AppLocalizations.of(context)!.myFavorites : (Localizations.localeOf(context).languageCode == 'mr' ? playlist.name_mr : playlist.name_en),
+          playlistName: playlist.isDefault ? AppLocalizations.of(context)!.myFavorites : (Localizations.localeOf(context).useMarathiContent ? playlist.name_mr : playlist.name_en),
           mode: mode,
         ),
       ),
@@ -111,7 +112,7 @@ class _FavoriteItemListScreenState extends State<FavoriteItemListScreen> {
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              playlist.isDefault ? localizations.myFavorites : (locale.languageCode == 'mr' ? playlist.name_mr : playlist.name_en),
+              playlist.isDefault ? localizations.myFavorites : (locale.useMarathiContent ? playlist.name_mr : playlist.name_en),
             ),
             actions: [
               IconButton(
@@ -263,7 +264,7 @@ class _FavoriteListItemWidgetState extends State<_FavoriteListItemWidget> {
           try {
             final data = json.decode(snapshot.data!);
             widget.cache[widget.aartiId] = data; // cache for fast playback
-            title = widget.locale.languageCode == 'mr'
+            title = widget.locale.useMarathiContent
                 ? ((data['title_mr']?.toString().isNotEmpty == true) ? data['title_mr'] : title)
                 : ((data['title_en']?.toString().isNotEmpty == true) ? data['title_en'] : title);
           } catch (_) {}

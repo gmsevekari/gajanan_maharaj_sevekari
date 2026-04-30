@@ -2031,6 +2031,12 @@ abstract class AppLocalizations {
   /// **'No participants found yet'**
   String get noSignupsFound;
 
+  /// No description provided for @notAllocated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not allocated'**
+  String get notAllocated;
+
   /// No description provided for @statusUpcomingOneDay.
   ///
   /// In en, this message translates to:

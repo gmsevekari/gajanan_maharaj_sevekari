@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/update_service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -66,14 +67,14 @@ class UpdateDialog extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${l10n.currentVersionLabel}: ${Localizations.localeOf(context).languageCode == 'mr' ? toMarathiNumerals(updateResult.currentVersion) : updateResult.currentVersion}',
+                    '${l10n.currentVersionLabel}: ${Localizations.localeOf(context).useMarathiContent ? toMarathiNumerals(updateResult.currentVersion) : updateResult.currentVersion}',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.appColors.secondaryText,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${l10n.latestVersionLabel}: ${Localizations.localeOf(context).languageCode == 'mr' ? toMarathiNumerals(updateResult.latestVersion) : updateResult.latestVersion}',
+                    '${l10n.latestVersionLabel}: ${Localizations.localeOf(context).useMarathiContent ? toMarathiNumerals(updateResult.latestVersion) : updateResult.latestVersion}',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.primary,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
@@ -45,7 +46,7 @@ class _MyAllocationTabState extends State<MyAllocationTab>
 
   String _formatNumber(BuildContext context, int number, {bool pad = false}) {
     String numStr = pad ? number.toString().padLeft(2, '0') : number.toString();
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    final isMarathi = Localizations.localeOf(context).useMarathiContent;
     if (!isMarathi) return numStr;
 
     const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];

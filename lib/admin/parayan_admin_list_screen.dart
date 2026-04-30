@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
@@ -147,7 +148,7 @@ class _AdminEventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    final isMarathi = Localizations.localeOf(context).useMarathiContent;
     final locale = Localizations.localeOf(context).languageCode;
     final dateStr = formatDateShort(event.startDate, locale).toUpperCase();
 

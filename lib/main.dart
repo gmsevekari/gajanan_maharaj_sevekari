@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/about_maharaj/about_maharaj_screen.dart';
 import 'package:gajanan_maharaj_sevekari/aarti/aarti_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
@@ -295,7 +296,7 @@ class _MyAppState extends State<MyApp> {
             festivalProvider,
             child,
           ) {
-            final isMarathi = localeProvider.locale.languageCode == 'mr';
+            final isMarathi = localeProvider.locale.useMarathiContent;
             final fontFamily = isMarathi
                 ? fontProvider.marathiFontFamily
                 : fontProvider.englishFontFamily;

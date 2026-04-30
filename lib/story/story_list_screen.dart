@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
@@ -114,7 +115,7 @@ class _StoryListScreenState extends State<StoryListScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    final isMarathi = Localizations.localeOf(context).useMarathiContent;
 
     return Scaffold(
       appBar: AppBar(

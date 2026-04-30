@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_manager.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
@@ -117,7 +118,7 @@ class _SplashScreenState extends State<SplashScreen> {
             left: 0,
             right: 0,
             child: Text(
-              locale.languageCode == 'mr'
+              locale.useMarathiContent
                   ? localizations.copyrightMessage(
                       toMarathiNumerals(DateTime.now().year.toString()),
                     )

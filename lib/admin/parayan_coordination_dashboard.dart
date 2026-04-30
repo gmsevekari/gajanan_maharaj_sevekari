@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
@@ -417,7 +418,7 @@ class _OngoingCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        Localizations.localeOf(context).languageCode == 'mr'
+                        Localizations.localeOf(context).useMarathiContent
                             ? event.titleMr
                             : event.titleEn,
                         style: theme.textTheme.titleSmall?.copyWith(
@@ -485,7 +486,7 @@ class _UpcomingCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  Localizations.localeOf(context).languageCode == 'mr'
+                  Localizations.localeOf(context).useMarathiContent
                       ? event.titleMr
                       : event.titleEn,
                   maxLines: 2,
@@ -520,7 +521,7 @@ class _UpcomingCard extends StatelessWidget {
 
 String _formatNumber(BuildContext context, int number, {bool pad = false}) {
   String numStr = pad ? number.toString().padLeft(2, '0') : number.toString();
-  final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+  final isMarathi = Localizations.localeOf(context).useMarathiContent;
   if (!isMarathi) return numStr;
 
   const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -551,7 +552,7 @@ String _getDateRange(BuildContext context, ParayanEvent event) {
 
 String _getParayanTypeText(BuildContext context, ParayanType type) {
   final l10n = AppLocalizations.of(context)!;
-  final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+  final isMarathi = Localizations.localeOf(context).useMarathiContent;
 
   String text;
   switch (type) {

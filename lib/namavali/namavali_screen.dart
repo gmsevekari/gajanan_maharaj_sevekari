@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/shared/cross_platform_youtube_player.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -223,7 +224,7 @@ class _NamavaliScreenState extends State<NamavaliScreen>
         } else if (snapshot.hasData) {
           final data = snapshot.data!;
           final names = data['names'] as List<dynamic>? ?? [];
-          final textStyle = isMarathi(locale)
+          final textStyle = locale.useMarathiContent
               ? fontProvider.marathiTextStyle.copyWith(
                   fontSize: _fontSize,
                   height: 1.6,
@@ -266,7 +267,7 @@ class _NamavaliScreenState extends State<NamavaliScreen>
               }
 
               final nameData = names[index];
-              final name = isMarathi(locale)
+              final name = locale.useMarathiContent
                   ? nameData['name_mr']
                   : nameData['name_en'];
 
@@ -495,5 +496,4 @@ class _NamavaliScreenState extends State<NamavaliScreen>
     );
   }
 
-  bool isMarathi(Locale locale) => locale.languageCode == 'mr';
 }

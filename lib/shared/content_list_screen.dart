@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
@@ -125,7 +126,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
-                final itemTitle = locale.languageCode == 'mr'
+                final itemTitle = locale.useMarathiContent
                     ? item['title_mr']
                     : item['title_en'];
 

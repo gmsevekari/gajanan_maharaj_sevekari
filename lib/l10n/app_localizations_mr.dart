@@ -1027,6 +1027,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get noSignupsFound => 'अद्याप कोणीही सहभागी झाले नाही';
 
   @override
+  String get notAllocated => 'वाटप अद्याप झाले नाही';
+
+  @override
   String statusUpcomingOneDay(Object date) {
     return 'पारायण $date रोजी आहे. सहभाग अद्याप सुरू झालेला नाही.';
   }

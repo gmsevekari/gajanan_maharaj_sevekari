@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
@@ -16,7 +17,7 @@ class FontSelectionScreen extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final fontProvider = Provider.of<FontProvider>(context);
     final localeProvider = Provider.of<LocaleProvider>(context);
-    final isMarathi = localeProvider.locale.languageCode == 'mr';
+    final isMarathi = localeProvider.locale.useMarathiContent;
 
     final fontMap = isMarathi
         ? fontProvider.availableMarathiFonts

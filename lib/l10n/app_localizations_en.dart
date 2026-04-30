@@ -1026,6 +1026,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noSignupsFound => 'No participants found yet';
 
   @override
+  String get notAllocated => 'Not allocated';
+
+  @override
   String statusUpcomingOneDay(Object date) {
     return 'The parayan is on $date. Participation is not yet open.';
   }
