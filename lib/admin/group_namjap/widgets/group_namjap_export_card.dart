@@ -12,6 +12,7 @@ class GroupNamjapExportCard extends StatelessWidget {
   final String percentStr;
   final double progress;
   final int participantCount;
+  final String groupName;
   final AppLocalizations l10n;
   final ThemeData theme;
   final String langCode;
@@ -25,6 +26,7 @@ class GroupNamjapExportCard extends StatelessWidget {
     required this.percentStr,
     required this.progress,
     required this.participantCount,
+    required this.groupName,
     required this.l10n,
     required this.theme,
     required this.langCode,
@@ -56,7 +58,9 @@ class GroupNamjapExportCard extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    l10n.appName,
+                    groupName.isNotEmpty
+                        ? '${l10n.appName} - $groupName'
+                        : l10n.appName,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

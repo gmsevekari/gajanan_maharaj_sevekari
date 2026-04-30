@@ -185,7 +185,7 @@
   "namjap": "Naamjap",
   "namavaliListenTitle": "108 Namavali - Ravindra Sathe",
   "namavaliShareMessage": "Check out the Gajanan Maharaj 108 Namavali",
-  "contentShareMessage": "Check out this content",
+  "contentShareMessage": "Check out this content: {url}",
   "copyrightMessage": "© {year} Gajanan Maharaj Seattle",
   "@copyrightMessage": {
     "placeholders": {
@@ -394,7 +394,6 @@
   "notAllocated": "Not allocated",
   "videoUnavailable": "Video unavailable",
   "noDataAvailable": "No data available",
-  "contentShareMessage": "Check out this content: {url}",
   "statusUpcomingOneDay": "The parayan is on {date}. Participation is not yet open.",
   "statusUpcomingMultiDay": "The parayan will start on {date}. Participation is not yet open.",
   "statusEnrolling": "Enrolling",
@@ -625,7 +624,6 @@
   "manualEntryLabel": "Add Namjap Count",
   "mantraLabel": "Mantra",
   "dateRangeLabel": "Date Range",
-  "statusLabel": "Status",
   "groupNamjapSubmitCount": "Submit Namjap Count: {count}",
   "@groupNamjapSubmitCount": {
     "placeholders": {
@@ -673,7 +671,6 @@
   "adminDeleteSuccess": "Admin removed successfully",
   "adminAddSuccess": "Admin added successfully",
   "selectGroupLabel": "Select Group",
-  "cancel": "Cancel",
   "delete": "Delete",
   "adminGroupLabel": "Group",
   "errorLabel": "Error",
@@ -682,8 +679,6 @@
   "roleGroupAdmin": "Group Admin",
   "roleParayanCoordinator": "Parayan Admin",
   "roleNamjapCoordinator": "Namjap Admin",
-  "emailRequired": "Email is required",
-  "invalidEmail": "Please enter a valid email address",
   "atLeastOneRoleRequired": "At least one role must be selected",
   "groupRequired": "Please select a group",
   "savingLabel": "Saving...",
@@ -691,7 +686,7 @@
   "updateAdminButton": "Update Admin",
   "deleteAdminButton": "Delete Admin",
   "adminAlreadyExists": "Admin with this email already exists",
-  "adminAddSuccess": "Admin added successfully",
   "adminUpdateSuccess": "Admin updated successfully",
-  "adminNamjapGroupTitle": "Namjap Groups"
+  "adminNamjapGroupTitle": "Namjap Groups",
+  "updatingStatus": "Updating status..."
 }

@@ -11,7 +11,8 @@ import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/admin/widgets/admin_stats_widgets.dart';
@@ -71,7 +72,7 @@ class _AdminGroupNamjapDetailScreenState
     final title = isEnglish ? event.nameEn : event.nameMr;
     final shareText =
         '${l10n.groupNamjapSharePrefix}: $title\n${l10n.groupNamjapJoinCode}: ${event.joinCode}\n\n${l10n.groupNamjapShareLinkPrefix}: https://gajananmaharajsevekari.org/namjap/${event.id}?joinCode=${event.joinCode}';
-    Share.share(shareText);
+    await SharePlus.instance.share(ShareParams(text: shareText));
   }
 
   Future<void> _updateStatus(GroupNamjapEvent event, String? newStatus) async {
@@ -83,7 +84,7 @@ class _AdminGroupNamjapDetailScreenState
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
+      builder: (context) => Center(
         child: Card(
           child: Padding(
             padding: EdgeInsets.all(24.0),
@@ -92,7 +93,7 @@ class _AdminGroupNamjapDetailScreenState
               children: [
                 CircularProgressIndicator(),
                 const SizedBox(height: 16),
-                const Text('Updating Status...'),
+                Text(l10n.updatingStatus),
               ],
             ),
           ),
@@ -144,10 +145,13 @@ class _AdminGroupNamjapDetailScreenState
           '${directory.path}/namjap_export_${DateTime.now().millisecondsSinceEpoch}.png';
       final file = File(filePath);
       await file.writeAsBytes(imageBytes);
-      await Share.shareXFiles([
-        XFile(file.path),
-      ], text: l10n.groupNamjapStatusExport);
-    } catch (e, stack) {
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          text: l10n.groupNamjapStatusExport,
+        ),
+      );
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l10n.groupNamjapFailedToCapture}: $e')),
@@ -199,12 +203,6 @@ class _AdminGroupNamjapDetailScreenState
         }
 
         final eventName = isEnglish ? event.nameEn : event.nameMr;
-        final sankalpText = isEnglish
-            ? event.sankalpEn
-            : toMarathiNumerals(event.sankalpMr);
-        final mantraText = isEnglish
-            ? event.mantra
-            : toMarathiNumerals(event.mantra);
 
         return Scaffold(
           appBar: AppBar(
@@ -239,6 +237,20 @@ class _AdminGroupNamjapDetailScreenState
                       final l10n = AppLocalizations.of(ctx)!;
                       final lc = Localizations.localeOf(ctx).languageCode;
                       final en = lc == 'en';
+
+                      // Resolve Group Name from AppConfig
+                      final appConfig = ctx.read<AppConfigProvider>().appConfig;
+                      String gName = '';
+                      if (appConfig != null) {
+                        final groups = appConfig.gajananMaharajGroups;
+                        final groupIndex =
+                            groups.indexWhere((g) => g.id == event.groupId);
+                        if (groupIndex != -1) {
+                          final g = groups[groupIndex];
+                          gName = en ? g.nameEn : g.nameMr;
+                        }
+                      }
+
                       final progress = event.targetCount > 0
                           ? (event.totalCount / event.targetCount).clamp(
                               0.0,
@@ -248,6 +260,7 @@ class _AdminGroupNamjapDetailScreenState
                       return GroupNamjapExportCard(
                         event: event,
                         eventName: en ? event.nameEn : event.nameMr,
+                        groupName: gName,
                         sankalp: en
                             ? event.sankalpEn
                             : toMarathiNumerals(event.sankalpMr),
@@ -635,8 +648,9 @@ class _AdminGroupNamjapDetailScreenState
     return StreamBuilder<QuerySnapshot>(
       stream: _participantsStream,
       builder: (context, snapshot) {
-        if (!snapshot.hasData)
+        if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
+        }
 
         final docs = snapshot.data!.docs;
         if (docs.isEmpty) {

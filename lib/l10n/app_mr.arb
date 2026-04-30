@@ -185,7 +185,7 @@
   "namjap": "नामजप",
   "namavaliListenTitle": "अष्टोत्तरशतनामावली - रवींद्र साठे",
   "namavaliShareMessage": "गजानन महाराज अष्टोत्तरशतनामावली नक्की ऐका",
-  "contentShareMessage": "हे नक्की ऐका",
+  "contentShareMessage": "हे पहा: {url}",
   "copyrightMessage": "© {year} गजानन महाराज सिएटल",
   "@copyrightMessage": {
     "placeholders": {
@@ -394,7 +394,6 @@
   "notAllocated": "वाटप अद्याप झाले नाही",
   "videoUnavailable": "व्हिडिओ उपलब्ध नाही",
   "noDataAvailable": "माहिती उपलब्ध नाही",
-  "contentShareMessage": "हे पहा: {url}",
   "statusUpcomingOneDay": "पारायण {date} रोजी आहे. सहभाग अद्याप सुरू झालेला नाही.",
   "statusUpcomingMultiDay": "पारायण {date} पासून सुरू होईल. सहभाग अद्याप सुरू झालेला नाही.",
   "statusEnrolling": "प्रवेश सुरू",
@@ -415,8 +414,8 @@
   "submitLabel": "सबमिट करा",
   "activeLabel": "सक्रिय पारायण #",
   "completedLabel": "पूर्ण पारायण #",
-  "emailRequired": "ईमेल आवश्यक आहे",
-  "invalidEmail": "कृपया योग्य ईमेल पत्ता प्रविष्ट करा",
+  "emailRequired": "ईमेल आयडी आवश्यक आहे",
+  "invalidEmail": "कृपया योग्य ईमेल आयडी टाका",
   "phoneRequired": "फोन नंबर आवश्यक आहे",
   "invalidPhone": "कृपया योग्य १०-अंकी फोन नंबर प्रविष्ट करा",
   "overviewTab": "आढावा",
@@ -625,7 +624,6 @@
   "manualEntryLabel": "नामजप काउंट ॲड करा",
   "mantraLabel": "मंत्र",
   "dateRangeLabel": "कालावधी",
-  "statusLabel": "स्टेटस",
   "groupNamjapSubmitCount": "नामजप सबमिट करा: {count}",
   "@groupNamjapSubmitCount": {
     "placeholders": {
@@ -673,7 +671,6 @@
   "adminDeleteSuccess": "ॲडमिन यशस्वीरित्या काढला गेला",
   "adminAddSuccess": "ॲडमिन यशस्वीरित्या ॲड झाला",
   "selectGroupLabel": "ग्रुप निवडा",
-  "cancel": "रद्द करा",
   "delete": "डिलीट करा",
   "adminGroupLabel": "ग्रुप",
   "errorLabel": "त्रुटी",
@@ -682,8 +679,6 @@
   "roleGroupAdmin": "ग्रुप ॲडमिन",
   "roleParayanCoordinator": "पारायण ॲडमिन",
   "roleNamjapCoordinator": "नामजप ॲडमिन",
-  "emailRequired": "ईमेल आयडी आवश्यक आहे",
-  "invalidEmail": "कृपया योग्य ईमेल आयडी टाका",
   "atLeastOneRoleRequired": "किमान एक रोल निवडणे आवश्यक आहे",
   "groupRequired": "कृपया एक ग्रुप निवडा",
   "savingLabel": "सेव्ह करत आहे...",
@@ -691,7 +686,7 @@
   "updateAdminButton": "ॲडमिन अपडेट करा",
   "deleteAdminButton": "ॲडमिन डिलीट करा",
   "adminAlreadyExists": "या ईमेलचा ॲडमिन आधीच अस्तित्वात आहे",
-  "adminAddSuccess": "ॲडमिन यशस्वीरित्या ॲड झाला",
   "adminUpdateSuccess": "ॲडमिन यशस्वीरित्या अपडेट झाला",
-  "adminNamjapGroupTitle": "नामजप ग्रुप्स"
+  "adminNamjapGroupTitle": "नामजप ग्रुप्स",
+  "updatingStatus": "स्थिती अपडेट होत आहे..."
 }

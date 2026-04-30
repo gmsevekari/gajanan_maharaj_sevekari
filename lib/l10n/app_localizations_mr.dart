@@ -1855,4 +1855,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get adminNamjapGroupTitle => 'नामजप ग्रुप्स';
+
+  @override
+  String get updatingStatus => 'स्थिती अपडेट होत आहे...';
 }

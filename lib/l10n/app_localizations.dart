@@ -3602,6 +3602,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Namjap Groups'**
   String get adminNamjapGroupTitle;
+
+  /// No description provided for @updatingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating status...'**
+  String get updatingStatus;
 }
 
 class _AppLocalizationsDelegate

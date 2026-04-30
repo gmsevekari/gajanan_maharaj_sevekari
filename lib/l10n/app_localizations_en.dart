@@ -1851,6 +1851,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminNamjapGroupTitle => 'Namjap Groups';
+
+  @override
+  String get updatingStatus => 'Updating status...';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).
@@ -1967,4 +1970,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   @override
   String get noParayanGroupsSelectedMessage =>
       'कृपया पारायण पाहण्यासाठी/सहभागी होण्यासाठी सेटिंग्ज -> ग्रुप्स मॅनेज करा मधून एक किंवा अधिक ग्रुप्स निवडा. जय गजानन 🙏🏻';
+
+  @override
+  String get updatingStatus => 'स्थिती अपडेट होत आहे...';
 }
