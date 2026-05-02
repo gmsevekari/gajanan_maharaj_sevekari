@@ -69,7 +69,9 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
             if (mounted) {
               final localizations = AppLocalizations.of(context)!;
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(localizations.adminAlreadyExists)),
+                SnackBar(
+                  content: Text(localizations.adminAlreadyExists),
+                ),
               );
             }
             return;
@@ -100,9 +102,9 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
       } catch (e) {
         if (mounted) {
           final localizations = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${localizations.errorLabel}: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${localizations.errorLabel}: $e')));
         }
       } finally {
         if (mounted) {
@@ -147,9 +149,9 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
       } catch (e) {
         if (mounted) {
           final localizations = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${localizations.errorLabel}: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${localizations.errorLabel}: $e')));
         }
       } finally {
         if (mounted) {
@@ -370,7 +372,7 @@ class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
                             _isSuperAdmin) ...[
                           const SizedBox(height: 24),
                           DropdownButtonFormField<String>(
-                            initialValue: _selectedGroupId,
+                            value: _selectedGroupId,
                             decoration: InputDecoration(
                               labelText: localizations.selectGroupLabel,
                               border: const OutlineInputBorder(),

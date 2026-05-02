@@ -67,13 +67,11 @@ class _StoryListScreenState extends State<StoryListScreen> {
     final group = specificGroup ?? widget.group;
     final files = group?.files ?? category?.files ?? parentConfig?.files ?? [];
 
-    final textDir =
-        group?.textResourceDirectory ??
+    final textDir = group?.textResourceDirectory ??
         category?.textResourceDirectory ??
         parentConfig?.textResourceDirectory ??
         '';
-    final imageDir =
-        group?.imageResourceDirectory ??
+    final imageDir = group?.imageResourceDirectory ??
         category?.imageResourceDirectory ??
         parentConfig?.imageResourceDirectory ??
         '';
@@ -88,7 +86,7 @@ class _StoryListScreenState extends State<StoryListScreen> {
           'title_en': data['title_en'] ?? '',
           'title_mr': data['title_mr'] ?? '',
           'assetPath': path,
-          'imagePath': fileItem.image.isNotEmpty == true
+          'imagePath': fileItem.image?.isNotEmpty == true
               ? '$imageDir/${fileItem.image}'
               : 'resources/images/gajanan_maharaj/aartis/event/placeholder.png', // Fallback
         });
@@ -177,8 +175,7 @@ class _StoryListScreenState extends State<StoryListScreen> {
 
     switch (widget.mode) {
       case StoryListMode.category:
-        final config =
-            widget.deity!.nityopasana.kidsStories![widget.storyType]!;
+        final config = widget.deity!.nityopasana.kidsStories![widget.storyType]!;
         final categories = config.categories ?? [];
         return _buildCategoryList(categories, theme, isMarathi);
 
@@ -207,16 +204,18 @@ class _StoryListScreenState extends State<StoryListScreen> {
       itemBuilder: (context, index) {
         final deity = deities[index];
         final stories = deity.nityopasana.kidsStories![widget.storyType]!;
-        final imagePath = deity.imagePath.startsWith('resources/')
-            ? deity.imagePath
-            : 'resources/images/deity/${deity.imagePath}';
-        final count = stories.isCategorized
-            ? stories.categories.length ?? 0
-            : (stories.isGrouped
-                  ? stories.groups?.length ?? 0
-                  : (stories.files.isNotEmpty == true
-                        ? stories.files.length
-                        : stories.items.length ?? 0));
+        final imagePath =
+            deity.imagePath.startsWith('resources/')
+                ? deity.imagePath
+                : 'resources/images/deity/${deity.imagePath}';
+        final count =
+            stories.isCategorized
+                ? stories.categories?.length ?? 0
+                : (stories.isGrouped
+                    ? stories.groups?.length ?? 0
+                    : (stories.files?.isNotEmpty == true
+                        ? stories.files!.length
+                        : stories.items?.length ?? 0));
 
         return _buildStandardCard(
           theme: theme,
@@ -271,9 +270,8 @@ class _StoryListScreenState extends State<StoryListScreen> {
     ThemeData theme,
     bool isMarathi,
   ) {
-    if (categories.isEmpty) {
+    if (categories.isEmpty)
       return const Center(child: Text('No categories found.'));
-    }
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
@@ -336,9 +334,8 @@ class _StoryListScreenState extends State<StoryListScreen> {
         }
 
         // Flatten all files into a single list for continuous navigation
-        final List<Map<String, String>> allFilesMetadata = groupDataList
-            .expand((g) => g.files)
-            .toList();
+        final List<Map<String, String>> allFilesMetadata =
+            groupDataList.expand((g) => g.files).toList();
 
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(8, 12, 8, 100),
@@ -443,9 +440,10 @@ class _StoryListScreenState extends State<StoryListScreen> {
             final fileData = files[index];
             return _buildStandardCard(
               theme: theme,
-              title: isMarathi
-                  ? (fileData['title_mr'] ?? '')
-                  : (fileData['title_en'] ?? ''),
+              title:
+                  isMarathi
+                      ? (fileData['title_mr'] ?? '')
+                      : (fileData['title_en'] ?? ''),
               imagePath: fileData['imagePath'],
               showImage: true,
               index: index + 1, // Add index for text stories
@@ -488,41 +486,43 @@ class _StoryListScreenState extends State<StoryListScreen> {
       clipBehavior: Clip.antiAlias,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-        leading: index != null
-            ? CircleAvatar(
-                backgroundColor: theme.appColors.primarySwatch.withValues(
-                  alpha: 0.1,
-                ),
-                child: Text(
-                  '$index',
-                  style: TextStyle(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.bold,
+        leading:
+            index != null
+                ? CircleAvatar(
+                  backgroundColor: theme.appColors.primarySwatch.withValues(
+                    alpha: 0.1,
                   ),
-                ),
-              )
-            : (showImage && imagePath != null
-                  ? ClipRRect(
+                  child: Text(
+                    '$index',
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+                : (showImage && imagePath != null
+                    ? ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.asset(
                         imagePath,
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: 50,
-                          height: 50,
-                          color: theme.appColors.primarySwatch.withValues(
-                            alpha: 0.1,
-                          ),
-                          child: Icon(
-                            Icons.image_not_supported_outlined,
-                            color: theme.appColors.primarySwatch,
-                          ),
-                        ),
+                        errorBuilder:
+                            (context, error, stackTrace) => Container(
+                              width: 50,
+                              height: 50,
+                              color: theme.appColors.primarySwatch.withValues(
+                                alpha: 0.1,
+                              ),
+                              child: Icon(
+                                Icons.image_not_supported_outlined,
+                                color: theme.appColors.primarySwatch,
+                              ),
+                            ),
                       ),
                     )
-                  : null),
+                    : null),
         title: Text(
           title,
           style: theme.textTheme.titleMedium?.copyWith(
@@ -548,7 +548,6 @@ class _StoryListScreenState extends State<StoryListScreen> {
     );
   }
 }
-
 class _GroupData {
   final StoryGroup group;
   final List<Map<String, String>> files;

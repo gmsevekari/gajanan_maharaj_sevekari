@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -32,11 +33,9 @@ void main() {
 
     when(() => mockAuth.currentUser).thenReturn(mockUser);
     when(() => mockUser.email).thenReturn('admin@test.com');
-    when(
-      () => mockFirestore.collection('admin_allowlist'),
-    ).thenReturn(mockCollection);
+    when(() => mockFirestore.collection('admin_allowlist')).thenReturn(mockCollection);
     when(() => mockCollection.doc(any())).thenReturn(mockDoc);
-
+    
     when(() => mockThemeProvider.themePreset).thenReturn(ThemePreset.tulsi);
     when(() => mockThemeProvider.themeMode).thenReturn(ThemeMode.light);
     when(() => mockThemeProvider.customColor).thenReturn(null);
@@ -48,30 +47,27 @@ void main() {
       providers: [
         ChangeNotifierProvider<ThemeProvider>.value(value: mockThemeProvider),
         ChangeNotifierProvider<FontProvider>.value(value: mockFontProvider),
-        ChangeNotifierProvider<FestivalProvider>.value(
-          value: mockFestivalProvider,
-        ),
+        ChangeNotifierProvider<FestivalProvider>.value(value: mockFestivalProvider),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: AdminDashboardScreen(auth: mockAuth, firestore: mockFirestore),
+        home: AdminDashboardScreen(
+          auth: mockAuth,
+          firestore: mockFirestore,
+        ),
       ),
     );
   }
 
   group('AdminDashboardScreen Module Visibility', () {
-    testWidgets('should show Manage Group Admins card for super_admin', (
-      tester,
-    ) async {
+    testWidgets('should show Manage Group Admins card for super_admin', (tester) async {
       final mockSnapshot = MockDocumentSnapshot();
       when(() => mockSnapshot.exists).thenReturn(true);
       when(() => mockSnapshot.data()).thenReturn({
         'roles': ['super_admin'],
       });
-      when(
-        () => mockDoc.snapshots(),
-      ).thenAnswer((_) => Stream.value(mockSnapshot));
+      when(() => mockDoc.snapshots()).thenAnswer((_) => Stream.value(mockSnapshot));
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
@@ -79,57 +75,43 @@ void main() {
       expect(find.text('Manage Group Admins'), findsOneWidget);
     });
 
-    testWidgets(
-      'should show Manage Group Admins card for group_admin with groupId',
-      (tester) async {
-        final mockSnapshot = MockDocumentSnapshot();
-        when(() => mockSnapshot.exists).thenReturn(true);
-        when(() => mockSnapshot.data()).thenReturn({
-          'roles': ['group_admin'],
-          'groupId': 'group_1',
-        });
-        when(
-          () => mockDoc.snapshots(),
-        ).thenAnswer((_) => Stream.value(mockSnapshot));
+    testWidgets('should show Manage Group Admins card for group_admin with groupId', (tester) async {
+      final mockSnapshot = MockDocumentSnapshot();
+      when(() => mockSnapshot.exists).thenReturn(true);
+      when(() => mockSnapshot.data()).thenReturn({
+        'roles': ['group_admin'],
+        'groupId': 'group_1',
+      });
+      when(() => mockDoc.snapshots()).thenAnswer((_) => Stream.value(mockSnapshot));
 
-        await tester.pumpWidget(createTestWidget());
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-        expect(find.text('Manage Group Admins'), findsOneWidget);
-      },
-    );
+      expect(find.text('Manage Group Admins'), findsOneWidget);
+    });
 
-    testWidgets(
-      'should NOT show Manage Group Admins card for group_admin WITHOUT groupId',
-      (tester) async {
-        final mockSnapshot = MockDocumentSnapshot();
-        when(() => mockSnapshot.exists).thenReturn(true);
-        when(() => mockSnapshot.data()).thenReturn({
-          'roles': ['group_admin'],
-          'groupId': null,
-        });
-        when(
-          () => mockDoc.snapshots(),
-        ).thenAnswer((_) => Stream.value(mockSnapshot));
+    testWidgets('should NOT show Manage Group Admins card for group_admin WITHOUT groupId', (tester) async {
+      final mockSnapshot = MockDocumentSnapshot();
+      when(() => mockSnapshot.exists).thenReturn(true);
+      when(() => mockSnapshot.data()).thenReturn({
+        'roles': ['group_admin'],
+        'groupId': null,
+      });
+      when(() => mockDoc.snapshots()).thenAnswer((_) => Stream.value(mockSnapshot));
 
-        await tester.pumpWidget(createTestWidget());
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
 
-        expect(find.text('Manage Group Admins'), findsNothing);
-      },
-    );
+      expect(find.text('Manage Group Admins'), findsNothing);
+    });
 
-    testWidgets('should NOT show Manage Group Admins card for other roles', (
-      tester,
-    ) async {
+    testWidgets('should NOT show Manage Group Admins card for other roles', (tester) async {
       final mockSnapshot = MockDocumentSnapshot();
       when(() => mockSnapshot.exists).thenReturn(true);
       when(() => mockSnapshot.data()).thenReturn({
         'roles': ['parayan_coordinator'],
       });
-      when(
-        () => mockDoc.snapshots(),
-      ).thenAnswer((_) => Stream.value(mockSnapshot));
+      when(() => mockDoc.snapshots()).thenAnswer((_) => Stream.value(mockSnapshot));
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();

@@ -11,7 +11,9 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/utils/parayan_extensions.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 
 class PreallocatedParayanDetailScreen extends StatefulWidget {
   final ParayanEvent? event;
@@ -160,13 +162,11 @@ class _PreallocatedParayanDetailScreenState
                                     Expanded(
                                       child: Text(
                                         _event!.getSmartDate(locale),
-                                        style: theme.textTheme.titleMedium
-                                            ?.copyWith(
-                                              color:
-                                                  theme.colorScheme.onSurface,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: isLandscape ? 14 : 16,
-                                            ),
+                                        style: theme.textTheme.titleMedium?.copyWith(
+                                          color: theme.colorScheme.onSurface,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: isLandscape ? 14 : 16,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -184,19 +184,15 @@ class _PreallocatedParayanDetailScreenState
                                     Expanded(
                                       child: Text(
                                         (_event!.type == ParayanType.oneDay
-                                            ? localizations.oneDayParayan
-                                            : _event!.type ==
-                                                  ParayanType.threeDay
-                                            ? localizations.threeDayParayan
-                                            : localizations.guruPushyaParayan),
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(
-                                              color: theme
-                                                  .colorScheme
-                                                  .onSurfaceVariant,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: isLandscape ? 12 : 14,
-                                            ),
+                                                ? localizations.oneDayParayan
+                                                : _event!.type == ParayanType.threeDay
+                                                    ? localizations.threeDayParayan
+                                                    : localizations.guruPushyaParayan),
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                          color: theme.colorScheme.onSurfaceVariant,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: isLandscape ? 12 : 14,
+                                        ),
                                       ),
                                     ),
                                   ],

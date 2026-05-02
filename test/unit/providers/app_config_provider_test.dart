@@ -46,7 +46,7 @@ void main() {
     // Set up mock binary messenger handler for rootBundle
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMessageHandler('flutter/assets', (ByteData? message) async {
-          final String key = utf8.decode(message!.buffer.asUint8List());
+          final String? key = utf8.decode(message!.buffer.asUint8List());
           if (key == 'resources/config/app_config.json') {
             return ByteData.view(
               utf8.encode(json.encode(mockAppConfigJson)).buffer,

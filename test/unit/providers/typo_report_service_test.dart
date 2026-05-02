@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/providers/typo_report_service.dart';
 import 'package:gajanan_maharaj_sevekari/models/typo_report.dart';
 import '../../mocks.dart';
@@ -14,9 +15,7 @@ void main() {
     mockCollection = MockCollectionReference();
     mockDocument = MockDocumentReference();
 
-    when(
-      () => mockFirestore.collection('typo_reports'),
-    ).thenReturn(mockCollection);
+    when(() => mockFirestore.collection('typo_reports')).thenReturn(mockCollection);
     when(() => mockCollection.doc(any())).thenReturn(mockDocument);
   });
 

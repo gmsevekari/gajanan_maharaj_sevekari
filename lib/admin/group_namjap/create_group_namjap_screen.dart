@@ -207,18 +207,16 @@ class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
                       ),
                       keyboardType: TextInputType.number,
                       validator: (v) {
-                        if (v == null || v.isEmpty) {
+                        if (v == null || v.isEmpty)
                           return localizations.groupNamjapRequired;
-                        }
-                        if (int.tryParse(v) == null) {
+                        if (int.tryParse(v) == null)
                           return localizations.groupNamjapMustBeNumber;
-                        }
                         return null;
                       },
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      initialValue: _selectedTimezone,
+                      value: _selectedTimezone,
                       decoration: InputDecoration(
                         labelText: localizations.groupNamjapTimezone,
                       ),
