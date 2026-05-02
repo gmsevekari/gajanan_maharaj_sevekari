@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:gajanan_maharaj_sevekari/providers/jap_mala_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
@@ -267,7 +266,10 @@ class _CountingJapTabState extends State<CountingJapTab> {
                 const SizedBox(height: 16),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.cardTheme.color ?? theme.cardColor,
                     borderRadius: BorderRadius.circular(24),
@@ -288,7 +290,8 @@ class _CountingJapTabState extends State<CountingJapTab> {
                               color: theme.colorScheme.onSurface,
                             ),
                             isDense: true,
-                            dropdownColor: theme.cardTheme.color ?? theme.cardColor,
+                            dropdownColor:
+                                theme.cardTheme.color ?? theme.cardColor,
                             borderRadius: BorderRadius.circular(12),
                             onChanged: provider.isPlaying
                                 ? null
@@ -343,7 +346,9 @@ class _CountingJapTabState extends State<CountingJapTab> {
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.1,
+                                ),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -375,7 +380,9 @@ class _CountingJapTabState extends State<CountingJapTab> {
                                     color: theme.appColors.primarySwatch,
                                     fontSize: 32,
                                     fontWeight: FontWeight.w900,
-                                    fontFeatures: const [FontFeature.tabularFigures()],
+                                    fontFeatures: const [
+                                      FontFeature.tabularFigures(),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -399,7 +406,9 @@ class _CountingJapTabState extends State<CountingJapTab> {
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.1,
+                                ),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -425,7 +434,9 @@ class _CountingJapTabState extends State<CountingJapTab> {
                                     color: theme.appColors.primarySwatch,
                                     fontSize: 28,
                                     fontWeight: FontWeight.w900,
-                                    fontFeatures: const [FontFeature.tabularFigures()],
+                                    fontFeatures: const [
+                                      FontFeature.tabularFigures(),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -477,7 +488,8 @@ class _CountingJapTabState extends State<CountingJapTab> {
                       );
                     }),
                     _buildDottedTargetCard(
-                      !targets.contains(provider.targetMalas) && provider.targetMalas > 0
+                      !targets.contains(provider.targetMalas) &&
+                              provider.targetMalas > 0
                           ? (provider.targetMalas == 1
                                 ? localizations.mala
                                 : localizations.malas)
@@ -487,9 +499,16 @@ class _CountingJapTabState extends State<CountingJapTab> {
                                       : localizations.malas)
                                 : localizations.other),
                       theme,
-                      !targets.contains(provider.targetMalas) && provider.targetMalas > 0,
-                      number: !targets.contains(provider.targetMalas) && provider.targetMalas > 0
-                          ? formatNumberLocalized(provider.targetMalas, locale, pad: false)
+                      !targets.contains(provider.targetMalas) &&
+                          provider.targetMalas > 0,
+                      number:
+                          !targets.contains(provider.targetMalas) &&
+                              provider.targetMalas > 0
+                          ? formatNumberLocalized(
+                              provider.targetMalas,
+                              locale,
+                              pad: false,
+                            )
                           : (provider.customTargetMalas != null
                                 ? formatNumberLocalized(
                                     provider.customTargetMalas!,
@@ -709,7 +728,11 @@ class _CountingJapTabState extends State<CountingJapTab> {
                       ),
                     )
                   else
-                    Icon(Icons.add, color: theme.appColors.secondaryText, size: 20),
+                    Icon(
+                      Icons.add,
+                      color: theme.appColors.secondaryText,
+                      size: 20,
+                    ),
                   const SizedBox(width: 4),
                   Flexible(
                     child: Text(

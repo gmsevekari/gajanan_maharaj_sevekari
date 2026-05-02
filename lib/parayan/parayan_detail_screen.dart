@@ -11,7 +11,6 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_signup_screen.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
-import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/utils/parayan_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'dart:async';
@@ -272,7 +271,7 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
               children: [
                 // Header Section
                 Padding(
-                padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 4.0),
+                  padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 4.0),
                   child: Card(
                     margin: EdgeInsets.zero,
                     clipBehavior: Clip.antiAlias,
@@ -300,11 +299,13 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                       Expanded(
                                         child: Text(
                                           _event!.getSmartDate(locale),
-                                          style: theme.textTheme.titleMedium?.copyWith(
-                                            color: theme.colorScheme.onSurface,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: isLandscape ? 14 : 16,
-                                          ),
+                                          style: theme.textTheme.titleMedium
+                                              ?.copyWith(
+                                                color:
+                                                    theme.colorScheme.onSurface,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: isLandscape ? 14 : 16,
+                                              ),
                                         ),
                                       ),
                                     ],
@@ -323,15 +324,21 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                         child: Text(
                                           (_event!.type == ParayanType.oneDay
                                                   ? localizations.oneDayParayan
-                                                  : _event!.type == ParayanType.threeDay
-                                                      ? localizations.threeDayParayan
-                                                      : localizations.guruPushyaParayan)
+                                                  : _event!.type ==
+                                                        ParayanType.threeDay
+                                                  ? localizations
+                                                        .threeDayParayan
+                                                  : localizations
+                                                        .guruPushyaParayan)
                                               .replaceAll(' ', '\u00A0'),
-                                          style: theme.textTheme.bodyMedium?.copyWith(
-                                            color: theme.colorScheme.onSurfaceVariant,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: isLandscape ? 12 : 14,
-                                          ),
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                color: theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: isLandscape ? 12 : 14,
+                                              ),
                                         ),
                                       ),
                                     ],
@@ -341,17 +348,22 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                       _event!.descriptionMr.isNotEmpty) ...[
                                     Divider(
                                       height: 12,
-                                      color: theme.dividerColor.withOpacity(0.1),
+                                      color: theme.dividerColor.withOpacity(
+                                        0.1,
+                                      ),
                                     ),
                                     Text(
                                       locale == 'mr'
                                           ? _event!.descriptionMr
                                           : _event!.descriptionEn,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.onSurfaceVariant,
-                                        height: 1.5,
-                                        fontStyle: FontStyle.italic,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                            height: 1.5,
+                                            fontStyle: FontStyle.italic,
+                                          ),
                                     ),
                                   ],
                                   const SizedBox(height: 8),
@@ -435,8 +447,12 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                               onPressed: isActionEnabled
                                   ? () async {
                                       if (isClaimable) {
-                                        _showClaimDialog(context, localizations);
-                                      } else if (isEditable && _deviceId != null) {
+                                        _showClaimDialog(
+                                          context,
+                                          localizations,
+                                        );
+                                      } else if (isEditable &&
+                                          _deviceId != null) {
                                         final household = await _parayanService
                                             .getHousehold(
                                               _event!.id,
@@ -475,10 +491,12 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                       isClaimable
                                           ? Icons.search
                                           : (isEditable
-                                              ? Icons.edit
-                                              : (_isRegistered
-                                                  ? Icons.check_circle_outline
-                                                  : Icons.person_add_outlined)),
+                                                ? Icons.edit
+                                                : (_isRegistered
+                                                      ? Icons
+                                                            .check_circle_outline
+                                                      : Icons
+                                                            .person_add_outlined)),
                                       size: isLandscape ? 14 : 20,
                                     ),
                                     const SizedBox(width: 8),
@@ -486,11 +504,13 @@ class _ParayanDetailScreenState extends State<ParayanDetailScreen>
                                       isClaimable
                                           ? localizations.findMyAllocationLabel
                                           : (_isRegistered
-                                              ? (canJoin
-                                                  ? localizations
-                                                      .editEnrollmentLabel
-                                                  : localizations.signedUpLabel)
-                                              : localizations.joinParayanLabel),
+                                                ? (canJoin
+                                                      ? localizations
+                                                            .editEnrollmentLabel
+                                                      : localizations
+                                                            .signedUpLabel)
+                                                : localizations
+                                                      .joinParayanLabel),
                                       style: TextStyle(
                                         fontSize: isLandscape ? 12 : 16,
                                         fontWeight: FontWeight.bold,

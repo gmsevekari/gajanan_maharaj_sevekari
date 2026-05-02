@@ -11,7 +11,6 @@ import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
-import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import '../mocks.dart';
 
 class MockAdminManagementService extends Mock

@@ -16,7 +16,8 @@ class CalendarExportService {
     String baseName,
   ) async {
     if (events.isEmpty) return;
-    const fileName = 'special_events.ics'; // Standard .ics is more robust on iOS
+    const fileName =
+        'special_events.ics'; // Standard .ics is more robust on iOS
     final icsContent = _generateEventsIcs(events, baseName);
     await _handleExport(icsContent, fileName);
   }
@@ -27,7 +28,8 @@ class CalendarExportService {
     String baseName,
   ) async {
     if (events.isEmpty) return;
-    const fileName = 'parayan_schedule.ics'; // Standard .ics is more robust on iOS
+    const fileName =
+        'parayan_schedule.ics'; // Standard .ics is more robust on iOS
     final icsContent = _generateParayansIcs(events, baseName);
     await _handleExport(icsContent, fileName);
   }
@@ -46,7 +48,7 @@ class CalendarExportService {
     buffer.write('PRODID:-//Gajanan Maharaj Sevekari//NONSGML v1.0//EN\r\n');
     buffer.write('CALSCALE:GREGORIAN\r\n');
     buffer.write('METHOD:PUBLISH\r\n');
-    buffer.write(_fold('X-WR-CALNAME:${_escapeIcs(calName)}') + '\r\n');
+    buffer.write('${_fold('X-WR-CALNAME:${_escapeIcs(calName)}')}\r\n');
     buffer.write('X-WR-TIMEZONE:UTC\r\n');
 
     for (final event in events) {
@@ -63,15 +65,19 @@ class CalendarExportService {
 
       buffer.write('BEGIN:VEVENT\r\n');
       buffer.write(
-        _fold('UID:${start.millisecondsSinceEpoch}_${event.titleEn.hashCode}@gmsevekari.com') + '\r\n',
+        '${_fold('UID:${start.millisecondsSinceEpoch}_${event.titleEn.hashCode}@gmsevekari.com')}\r\n',
       );
       buffer.write('DTSTAMP:$stamp\r\n');
       buffer.write('DTSTART:$dtStart\r\n');
       buffer.write('DTEND:$dtEnd\r\n');
-      buffer.write(_fold('SUMMARY:${_escapeIcs(event.titleEn)}') + '\r\n');
-      buffer.write(_fold('DESCRIPTION:${_escapeIcs(event.detailsEn ?? "")}') + '\r\n');
+      buffer.write('${_fold('SUMMARY:${_escapeIcs(event.titleEn)}')}\r\n');
+      buffer.write(
+        '${_fold('DESCRIPTION:${_escapeIcs(event.detailsEn ?? "")}')}\r\n',
+      );
       if (event.locationEn != null) {
-        buffer.write(_fold('LOCATION:${_escapeIcs(event.locationEn!)}') + '\r\n');
+        buffer.write(
+          '${_fold('LOCATION:${_escapeIcs(event.locationEn!)}')}\r\n',
+        );
       }
       buffer.write('END:VEVENT\r\n');
     }
@@ -85,14 +91,17 @@ class CalendarExportService {
     return _generateParayansIcs(events, calName);
   }
 
-  static String _generateParayansIcs(List<ParayanEvent> events, String calName) {
+  static String _generateParayansIcs(
+    List<ParayanEvent> events,
+    String calName,
+  ) {
     final StringBuffer buffer = StringBuffer();
     buffer.write('BEGIN:VCALENDAR\r\n');
     buffer.write('VERSION:2.0\r\n');
     buffer.write('PRODID:-//Gajanan Maharaj Sevekari//NONSGML v1.0//EN\r\n');
     buffer.write('CALSCALE:GREGORIAN\r\n');
     buffer.write('METHOD:PUBLISH\r\n');
-    buffer.write(_fold('X-WR-CALNAME:${_escapeIcs(calName)}') + '\r\n');
+    buffer.write('${_fold('X-WR-CALNAME:${_escapeIcs(calName)}')}\r\n');
     buffer.write('X-WR-TIMEZONE:UTC\r\n');
 
     for (final event in events) {
@@ -113,14 +122,16 @@ class CalendarExportService {
 
       buffer.write('BEGIN:VEVENT\r\n');
       buffer.write(
-        _fold('UID:${start.millisecondsSinceEpoch}_${event.titleEn.hashCode}@gmsevekari.com') + '\r\n',
+        '${_fold('UID:${start.millisecondsSinceEpoch}_${event.titleEn.hashCode}@gmsevekari.com')}\r\n',
       );
       buffer.write('DTSTAMP:$stamp\r\n');
       buffer.write('DTSTART;VALUE=DATE:$dtStart\r\n');
       buffer.write('DTEND;VALUE=DATE:$dtEnd\r\n');
-      buffer.write(_fold('SUMMARY:${_escapeIcs("$typeLabel: ${event.titleEn}")}') + '\r\n');
       buffer.write(
-        _fold('DESCRIPTION:Join the ${event.titleEn} parayan. Type: $typeLabel') + '\r\n',
+        '${_fold('SUMMARY:${_escapeIcs("$typeLabel: ${event.titleEn}")}')}\r\n',
+      );
+      buffer.write(
+        '${_fold('DESCRIPTION:Join the ${event.titleEn} parayan. Type: $typeLabel')}\r\n',
       );
       buffer.write('END:VEVENT\r\n');
     }

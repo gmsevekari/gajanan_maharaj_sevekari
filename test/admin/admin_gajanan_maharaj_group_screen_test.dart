@@ -7,21 +7,28 @@ import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 class MockAppConfigProvider extends Mock implements AppConfigProvider {}
 
 void main() {
   late MockAppConfigProvider mockAppConfigProvider;
-  final adminUser = AdminUser(email: 'test@example.com', roles: ['super_admin']);
+  final adminUser = AdminUser(
+    email: 'test@example.com',
+    roles: ['super_admin'],
+  );
 
   setUp(() {
     mockAppConfigProvider = MockAppConfigProvider();
     final appConfig = AppConfig(
       deities: [],
       gajananMaharajGroups: [
-        GajananMaharajGroup(id: 'group1', nameEn: 'Group 1', nameMr: 'ग्रुप १', icon: null),
+        GajananMaharajGroup(
+          id: 'group1',
+          nameEn: 'Group 1',
+          nameMr: 'ग्रुप १',
+          icon: null,
+        ),
       ],
       socialMediaLinks: [],
       appName: {},
@@ -37,13 +44,17 @@ void main() {
   Widget createTestWidget({String mode = 'parayan'}) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AppConfigProvider>.value(value: mockAppConfigProvider),
+        ChangeNotifierProvider<AppConfigProvider>.value(
+          value: mockAppConfigProvider,
+        ),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         onGenerateRoute: (settings) {
-          return MaterialPageRoute(builder: (context) => Scaffold(body: Text(settings.name ?? '')));
+          return MaterialPageRoute(
+            builder: (context) => Scaffold(body: Text(settings.name ?? '')),
+          );
         },
         home: AdminGajananMaharajGroupScreen(adminUser: adminUser, mode: mode),
       ),
@@ -62,7 +73,9 @@ void main() {
     expect(find.text('Namjap Groups'), findsOneWidget);
   });
 
-  testWidgets('navigates to Parayan Coordination when mode is parayan', (tester) async {
+  testWidgets('navigates to Parayan Coordination when mode is parayan', (
+    tester,
+  ) async {
     await tester.pumpWidget(createTestWidget(mode: 'parayan'));
     await tester.pumpAndSettle();
 
@@ -72,7 +85,9 @@ void main() {
     expect(find.text(Routes.adminParayanCoordination), findsOneWidget);
   });
 
-  testWidgets('navigates to Namjap Dashboard when mode is namjap', (tester) async {
+  testWidgets('navigates to Namjap Dashboard when mode is namjap', (
+    tester,
+  ) async {
     await tester.pumpWidget(createTestWidget(mode: 'namjap'));
     await tester.pumpAndSettle();
 
@@ -92,7 +107,9 @@ void main() {
     expect(find.text(Routes.home), findsOneWidget);
   });
 
-  testWidgets('navigates to settings when settings button is pressed', (tester) async {
+  testWidgets('navigates to settings when settings button is pressed', (
+    tester,
+  ) async {
     await tester.pumpWidget(createTestWidget());
     await tester.pumpAndSettle();
 

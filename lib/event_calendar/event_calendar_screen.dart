@@ -336,8 +336,10 @@ class _EventCalendarScreenState extends State<EventCalendarScreen>
     final title = locale == 'mr' ? event.titleMr : event.titleEn;
     final location =
         (locale == 'mr' ? event.locationMr : event.locationEn) ?? '';
-    final details =
+    final rawDetails =
         (locale == 'mr' ? event.detailsMr : event.detailsEn) ?? '';
+        
+    final details = convertTextTimings(rawDetails, event.startTime.toDate(), locale);
 
     final startTime = formatTimeDetailed(event.startTime.toDate(), locale);
     final String? endTime = event.endTime != null

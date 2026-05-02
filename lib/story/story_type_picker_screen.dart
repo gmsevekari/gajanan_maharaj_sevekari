@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/story/story_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
-import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 
 class StoryTypePickerScreen extends StatelessWidget {
   final DeityConfig deity;
@@ -113,11 +111,8 @@ class StoryTypePickerScreen extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => StoryListScreen(
-                storyType: type,
-                mode: mode,
-                deity: deity,
-              ),
+              builder: (context) =>
+                  StoryListScreen(storyType: type, mode: mode, deity: deity),
             ),
           );
         },

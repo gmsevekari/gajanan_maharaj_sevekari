@@ -50,9 +50,9 @@ void main() {
           'id': GroupConstants.gunjan,
           'name_en': 'Gunjan',
           'name_mr': 'गुंजन',
-          'default_country_code': '+91'
-        }
-      ]
+          'default_country_code': '+91',
+        },
+      ],
     });
     when(() => mockAppConfigProvider.appConfig).thenReturn(mockConfig);
 
@@ -83,7 +83,7 @@ void main() {
     );
   }
 
-  Widget _wrapDialog(Widget dialog) {
+  Widget wrapDialog(Widget dialog) {
     return Builder(
       builder: (context) {
         return ElevatedButton(
@@ -98,7 +98,7 @@ void main() {
     testWidgets('initial render and validation', (tester) async {
       await tester.pumpWidget(
         createTestWidget(
-          _wrapDialog(
+          wrapDialog(
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
@@ -139,7 +139,7 @@ void main() {
 
       await tester.pumpWidget(
         createTestWidget(
-          _wrapDialog(
+          wrapDialog(
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
@@ -205,7 +205,7 @@ void main() {
 
       await tester.pumpWidget(
         createTestWidget(
-          _wrapDialog(
+          wrapDialog(
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
@@ -254,7 +254,7 @@ void main() {
 
       await tester.pumpWidget(
         createTestWidget(
-          _wrapDialog(
+          wrapDialog(
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
@@ -294,7 +294,7 @@ void main() {
 
       await tester.pumpWidget(
         createTestWidget(
-          _wrapDialog(
+          wrapDialog(
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
@@ -324,7 +324,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         createTestWidget(
-          _wrapDialog(
+          wrapDialog(
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
@@ -365,7 +365,7 @@ void main() {
 
       await tester.pumpWidget(
         createTestWidget(
-          _wrapDialog(
+          wrapDialog(
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
@@ -400,7 +400,7 @@ void main() {
     testWidgets('universal 8-digit phone validation', (tester) async {
       await tester.pumpWidget(
         createTestWidget(
-          _wrapDialog(
+          wrapDialog(
             ClaimAllocationDialog(
               eventId: 'e1',
               deviceId: 'd1',
@@ -417,7 +417,7 @@ void main() {
 
       // Test with +91 (Default)
       await tester.enterText(find.byType(TextFormField).first, '+91');
-      
+
       // 7 digits should fail
       await tester.enterText(find.byType(TextFormField).last, '1234567');
       await tester.tap(find.text('Submit'));
@@ -432,7 +432,7 @@ void main() {
 
       // Test with +64 (New Zealand)
       await tester.enterText(find.byType(TextFormField).first, '+64');
-      
+
       // 7 digits should fail
       await tester.enterText(find.byType(TextFormField).last, '1234567');
       await tester.tap(find.text('Submit'));

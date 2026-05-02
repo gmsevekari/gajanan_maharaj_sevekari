@@ -6,7 +6,6 @@ import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -21,7 +20,11 @@ void main() {
     testGroups = [
       GajananMaharajGroup(id: 'group1', nameEn: 'Group One', nameMr: 'गट एक'),
       GajananMaharajGroup(id: 'group2', nameEn: 'Group Two', nameMr: 'गट दोन'),
-      GajananMaharajGroup(id: 'group3', nameEn: 'Group Three', nameMr: 'गट तीन'),
+      GajananMaharajGroup(
+        id: 'group3',
+        nameEn: 'Group Three',
+        nameMr: 'गट तीन',
+      ),
     ];
 
     final mockAppConfig = AppConfig(
@@ -77,23 +80,24 @@ void main() {
     expect(find.text('Group Three'), findsOneWidget);
   });
 
-  testWidgets('renders only filtered groups when filteredGroupIds is provided', (
-    WidgetTester tester,
-  ) async {
-    final config = GroupScreenConfig(
-      title: 'Filtered Groups',
-      emptyMessage: 'No groups found',
-      targetRoute: '/dummy',
-      filteredGroupIds: ['group1', 'group3'],
-    );
+  testWidgets(
+    'renders only filtered groups when filteredGroupIds is provided',
+    (WidgetTester tester) async {
+      final config = GroupScreenConfig(
+        title: 'Filtered Groups',
+        emptyMessage: 'No groups found',
+        targetRoute: '/dummy',
+        filteredGroupIds: ['group1', 'group3'],
+      );
 
-    await tester.pumpWidget(createWidget(config: config));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(createWidget(config: config));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Group One'), findsOneWidget);
-    expect(find.text('Group Two'), findsNothing);
-    expect(find.text('Group Three'), findsOneWidget);
-  });
+      expect(find.text('Group One'), findsOneWidget);
+      expect(find.text('Group Two'), findsNothing);
+      expect(find.text('Group Three'), findsOneWidget);
+    },
+  );
 
   testWidgets('renders empty message when no groups match filter', (
     WidgetTester tester,
