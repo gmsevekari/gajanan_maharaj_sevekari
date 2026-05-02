@@ -11,6 +11,15 @@ String toMarathiNumerals(String input) {
   return input;
 }
 
+String toEnglishNumerals(String input) {
+  const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  const marathi = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+  for (int i = 0; i < marathi.length; i++) {
+    input = input.replaceAll(marathi[i], english[i]);
+  }
+  return input;
+}
+
 String formatNumberLocalized(
   dynamic number,
   String languageCode, {
