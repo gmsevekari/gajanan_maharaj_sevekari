@@ -3608,6 +3608,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Updating status...'**
   String get updatingStatus;
+
+  /// No description provided for @discardUnsavedCountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved Count'**
+  String get discardUnsavedCountTitle;
+
+  /// No description provided for @discardUnsavedCountMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsubmitted jap count. Do you want to discard it and leave?'**
+  String get discardUnsavedCountMessage;
+
+  /// No description provided for @discardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discardLabel;
 }
 
 class _AppLocalizationsDelegate

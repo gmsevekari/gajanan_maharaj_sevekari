@@ -1858,4 +1858,14 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get updatingStatus => 'स्थिती अपडेट होत आहे...';
+
+  @override
+  String get discardUnsavedCountTitle => 'जतन न केलेली संख्या';
+
+  @override
+  String get discardUnsavedCountMessage =>
+      'तुमची काही नामजप संख्या जतन केलेली नाही. तुम्हाला ती रद्द करून बाहेर पडायचे आहे का?';
+
+  @override
+  String get discardLabel => 'रद्द करा';
 }

@@ -688,5 +688,8 @@
   "adminAlreadyExists": "Admin with this email already exists",
   "adminUpdateSuccess": "Admin updated successfully",
   "adminNamjapGroupTitle": "Namjap Groups",
-  "updatingStatus": "Updating status..."
+  "updatingStatus": "Updating status...",
+  "discardUnsavedCountTitle": "Unsaved Count",
+  "discardUnsavedCountMessage": "You have unsubmitted jap count. Do you want to discard it and leave?",
+  "discardLabel": "Discard"
 }

@@ -1854,6 +1854,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updatingStatus => 'Updating status...';
+
+  @override
+  String get discardUnsavedCountTitle => 'Unsaved Count';
+
+  @override
+  String get discardUnsavedCountMessage =>
+      'You have unsubmitted jap count. Do you want to discard it and leave?';
+
+  @override
+  String get discardLabel => 'Discard';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).
@@ -1973,4 +1983,14 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get updatingStatus => 'स्थिती अपडेट होत आहे...';
+
+  @override
+  String get discardUnsavedCountTitle => 'जतन न केलेली संख्या';
+
+  @override
+  String get discardUnsavedCountMessage =>
+      'तुमची काही नामजप संख्या जतन केलेली नाही. तुम्हाला ती रद्द करून बाहेर पडायचे आहे का?';
+
+  @override
+  String get discardLabel => 'रद्द करा';
 }

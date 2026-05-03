@@ -42,5 +42,8 @@
   "otherStotras": "इतर स्तोत्रं",
   "otherBhajans": "इतर भजन",
   "donationsTitle": "देणगी",
-  "updatingStatus": "स्थिती अपडेट होत आहे..."
+  "updatingStatus": "स्थिती अपडेट होत आहे...",
+  "discardUnsavedCountTitle": "जतन न केलेली संख्या",
+  "discardUnsavedCountMessage": "तुमची काही नामजप संख्या जतन केलेली नाही. तुम्हाला ती रद्द करून बाहेर पडायचे आहे का?",
+  "discardLabel": "रद्द करा"
 }

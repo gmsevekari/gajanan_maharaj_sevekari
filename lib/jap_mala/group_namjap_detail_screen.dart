@@ -109,6 +109,27 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
     );
   }
 
+  Future<bool?> _showDiscardWarningDialog(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(localizations.discardUnsavedCountTitle),
+        content: Text(localizations.discardUnsavedCountMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(localizations.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(localizations.discardLabel),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -117,181 +138,237 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
 
-    return StreamBuilder<GroupNamjapEvent?>(
-      stream: _eventStream,
-      builder: (context, snapshot) {
-        final event = snapshot.data;
-        final title = event == null
-            ? localizations.groupNamjapEventDetails
-            : (locale == 'mr' ? event.nameMr : event.nameEn);
+    return ChangeNotifierProvider(
+      create: (_) => JapMalaProvider(),
+      child: Builder(
+        builder: (context) {
+          return StreamBuilder<GroupNamjapEvent?>(
+            stream: _eventStream,
+            builder: (context, snapshot) {
+              final event = snapshot.data;
+              final title = event == null
+                  ? localizations.groupNamjapEventDetails
+                  : (locale == 'mr' ? event.nameMr : event.nameEn);
 
-        return Scaffold(
-          appBar: AppBar(
-            title: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(
-                title,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  color: theme.colorScheme.onPrimary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            backgroundColor: theme.appColors.primarySwatch,
-            iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
-            actions: [
-              IconButton(
-                icon: const ThemedIcon(LogicalIcon.home),
-                onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  Routes.home,
-                  (route) => false,
-                ),
-              ),
-              IconButton(
-                icon: const ThemedIcon(LogicalIcon.settings),
-                onPressed: () => Navigator.pushNamed(context, Routes.settings),
-              ),
-            ],
-          ),
-          body: snapshot.connectionState == ConnectionState.waiting
-              ? const Center(child: CircularProgressIndicator())
-              : event == null
-              ? Center(child: Text(localizations.groupNamjapEventNotFound))
-              : SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTopEventCard(
-                        event,
-                        localizations,
-                        theme,
-                        locale,
-                        isLandscape,
-                      ),
-                      const SizedBox(height: 12),
-                      _buildActionRow(
-                        event,
-                        localizations,
-                        theme,
-                        locale,
-                        isLandscape,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 8.0,
+              return PopScope(
+                canPop: false,
+                onPopInvokedWithResult: (didPop, result) async {
+                  if (didPop) return;
+                  final japProvider = context.read<JapMalaProvider>();
+                  if (japProvider.totalCount > 0) {
+                    final shouldPop = await _showDiscardWarningDialog(context);
+                    if (shouldPop == true) {
+                      if (context.mounted) Navigator.of(context).pop(result);
+                    }
+                  } else {
+                    if (context.mounted) Navigator.of(context).pop(result);
+                  }
+                },
+                child: Scaffold(
+                  appBar: AppBar(
+                    title: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        title,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: theme.colorScheme.onPrimary,
+                          fontWeight: FontWeight.bold,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildProgressCardsRow(
-                              event,
-                              localizations,
-                              theme,
-                              locale,
-                            ),
-                            const SizedBox(height: 16),
-                            ChangeNotifierProvider(
-                              create: (_) => JapMalaProvider(),
-                              child: Consumer2<JapMalaProvider, GroupNamjapProvider>(
-                                builder:
-                                    (context, japProvider, groupProvider, _) {
-                                      final isJoined = groupProvider.isJoined(
-                                        widget.eventId,
-                                      );
-                                      final isOngoing =
-                                          event.status == 'ongoing';
-                                      final canSubmit =
-                                          japProvider.totalCount > 0 &&
-                                          isJoined &&
-                                          isOngoing;
+                      ),
+                    ),
+                    backgroundColor: theme.appColors.primarySwatch,
+                    iconTheme: IconThemeData(
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                    actions: [
+                      IconButton(
+                        icon: const ThemedIcon(LogicalIcon.home),
+                        onPressed: () async {
+                          final japProvider = context.read<JapMalaProvider>();
+                          if (japProvider.totalCount > 0) {
+                            final shouldPop = await _showDiscardWarningDialog(
+                              context,
+                            );
+                            if (shouldPop != true) return;
+                          }
+                          if (context.mounted) {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              Routes.home,
+                              (route) => false,
+                            );
+                          }
+                        },
+                      ),
+                      IconButton(
+                        icon: const ThemedIcon(LogicalIcon.settings),
+                        onPressed: () =>
+                            Navigator.pushNamed(context, Routes.settings),
+                      ),
+                    ],
+                  ),
+                  body: snapshot.connectionState == ConnectionState.waiting
+                      ? const Center(child: CircularProgressIndicator())
+                      : event == null
+                      ? Center(
+                          child: Text(localizations.groupNamjapEventNotFound),
+                        )
+                      : SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildTopEventCard(
+                                event,
+                                localizations,
+                                theme,
+                                locale,
+                                isLandscape,
+                              ),
+                              const SizedBox(height: 12),
+                              _buildActionRow(
+                                event,
+                                localizations,
+                                theme,
+                                locale,
+                                isLandscape,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 8.0,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildProgressCardsRow(
+                                      event,
+                                      localizations,
+                                      theme,
+                                      locale,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Consumer2<
+                                      JapMalaProvider,
+                                      GroupNamjapProvider
+                                    >(
+                                      builder: (context, japProvider, groupProvider, _) {
+                                        final isJoined = groupProvider.isJoined(
+                                          widget.eventId,
+                                        );
+                                        final isOngoing =
+                                            event.status == 'ongoing';
+                                        final canSubmit =
+                                            japProvider.totalCount > 0 &&
+                                            isJoined &&
+                                            isOngoing;
 
-                                      return Column(
-                                        children: [
-                                          const SizedBox(height: 12),
-                                          if (isJoined && isOngoing)
-                                            Center(
-                                              child: TextButton.icon(
-                                                onPressed: () => _showManualEntryDialog(context, japProvider),
-                                                icon: const Icon(Icons.edit_note, size: 20),
-                                                label: Text(localizations.manualEntryLabel),
-                                              ),
-                                            ),
-                                          SizedBox(
-                                            width: double.infinity,
-                                            height: isLandscape ? 40 : 50,
-                                            child: ElevatedButton(
-                                              onPressed: canSubmit
-                                                  ? () async {
-                                                      await _submitCount(
-                                                        japProvider.totalCount,
-                                                      );
-                                                      japProvider.reset();
-                                                    }
-                                                  : null,
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: canSubmit
-                                                    ? theme.colorScheme.primary
-                                                    : theme
-                                                          .appColors
-                                                          .disabledBackground,
-                                                foregroundColor: canSubmit
-                                                    ? theme
-                                                          .colorScheme
-                                                          .onPrimary
-                                                    : theme
-                                                          .appColors
-                                                          .disabledText,
-                                                elevation: canSubmit ? 2 : 0,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                ),
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: isLandscape ? 12 : 20,
+                                        return Column(
+                                          children: [
+                                            const SizedBox(height: 12),
+                                            if (isJoined && isOngoing)
+                                              Center(
+                                                child: TextButton.icon(
+                                                  onPressed: () =>
+                                                      _showManualEntryDialog(
+                                                        context,
+                                                        japProvider,
+                                                      ),
+                                                  icon: const Icon(
+                                                    Icons.edit_note,
+                                                    size: 20,
+                                                  ),
+                                                  label: Text(
+                                                    localizations
+                                                        .manualEntryLabel,
+                                                  ),
                                                 ),
                                               ),
-                                              child: FittedBox(
-                                                child: Text(
-                                                  localizations
-                                                      .groupNamjapSubmitCount(
-                                                        formatNumberLocalized(
+                                            SizedBox(
+                                              width: double.infinity,
+                                              height: isLandscape ? 40 : 50,
+                                              child: ElevatedButton(
+                                                onPressed: canSubmit
+                                                    ? () async {
+                                                        await _submitCount(
                                                           japProvider
                                                               .totalCount,
-                                                          locale,
-                                                          pad: false,
+                                                        );
+                                                        japProvider.reset();
+                                                      }
+                                                    : null,
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: canSubmit
+                                                      ? theme
+                                                            .colorScheme
+                                                            .primary
+                                                      : theme
+                                                            .appColors
+                                                            .disabledBackground,
+                                                  foregroundColor: canSubmit
+                                                      ? theme
+                                                            .colorScheme
+                                                            .onPrimary
+                                                      : theme
+                                                            .appColors
+                                                            .disabledText,
+                                                  elevation: canSubmit ? 2 : 0,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          20,
                                                         ),
-                                                      ),
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: isLandscape
+                                                        ? 12
+                                                        : 20,
+                                                  ),
+                                                ),
+                                                child: FittedBox(
+                                                  child: Text(
+                                                    localizations
+                                                        .groupNamjapSubmitCount(
+                                                          formatNumberLocalized(
+                                                            japProvider
+                                                                .totalCount,
+                                                            locale,
+                                                            pad: false,
+                                                          ),
+                                                        ),
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                          if (event.status == 'ongoing' ||
-                                              event.status == 'enrolling') ...[
-                                            const SizedBox(height: 12),
-                                            ManualJapTab(
-                                              compact: true,
-                                              enabled: isJoined && isOngoing,
-                                            ),
+                                            if (event.status == 'ongoing' ||
+                                                event.status ==
+                                                    'enrolling') ...[
+                                              const SizedBox(height: 12),
+                                              ManualJapTab(
+                                                compact: true,
+                                                enabled: isJoined && isOngoing,
+                                              ),
+                                            ],
                                           ],
-                                        ],
-                                      );
-                                    },
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
                 ),
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -456,7 +533,6 @@ class _GroupNamjapDetailScreenState extends State<GroupNamjapDetailScreen> {
     String locale,
     bool isLandscape,
   ) {
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       child: Row(
