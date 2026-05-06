@@ -11,18 +11,18 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
-class ParayanCoordinationDashboard extends StatefulWidget {
+class AdminParayanCoordinationDashboardScreen extends StatefulWidget {
   final AdminUser? adminUser;
 
-  const ParayanCoordinationDashboard({super.key, this.adminUser});
+  const AdminParayanCoordinationDashboardScreen({super.key, this.adminUser});
 
   @override
-  State<ParayanCoordinationDashboard> createState() =>
-      _ParayanCoordinationDashboardState();
+  State<AdminParayanCoordinationDashboardScreen> createState() =>
+      _AdminParayanCoordinationDashboardScreenState();
 }
 
-class _ParayanCoordinationDashboardState
-    extends State<ParayanCoordinationDashboard> {
+class _AdminParayanCoordinationDashboardScreenState
+    extends State<AdminParayanCoordinationDashboardScreen> {
   final ParayanService _parayanService = ParayanService();
   late Stream<List<ParayanEvent>> _eventsStream;
 
@@ -393,7 +393,7 @@ class _OngoingCard extends StatelessWidget {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => ParayanAdminDetailScreen(event: event),
+              builder: (_) => AdminParayanDetailScreen(event: event),
             ),
           ),
           borderRadius: BorderRadius.circular(12),
@@ -476,7 +476,7 @@ class _UpcomingCard extends StatelessWidget {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => ParayanAdminDetailScreen(event: event),
+              builder: (_) => AdminParayanDetailScreen(event: event),
             ),
           ),
           borderRadius: BorderRadius.circular(12),

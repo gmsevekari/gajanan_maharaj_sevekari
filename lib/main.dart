@@ -46,19 +46,19 @@ import 'package:gajanan_maharaj_sevekari/jap_mala/namjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/individual_namjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/group_namjap_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/group_namjap_detail_screen.dart';
-import 'package:gajanan_maharaj_sevekari/admin/add_group_admin_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_add_group_admin_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_login_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_dashboard_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_temple_notifications_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_typo_reports_screen.dart';
-import 'package:gajanan_maharaj_sevekari/admin/parayan_coordination_dashboard.dart';
-import 'package:gajanan_maharaj_sevekari/admin/manage_group_admins_screen.dart';
-import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
-import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_list_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_coordination_dashboard_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_manage_group_admins_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_gajanan_maharaj_group_screen.dart';
-import 'package:gajanan_maharaj_sevekari/admin/create_parayan_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_create_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_dashboard.dart';
-import 'package:gajanan_maharaj_sevekari/admin/group_namjap/create_group_namjap_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_create_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/user_notifications_screen.dart';
@@ -385,12 +385,12 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminParayanCoordination: (context) {
                   final adminUser =
                       ModalRoute.of(context)?.settings.arguments as AdminUser?;
-                  return ParayanCoordinationDashboard(adminUser: adminUser);
+                  return AdminParayanCoordinationDashboardScreen(adminUser: adminUser);
                 },
                 Routes.adminCreateParayan: (context) {
                   final adminUser =
                       ModalRoute.of(context)?.settings.arguments as AdminUser?;
-                  return CreateParayanScreen(adminUser: adminUser);
+                  return AdminParayanCreateScreen(adminUser: adminUser);
                 },
                 Routes.adminGajananMaharajGroups: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
@@ -443,7 +443,7 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminCreateGroupNamjap: (context) {
                   final args = ModalRoute.of(context)!.settings.arguments;
                   if (args is AdminUser) {
-                    return CreateGroupNamjapScreen(adminUser: args);
+                    return AdminGroupNamjapCreateScreen(adminUser: args);
                   }
                   return const Scaffold(
                     body: Center(child: Text('Error: Missing AdminUser arguments')),
@@ -452,18 +452,18 @@ class _MyAppState extends State<MyApp> {
                 Routes.onboarding: (context) => const GroupSelectionScreen(),
                 Routes.adminManageGroupAdmins: (context) {
                   final admin = ModalRoute.of(context)!.settings.arguments as AdminUser;
-                  return ManageGroupAdminsScreen(currentAdmin: admin);
+                  return AdminManageGroupAdminsScreen(currentAdmin: admin);
                 },
                 Routes.adminAddGroupAdmin: (context) {
                   final args = ModalRoute.of(context)!.settings.arguments;
                   if (args is Map<String, dynamic>) {
-                    return AddGroupAdminScreen(
+                    return AdminAddGroupAdminScreen(
                       currentAdmin: args['currentAdmin'] as AdminUser,
                       adminToEdit: args['adminToEdit'] as AdminUser?,
                     );
                   }
                   final admin = args as AdminUser;
-                  return AddGroupAdminScreen(currentAdmin: admin);
+                  return AdminAddGroupAdminScreen(currentAdmin: admin);
                 },
               },
               onGenerateRoute: (settings) {
@@ -551,12 +551,12 @@ class _MyAppState extends State<MyApp> {
                     final event = settings.arguments as ParayanEvent;
                     return MaterialPageRoute(
                       builder: (context) =>
-                          ParayanAdminDetailScreen(event: event),
+                          AdminParayanDetailScreen(event: event),
                     );
                   case Routes.adminParayanList:
                     final args = settings.arguments as Map<String, dynamic>;
                     return MaterialPageRoute(
-                      builder: (context) => ParayanAdminListScreen(
+                      builder: (context) => AdminParayanListScreen(
                         title: args['title'] as String,
                         statusFilter: args['statusFilter'] as String,
                         groupId: args['groupId'] as String?,

@@ -25,17 +25,17 @@ import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 
 enum _ParticipantFilter { all, completed, pending, unclaimed }
 
-class ParayanAdminDetailScreen extends StatefulWidget {
+class AdminParayanDetailScreen extends StatefulWidget {
   final ParayanEvent event;
 
-  const ParayanAdminDetailScreen({super.key, required this.event});
+  const AdminParayanDetailScreen({super.key, required this.event});
 
   @override
-  State<ParayanAdminDetailScreen> createState() =>
-      _ParayanAdminDetailScreenState();
+  State<AdminParayanDetailScreen> createState() =>
+      _AdminParayanDetailScreenState();
 }
 
-class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
+class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ParayanService _parayanService = ParayanService();
@@ -234,7 +234,7 @@ class _ParayanAdminDetailScreenState extends State<ParayanAdminDetailScreen>
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          ParayanAdminAddParticipantsScreen(event: event),
+                          AdminParayanAddParticipantsScreen(event: event),
                     ),
                   ),
                   icon: const Icon(Icons.group_add),

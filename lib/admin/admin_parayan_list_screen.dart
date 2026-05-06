@@ -10,12 +10,12 @@ import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 
-class ParayanAdminListScreen extends StatefulWidget {
+class AdminParayanListScreen extends StatefulWidget {
   final String title;
   final String statusFilter; // 'completed' or 'upcoming'
   final String? groupId;
 
-  const ParayanAdminListScreen({
+  const AdminParayanListScreen({
     super.key,
     required this.title,
     required this.statusFilter,
@@ -23,10 +23,10 @@ class ParayanAdminListScreen extends StatefulWidget {
   });
 
   @override
-  State<ParayanAdminListScreen> createState() => _ParayanAdminListScreenState();
+  State<AdminParayanListScreen> createState() => _AdminParayanListScreenState();
 }
 
-class _ParayanAdminListScreenState extends State<ParayanAdminListScreen> {
+class _AdminParayanListScreenState extends State<AdminParayanListScreen> {
   final ParayanService _parayanService = ParayanService();
   late Stream<List<ParayanEvent>> _eventsStream;
 
@@ -158,7 +158,7 @@ class _AdminEventCard extends StatelessWidget {
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ParayanAdminDetailScreen(event: event),
+            builder: (_) => AdminParayanDetailScreen(event: event),
           ),
         ),
         borderRadius: BorderRadius.circular(12),

@@ -4,7 +4,7 @@ import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_d
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_list_screen.dart';
-import 'package:gajanan_maharaj_sevekari/admin/group_namjap/create_group_namjap_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_create_screen.dart';
 
 void main() {
   const testAdmin = AdminUser(
@@ -13,11 +13,11 @@ void main() {
   );
 
   group('Admin Group Namjap UI Integrity', () {
-    testWidgets('CreateGroupNamjapScreen is structurally sound', (
+    testWidgets('AdminGroupNamjapCreateScreen is structurally sound', (
       WidgetTester tester,
     ) async {
       expect(
-        const CreateGroupNamjapScreen(adminUser: testAdmin),
+        const AdminGroupNamjapCreateScreen(adminUser: testAdmin),
         isA<StatefulWidget>(),
       );
     });

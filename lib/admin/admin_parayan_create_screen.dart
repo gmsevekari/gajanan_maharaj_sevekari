@@ -12,16 +12,16 @@ import 'package:intl/intl.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:uuid/uuid.dart';
 
-class CreateParayanScreen extends StatefulWidget {
+class AdminParayanCreateScreen extends StatefulWidget {
   final AdminUser? adminUser;
 
-  const CreateParayanScreen({super.key, this.adminUser});
+  const AdminParayanCreateScreen({super.key, this.adminUser});
 
   @override
-  State<CreateParayanScreen> createState() => _CreateParayanScreenState();
+  State<AdminParayanCreateScreen> createState() => _AdminParayanCreateScreenState();
 }
 
-class _CreateParayanScreenState extends State<CreateParayanScreen> {
+class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
   final _formKey = GlobalKey<FormState>();
   final _parayanService = ParayanService();
 
@@ -240,7 +240,7 @@ class _CreateParayanScreenState extends State<CreateParayanScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => ParayanAdminDetailScreen(event: event),
+          builder: (context) => AdminParayanDetailScreen(event: event),
         ),
       );
 

@@ -9,21 +9,21 @@ import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 
-class CreateGroupNamjapScreen extends StatefulWidget {
+class AdminGroupNamjapCreateScreen extends StatefulWidget {
   final AdminUser adminUser;
   final FirebaseFirestore? firestore;
-  const CreateGroupNamjapScreen({
+  const AdminGroupNamjapCreateScreen({
     super.key,
     required this.adminUser,
     this.firestore,
   });
 
   @override
-  State<CreateGroupNamjapScreen> createState() =>
-      _CreateGroupNamjapScreenState();
+  State<AdminGroupNamjapCreateScreen> createState() =>
+      _AdminGroupNamjapCreateScreenState();
 }
 
-class _CreateGroupNamjapScreenState extends State<CreateGroupNamjapScreen> {
+class _AdminGroupNamjapCreateScreenState extends State<AdminGroupNamjapCreateScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameEnController = TextEditingController();
   final _nameMrController = TextEditingController();

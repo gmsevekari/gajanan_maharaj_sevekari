@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:gajanan_maharaj_sevekari/admin/manage_group_admins_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_manage_group_admins_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_management_service.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
@@ -48,7 +48,7 @@ void main() {
         theme: AppTheme.lightTheme,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: ManageGroupAdminsScreen(
+        home: AdminManageGroupAdminsScreen(
           currentAdmin: admin,
           managementService: mockService,
         ),
@@ -56,7 +56,7 @@ void main() {
     );
   }
 
-  group('ManageGroupAdminsScreen Tests', () {
+  group('AdminManageGroupAdminsScreen Tests', () {
     final groupAdmin = AdminUser(
       email: 'group@test.com',
       roles: ['group_admin'],
@@ -196,7 +196,7 @@ void main() {
                 return const Scaffold(body: Text('Add Admin Screen'));
               },
             },
-            home: ManageGroupAdminsScreen(
+            home: AdminManageGroupAdminsScreen(
               currentAdmin: groupAdmin,
               managementService: mockService,
             ),
@@ -257,7 +257,7 @@ void main() {
               Routes.home: (context) =>
                   const Scaffold(body: Text('Home Screen')),
             },
-            home: ManageGroupAdminsScreen(
+            home: AdminManageGroupAdminsScreen(
               currentAdmin: groupAdmin,
               managementService: mockService,
             ),
@@ -296,7 +296,7 @@ void main() {
               Routes.settings: (context) =>
                   const Scaffold(body: Text('Settings Screen')),
             },
-            home: ManageGroupAdminsScreen(
+            home: AdminManageGroupAdminsScreen(
               currentAdmin: groupAdmin,
               managementService: mockService,
             ),
@@ -336,7 +336,7 @@ void main() {
               Routes.adminAddGroupAdmin: (context) =>
                   const Scaffold(body: Text('Add Admin Screen')),
             },
-            home: ManageGroupAdminsScreen(
+            home: AdminManageGroupAdminsScreen(
               currentAdmin: groupAdmin,
               managementService: mockService,
             ),

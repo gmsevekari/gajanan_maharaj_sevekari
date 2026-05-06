@@ -10,12 +10,12 @@ import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 
-class AddGroupAdminScreen extends StatefulWidget {
+class AdminAddGroupAdminScreen extends StatefulWidget {
   final AdminUser currentAdmin;
   final AdminUser? adminToEdit;
   final AdminManagementService? managementService;
 
-  const AddGroupAdminScreen({
+  const AdminAddGroupAdminScreen({
     super.key,
     required this.currentAdmin,
     this.adminToEdit,
@@ -23,10 +23,10 @@ class AddGroupAdminScreen extends StatefulWidget {
   });
 
   @override
-  State<AddGroupAdminScreen> createState() => _AddGroupAdminScreenState();
+  State<AdminAddGroupAdminScreen> createState() => _AdminAddGroupAdminScreenState();
 }
 
-class _AddGroupAdminScreenState extends State<AddGroupAdminScreen> {
+class _AdminAddGroupAdminScreenState extends State<AdminAddGroupAdminScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final Set<String> _selectedRoles = {};

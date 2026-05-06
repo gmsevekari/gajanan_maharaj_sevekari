@@ -4,14 +4,14 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 
-class ParayanAdminAddParticipantsScreen extends StatefulWidget {
+class AdminParayanAddParticipantsScreen extends StatefulWidget {
   final ParayanEvent event;
 
-  const ParayanAdminAddParticipantsScreen({super.key, required this.event});
+  const AdminParayanAddParticipantsScreen({super.key, required this.event});
 
   @override
-  State<ParayanAdminAddParticipantsScreen> createState() =>
-      _ParayanAdminAddParticipantsScreenState();
+  State<AdminParayanAddParticipantsScreen> createState() =>
+      _AdminParayanAddParticipantsScreenState();
 }
 
 class _GroupData {
@@ -20,8 +20,8 @@ class _GroupData {
   String selectedCountryCode = '+1';
 }
 
-class _ParayanAdminAddParticipantsScreenState
-    extends State<ParayanAdminAddParticipantsScreen> {
+class _AdminParayanAddParticipantsScreenState
+    extends State<AdminParayanAddParticipantsScreen> {
   final _formKey = GlobalKey<FormState>();
   final List<_GroupData> _groups = [_GroupData()];
   final ParayanService _parayanService = ParayanService();

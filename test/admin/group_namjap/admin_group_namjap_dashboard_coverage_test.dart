@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_dashboard.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_list_screen.dart';
-import 'package:gajanan_maharaj_sevekari/admin/group_namjap/create_group_namjap_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_create_screen.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
@@ -347,12 +347,12 @@ void main() {
     });
   });
 
-  group('CreateGroupNamjapScreen Coverage', () {
+  group('AdminGroupNamjapCreateScreen Coverage', () {
     testWidgets('successful creation', (tester) async {
       setLargeScreen(tester);
       await tester.pumpWidget(
         createWidget(
-          CreateGroupNamjapScreen(adminUser: adminUser, firestore: firestore),
+          AdminGroupNamjapCreateScreen(adminUser: adminUser, firestore: firestore),
         ),
       );
 
@@ -441,7 +441,7 @@ void main() {
 
       await tester.pumpWidget(
         createWidget(
-          CreateGroupNamjapScreen(
+          AdminGroupNamjapCreateScreen(
             adminUser: adminUser,
             firestore: mockFirestore,
           ),

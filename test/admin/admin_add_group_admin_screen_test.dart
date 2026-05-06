@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
-import 'package:gajanan_maharaj_sevekari/admin/add_group_admin_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_add_group_admin_screen.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
@@ -78,7 +78,7 @@ void main() {
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => AddGroupAdminScreen(
+                  builder: (_) => AdminAddGroupAdminScreen(
                     currentAdmin: admin,
                     managementService: mockAdminManagementService,
                   ),
@@ -118,7 +118,7 @@ void main() {
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => AddGroupAdminScreen(
+                  builder: (_) => AdminAddGroupAdminScreen(
                     currentAdmin: currentAdmin,
                     adminToEdit: adminToEdit,
                     managementService: mockAdminManagementService,
@@ -133,7 +133,7 @@ void main() {
     );
   }
 
-  group('AddGroupAdminScreen - Form Implementation', () {
+  group('AdminAddGroupAdminScreen - Form Implementation', () {
     testWidgets('renders all form fields for super_admin', (tester) async {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
       await tester.pumpWidget(createTestWidget(admin));
@@ -376,7 +376,7 @@ void main() {
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => AddGroupAdminScreen(
+                      builder: (_) => AdminAddGroupAdminScreen(
                         currentAdmin: admin,
                         managementService: mockAdminManagementService,
                       ),
@@ -497,7 +497,7 @@ void main() {
     });
   });
 
-  group('AddGroupAdminScreen - Edit Mode', () {
+  group('AdminAddGroupAdminScreen - Edit Mode', () {
     testWidgets('renders pre-filled fields and locks email', (tester) async {
       final currentAdmin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
       final adminToEdit = AdminUser(

@@ -6,7 +6,7 @@ import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_dashboard.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_detail_screen.dart';
-import 'package:gajanan_maharaj_sevekari/admin/group_namjap/create_group_namjap_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_create_screen.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
@@ -111,13 +111,13 @@ void main() {
     });
   });
 
-  group('CreateGroupNamjapScreen', () {
+  group('AdminGroupNamjapCreateScreen', () {
     testWidgets('submits form with correct groupId', (tester) async {
       final fakeFirestore = FakeFirebaseFirestore();
 
       await tester.pumpWidget(
         wrap(
-          CreateGroupNamjapScreen(
+          AdminGroupNamjapCreateScreen(
             adminUser: groupAdmin,
             firestore: fakeFirestore,
           ),

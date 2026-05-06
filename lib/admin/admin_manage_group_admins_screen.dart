@@ -7,22 +7,22 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
-class ManageGroupAdminsScreen extends StatefulWidget {
+class AdminManageGroupAdminsScreen extends StatefulWidget {
   final AdminUser currentAdmin;
   final AdminManagementService? managementService;
 
-  const ManageGroupAdminsScreen({
+  const AdminManageGroupAdminsScreen({
     super.key,
     required this.currentAdmin,
     this.managementService,
   });
 
   @override
-  State<ManageGroupAdminsScreen> createState() =>
-      _ManageGroupAdminsScreenState();
+  State<AdminManageGroupAdminsScreen> createState() =>
+      _AdminManageGroupAdminsScreenState();
 }
 
-class _ManageGroupAdminsScreenState extends State<ManageGroupAdminsScreen> {
+class _AdminManageGroupAdminsScreenState extends State<AdminManageGroupAdminsScreen> {
   late final AdminManagementService _managementService;
 
   @override
