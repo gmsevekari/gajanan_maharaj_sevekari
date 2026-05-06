@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
-import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/utils/parayan_extensions.dart';

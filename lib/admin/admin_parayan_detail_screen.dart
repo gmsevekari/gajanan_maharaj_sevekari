@@ -15,7 +15,7 @@ import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
-import 'package:gajanan_maharaj_sevekari/admin/parayan_admin_add_participants_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_add_participants_screen.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
