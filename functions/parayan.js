@@ -78,6 +78,10 @@ exports.allocateParayanAdhyays = onCall(async (request) => {
     }
 
     const eventData = eventDoc.data();
+    if (eventData.groupId === "gajanan_gunjan") {
+      logger.info(`Skipping cloud allocation for Gunjan event: ${eventId}`);
+      return {success: true, message: "Manual allocation expected for Gunjan."};
+    }
     const type = eventData.type;
 
     const participantsRef = eventRef.collection("participants");

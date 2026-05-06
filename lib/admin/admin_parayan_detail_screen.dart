@@ -111,7 +111,7 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
     );
 
     try {
-      if (newStatus == 'allocated') {
+      if (newStatus == 'allocated' && event.groupId != GroupConstants.gunjan) {
         // Trigger cloud-based allocation
         await _parayanService.allocateAdhyays(event.id);
       } else {

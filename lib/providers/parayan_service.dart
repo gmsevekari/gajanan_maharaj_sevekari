@@ -8,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.da
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
 import 'package:flutter/foundation.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 
 class ParayanService {
   final FirebaseFirestore _db;
@@ -35,7 +36,7 @@ class ParayanService {
     await _eventsRef.doc(event.id).update({'status': newStatus});
 
     // If status changed to allocated, perform batch adhyay allocation
-    if (newStatus == 'allocated') {
+    if (newStatus == 'allocated' && event.groupId != GroupConstants.gunjan) {
       await allocateAdhyays(event.id);
     } else if (newStatus == 'completed') {
       // Unsubscribe the current (admin) device as well
