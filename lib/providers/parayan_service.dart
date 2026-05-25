@@ -400,4 +400,52 @@ class ParayanService {
       rethrow;
     }
   }
+
+  /// Fetches all parayan events for the Gunjan group, sorted by startDate descending.
+  /// Returns a one-shot Future (not a Stream) for use in dropdown population.
+  Future<List<ParayanEvent>> getGunjanEvents() async {
+    final snapshot = await _eventsRef
+        .where('groupId', isEqualTo: GroupConstants.gunjan)
+        .get();
+    final events = snapshot.docs
+        .map((doc) => ParayanEvent.fromFirestore(doc))
+        .toList()
+      ..sort((a, b) => b.startDate.compareTo(a.startDate));
+    return events;
+  }
+
+  /// Fetches all participants for a given event as a one-shot Future.
+  Future<List<ParayanMember>> getParticipantsOnce(String eventId) async {
+    final snapshot = await _eventsRef
+        .doc(eventId)
+        .collection('participants')
+        .orderBy('globalIndex')
+        .get();
+    return snapshot.docs
+        .map((doc) => ParayanMember.fromMap(doc.data()['name'] ?? '', {
+              ...doc.data(),
+              'id': doc.id,
+            }))
+        .toList();
+  }
+
+  /// Creates a new parayan event and all its participants in a single Firestore batch.
+  Future<void> createEventWithParticipants({
+    required ParayanEvent event,
+    required List<Map<String, dynamic>> participants,
+  }) async {
+    final batch = _db.batch();
+
+    // Create event document
+    batch.set(_eventsRef.doc(event.id), event.toFirestore(), null);
+
+    // Create participant documents
+    final participantsRef = _eventsRef.doc(event.id).collection('participants');
+    for (final pData in participants) {
+      final docId = pData.remove('docId') as String;
+      batch.set(participantsRef.doc(docId), pData, null);
+    }
+
+    await batch.commit();
+  }
 }
