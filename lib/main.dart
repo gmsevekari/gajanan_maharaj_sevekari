@@ -57,6 +57,7 @@ import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_detail_screen.dart'
 import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_gajanan_maharaj_group_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_create_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_create_with_allocation_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_dashboard.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_create_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_detail_screen.dart';
@@ -391,6 +392,11 @@ class _MyAppState extends State<MyApp> {
                   final adminUser =
                       ModalRoute.of(context)?.settings.arguments as AdminUser?;
                   return AdminParayanCreateScreen(adminUser: adminUser);
+                },
+                Routes.adminCreateParayanWithAllocation: (context) {
+                  final adminUser =
+                      ModalRoute.of(context)?.settings.arguments as AdminUser?;
+                  return AdminParayanCreateWithAllocationScreen(adminUser: adminUser);
                 },
                 Routes.adminGajananMaharajGroups: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;

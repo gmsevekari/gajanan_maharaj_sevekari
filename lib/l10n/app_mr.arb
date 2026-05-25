@@ -691,5 +691,10 @@
   "updatingStatus": "स्थिती अपडेट होत आहे...",
   "discardUnsavedCountTitle": "जतन न केलेली संख्या",
   "discardUnsavedCountMessage": "तुमची काही नामजप संख्या जतन केलेली नाही. तुम्हाला ती रद्द करून बाहेर पडायचे आहे का?",
-  "discardLabel": "रद्द करा"
+  "discardLabel": "रद्द करा",
+  "createParayanWithAllocation": "अलोकेशनसह पारायण तयार करा",
+  "selectLastParayan": "मागील पारायण निवडा",
+  "lastParayanLabel": "मागील पारायण",
+  "createWithAllocationButton": "तयार करा आणि अलोकेट करा",
+  "duplicateDateError": "या तारखेसाठी पारायण आधीच अस्तित्वात आहे."
 }

@@ -691,5 +691,10 @@
   "updatingStatus": "Updating status...",
   "discardUnsavedCountTitle": "Unsaved Count",
   "discardUnsavedCountMessage": "You have unsubmitted jap count. Do you want to discard it and leave?",
-  "discardLabel": "Discard"
+  "discardLabel": "Discard",
+  "createParayanWithAllocation": "Create Parayan with Allocation",
+  "selectLastParayan": "Select Last Parayan",
+  "lastParayanLabel": "Last Parayan",
+  "createWithAllocationButton": "Create & Allocate",
+  "duplicateDateError": "A Parayan event already exists for this date."
 }

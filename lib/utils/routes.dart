@@ -49,4 +49,5 @@ class Routes {
   static const String onboarding = '/onboarding';
   static const String adminManageGroupAdmins = '/admin_manage_group_admins';
   static const String adminAddGroupAdmin = '/admin_add_group_admin';
+  static const String adminCreateParayanWithAllocation = '/admin_create_parayan_with_allocation';
 }
