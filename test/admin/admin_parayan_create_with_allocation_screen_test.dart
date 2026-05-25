@@ -1,0 +1,169 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
+import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
+import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
+import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_create_with_allocation_screen.dart';
+import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
+import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
+import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
+import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
+import '../mocks.dart';
+
+void main() {
+  late MockParayanService mockService;
+  late MockFestivalProvider mockFestivalProvider;
+  late MockThemeProvider mockThemeProvider;
+  late MockFontProvider mockFontProvider;
+  late MockAppConfigProvider mockAppConfigProvider;
+
+  setUp(() {
+    mockService = MockParayanService();
+    mockFestivalProvider = MockFestivalProvider();
+    mockThemeProvider = MockThemeProvider();
+    mockFontProvider = MockFontProvider();
+    mockAppConfigProvider = MockAppConfigProvider();
+
+    registerFallbackValue(
+      ParayanEvent(
+        id: 'e1',
+        titleEn: 'T',
+        titleMr: 'T',
+        descriptionEn: 'D',
+        descriptionMr: 'D',
+        type: ParayanType.oneDay,
+        startDate: DateTime.now(),
+        endDate: DateTime.now(),
+        createdAt: DateTime.now(),
+        reminderTimes: [],
+        groupId: GroupConstants.gunjan,
+        status: 'upcoming',
+      ),
+    );
+
+    when(() => mockFestivalProvider.activeFestival).thenReturn(null);
+    when(() => mockThemeProvider.themePreset).thenReturn(ThemePreset.tulsi);
+    when(() => mockThemeProvider.themeMode).thenReturn(ThemeMode.light);
+    when(() => mockThemeProvider.customColor).thenReturn(null);
+
+    final mockConfig = AppConfig.fromJson({
+      'appName': {'en': 'Test', 'mr': 'Test'},
+      'latestVersion': '1.0.0',
+      'forceUpdate': 'false',
+      'gajanan_maharaj_groups': [
+        {
+          'id': GroupConstants.gunjan,
+          'name_en': 'Gunjan',
+          'name_mr': 'गुंजन',
+          'default_country_code': '+91'
+        }
+      ]
+    });
+    when(() => mockAppConfigProvider.appConfig).thenReturn(mockConfig);
+
+    // Default mock response: empty list of gunjan events
+    when(() => mockService.getGunjanEvents()).thenAnswer((_) async => <ParayanEvent>[]);
+
+    SharedPreferences.setMockInitialValues({});
+  });
+
+  Widget createTestWidget(Widget child) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<FestivalProvider>.value(
+          value: mockFestivalProvider,
+        ),
+        ChangeNotifierProvider<ThemeProvider>.value(value: mockThemeProvider),
+        ChangeNotifierProvider<FontProvider>.value(value: mockFontProvider),
+        ChangeNotifierProvider<AppConfigProvider>.value(
+          value: mockAppConfigProvider,
+        ),
+      ],
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: child,
+      ),
+    );
+  }
+
+  group('AdminParayanCreateWithAllocationScreen Tests', () {
+    testWidgets('shows loading and renders empty state', (tester) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          AdminParayanCreateWithAllocationScreen(
+            adminUser: const AdminUser(
+              email: 'admin@test.com',
+              groupId: GroupConstants.gunjan,
+              roles: ['parayan_coordinator'],
+            ),
+            parayanService: mockService,
+          ),
+        ),
+      );
+
+      // Verify progress indicator is shown initially
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      await tester.pumpAndSettle();
+
+      // Verify dropdown message when empty
+      expect(
+        find.text('No previous Gunjan parayans found to copy from.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('pre-populates dropdown and fields when events are loaded', (
+      tester,
+    ) async {
+      final lastEvent = ParayanEvent(
+        id: 'gunjan_last',
+        titleEn: 'Gunjan Last Event',
+        titleMr: 'गुंजन मागील कार्यक्रम',
+        descriptionEn: 'Last Desc EN',
+        descriptionMr: 'Last Desc MR',
+        type: ParayanType.threeDay,
+        startDate: DateTime.now().subtract(const Duration(days: 7)),
+        endDate: DateTime.now().subtract(const Duration(days: 5)),
+        createdAt: DateTime.now().subtract(const Duration(days: 10)),
+        reminderTimes: [],
+        groupId: GroupConstants.gunjan,
+        status: 'completed',
+      );
+
+      when(() => mockService.getGunjanEvents()).thenAnswer((_) async => [lastEvent]);
+
+      await tester.pumpWidget(
+        createTestWidget(
+          AdminParayanCreateWithAllocationScreen(
+            adminUser: const AdminUser(
+              email: 'admin@test.com',
+              groupId: GroupConstants.gunjan,
+              roles: ['parayan_coordinator'],
+            ),
+            parayanService: mockService,
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Check description strings (labels)
+      expect(find.text('Last Desc EN'), findsOneWidget);
+      expect(find.text('Last Desc MR'), findsOneWidget);
+
+      // Check title fields are pre-populated
+      expect(find.widgetWithText(TextFormField, 'Gunjan Last Event'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'गुंजन मागील कार्यक्रम'), findsOneWidget);
+    });
+  });
+}

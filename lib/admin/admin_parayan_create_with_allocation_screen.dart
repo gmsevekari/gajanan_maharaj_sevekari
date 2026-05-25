@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_detail_screen.dart';
@@ -15,8 +16,13 @@ import 'package:uuid/uuid.dart';
 
 class AdminParayanCreateWithAllocationScreen extends StatefulWidget {
   final AdminUser? adminUser;
+  final ParayanService? parayanService;
 
-  const AdminParayanCreateWithAllocationScreen({super.key, this.adminUser});
+  const AdminParayanCreateWithAllocationScreen({
+    super.key,
+    this.adminUser,
+    this.parayanService,
+  });
 
   @override
   State<AdminParayanCreateWithAllocationScreen> createState() =>
@@ -26,7 +32,7 @@ class AdminParayanCreateWithAllocationScreen extends StatefulWidget {
 class _AdminParayanCreateWithAllocationScreenState
     extends State<AdminParayanCreateWithAllocationScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _parayanService = ParayanService();
+  late final ParayanService _parayanService;
 
   final _titleEnController = TextEditingController();
   final _titleMrController = TextEditingController();
@@ -47,6 +53,7 @@ class _AdminParayanCreateWithAllocationScreenState
   @override
   void initState() {
     super.initState();
+    _parayanService = widget.parayanService ?? ParayanService();
     _loadGunjanEvents();
   }
 
@@ -377,7 +384,7 @@ class _AdminParayanCreateWithAllocationScreenState
                       Text(
                         localizations.englishDetailsHeader,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          color: AppColors.saffron,
+                          color: theme.colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -419,7 +426,7 @@ class _AdminParayanCreateWithAllocationScreenState
                       Text(
                         localizations.marathiDetailsHeader,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          color: AppColors.saffron,
+                          color: theme.colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -484,7 +491,7 @@ class _AdminParayanCreateWithAllocationScreenState
                         child: ElevatedButton(
                           onPressed: _isLoading ? null : _submit,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.saffron,
+                            backgroundColor: theme.colorScheme.primary,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
