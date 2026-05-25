@@ -1868,4 +1868,19 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get discardLabel => 'रद्द करा';
+
+  @override
+  String get createParayanWithAllocation => 'अलोकेशनसह पारायण तयार करा';
+
+  @override
+  String get selectLastParayan => 'मागील पारायण निवडा';
+
+  @override
+  String get lastParayanLabel => 'मागील पारायण';
+
+  @override
+  String get createWithAllocationButton => 'तयार करा आणि अलोकेट करा';
+
+  @override
+  String get duplicateDateError => 'या तारखेसाठी पारायण आधीच अस्तित्वात आहे.';
 }

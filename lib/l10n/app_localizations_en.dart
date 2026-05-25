@@ -1864,6 +1864,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get discardLabel => 'Discard';
+
+  @override
+  String get createParayanWithAllocation => 'Create Parayan with Allocation';
+
+  @override
+  String get selectLastParayan => 'Select Last Parayan';
+
+  @override
+  String get lastParayanLabel => 'Last Parayan';
+
+  @override
+  String get createWithAllocationButton => 'Create & Allocate';
+
+  @override
+  String get duplicateDateError =>
+      'A Parayan event already exists for this date.';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

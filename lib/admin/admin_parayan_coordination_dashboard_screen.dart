@@ -242,25 +242,46 @@ class _AdminParayanCoordinationDashboardScreenState
               ],
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
               SliverToBoxAdapter(
-                child: Center(
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pushNamed(
-                      context,
-                      Routes.adminCreateParayan,
-                      arguments: widget.adminUser,
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => Navigator.pushNamed(
+                          context,
+                          Routes.adminCreateParayan,
+                          arguments: widget.adminUser,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: theme.colorScheme.onPrimary,
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: Text(localizations.createParayanTitle),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: Text(localizations.createParayanTitle),
+                      if (widget.adminUser?.groupId == 'gajanan_gunjan') ...[
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pushNamed(
+                            context,
+                            Routes.adminCreateParayanWithAllocation,
+                            arguments: widget.adminUser,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: theme.appColors.saffron,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: Text(localizations.createParayanWithAllocation),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),

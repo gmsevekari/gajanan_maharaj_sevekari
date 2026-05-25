@@ -3626,6 +3626,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Discard'**
   String get discardLabel;
+
+  /// No description provided for @createParayanWithAllocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Parayan with Allocation'**
+  String get createParayanWithAllocation;
+
+  /// No description provided for @selectLastParayan.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Last Parayan'**
+  String get selectLastParayan;
+
+  /// No description provided for @lastParayanLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Parayan'**
+  String get lastParayanLabel;
+
+  /// No description provided for @createWithAllocationButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Create & Allocate'**
+  String get createWithAllocationButton;
+
+  /// No description provided for @duplicateDateError.
+  ///
+  /// In en, this message translates to:
+  /// **'A Parayan event already exists for this date.'**
+  String get duplicateDateError;
 }
 
 class _AppLocalizationsDelegate
