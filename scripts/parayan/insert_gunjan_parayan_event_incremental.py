@@ -46,8 +46,8 @@ def get_next_adhyays(current_adhyays):
 def insert_incremental_event():
     # --- CONFIGURATION ---
     # Update these values for each new event creation
-    LAST_EVENT_ID = "gajanan_gunjan-2026-04-26-threeDay"  # The ID of the previous parayan
-    NEW_START_DATE_STR = "2026-05-24" # YYYY-MM-DD
+    LAST_EVENT_ID = "gajanan_gunjan-2026-05-12-threeDay"  # The ID of the previous parayan
+    NEW_START_DATE_STR = "2026-05-26" # YYYY-MM-DD
     # ---------------------
 
     collection_name = "parayan_events"
@@ -64,8 +64,8 @@ def insert_incremental_event():
     groupId = "gajanan_gunjan"
     event_type = "threeDay"
 
-    title_en = "Dashami Ekadashi and Dwadashi Parayan"
-    title_mr = "दशमी एकादशी आणि द्वादशी पारायण"
+    title_en = "No. 191 - Dashami Ekadashi and Dwadashi Parayan"
+    title_mr = "क्र. १९१ - दशमी एकादशी आणि द्वादशी पारायण"
 
     desc_en = "Parayan of Gajanan Vijay Granth on the occasion of Dashami Ekadashi and Dwadashi"
     desc_mr = "दशमी एकादशी आणि द्वादशीच्या प्रसंगी गजानन विजय ग्रंथाचे पारायण"
@@ -144,7 +144,7 @@ def insert_incremental_event():
         for p_data in new_participants_data:
             # Create a unique doc ID for the participant
             sanitized_name = p_data['name'].replace(" ", "_")
-            doc_id = f"AUTO_{p_data['phone']}_{sanitized_name}_{now_ts}"
+            doc_id = f"ADMIN_{p_data['phone']}_{sanitized_name}_{now_ts}"
             
             doc_ref = new_participants_ref.document(doc_id)
             batch.set(doc_ref, p_data)

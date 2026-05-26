@@ -271,7 +271,7 @@ class _AdminParayanCoordinationDashboardScreenState
                             arguments: widget.adminUser,
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: theme.appColors.saffron,
+                            backgroundColor: theme.colorScheme.primary,
                             foregroundColor: Colors.white,
                             minimumSize: const Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(
