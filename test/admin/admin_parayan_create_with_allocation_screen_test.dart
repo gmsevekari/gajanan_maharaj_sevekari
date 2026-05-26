@@ -63,14 +63,16 @@ void main() {
           'id': GroupConstants.gunjan,
           'name_en': 'Gunjan',
           'name_mr': 'गुंजन',
-          'default_country_code': '+91'
-        }
-      ]
+          'default_country_code': '+91',
+        },
+      ],
     });
     when(() => mockAppConfigProvider.appConfig).thenReturn(mockConfig);
 
     // Default mock response: empty list of gunjan events
-    when(() => mockService.getGunjanEvents()).thenAnswer((_) async => <ParayanEvent>[]);
+    when(
+      () => mockService.getGunjanEvents(),
+    ).thenAnswer((_) async => <ParayanEvent>[]);
 
     SharedPreferences.setMockInitialValues({});
   });
@@ -140,7 +142,9 @@ void main() {
         status: 'completed',
       );
 
-      when(() => mockService.getGunjanEvents()).thenAnswer((_) async => [lastEvent]);
+      when(
+        () => mockService.getGunjanEvents(),
+      ).thenAnswer((_) async => [lastEvent]);
 
       await tester.pumpWidget(
         createTestWidget(
@@ -162,8 +166,14 @@ void main() {
       expect(find.text('Last Desc MR'), findsOneWidget);
 
       // Check title fields are pre-populated
-      expect(find.widgetWithText(TextFormField, 'Gunjan Last Event'), findsOneWidget);
-      expect(find.widgetWithText(TextFormField, 'गुंजन मागील कार्यक्रम'), findsOneWidget);
+      expect(
+        find.widgetWithText(TextFormField, 'Gunjan Last Event'),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithText(TextFormField, 'गुंजन मागील कार्यक्रम'),
+        findsOneWidget,
+      );
     });
   });
 }

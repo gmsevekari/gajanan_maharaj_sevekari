@@ -29,8 +29,7 @@ class _AdminParayanCoordinationDashboardScreenState
   @override
   void initState() {
     super.initState();
-    _eventsStream =
-        _parayanService.getAllEvents(widget.adminUser!.groupId!);
+    _eventsStream = _parayanService.getAllEvents(widget.adminUser!.groupId!);
   }
 
   @override
@@ -122,9 +121,7 @@ class _AdminParayanCoordinationDashboardScreenState
           final activeCount = activeEvents.length;
 
           final completedEvents =
-              allEvents
-                  .where((e) => e.status == 'completed')
-                  .toList()
+              allEvents.where((e) => e.status == 'completed').toList()
                 ..sort((a, b) => b.endDate.compareTo(a.endDate));
 
           final completedCount = completedEvents.length;
@@ -172,7 +169,7 @@ class _AdminParayanCoordinationDashboardScreenState
                         Text(
                           localizations.noCompletedParayans,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.appColors.secondaryText,
+                            color: theme.appColors.secondaryText,
                           ),
                         ),
                       const SizedBox(height: 32),
@@ -278,7 +275,9 @@ class _AdminParayanCoordinationDashboardScreenState
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                          child: Text(localizations.createParayanWithAllocation),
+                          child: Text(
+                            localizations.createParayanWithAllocation,
+                          ),
                         ),
                       ],
                     ],
@@ -467,10 +466,7 @@ class _OngoingCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Icon(
-                  Icons.chevron_right,
-                  color: theme.appColors.divider,
-                ),
+                Icon(Icons.chevron_right, color: theme.appColors.divider),
               ],
             ),
           ),

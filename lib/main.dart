@@ -386,7 +386,9 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminParayanCoordination: (context) {
                   final adminUser =
                       ModalRoute.of(context)?.settings.arguments as AdminUser?;
-                  return AdminParayanCoordinationDashboardScreen(adminUser: adminUser);
+                  return AdminParayanCoordinationDashboardScreen(
+                    adminUser: adminUser,
+                  );
                 },
                 Routes.adminCreateParayan: (context) {
                   final adminUser =
@@ -396,7 +398,9 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminCreateParayanWithAllocation: (context) {
                   final adminUser =
                       ModalRoute.of(context)?.settings.arguments as AdminUser?;
-                  return AdminParayanCreateWithAllocationScreen(adminUser: adminUser);
+                  return AdminParayanCreateWithAllocationScreen(
+                    adminUser: adminUser,
+                  );
                 },
                 Routes.adminGajananMaharajGroups: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
@@ -410,7 +414,9 @@ class _MyAppState extends State<MyApp> {
                     return AdminGajananMaharajGroupScreen(adminUser: args);
                   }
                   return const Scaffold(
-                    body: Center(child: Text('Error: Missing AdminUser arguments')),
+                    body: Center(
+                      child: Text('Error: Missing AdminUser arguments'),
+                    ),
                   );
                 },
                 Routes.userNotifications: (context) =>
@@ -443,7 +449,9 @@ class _MyAppState extends State<MyApp> {
                     return AdminGroupNamjapDashboard(adminUser: args);
                   }
                   return const Scaffold(
-                    body: Center(child: Text('Error: Missing AdminUser arguments')),
+                    body: Center(
+                      child: Text('Error: Missing AdminUser arguments'),
+                    ),
                   );
                 },
                 Routes.adminCreateGroupNamjap: (context) {
@@ -452,12 +460,15 @@ class _MyAppState extends State<MyApp> {
                     return AdminGroupNamjapCreateScreen(adminUser: args);
                   }
                   return const Scaffold(
-                    body: Center(child: Text('Error: Missing AdminUser arguments')),
+                    body: Center(
+                      child: Text('Error: Missing AdminUser arguments'),
+                    ),
                   );
                 },
                 Routes.onboarding: (context) => const GroupSelectionScreen(),
                 Routes.adminManageGroupAdmins: (context) {
-                  final admin = ModalRoute.of(context)!.settings.arguments as AdminUser;
+                  final admin =
+                      ModalRoute.of(context)!.settings.arguments as AdminUser;
                   return AdminManageGroupAdminsScreen(currentAdmin: admin);
                 },
                 Routes.adminAddGroupAdmin: (context) {

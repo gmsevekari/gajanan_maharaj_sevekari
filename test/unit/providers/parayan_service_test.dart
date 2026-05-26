@@ -356,195 +356,191 @@ void main() {
       when(() => mockBatch.commit()).thenAnswer((_) async => {});
     });
 
-    test('getGunjanEvents returns only gunjan events sorted by startDate desc',
-        () async {
-      final qs = MockQuerySnapshot();
-      final doc1 = MockQueryDocumentSnapshot();
-      final doc2 = MockQueryDocumentSnapshot();
+    test(
+      'getGunjanEvents returns only gunjan events sorted by startDate desc',
+      () async {
+        final qs = MockQuerySnapshot();
+        final doc1 = MockQueryDocumentSnapshot();
+        final doc2 = MockQueryDocumentSnapshot();
 
-      final olderDate = DateTime(2025, 1, 1);
-      final newerDate = DateTime(2025, 6, 1);
+        final olderDate = DateTime(2025, 1, 1);
+        final newerDate = DateTime(2025, 6, 1);
 
-      when(() => mockEventsCollection.get()).thenAnswer((_) async => qs);
-      when(() => qs.docs).thenReturn([doc1, doc2]);
+        when(() => mockEventsCollection.get()).thenAnswer((_) async => qs);
+        when(() => qs.docs).thenReturn([doc1, doc2]);
 
-      when(() => doc1.id).thenReturn('e_old');
-      when(() => doc1.data()).thenReturn({
-        'title_en': 'Old',
-        'title_mr': 'Old',
-        'description_en': 'D',
-        'description_mr': 'D',
-        'type': 'oneDay',
-        'status': 'upcoming',
-        'groupId': GroupConstants.gunjan,
-        'startDate': Timestamp.fromDate(olderDate),
-        'endDate': Timestamp.fromDate(olderDate),
-        'createdAt': Timestamp.fromDate(olderDate),
-        'reminderTimes': [],
-      });
+        when(() => doc1.id).thenReturn('e_old');
+        when(() => doc1.data()).thenReturn({
+          'title_en': 'Old',
+          'title_mr': 'Old',
+          'description_en': 'D',
+          'description_mr': 'D',
+          'type': 'oneDay',
+          'status': 'upcoming',
+          'groupId': GroupConstants.gunjan,
+          'startDate': Timestamp.fromDate(olderDate),
+          'endDate': Timestamp.fromDate(olderDate),
+          'createdAt': Timestamp.fromDate(olderDate),
+          'reminderTimes': [],
+        });
 
-      when(() => doc2.id).thenReturn('e_new');
-      when(() => doc2.data()).thenReturn({
-        'title_en': 'New',
-        'title_mr': 'New',
-        'description_en': 'D',
-        'description_mr': 'D',
-        'type': 'oneDay',
-        'status': 'upcoming',
-        'groupId': GroupConstants.gunjan,
-        'startDate': Timestamp.fromDate(newerDate),
-        'endDate': Timestamp.fromDate(newerDate),
-        'createdAt': Timestamp.fromDate(newerDate),
-        'reminderTimes': [],
-      });
+        when(() => doc2.id).thenReturn('e_new');
+        when(() => doc2.data()).thenReturn({
+          'title_en': 'New',
+          'title_mr': 'New',
+          'description_en': 'D',
+          'description_mr': 'D',
+          'type': 'oneDay',
+          'status': 'upcoming',
+          'groupId': GroupConstants.gunjan,
+          'startDate': Timestamp.fromDate(newerDate),
+          'endDate': Timestamp.fromDate(newerDate),
+          'createdAt': Timestamp.fromDate(newerDate),
+          'reminderTimes': [],
+        });
 
-      final events = await service.getGunjanEvents();
+        final events = await service.getGunjanEvents();
 
-      expect(events, hasLength(2));
-      expect(events[0].id, 'e_new');
-      expect(events[1].id, 'e_old');
-    });
-
-    test('getGunjanEvents returns empty list when no gunjan events exist',
-        () async {
-      final qs = MockQuerySnapshot();
-      when(() => mockEventsCollection.get()).thenAnswer((_) async => qs);
-      when(() => qs.docs).thenReturn([]);
-
-      final events = await service.getGunjanEvents();
-
-      expect(events, isEmpty);
-    });
-
-    test('getParticipantsOnce returns all participants ordered by globalIndex',
-        () async {
-      final pqs = MockQuerySnapshot();
-      final pd1 = MockQueryDocumentSnapshot();
-      final pd2 = MockQueryDocumentSnapshot();
-
-      when(() => mockParticipantsCollection.get())
-          .thenAnswer((_) async => pqs);
-      when(() => pqs.docs).thenReturn([pd1, pd2]);
-
-      when(() => pd1.id).thenReturn('p1');
-      when(() => pd1.data()).thenReturn({
-        'name': 'Alice',
-        'globalIndex': 1,
-        'phone': '111',
-        'deviceId': 'd1',
-        'joinedAt': Timestamp.now(),
-        'assignedAdhyays': [1],
-      });
-
-      when(() => pd2.id).thenReturn('p2');
-      when(() => pd2.data()).thenReturn({
-        'name': 'Bob',
-        'globalIndex': 2,
-        'phone': '222',
-        'deviceId': 'd2',
-        'joinedAt': Timestamp.now(),
-        'assignedAdhyays': [2],
-      });
-
-      final participants = await service.getParticipantsOnce('e1');
-
-      expect(participants, hasLength(2));
-      expect(participants[0].name, 'Alice');
-      expect(participants[1].name, 'Bob');
-    });
-
-    test('getParticipantsOnce returns empty list for event with no participants',
-        () async {
-      final pqs = MockQuerySnapshot();
-      when(() => mockParticipantsCollection.get())
-          .thenAnswer((_) async => pqs);
-      when(() => pqs.docs).thenReturn([]);
-
-      final participants = await service.getParticipantsOnce('e1');
-
-      expect(participants, isEmpty);
-    });
+        expect(events, hasLength(2));
+        expect(events[0].id, 'e_new');
+        expect(events[1].id, 'e_old');
+      },
+    );
 
     test(
-        'createEventWithParticipants creates event and all participants atomically',
-        () async {
-      final event = ParayanEvent(
-        id: 'gunjan_1',
-        titleEn: 'Gunjan Parayan',
-        titleMr: 'गुंजन पारायण',
-        descriptionEn: 'D',
-        descriptionMr: 'D',
-        groupId: GroupConstants.gunjan,
-        type: ParayanType.oneDay,
-        status: 'allocated',
-        startDate: DateTime(2025, 6, 1),
-        endDate: DateTime(2025, 6, 1),
-        createdAt: DateTime(2025, 5, 1),
-        reminderTimes: [],
-      );
+      'getGunjanEvents returns empty list when no gunjan events exist',
+      () async {
+        final qs = MockQuerySnapshot();
+        when(() => mockEventsCollection.get()).thenAnswer((_) async => qs);
+        when(() => qs.docs).thenReturn([]);
 
-      final participants = [
-        {
-          'docId': 'p1',
+        final events = await service.getGunjanEvents();
+
+        expect(events, isEmpty);
+      },
+    );
+
+    test(
+      'getParticipantsOnce returns all participants ordered by globalIndex',
+      () async {
+        final pqs = MockQuerySnapshot();
+        final pd1 = MockQueryDocumentSnapshot();
+        final pd2 = MockQueryDocumentSnapshot();
+
+        when(
+          () => mockParticipantsCollection.get(),
+        ).thenAnswer((_) async => pqs);
+        when(() => pqs.docs).thenReturn([pd1, pd2]);
+
+        when(() => pd1.id).thenReturn('p1');
+        when(() => pd1.data()).thenReturn({
           'name': 'Alice',
           'globalIndex': 1,
           'phone': '111',
-        },
-        {
-          'docId': 'p2',
+          'deviceId': 'd1',
+          'joinedAt': Timestamp.now(),
+          'assignedAdhyays': [1],
+        });
+
+        when(() => pd2.id).thenReturn('p2');
+        when(() => pd2.data()).thenReturn({
           'name': 'Bob',
           'globalIndex': 2,
           'phone': '222',
-        },
-      ];
+          'deviceId': 'd2',
+          'joinedAt': Timestamp.now(),
+          'assignedAdhyays': [2],
+        });
 
-      await service.createEventWithParticipants(
-        event: event,
-        participants: participants,
-      );
+        final participants = await service.getParticipantsOnce('e1');
 
-      verify(() => mockBatch.set<Object?>(
-            any(),
-            any(),
-            any(),
-          )).called(1); // event (set<Object?>)
-      verify(() => mockBatch.set<Map<String, dynamic>>(
-            any(),
-            any(),
-            any(),
-          )).called(2); // participants (set<Map<String, dynamic>>)
-      verify(() => mockBatch.commit()).called(1);
-    });
+        expect(participants, hasLength(2));
+        expect(participants[0].name, 'Alice');
+        expect(participants[1].name, 'Bob');
+      },
+    );
 
     test(
-        'createEventWithParticipants with empty participants list creates only the event',
-        () async {
-      final event = ParayanEvent(
-        id: 'gunjan_2',
-        titleEn: 'Gunjan Parayan 2',
-        titleMr: 'गुंजन पारायण 2',
-        descriptionEn: 'D',
-        descriptionMr: 'D',
-        groupId: GroupConstants.gunjan,
-        type: ParayanType.oneDay,
-        status: 'allocated',
-        startDate: DateTime(2025, 7, 1),
-        endDate: DateTime(2025, 7, 1),
-        createdAt: DateTime(2025, 6, 1),
-        reminderTimes: [],
-      );
+      'getParticipantsOnce returns empty list for event with no participants',
+      () async {
+        final pqs = MockQuerySnapshot();
+        when(
+          () => mockParticipantsCollection.get(),
+        ).thenAnswer((_) async => pqs);
+        when(() => pqs.docs).thenReturn([]);
 
-      await service.createEventWithParticipants(
-        event: event,
-        participants: [],
-      );
+        final participants = await service.getParticipantsOnce('e1');
 
-      verify(() => mockBatch.set<Object?>(
-            any(),
-            any(),
-            any(),
-          )).called(1); // only event (set<Object?>)
-      verify(() => mockBatch.commit()).called(1);
-    });
+        expect(participants, isEmpty);
+      },
+    );
+
+    test(
+      'createEventWithParticipants creates event and all participants atomically',
+      () async {
+        final event = ParayanEvent(
+          id: 'gunjan_1',
+          titleEn: 'Gunjan Parayan',
+          titleMr: 'गुंजन पारायण',
+          descriptionEn: 'D',
+          descriptionMr: 'D',
+          groupId: GroupConstants.gunjan,
+          type: ParayanType.oneDay,
+          status: 'allocated',
+          startDate: DateTime(2025, 6, 1),
+          endDate: DateTime(2025, 6, 1),
+          createdAt: DateTime(2025, 5, 1),
+          reminderTimes: [],
+        );
+
+        final participants = [
+          {'docId': 'p1', 'name': 'Alice', 'globalIndex': 1, 'phone': '111'},
+          {'docId': 'p2', 'name': 'Bob', 'globalIndex': 2, 'phone': '222'},
+        ];
+
+        await service.createEventWithParticipants(
+          event: event,
+          participants: participants,
+        );
+
+        verify(
+          () => mockBatch.set<Object?>(any(), any(), any()),
+        ).called(1); // event (set<Object?>)
+        verify(
+          () => mockBatch.set<Map<String, dynamic>>(any(), any(), any()),
+        ).called(2); // participants (set<Map<String, dynamic>>)
+        verify(() => mockBatch.commit()).called(1);
+      },
+    );
+
+    test(
+      'createEventWithParticipants with empty participants list creates only the event',
+      () async {
+        final event = ParayanEvent(
+          id: 'gunjan_2',
+          titleEn: 'Gunjan Parayan 2',
+          titleMr: 'गुंजन पारायण 2',
+          descriptionEn: 'D',
+          descriptionMr: 'D',
+          groupId: GroupConstants.gunjan,
+          type: ParayanType.oneDay,
+          status: 'allocated',
+          startDate: DateTime(2025, 7, 1),
+          endDate: DateTime(2025, 7, 1),
+          createdAt: DateTime(2025, 6, 1),
+          reminderTimes: [],
+        );
+
+        await service.createEventWithParticipants(
+          event: event,
+          participants: [],
+        );
+
+        verify(
+          () => mockBatch.set<Object?>(any(), any(), any()),
+        ).called(1); // only event (set<Object?>)
+        verify(() => mockBatch.commit()).called(1);
+      },
+    );
   });
 }

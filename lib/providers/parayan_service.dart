@@ -407,10 +407,9 @@ class ParayanService {
     final snapshot = await _eventsRef
         .where('groupId', isEqualTo: GroupConstants.gunjan)
         .get();
-    final events = snapshot.docs
-        .map((doc) => ParayanEvent.fromFirestore(doc))
-        .toList()
-      ..sort((a, b) => b.startDate.compareTo(a.startDate));
+    final events =
+        snapshot.docs.map((doc) => ParayanEvent.fromFirestore(doc)).toList()
+          ..sort((a, b) => b.startDate.compareTo(a.startDate));
     return events;
   }
 
@@ -422,10 +421,12 @@ class ParayanService {
         .orderBy('globalIndex')
         .get();
     return snapshot.docs
-        .map((doc) => ParayanMember.fromMap(doc.data()['name'] ?? '', {
-              ...doc.data(),
-              'id': doc.id,
-            }))
+        .map(
+          (doc) => ParayanMember.fromMap(doc.data()['name'] ?? '', {
+            ...doc.data(),
+            'id': doc.id,
+          }),
+        )
         .toList();
   }
 

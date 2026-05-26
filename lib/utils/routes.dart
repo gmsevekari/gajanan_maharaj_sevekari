@@ -42,12 +42,14 @@ class Routes {
   static const String adminTypoReports = '/admin_typo_reports';
 
   // Admin Group Namjap Routes
-  static const String adminGroupNamjapDashboard = '/admin_group_namjap_dashboard';
+  static const String adminGroupNamjapDashboard =
+      '/admin_group_namjap_dashboard';
   static const String adminCreateGroupNamjap = '/admin_create_group_namjap';
   static const String adminGroupNamjapDetail = '/admin_group_namjap_detail';
   static const String adminGroupNamjapList = '/admin_group_namjap_list';
   static const String onboarding = '/onboarding';
   static const String adminManageGroupAdmins = '/admin_manage_group_admins';
   static const String adminAddGroupAdmin = '/admin_add_group_admin';
-  static const String adminCreateParayanWithAllocation = '/admin_create_parayan_with_allocation';
+  static const String adminCreateParayanWithAllocation =
+      '/admin_create_parayan_with_allocation';
 }

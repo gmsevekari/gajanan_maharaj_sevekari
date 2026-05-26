@@ -36,7 +36,7 @@ class _AdminParayanCreateWithAllocationScreenState
 
   final _titleEnController = TextEditingController();
   final _titleMrController = TextEditingController();
-  
+
   // descriptions are copied from last parayan and shown as label (not editable text field)
   String _descriptionEn = '';
   String _descriptionMr = '';
@@ -97,7 +97,7 @@ class _AdminParayanCreateWithAllocationScreenState
 
       // English: Copy from previous and show as a label
       _titleEnController.text = lastEvent.titleEn;
-      
+
       // Marathi: Copy from previous and show as a label
       _titleMrController.text = lastEvent.titleMr;
 
@@ -134,14 +134,7 @@ class _AdminParayanCreateWithAllocationScreenState
     );
     if (picked != null) {
       setState(() {
-        _startDate = DateTime(
-          picked.year,
-          picked.month,
-          picked.day,
-          0,
-          0,
-          0,
-        );
+        _startDate = DateTime(picked.year, picked.month, picked.day, 0, 0, 0);
         if (_selectedLastParayan?.type == ParayanType.threeDay) {
           final targetEnd = _startDate.add(const Duration(days: 2));
           _endDate = DateTime(
@@ -171,7 +164,9 @@ class _AdminParayanCreateWithAllocationScreenState
     if (_selectedLastParayan == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Please select the previous parayan to copy allocation from.'),
+          content: Text(
+            'Please select the previous parayan to copy allocation from.',
+          ),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -207,8 +202,9 @@ class _AdminParayanCreateWithAllocationScreenState
       }
 
       // Fetch participants of last event to rotate adhyays
-      final lastParticipants =
-          await _parayanService.getParticipantsOnce(_selectedLastParayan!.id);
+      final lastParticipants = await _parayanService.getParticipantsOnce(
+        _selectedLastParayan!.id,
+      );
 
       final List<Map<String, dynamic>> newParticipants = [];
       final nowTs = Timestamp.now();
@@ -216,13 +212,16 @@ class _AdminParayanCreateWithAllocationScreenState
       for (final lastParticipant in lastParticipants) {
         // compute next adhyays
         final nextAdhyays = getNextAdhyays(lastParticipant.assignedAdhyays);
-        
+
         final completionsMap = <String, bool>{};
         for (int i = 0; i < nextAdhyays.length; i++) {
           completionsMap[(i + 1).toString()] = false;
         }
 
-        final sanitizedName = lastParticipant.name.replaceAll(RegExp(r'\s+'), '_');
+        final sanitizedName = lastParticipant.name.replaceAll(
+          RegExp(r'\s+'),
+          '_',
+        );
         final phone = lastParticipant.phone ?? 'Unknown';
         final docId = "ADMIN_${phone}_${sanitizedName}_${nowTs.seconds}";
 
@@ -241,12 +240,21 @@ class _AdminParayanCreateWithAllocationScreenState
 
       // Construct start and end dates directly in UTC matching the India (Asia/Kolkata) timezone representation.
       // India is UTC+5:30. So 00:00:00 local time in India is 18:30:00 UTC of the previous day.
-      final startUtc = DateTime.utc(_startDate.year, _startDate.month, _startDate.day)
-          .subtract(const Duration(hours: 5, minutes: 30));
-      
+      final startUtc = DateTime.utc(
+        _startDate.year,
+        _startDate.month,
+        _startDate.day,
+      ).subtract(const Duration(hours: 5, minutes: 30));
+
       // 23:59:59 local time in India is 18:29:59 UTC.
-      final endUtc = DateTime.utc(_endDate.year, _endDate.month, _endDate.day, 23, 59, 59)
-          .subtract(const Duration(hours: 5, minutes: 30));
+      final endUtc = DateTime.utc(
+        _endDate.year,
+        _endDate.month,
+        _endDate.day,
+        23,
+        59,
+        59,
+      ).subtract(const Duration(hours: 5, minutes: 30));
 
       final List<String> formattedTimes = ["13:00", "16:00", "19:00"];
       final event = ParayanEvent(
@@ -328,9 +336,7 @@ class _AdminParayanCreateWithAllocationScreenState
     final isMarathi = Localizations.localeOf(context).useMarathiContent;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.createParayanWithAllocation),
-      ),
+      appBar: AppBar(title: Text(localizations.createParayanWithAllocation)),
       body: _fetchingLastParayan
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -361,7 +367,9 @@ class _AdminParayanCreateWithAllocationScreenState
                             _gunjanEvents.isEmpty
                                 ? Text(
                                     'No previous Gunjan parayans found to copy from.',
-                                    style: TextStyle(color: theme.colorScheme.error),
+                                    style: TextStyle(
+                                      color: theme.colorScheme.error,
+                                    ),
                                   )
                                 : DropdownButtonFormField<ParayanEvent>(
                                     value: _selectedLastParayan,
@@ -371,7 +379,9 @@ class _AdminParayanCreateWithAllocationScreenState
                                       border: const OutlineInputBorder(),
                                     ),
                                     items: _gunjanEvents.map((event) {
-                                      final dateStr = DateFormat.yMMMd().format(event.startDate);
+                                      final dateStr = DateFormat.yMMMd().format(
+                                        event.startDate,
+                                      );
                                       return DropdownMenuItem<ParayanEvent>(
                                         value: event,
                                         child: Text(
@@ -509,7 +519,14 @@ class _AdminParayanCreateWithAllocationScreenState
                             ),
                           ),
                           child: _isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
+                              ? const SizedBox(
+                                  width: 24.0,
+                                  height: 24.0,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
                               : Text(
                                   localizations.createWithAllocationButton,
                                   style: const TextStyle(
