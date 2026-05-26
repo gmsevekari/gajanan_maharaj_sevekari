@@ -356,6 +356,7 @@ class _AdminParayanCreateWithAllocationScreenState
                                   )
                                 : DropdownButtonFormField<ParayanEvent>(
                                     value: _selectedLastParayan,
+                                    isExpanded: true,
                                     decoration: InputDecoration(
                                       labelText: localizations.lastParayanLabel,
                                       border: const OutlineInputBorder(),
@@ -366,6 +367,7 @@ class _AdminParayanCreateWithAllocationScreenState
                                         value: event,
                                         child: Text(
                                           '${isMarathi ? event.titleMr : event.titleEn} ($dateStr)',
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       );
                                     }).toList(),
