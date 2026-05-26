@@ -239,6 +239,15 @@ class _AdminParayanCreateWithAllocationScreenState
         });
       }
 
+      // Construct start and end dates directly in UTC matching the India (Asia/Kolkata) timezone representation.
+      // India is UTC+5:30. So 00:00:00 local time in India is 18:30:00 UTC of the previous day.
+      final startUtc = DateTime.utc(_startDate.year, _startDate.month, _startDate.day)
+          .subtract(const Duration(hours: 5, minutes: 30));
+      
+      // 23:59:59 local time in India is 18:29:59 UTC.
+      final endUtc = DateTime.utc(_endDate.year, _endDate.month, _endDate.day, 23, 59, 59)
+          .subtract(const Duration(hours: 5, minutes: 30));
+
       final List<String> formattedTimes = ["13:00", "16:00", "19:00"];
       final event = ParayanEvent(
         id: eventId,
@@ -247,8 +256,8 @@ class _AdminParayanCreateWithAllocationScreenState
         descriptionEn: _descriptionEn,
         descriptionMr: _descriptionMr,
         type: eventType,
-        startDate: _startDate,
-        endDate: _endDate,
+        startDate: startUtc,
+        endDate: endUtc,
         status: 'upcoming', // Approved to set upcoming on creation
         reminderTimes: formattedTimes,
         createdAt: DateTime.now(),
