@@ -50,9 +50,22 @@ service cloud.firestore {
       );
     }
 
-    // Typo Reports: Authenticated create; Admin readable/deletable
+    // Typo Reports: Validated fields/types/sizes; Admin readable/deletable
     match /typo_reports/{reportId} {
-      allow create: if true;
+      allow create: if request.resource.data.keys().hasOnly([
+        'contentPath', 'contentTitle', 'contentType', 'deityId',
+        'typoText', 'suggestedCorrection', 'deviceId', 'timestamp'
+      ])
+      && request.resource.data.contentPath is string
+      && request.resource.data.contentTitle is string
+      && request.resource.data.contentType is string
+      && request.resource.data.deityId is string
+      && request.resource.data.typoText is string
+      && request.resource.data.typoText.size() < 2000
+      && request.resource.data.suggestedCorrection is string
+      && request.resource.data.suggestedCorrection.size() < 2000
+      && request.resource.data.deviceId is string
+      && request.resource.data.timestamp is timestamp;
       allow read, delete: if isAdmin();
       allow update: if false;
     }

@@ -32,8 +32,8 @@ class AdminAuditService {
         'admin_email': user.email,
         'action': action,
         'details': details,
-        'timestamp': now.toIso8601String(),
-        'expires_at': expiresAt.toIso8601String(),
+        'timestamp': Timestamp.fromDate(now),
+        'expires_at': Timestamp.fromDate(expiresAt),
       });
 
       debugPrint('Admin Audit Log: $action by ${user.email}');
