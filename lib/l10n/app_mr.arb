@@ -696,5 +696,18 @@
   "selectLastParayan": "मागील पारायण निवडा",
   "lastParayanLabel": "मागील पारायण",
   "createWithAllocationButton": "तयार करा आणि ॲलोकेट करा",
-  "duplicateDateError": "या तारखेसाठी पारायण आधीच अस्तित्वात आहे."
+  "duplicateDateError": "या तारखेसाठी पारायण आधीच अस्तित्वात आहे.",
+  "failedToLoadEvents": "मागील पारायण इव्हेंट्स लोड करण्यात अयशस्वी.",
+  "selectPreviousParayanError": "कृपया अलोकेशन कॉपी करण्यासाठी मागील पारायण निवडा.",
+  "createParayanSuccess": "अलोकेशनसह पारायण \"{title}\" यशस्वीरीत्या तयार केले आहे.",
+  "@createParayanSuccess": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "noPreviousParayansFound": "कॉपी करण्यासाठी मागील गुंजन पारायण सापडले नाहीत.",
+  "failedToCreateParayan": "पारायण तयार करण्यात अयशस्वी.",
+  "missingAdminError": "ॲडमिन परवानगी नाही."
 }

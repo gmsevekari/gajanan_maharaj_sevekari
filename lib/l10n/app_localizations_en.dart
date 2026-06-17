@@ -1880,6 +1880,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get duplicateDateError =>
       'A Parayan event already exists for this date.';
+
+  @override
+  String get failedToLoadEvents => 'Failed to load previous parayan events.';
+
+  @override
+  String get selectPreviousParayanError =>
+      'Please select the previous parayan to copy allocation from.';
+
+  @override
+  String createParayanSuccess(String title) {
+    return 'Parayan \"$title\" with allocation has been created successfully.';
+  }
+
+  @override
+  String get noPreviousParayansFound =>
+      'No previous Gunjan parayans found to copy from.';
+
+  @override
+  String get failedToCreateParayan => 'Failed to create parayan.';
+
+  @override
+  String get missingAdminError => 'Missing admin permissions.';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

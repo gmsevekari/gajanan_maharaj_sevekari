@@ -696,5 +696,18 @@
   "selectLastParayan": "Select Last Parayan",
   "lastParayanLabel": "Last Parayan",
   "createWithAllocationButton": "Create & Allocate",
-  "duplicateDateError": "A Parayan event already exists for this date."
+  "duplicateDateError": "A Parayan event already exists for this date.",
+  "failedToLoadEvents": "Failed to load previous parayan events.",
+  "selectPreviousParayanError": "Please select the previous parayan to copy allocation from.",
+  "createParayanSuccess": "Parayan \"{title}\" with allocation has been created successfully.",
+  "@createParayanSuccess": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "noPreviousParayansFound": "No previous Gunjan parayans found to copy from.",
+  "failedToCreateParayan": "Failed to create parayan.",
+  "missingAdminError": "Missing admin permissions."
 }

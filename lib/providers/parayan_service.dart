@@ -438,13 +438,14 @@ class ParayanService {
     final batch = _db.batch();
 
     // Create event document
-    batch.set(_eventsRef.doc(event.id), event.toFirestore(), null);
+    batch.set(_eventsRef.doc(event.id), event.toFirestore());
 
     // Create participant documents
     final participantsRef = _eventsRef.doc(event.id).collection('participants');
     for (final pData in participants) {
-      final docId = pData.remove('docId') as String;
-      batch.set(participantsRef.doc(docId), pData, null);
+      final entry = Map<String, dynamic>.from(pData);
+      final docId = entry.remove('docId') as String;
+      batch.set(participantsRef.doc(docId), entry);
     }
 
     await batch.commit();

@@ -3656,6 +3656,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A Parayan event already exists for this date.'**
   String get duplicateDateError;
+
+  /// No description provided for @failedToLoadEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load previous parayan events.'**
+  String get failedToLoadEvents;
+
+  /// No description provided for @selectPreviousParayanError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select the previous parayan to copy allocation from.'**
+  String get selectPreviousParayanError;
+
+  /// No description provided for @createParayanSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan \"{title}\" with allocation has been created successfully.'**
+  String createParayanSuccess(String title);
+
+  /// No description provided for @noPreviousParayansFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous Gunjan parayans found to copy from.'**
+  String get noPreviousParayansFound;
+
+  /// No description provided for @failedToCreateParayan.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create parayan.'**
+  String get failedToCreateParayan;
+
+  /// No description provided for @missingAdminError.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing admin permissions.'**
+  String get missingAdminError;
 }
 
 class _AppLocalizationsDelegate

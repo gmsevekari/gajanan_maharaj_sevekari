@@ -396,10 +396,16 @@ class _MyAppState extends State<MyApp> {
                   return AdminParayanCreateScreen(adminUser: adminUser);
                 },
                 Routes.adminCreateParayanWithAllocation: (context) {
-                  final adminUser =
-                      ModalRoute.of(context)?.settings.arguments as AdminUser?;
+                  final args = ModalRoute.of(context)?.settings.arguments;
+                  if (args is! AdminUser) {
+                    return const Scaffold(
+                      body: Center(
+                        child: Text('Error: Missing AdminUser arguments'),
+                      ),
+                    );
+                  }
                   return AdminParayanCreateWithAllocationScreen(
-                    adminUser: adminUser,
+                    adminUser: args,
                   );
                 },
                 Routes.adminGajananMaharajGroups: (context) {

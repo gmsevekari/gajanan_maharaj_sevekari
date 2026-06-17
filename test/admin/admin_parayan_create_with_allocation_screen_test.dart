@@ -14,6 +14,7 @@ import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import '../mocks.dart';
@@ -92,6 +93,10 @@ void main() {
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        routes: {
+          Routes.adminParayanDetail: (context) =>
+              const Scaffold(body: Center(child: Text('Mock Detail Screen'))),
+        },
         home: child,
       ),
     );
@@ -172,6 +177,163 @@ void main() {
       );
       expect(
         find.widgetWithText(TextFormField, 'गुंजन मागील कार्यक्रम'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('shows error when adminUser is null on submit', (tester) async {
+      final lastEvent = ParayanEvent(
+        id: 'gunjan_last',
+        titleEn: 'Gunjan Last Event',
+        titleMr: 'गुंजन मागील कार्यक्रम',
+        descriptionEn: 'Last Desc EN',
+        descriptionMr: 'Last Desc MR',
+        type: ParayanType.threeDay,
+        startDate: DateTime.now().subtract(const Duration(days: 7)),
+        endDate: DateTime.now().subtract(const Duration(days: 5)),
+        createdAt: DateTime.now().subtract(const Duration(days: 10)),
+        reminderTimes: [],
+        groupId: GroupConstants.gunjan,
+        status: 'completed',
+      );
+
+      when(
+        () => mockService.getGunjanEvents(),
+      ).thenAnswer((_) async => [lastEvent]);
+
+      await tester.pumpWidget(
+        createTestWidget(
+          AdminParayanCreateWithAllocationScreen(
+            adminUser: null,
+            parayanService: mockService,
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Ensure button is visible since the form might scroll
+      await tester.ensureVisible(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      // Tap submit button
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Missing admin permissions.'), findsOneWidget);
+    });
+
+    testWidgets('submits successfully and navigates on happy path', (
+      tester,
+    ) async {
+      final lastEvent = ParayanEvent(
+        id: 'gunjan_last',
+        titleEn: 'Gunjan Last Event',
+        titleMr: 'गुंजन मागील कार्यक्रम',
+        descriptionEn: 'Last Desc EN',
+        descriptionMr: 'Last Desc MR',
+        type: ParayanType.threeDay,
+        startDate: DateTime.now().subtract(const Duration(days: 7)),
+        endDate: DateTime.now().subtract(const Duration(days: 5)),
+        createdAt: DateTime.now().subtract(const Duration(days: 10)),
+        reminderTimes: [],
+        groupId: GroupConstants.gunjan,
+        status: 'completed',
+      );
+
+      when(
+        () => mockService.getGunjanEvents(),
+      ).thenAnswer((_) async => [lastEvent]);
+      when(() => mockService.exists(any())).thenAnswer((_) async => false);
+      when(
+        () => mockService.getParticipantsOnce(any()),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockService.createEventWithParticipants(
+          event: any(named: 'event'),
+          participants: any(named: 'participants'),
+        ),
+      ).thenAnswer((_) async => {});
+
+      await tester.pumpWidget(
+        createTestWidget(
+          AdminParayanCreateWithAllocationScreen(
+            adminUser: const AdminUser(
+              email: 'admin@test.com',
+              groupId: GroupConstants.gunjan,
+              roles: ['parayan_coordinator'],
+            ),
+            parayanService: mockService,
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Ensure button is visible since the form might scroll
+      await tester.ensureVisible(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      // Tap submit button
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      // Verify createEventWithParticipants is called
+      verify(
+        () => mockService.createEventWithParticipants(
+          event: any(named: 'event'),
+          participants: any(named: 'participants'),
+        ),
+      ).called(1);
+    });
+
+    testWidgets('shows duplicate date error if event already exists', (
+      tester,
+    ) async {
+      final lastEvent = ParayanEvent(
+        id: 'gunjan_last',
+        titleEn: 'Gunjan Last Event',
+        titleMr: 'गुंजन मागील कार्यक्रम',
+        descriptionEn: 'Last Desc EN',
+        descriptionMr: 'Last Desc MR',
+        type: ParayanType.threeDay,
+        startDate: DateTime.now().subtract(const Duration(days: 7)),
+        endDate: DateTime.now().subtract(const Duration(days: 5)),
+        createdAt: DateTime.now().subtract(const Duration(days: 10)),
+        reminderTimes: [],
+        groupId: GroupConstants.gunjan,
+        status: 'completed',
+      );
+
+      when(
+        () => mockService.getGunjanEvents(),
+      ).thenAnswer((_) async => [lastEvent]);
+      when(() => mockService.exists(any())).thenAnswer((_) async => true);
+
+      await tester.pumpWidget(
+        createTestWidget(
+          AdminParayanCreateWithAllocationScreen(
+            adminUser: const AdminUser(
+              email: 'admin@test.com',
+              groupId: GroupConstants.gunjan,
+              roles: ['parayan_coordinator'],
+            ),
+            parayanService: mockService,
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Ensure button is visible since the form might scroll
+      await tester.ensureVisible(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('A Parayan event already exists for this date.'),
         findsOneWidget,
       );
     });

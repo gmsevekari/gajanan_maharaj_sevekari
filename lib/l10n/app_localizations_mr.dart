@@ -1883,4 +1883,27 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get duplicateDateError => 'या तारखेसाठी पारायण आधीच अस्तित्वात आहे.';
+
+  @override
+  String get failedToLoadEvents =>
+      'मागील पारायण इव्हेंट्स लोड करण्यात अयशस्वी.';
+
+  @override
+  String get selectPreviousParayanError =>
+      'कृपया अलोकेशन कॉपी करण्यासाठी मागील पारायण निवडा.';
+
+  @override
+  String createParayanSuccess(String title) {
+    return 'अलोकेशनसह पारायण \"$title\" यशस्वीरीत्या तयार केले आहे.';
+  }
+
+  @override
+  String get noPreviousParayansFound =>
+      'कॉपी करण्यासाठी मागील गुंजन पारायण सापडले नाहीत.';
+
+  @override
+  String get failedToCreateParayan => 'पारायण तयार करण्यात अयशस्वी.';
+
+  @override
+  String get missingAdminError => 'ॲडमिन परवानगी नाही.';
 }

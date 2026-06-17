@@ -22,10 +22,11 @@ List<int> getNextAdhyays(List<int> currentAdhyays) {
 
   // Find the "end value" — the value v whose cyclic successor is NOT
   // in the set, i.e. the last element in the consecutive chain.
-  final endVal = currentAdhyays.cast<int?>().firstWhere(
-    (v) => !currentSet.contains((v! % _totalAdhyays) + 1),
-    orElse: () => currentAdhyays.reduce((a, b) => a > b ? a : b),
-  )!;
+  final endVal =
+      currentAdhyays
+          .where((v) => !currentSet.contains((v % _totalAdhyays) + 1))
+          .firstOrNull ??
+      currentAdhyays.reduce((a, b) => a > b ? a : b);
 
   final nextStart = (endVal % _totalAdhyays) + 1;
 

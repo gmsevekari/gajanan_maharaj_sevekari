@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,8 +5,6 @@ import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
-import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../mocks.dart';
 
@@ -16,7 +13,6 @@ void main() {
     registerFallbackValue(Timestamp(0, 0));
     registerFallbackValue(MockWriteBatch());
     registerFallbackValue(MockDocumentReference());
-    print('STARTING PHASE 2 STABLE SUITE VERIFICATION');
     registerFallbackValue(Timestamp(0, 0));
     registerFallbackValue(MockWriteBatch());
     registerFallbackValue(MockDocumentReference());
