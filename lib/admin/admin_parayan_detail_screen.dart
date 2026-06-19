@@ -157,7 +157,9 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
       final groupName =
           parayanName ?? (isMarathi ? group.nameMr : group.nameEn);
 
-      return groupName.isNotEmpty ? "${l10n.appName} - $groupName" : l10n.appName;
+      return groupName.isNotEmpty
+          ? "${l10n.appName} - $groupName"
+          : l10n.appName;
     } catch (_) {
       return l10n.appName;
     }
@@ -554,19 +556,26 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                             ButtonSegment(
                               value: 'ongoing',
                               label: Text(l10n.statusOngoing),
-                              icon: const Icon(Icons.play_circle_outline, size: 14),
+                              icon: const Icon(
+                                Icons.play_circle_outline,
+                                size: 14,
+                              ),
                             ),
                             ButtonSegment(
                               value: 'completed',
                               label: Text(l10n.statusCompleted),
-                              icon: const Icon(Icons.check_circle_outline, size: 14),
+                              icon: const Icon(
+                                Icons.check_circle_outline,
+                                size: 14,
+                              ),
                             ),
                           ],
-                          selected: [
-                            'allocated',
-                            'ongoing',
-                            'completed',
-                          ].contains(event.status)
+                          selected:
+                              [
+                                'allocated',
+                                'ongoing',
+                                'completed',
+                              ].contains(event.status)
                               ? <String>{event.status}
                               : <String>{},
                           onSelectionChanged: (Set<String> newSelection) {
@@ -594,12 +603,18 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                             ButtonSegment(
                               value: 'upcoming',
                               label: Text(l10n.statusUpcoming),
-                              icon: const Icon(Icons.calendar_today_outlined, size: 14),
+                              icon: const Icon(
+                                Icons.calendar_today_outlined,
+                                size: 14,
+                              ),
                             ),
                             ButtonSegment(
                               value: 'enrolling',
                               label: Text(l10n.statusEnrolling),
-                              icon: const Icon(Icons.person_add_outlined, size: 14),
+                              icon: const Icon(
+                                Icons.person_add_outlined,
+                                size: 14,
+                              ),
                             ),
                             ButtonSegment(
                               value: 'allocated',
@@ -643,15 +658,22 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                             ButtonSegment(
                               value: 'ongoing',
                               label: Text(l10n.statusOngoing),
-                              icon: const Icon(Icons.play_circle_outline, size: 14),
+                              icon: const Icon(
+                                Icons.play_circle_outline,
+                                size: 14,
+                              ),
                             ),
                             ButtonSegment(
                               value: 'completed',
                               label: Text(l10n.statusCompleted),
-                              icon: const Icon(Icons.check_circle_outline, size: 14),
+                              icon: const Icon(
+                                Icons.check_circle_outline,
+                                size: 14,
+                              ),
                             ),
                           ],
-                          selected: ['ongoing', 'completed'].contains(event.status)
+                          selected:
+                              ['ongoing', 'completed'].contains(event.status)
                               ? <String>{event.status}
                               : <String>{},
                           onSelectionChanged: (Set<String> newSelection) {
@@ -701,7 +723,9 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                 scrollDirection: Axis.horizontal,
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    minWidth: MediaQuery.of(context).size.width - 64, // Card width approx
+                    minWidth:
+                        MediaQuery.of(context).size.width -
+                        64, // Card width approx
                   ),
                   child: DataTable(
                     columnSpacing: 24,
@@ -726,7 +750,9 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                           label: Expanded(
                             child: Center(
                               child: Text(
-                                Localizations.localeOf(context).useMarathiContent
+                                Localizations.localeOf(
+                                      context,
+                                    ).useMarathiContent
                                     ? toMarathiNumerals(time)
                                     : time,
                                 style: theme.textTheme.labelSmall?.copyWith(
@@ -1188,7 +1214,7 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                           ),
                           onPressed: () async {
                             final number = member.phone!.replaceAll(
-                              RegExp(r"[^\d+]"),
+                              RegExp(r"\D"),
                               "",
                             );
                             final url = 'https://wa.me/$number';
@@ -1247,44 +1273,50 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                               "${l10n.day} ${_formatNumber(context, idx)}: ${l10n.adhyay} ${_formatNumber(context, adhyay)}",
                             ),
                             value: isDone,
-                            onChanged: event.status == 'completed' ? null : (val) async {
-                              if (val == null) return;
+                            onChanged: event.status == 'completed'
+                                ? null
+                                : (val) async {
+                                    if (val == null) return;
 
-                              // Optimistic update for instant UI feedback
-                              setDialogState(() {
-                                member.completions[idx.toString()] = val;
-                              });
+                                    // Optimistic update for instant UI feedback
+                                    setDialogState(() {
+                                      member.completions[idx.toString()] = val;
+                                    });
 
-                              try {
-                                await _parayanService.updateMemberCompletion(
-                                  eventId: event.id,
-                                  memberId: member.id!,
-                                  dayIndex: idx,
-                                  completed: val,
-                                );
+                                    try {
+                                      await _parayanService
+                                          .updateMemberCompletion(
+                                            eventId: event.id,
+                                            memberId: member.id!,
+                                            dayIndex: idx,
+                                            completed: val,
+                                          );
 
-                                await AdminAuditService.logAction(
-                                  action: 'UPDATE_MEMBER_COMPLETION',
-                                  details: {
-                                    'event_id': event.id,
-                                    'device_id': member.deviceId,
-                                    'member_name': member.name,
-                                    'day_index': idx,
-                                    'completed': val,
+                                      await AdminAuditService.logAction(
+                                        action: 'UPDATE_MEMBER_COMPLETION',
+                                        details: {
+                                          'event_id': event.id,
+                                          'device_id': member.deviceId,
+                                          'member_name': member.name,
+                                          'day_index': idx,
+                                          'completed': val,
+                                        },
+                                      );
+                                    } catch (e) {
+                                      // Revert optimistic update on failure
+                                      setDialogState(() {
+                                        member.completions[idx.toString()] =
+                                            !val;
+                                      });
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(content: Text('Error: $e')),
+                                        );
+                                      }
+                                    }
                                   },
-                                );
-                              } catch (e) {
-                                // Revert optimistic update on failure
-                                setDialogState(() {
-                                  member.completions[idx.toString()] = !val;
-                                });
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Error: $e')),
-                                  );
-                                }
-                              }
-                            },
                           );
                         }),
                   ],

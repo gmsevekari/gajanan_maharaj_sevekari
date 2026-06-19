@@ -384,16 +384,28 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminTempleNotifications: (context) =>
                     const AdminTempleNotificationsScreen(),
                 Routes.adminParayanCoordination: (context) {
-                  final adminUser =
-                      ModalRoute.of(context)?.settings.arguments as AdminUser?;
+                  final args = ModalRoute.of(context)?.settings.arguments;
+                  if (args is! AdminUser) {
+                    return const Scaffold(
+                      body: Center(
+                        child: Text('Error: Missing AdminUser arguments'),
+                      ),
+                    );
+                  }
                   return AdminParayanCoordinationDashboardScreen(
-                    adminUser: adminUser,
+                    adminUser: args,
                   );
                 },
                 Routes.adminCreateParayan: (context) {
-                  final adminUser =
-                      ModalRoute.of(context)?.settings.arguments as AdminUser?;
-                  return AdminParayanCreateScreen(adminUser: adminUser);
+                  final args = ModalRoute.of(context)?.settings.arguments;
+                  if (args is! AdminUser) {
+                    return const Scaffold(
+                      body: Center(
+                        child: Text('Error: Missing AdminUser arguments'),
+                      ),
+                    );
+                  }
+                  return AdminParayanCreateScreen(adminUser: args);
                 },
                 Routes.adminCreateParayanWithAllocation: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;

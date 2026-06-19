@@ -18,7 +18,8 @@ class AdminParayanCreateScreen extends StatefulWidget {
   const AdminParayanCreateScreen({super.key, this.adminUser});
 
   @override
-  State<AdminParayanCreateScreen> createState() => _AdminParayanCreateScreenState();
+  State<AdminParayanCreateScreen> createState() =>
+      _AdminParayanCreateScreenState();
 }
 
 class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
@@ -154,22 +155,33 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    final localizations = AppLocalizations.of(context)!;
+    final adminUser = widget.adminUser;
 
-    // Guru Pushya mandatory end date validation
-    if (_selectedType == ParayanType.guruPushya && !_isEndDateSetManually) {
+    // Security guard for null adminUser
+    if (adminUser == null) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            AppLocalizations.of(context)!.guruPushyaEndDateRequired,
-          ),
+          content: Text(localizations.missingAdminError),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
     }
 
-    final localizations = AppLocalizations.of(context)!;
+    if (!_formKey.currentState!.validate()) return;
+
+    // Guru Pushya mandatory end date validation
+    if (_selectedType == ParayanType.guruPushya && !_isEndDateSetManually) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(localizations.guruPushyaEndDateRequired),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -574,10 +586,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
     );
   }
 
-  Widget _buildGroupSelection(
-    AppLocalizations localizations,
-    ThemeData theme,
-  ) {
+  Widget _buildGroupSelection(AppLocalizations localizations, ThemeData theme) {
     // If admin has a fixed group, show it as a label
     if (widget.adminUser?.groupId != null) {
       final groupId = widget.adminUser!.groupId!;
