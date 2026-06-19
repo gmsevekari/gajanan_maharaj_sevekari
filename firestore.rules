@@ -30,28 +30,50 @@ service cloud.firestore {
 
       // Secure listing: Allow super_admin to see all, group_admin to see their own group
       // Using direct get() in list rule is more robust for query verification
-      allow list: if request.auth != null && (
+      allow list: if request.auth != null && isAdmin() && (
         get(/databases/$(database)/documents/admin_allowlist/$(request.auth.token.email)).data.roles.hasAny(['super_admin']) ||
         (
           get(/databases/$(database)/documents/admin_allowlist/$(request.auth.token.email)).data.roles.hasAny(['group_admin']) &&
+          get(/databases/$(database)/documents/admin_allowlist/$(request.auth.token.email)).data.groupId != null &&
           resource.data.groupId == get(/databases/$(database)/documents/admin_allowlist/$(request.auth.token.email)).data.groupId
         )
       );
 
-      // Allow create/update/delete (write)
-      allow write: if isSuperAdmin() || (
+      // Split write rules to avoid invalid request.method and prevent privilege escalation
+      allow create: if isSuperAdmin() || (
         isAdmin() &&
         getAdminData().roles.hasAny(['group_admin']) &&
-        (
-          (request.method == 'create' &&
-           request.resource.data.groupId == getAdminData().groupId &&
-           !request.resource.data.roles.hasAny(['super_admin'])) ||
-          (request.method == 'update' &&
-           resource.data.groupId == getAdminData().groupId &&
-           request.resource.data.groupId == getAdminData().groupId &&
-           !request.resource.data.roles.hasAny(['super_admin'])) ||
-          (request.method == 'delete' && resource.data.groupId == getAdminData().groupId)
-        )
+        getAdminData().groupId != null &&
+        request.resource.data.groupId == getAdminData().groupId &&
+        !request.resource.data.roles.hasAny(['super_admin']) &&
+        request.resource.data.keys().hasOnly(['roles', 'groupId']) &&
+        request.resource.data.roles is list &&
+        (request.resource.data.groupId == null || request.resource.data.groupId is string)
+      );
+
+      allow update: if isSuperAdmin() || (
+        isAdmin() &&
+        getAdminData().roles.hasAny(['group_admin']) &&
+        getAdminData().groupId != null &&
+        resource.data.groupId == getAdminData().groupId &&
+        request.resource.data.groupId == getAdminData().groupId &&
+        !resource.data.roles.hasAny(['super_admin']) && // Prevent demoting super admin
+        !request.resource.data.roles.hasAny(['super_admin']) &&
+        request.resource.data.keys().hasOnly(['roles', 'groupId']) &&
+        request.resource.data.roles is list &&
+        (request.resource.data.groupId == null || request.resource.data.groupId is string) &&
+        // Prevent editing own document to escalate roles or modify groupId
+        (email != request.auth.token.email || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['roles', 'groupId']))
+      );
+
+      allow delete: if isSuperAdmin() || (
+        isAdmin() &&
+        getAdminData().roles.hasAny(['group_admin']) &&
+        getAdminData().groupId != null &&
+        resource.data.groupId == getAdminData().groupId &&
+        !resource.data.roles.hasAny(['super_admin']) && // Prevent deleting super admin
+        // Prevent deleting own admin record
+        email != request.auth.token.email
       );
     }
 
@@ -75,15 +97,21 @@ service cloud.firestore {
       && request.resource.data.suggestedCorrection.size() < 2000
       && request.resource.data.deviceId is string
       && request.resource.data.deviceId.size() < 200
-      && request.resource.data.timestamp is timestamp;
+      && request.resource.data.timestamp == request.time;
       allow read, delete: if isAdmin();
       allow update: if false;
     }
 
     // Admin Audit Logs: Admin create-only (append-only); Not readable via app
-    match /admin_audit_logs/{document=**} {
+    match /admin_audit_logs/{logId} {
       allow read: if false;
-      allow create: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly(['admin_email', 'action', 'details', 'timestamp', 'expires_at'])
+        && request.resource.data.admin_email == request.auth.token.email
+        && request.resource.data.action is string
+        && request.resource.data.timestamp == request.time
+        && request.resource.data.expires_at is timestamp
+        && request.resource.data.details is map;
       allow update, delete: if false;
     }
 
