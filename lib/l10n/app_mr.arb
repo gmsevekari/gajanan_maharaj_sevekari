@@ -724,5 +724,8 @@
   "timezoneIndia": "भारत (आयएसटी)",
   "groupIdRequiredError": "पारायण इव्हेंट तयार करण्यासाठी ग्रुप आयडी आवश्यक आहे.",
   "missingParayanGroupError": "मिसिंग पारायण ग्रुप",
-  "navigateFromDashboardPrompt": "कृपया एका विशिष्ट ग्रुप कोऑर्डिनेशन डॅशबोर्डवरून नेव्हिगेट करा."
+  "navigateFromDashboardPrompt": "कृपया एका विशिष्ट ग्रुप कोऑर्डिनेशन डॅशबोर्डवरून नेव्हिगेट करा.",
+  "failedToUpdateStatus": "इव्हेंट स्टेटस अपडेट करण्यात अयशस्वी.",
+  "failedToUpdateCompletion": "इव्हेंट पूर्णता अपडेट करण्यात अयशस्वी.",
+  "failedToExport": "ग्रुप्स एक्सपोर्ट करण्यात अयशस्वी."
 }

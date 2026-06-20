@@ -46,13 +46,7 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
   _ParticipantFilter _currentFilter = _ParticipantFilter.all;
   bool _isStatusLocked = true;
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      if (mounted) setState(() {});
-    });
+  void _initStreams() {
     _overviewParticipantsStream = _parayanService.getAllParticipants(
       widget.event.id,
     );
@@ -60,6 +54,24 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
       widget.event.id,
     );
     _eventStream = _parayanService.getEventById(widget.event.id);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (mounted) setState(() {});
+    });
+    _initStreams();
+  }
+
+  @override
+  void didUpdateWidget(AdminParayanDetailScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.event.id != oldWidget.event.id) {
+      _initStreams();
+    }
   }
 
   @override
@@ -134,11 +146,12 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
         ).showSnackBar(SnackBar(content: Text(l10n.statusUpdateSuccess)));
       }
     } catch (e) {
+      debugPrint('Failed to update event status: $e');
       if (mounted) {
         Navigator.of(context).pop(); // Close loading dialog
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text(l10n.failedToUpdateStatus)));
       }
     }
   }
@@ -1189,6 +1202,15 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
     int groupNumber,
   ) {
     final theme = Theme.of(context);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final start = DateTime(
+      event.startDate.year,
+      event.startDate.month,
+      event.startDate.day,
+    );
+    final currentDayOfEvent = today.difference(start).inDays + 1;
+
     showDialog(
       context: context,
       builder: (context) {
@@ -1243,24 +1265,10 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                         .asMap()
                         .entries
                         .where((entry) {
-                          // Filter based on current day of the event
-                          final now = DateTime.now();
-                          final today = DateTime(now.year, now.month, now.day);
-                          final start = DateTime(
-                            event.startDate.year,
-                            event.startDate.month,
-                            event.startDate.day,
-                          );
-                          final currentDayOfEvent =
-                              today.difference(start).inDays + 1;
-
-                          // Show day 1 adhyay if currentDayOfEvent >= 1, day 2 if >= 2, etc.
                           // idx (entry.key) starts from 0, so entry.key + 1 is the day index.
                           final dayIndex = entry.key + 1;
 
-                          // Always show at least the first day if the event is ongoing or later,
-                          // or if we are exactly on the start date.
-                          // Otherwise, show only up to the current day.
+                          // Always show only up to the current day.
                           return dayIndex <= currentDayOfEvent;
                         })
                         .map((entry) {
@@ -1303,16 +1311,21 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                                         },
                                       );
                                     } catch (e) {
-                                      // Revert optimistic update on failure
-                                      setDialogState(() {
-                                        member.completions[idx.toString()] =
-                                            !val;
-                                      });
+                                      debugPrint('Failed to update member completion: $e');
                                       if (context.mounted) {
+                                        // Revert optimistic update on failure
+                                        setDialogState(() {
+                                          member.completions[idx.toString()] =
+                                              !val;
+                                        });
                                         ScaffoldMessenger.of(
                                           context,
                                         ).showSnackBar(
-                                          SnackBar(content: Text('Error: $e')),
+                                          SnackBar(
+                                            content: Text(
+                                              l10n.failedToUpdateCompletion,
+                                            ),
+                                          ),
                                         );
                                       }
                                     }
@@ -1412,11 +1425,11 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
 
       final List<XFile> files = [];
       final tempDir = await getTemporaryDirectory();
+      if (!context.mounted) return;
 
       // Batch groups: 1 group per file for 1-day, 3 groups per file for 3-day.
       final int batchSize = (event.type == ParayanType.threeDay) ? 3 : 1;
       final exportTheme = Theme.of(context);
-      if (!context.mounted) return;
 
       for (int i = 0; i < sortedGroupNumbers.length; i += batchSize) {
         final currentGroupNumbers = sortedGroupNumbers.sublist(
@@ -1519,11 +1532,12 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
         );
       }
     } catch (e) {
+      debugPrint('Export failed: $e');
       if (context.mounted) {
         Navigator.of(context).pop(); // Close loading dialog
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Export failed: $e')));
+        ).showSnackBar(SnackBar(content: Text(l10n.failedToExport)));
       }
     }
   }

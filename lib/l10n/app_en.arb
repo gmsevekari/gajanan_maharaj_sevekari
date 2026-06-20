@@ -724,5 +724,8 @@
   "timezoneIndia": "India (IST)",
   "groupIdRequiredError": "Group ID is required to create a Parayan event.",
   "missingParayanGroupError": "Error: Missing Parayan Group",
-  "navigateFromDashboardPrompt": "Please navigate from a specific group coordination dashboard."
+  "navigateFromDashboardPrompt": "Please navigate from a specific group coordination dashboard.",
+  "failedToUpdateStatus": "Failed to update event status.",
+  "failedToUpdateCompletion": "Failed to update completion status.",
+  "failedToExport": "Failed to export groups."
 }

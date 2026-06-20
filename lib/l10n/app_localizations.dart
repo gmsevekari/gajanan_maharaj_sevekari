@@ -3740,6 +3740,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please navigate from a specific group coordination dashboard.'**
   String get navigateFromDashboardPrompt;
+
+  /// No description provided for @failedToUpdateStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update event status.'**
+  String get failedToUpdateStatus;
+
+  /// No description provided for @failedToUpdateCompletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update completion status.'**
+  String get failedToUpdateCompletion;
+
+  /// No description provided for @failedToExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to export groups.'**
+  String get failedToExport;
 }
 
 class _AppLocalizationsDelegate

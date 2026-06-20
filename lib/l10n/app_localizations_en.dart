@@ -1931,6 +1931,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get navigateFromDashboardPrompt =>
       'Please navigate from a specific group coordination dashboard.';
+
+  @override
+  String get failedToUpdateStatus => 'Failed to update event status.';
+
+  @override
+  String get failedToUpdateCompletion => 'Failed to update completion status.';
+
+  @override
+  String get failedToExport => 'Failed to export groups.';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

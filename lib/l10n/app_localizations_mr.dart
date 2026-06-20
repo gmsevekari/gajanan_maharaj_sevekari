@@ -1930,9 +1930,19 @@ class AppLocalizationsMr extends AppLocalizations {
       'पारायण इव्हेंट तयार करण्यासाठी ग्रुप आयडी आवश्यक आहे.';
 
   @override
-  String get missingParayanGroupError => 'त्रुटी: गहाळ पारायण ग्रुप';
+  String get missingParayanGroupError => 'मिसिंग पारायण ग्रुप';
 
   @override
   String get navigateFromDashboardPrompt =>
       'कृपया एका विशिष्ट ग्रुप कोऑर्डिनेशन डॅशबोर्डवरून नेव्हिगेट करा.';
+
+  @override
+  String get failedToUpdateStatus => 'इव्हेंट स्टेटस अपडेट करण्यात अयशस्वी.';
+
+  @override
+  String get failedToUpdateCompletion =>
+      'इव्हेंट पूर्णता अपडेट करण्यात अयशस्वी.';
+
+  @override
+  String get failedToExport => 'ग्रुप्स एक्सपोर्ट करण्यात अयशस्वी.';
 }
