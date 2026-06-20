@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
+import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_detail_screen.dart';
@@ -23,6 +24,8 @@ class AdminParayanCreateScreen extends StatefulWidget {
 }
 
 class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
+  static final _alphanumericRegExp = RegExp('[a-zA-Z0-9 \u0900-\u097F]');
+
   final _formKey = GlobalKey<FormState>();
   final _parayanService = ParayanService();
 
@@ -31,18 +34,22 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
   final _descriptionEnController = TextEditingController();
   final _descriptionMrController = TextEditingController();
   ParayanType _selectedType = ParayanType.oneDay;
-  DateTime _startDate = DateTime.now();
-  DateTime _endDate = DateTime.now();
+  late DateTime _startDate;
+  late DateTime _endDate;
   bool _isEndDateSetManually = false;
   String? _selectedGroupId;
   String _selectedTimezone = 'America/Los_Angeles';
 
-  final List<Map<String, String>> _timezones = [
-    {'label': 'Seattle (Pacific Time)', 'value': 'America/Los_Angeles'},
-    {'label': 'India (IST)', 'value': 'Asia/Kolkata'},
-  ];
-
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedGroupId = widget.adminUser?.groupId;
+    final now = DateTime.now();
+    _startDate = DateTime(now.year, now.month, now.day);
+    _endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
+  }
 
   @override
   void dispose() {
@@ -53,7 +60,24 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
     super.dispose();
   }
 
-  Future<void> _selectDateTime(BuildContext context, bool isStartDate) async {
+  /// Computes the end date based on the parayan type and start date.
+  static DateTime _computeEndDate(ParayanType type, DateTime startDate) {
+    switch (type) {
+      case ParayanType.threeDay:
+        final targetEnd = startDate.add(const Duration(days: 2));
+        return DateTime(
+          targetEnd.year, targetEnd.month, targetEnd.day, 23, 59, 59,
+        );
+      case ParayanType.oneDay:
+        return DateTime(
+          startDate.year, startDate.month, startDate.day, 23, 59, 59,
+        );
+      case ParayanType.guruPushya:
+        return startDate;
+    }
+  }
+
+  Future<void> _selectDateTime(bool isStartDate) async {
     final initialDate = isStartDate ? _startDate : _endDate;
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -69,89 +93,46 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
       initialTime: TimeOfDay.fromDateTime(initialDate),
     );
 
-    if (pickedTime != null) {
-      setState(() {
-        final newDateTime = DateTime(
-          pickedDate.year,
-          pickedDate.month,
-          pickedDate.day,
-          pickedTime.hour,
-          pickedTime.minute,
-        );
-        if (isStartDate) {
-          _startDate = newDateTime;
-          if (_selectedType == ParayanType.threeDay) {
-            final targetEnd = _startDate.add(const Duration(days: 2));
-            _endDate = DateTime(
-              targetEnd.year,
-              targetEnd.month,
-              targetEnd.day,
-              23,
-              59,
-              59,
-            );
-          } else if (_selectedType == ParayanType.oneDay) {
-            _endDate = DateTime(
-              _startDate.year,
-              _startDate.month,
-              _startDate.day,
-              23,
-              59,
-              59,
-            );
-          }
-        } else {
-          _endDate = newDateTime;
-          _isEndDateSetManually = true;
-        }
-      });
-    }
+    if (pickedTime == null) return;
+    if (!mounted) return;
+
+    setState(() {
+      final newDateTime = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+      if (isStartDate) {
+        _startDate = newDateTime;
+        _endDate = _computeEndDate(_selectedType, _startDate);
+      } else {
+        _endDate = newDateTime;
+        _isEndDateSetManually = true;
+      }
+    });
   }
 
-  Future<void> _selectDate(BuildContext context, bool isStartDate) async {
+  Future<void> _selectDate(bool isStartDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: isStartDate ? _startDate : _endDate,
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
     );
-    if (picked != null) {
-      setState(() {
-        if (isStartDate) {
-          _startDate = picked;
-          if (_selectedType == ParayanType.threeDay) {
-            final targetEnd = _startDate.add(const Duration(days: 2));
-            _endDate = DateTime(
-              targetEnd.year,
-              targetEnd.month,
-              targetEnd.day,
-              23,
-              59,
-              59,
-            );
-          } else if (_selectedType == ParayanType.oneDay) {
-            _endDate = DateTime(
-              _startDate.year,
-              _startDate.month,
-              _startDate.day,
-              23,
-              59,
-              59,
-            );
-          }
-        } else {
-          _endDate = DateTime(
-            picked.year,
-            picked.month,
-            picked.day,
-            23,
-            59,
-            59,
-          );
-          _isEndDateSetManually = true;
-        }
-      });
-    }
+    if (picked == null) return;
+    if (!mounted) return;
+
+    setState(() {
+      if (isStartDate) {
+        _startDate = picked;
+        _endDate = _computeEndDate(_selectedType, _startDate);
+      } else {
+        _endDate = DateTime(picked.year, picked.month, picked.day, 23, 59, 59);
+        _isEndDateSetManually = true;
+      }
+    });
   }
 
   Future<void> _submit() async {
@@ -171,6 +152,17 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
     }
 
     if (!_formKey.currentState!.validate()) return;
+
+    // Chronological validation
+    if (_endDate.isBefore(_startDate)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(localizations.endDateBeforeStartDateError),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+      return;
+    }
 
     // Guru Pushya mandatory end date validation
     if (_selectedType == ParayanType.guruPushya && !_isEndDateSetManually) {
@@ -192,11 +184,11 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
       final List<String> formattedTimes = ["13:00", "16:00", "19:00"];
 
       if (_selectedGroupId == null) {
-        throw Exception("Group ID is required to create a Parayan event.");
+        throw Exception(localizations.groupIdRequiredError);
       }
       final String groupId = _selectedGroupId!;
       final String dateStr = DateFormat('yyyy-MM-dd').format(_startDate);
-      final String eventId = "${groupId}-${dateStr}-${_selectedType.name}";
+      final String eventId = "$groupId-$dateStr-${_selectedType.name}";
 
       // Check for duplicate
       final bool alreadyExists = await _parayanService.exists(eventId);
@@ -245,6 +237,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
       );
       if (!mounted) return;
 
+      final messenger = ScaffoldMessenger.of(context);
       final isMarathi = Localizations.localeOf(context).useMarathiContent;
       final eventTitle = isMarathi ? event.titleMr : event.titleEn;
 
@@ -256,22 +249,25 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
         ),
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
-          content: Text(
-            "${isMarathi ? 'पारायण " $eventTitle " यशस्वीरीत्या तयार केले आहे.' : 'Parayan " $eventTitle " has been created successfully.'}",
-          ),
+          content: Text(localizations.parayanCreatedSuccess(eventTitle)),
         ),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(localizations.failedToCreateParayan),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -280,9 +276,48 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    // Alphanumeric + spaces + Marathi (Devanagari) characters
     final List<TextInputFormatter> alphanumericFormatter = [
-      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9 \u0900-\u097F]')),
+      FilteringTextInputFormatter.allow(_alphanumericRegExp),
+    ];
+
+    if (_selectedGroupId == null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(localizations.createParayanTitle)),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: theme.colorScheme.error,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  localizations.missingParayanGroupError,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.error,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  localizations.navigateFromDashboardPrompt,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final List<Map<String, String>> timezones = [
+      {'label': localizations.timezoneSeattle, 'value': 'America/Los_Angeles'},
+      {'label': localizations.timezoneIndia, 'value': 'Asia/Kolkata'},
     ];
 
     return Scaffold(
@@ -399,7 +434,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                   const SizedBox(height: 16),
 
                   DropdownButtonFormField<ParayanType>(
-                    value: _selectedType,
+                    initialValue: _selectedType,
                     decoration: InputDecoration(
                       labelText: localizations.parayanTypeLabel,
                     ),
@@ -421,28 +456,8 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                       if (value != null) {
                         setState(() {
                           _selectedType = value;
-                          if (_selectedType == ParayanType.threeDay) {
-                            final targetEnd = _startDate.add(
-                              const Duration(days: 2),
-                            );
-                            _endDate = DateTime(
-                              targetEnd.year,
-                              targetEnd.month,
-                              targetEnd.day,
-                              23,
-                              59,
-                              59,
-                            );
-                          } else if (_selectedType == ParayanType.oneDay) {
-                            _endDate = DateTime(
-                              _startDate.year,
-                              _startDate.month,
-                              _startDate.day,
-                              23,
-                              59,
-                              59,
-                            );
-                          } else if (_selectedType == ParayanType.guruPushya) {
+                          _endDate = _computeEndDate(_selectedType, _startDate);
+                          if (_selectedType == ParayanType.guruPushya) {
                             _isEndDateSetManually = false;
                           }
                         });
@@ -452,9 +467,11 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                   const SizedBox(height: 16),
 
                   DropdownButtonFormField<String>(
-                    value: _selectedTimezone,
-                    decoration: const InputDecoration(labelText: 'Timezone'),
-                    items: _timezones.map((tz) {
+                    initialValue: _selectedTimezone,
+                    decoration: InputDecoration(
+                      labelText: localizations.timezoneLabel,
+                    ),
+                    items: timezones.map((tz) {
                       return DropdownMenuItem(
                         value: tz['value'],
                         child: Text(tz['label']!),
@@ -473,43 +490,39 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                   if (_selectedType == ParayanType.oneDay)
                     ListTile(
                       title: Text(localizations.parayanDateLabel),
-                      subtitle: Text(
-                        DateFormat('MMM d, yyyy').format(_startDate),
-                      ),
+                      subtitle: Text(formatDateMedium(_startDate, Localizations.localeOf(context).languageCode)),
                       trailing: const Icon(Icons.calendar_today),
-                      onTap: () => _selectDate(context, true),
+                      onTap: () => _selectDate(true),
                     )
                   else ...[
                     ListTile(
                       title: Text(localizations.startDateLabel),
                       subtitle: Text(
-                        _selectedType == ParayanType.guruPushya
-                            ? DateFormat(
-                                'MMM d, yyyy - hh:mm a',
-                              ).format(_startDate)
-                            : DateFormat('MMM d, yyyy').format(_startDate),
+                        formatDateMedium(
+                          _startDate,
+                          Localizations.localeOf(context).languageCode,
+                          includeTime: _selectedType == ParayanType.guruPushya,
+                        ),
                       ),
                       trailing: const Icon(Icons.calendar_today),
                       onTap: () => _selectedType == ParayanType.guruPushya
-                          ? _selectDateTime(context, true)
-                          : _selectDate(context, true),
+                          ? _selectDateTime(true)
+                          : _selectDate(true),
                     ),
                     if (_selectedType == ParayanType.threeDay)
                       ListTile(
                         title: Text(localizations.endDateLabel),
-                        subtitle: Text(
-                          DateFormat('MMM d, yyyy').format(_endDate),
-                        ),
+                        subtitle: Text(formatDateMedium(_endDate, Localizations.localeOf(context).languageCode)),
                         enabled: false,
                       )
                     else // guruPushya
                       ListTile(
                         title: Text(localizations.endDateLabel),
                         subtitle: Text(
-                          DateFormat('MMM d, yyyy - hh:mm a').format(_endDate),
+                          formatDateMedium(_endDate, Localizations.localeOf(context).languageCode, includeTime: true),
                         ),
                         trailing: const Icon(Icons.calendar_today),
-                        onTap: () => _selectDateTime(context, false),
+                        onTap: () => _selectDateTime(false),
                       ),
                   ],
 
@@ -587,64 +600,34 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
   }
 
   Widget _buildGroupSelection(AppLocalizations localizations, ThemeData theme) {
-    // If admin has a fixed group, show it as a label
-    if (widget.adminUser?.groupId != null) {
-      final groupId = widget.adminUser!.groupId!;
-      _selectedGroupId = groupId; // Set it once
+    final groupId = _selectedGroupId!;
 
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest.withValues(
-            alpha: 0.3,
-          ),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.business, color: theme.colorScheme.primary),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    localizations.parayanGroupLabel,
-                    style: theme.textTheme.bodySmall,
-                  ),
-                  Text(
-                    groupId, // In a real app, map this to a friendly name from config
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    // Otherwise show a fallback error if no group is pre-selected
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
         children: [
-          Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
-          const SizedBox(height: 16),
-          Text(
-            "Error: Missing Parayan Group",
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.error,
-              fontWeight: FontWeight.bold,
+          Icon(Icons.business, color: theme.colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  localizations.parayanGroupLabel,
+                  style: theme.textTheme.bodySmall,
+                ),
+                Text(
+                  groupId,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Please navigate from a specific group coordination dashboard.",
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall,
           ),
         ],
       ),

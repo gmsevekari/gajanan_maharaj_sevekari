@@ -3692,6 +3692,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Missing admin permissions.'**
   String get missingAdminError;
+
+  /// No description provided for @parayanCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Parayan \"{title}\" has been created successfully.'**
+  String parayanCreatedSuccess(String title);
+
+  /// No description provided for @endDateBeforeStartDateError.
+  ///
+  /// In en, this message translates to:
+  /// **'End date and time must be after start date and time.'**
+  String get endDateBeforeStartDateError;
+
+  /// No description provided for @timezoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Timezone'**
+  String get timezoneLabel;
+
+  /// No description provided for @timezoneSeattle.
+  ///
+  /// In en, this message translates to:
+  /// **'Seattle (Pacific Time)'**
+  String get timezoneSeattle;
+
+  /// No description provided for @timezoneIndia.
+  ///
+  /// In en, this message translates to:
+  /// **'India (IST)'**
+  String get timezoneIndia;
+
+  /// No description provided for @groupIdRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Group ID is required to create a Parayan event.'**
+  String get groupIdRequiredError;
+
+  /// No description provided for @missingParayanGroupError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: Missing Parayan Group'**
+  String get missingParayanGroupError;
+
+  /// No description provided for @navigateFromDashboardPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Please navigate from a specific group coordination dashboard.'**
+  String get navigateFromDashboardPrompt;
 }
 
 class _AppLocalizationsDelegate

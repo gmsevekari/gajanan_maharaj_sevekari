@@ -46,9 +46,10 @@ service cloud.firestore {
         getAdminData().groupId != null &&
         request.resource.data.groupId == getAdminData().groupId &&
         !request.resource.data.roles.hasAny(['super_admin']) &&
-        request.resource.data.keys().hasOnly(['roles', 'groupId']) &&
+        request.resource.data.keys().hasOnly(['roles', 'groupId', 'typoNotificationsEnabled']) &&
         request.resource.data.roles is list &&
-        (request.resource.data.groupId == null || request.resource.data.groupId is string)
+        (request.resource.data.groupId == null || request.resource.data.groupId is string) &&
+        (!('typoNotificationsEnabled' in request.resource.data) || request.resource.data.typoNotificationsEnabled is bool)
       );
 
       allow update: if isSuperAdmin() || (
@@ -56,12 +57,13 @@ service cloud.firestore {
         getAdminData().roles.hasAny(['group_admin']) &&
         getAdminData().groupId != null &&
         resource.data.groupId == getAdminData().groupId &&
-        request.resource.data.groupId == getAdminData().groupId &&
+        (request.resource.data.groupId == getAdminData().groupId || request.resource.data.groupId == null) &&
         !resource.data.roles.hasAny(['super_admin']) && // Prevent demoting super admin
         !request.resource.data.roles.hasAny(['super_admin']) &&
-        request.resource.data.keys().hasOnly(['roles', 'groupId']) &&
+        request.resource.data.keys().hasOnly(['roles', 'groupId', 'typoNotificationsEnabled']) &&
         request.resource.data.roles is list &&
         (request.resource.data.groupId == null || request.resource.data.groupId is string) &&
+        (!('typoNotificationsEnabled' in request.resource.data) || request.resource.data.typoNotificationsEnabled is bool) &&
         // Prevent editing own document to escalate roles or modify groupId
         (email != request.auth.token.email || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['roles', 'groupId']))
       );

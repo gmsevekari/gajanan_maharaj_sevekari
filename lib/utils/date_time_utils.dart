@@ -83,6 +83,16 @@ String formatTimeDetailed(DateTime time, String locale) {
   }
 }
 
+/// Formats a date into a medium format: "MMM d, yyyy" with optional time.
+///
+/// When [includeTime] is true, appends " - hh:mm a" (e.g., "Jun 20, 2026 - 02:30 PM").
+String formatDateMedium(DateTime date, String locale, {bool includeTime = false}) {
+  final localDate = date.toLocal();
+  final formatStr = includeTime ? 'MMM d, yyyy - hh:mm a' : 'MMM d, yyyy';
+  final dateStr = DateFormat(formatStr, locale).format(localDate);
+  return locale == 'mr' ? toMarathiNumerals(dateStr) : dateStr;
+}
+
 /// Formats date to "MMMM yyyy" format.
 String formatMonthYear(DateTime date, String locale) {
   final localDate = date.toLocal();

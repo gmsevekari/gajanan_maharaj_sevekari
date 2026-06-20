@@ -709,5 +709,20 @@
   },
   "noPreviousParayansFound": "No previous Gunjan parayans found to copy from.",
   "failedToCreateParayan": "Failed to create parayan.",
-  "missingAdminError": "Missing admin permissions."
+  "missingAdminError": "Missing admin permissions.",
+  "parayanCreatedSuccess": "Parayan \"{title}\" has been created successfully.",
+  "@parayanCreatedSuccess": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "endDateBeforeStartDateError": "End date and time must be after start date and time.",
+  "timezoneLabel": "Timezone",
+  "timezoneSeattle": "Seattle (Pacific Time)",
+  "timezoneIndia": "India (IST)",
+  "groupIdRequiredError": "Group ID is required to create a Parayan event.",
+  "missingParayanGroupError": "Error: Missing Parayan Group",
+  "navigateFromDashboardPrompt": "Please navigate from a specific group coordination dashboard."
 }

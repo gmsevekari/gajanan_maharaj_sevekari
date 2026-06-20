@@ -1902,6 +1902,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get missingAdminError => 'Missing admin permissions.';
+
+  @override
+  String parayanCreatedSuccess(String title) {
+    return 'Parayan \"$title\" has been created successfully.';
+  }
+
+  @override
+  String get endDateBeforeStartDateError =>
+      'End date and time must be after start date and time.';
+
+  @override
+  String get timezoneLabel => 'Timezone';
+
+  @override
+  String get timezoneSeattle => 'Seattle (Pacific Time)';
+
+  @override
+  String get timezoneIndia => 'India (IST)';
+
+  @override
+  String get groupIdRequiredError =>
+      'Group ID is required to create a Parayan event.';
+
+  @override
+  String get missingParayanGroupError => 'Error: Missing Parayan Group';
+
+  @override
+  String get navigateFromDashboardPrompt =>
+      'Please navigate from a specific group coordination dashboard.';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

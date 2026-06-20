@@ -1906,4 +1906,33 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get missingAdminError => 'ॲडमिन परवानगी नाही.';
+
+  @override
+  String parayanCreatedSuccess(String title) {
+    return 'पारायण \"$title\" यशस्वीरीत्या तयार केले आहे.';
+  }
+
+  @override
+  String get endDateBeforeStartDateError =>
+      'अंतिम तारीख आणि वेळ सुरुवातीच्या तारीख आणि वेळेनंतर असणे आवश्यक आहे.';
+
+  @override
+  String get timezoneLabel => 'टाइमझोन';
+
+  @override
+  String get timezoneSeattle => 'सिएटल (पॅसिफिक वेळ)';
+
+  @override
+  String get timezoneIndia => 'भारत (आयएसटी)';
+
+  @override
+  String get groupIdRequiredError =>
+      'पारायण इव्हेंट तयार करण्यासाठी ग्रुप आयडी आवश्यक आहे.';
+
+  @override
+  String get missingParayanGroupError => 'त्रुटी: गहाळ पारायण ग्रुप';
+
+  @override
+  String get navigateFromDashboardPrompt =>
+      'कृपया एका विशिष्ट ग्रुप कोऑर्डिनेशन डॅशबोर्डवरून नेव्हिगेट करा.';
 }
