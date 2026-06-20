@@ -6,6 +6,7 @@ service cloud.firestore {
     // Helper functions for role-based access
     function isAdmin() {
       return request.auth != null &&
+             request.auth.token.email_verified == true &&
              exists(/databases/$(database)/documents/admin_allowlist/$(request.auth.token.email));
     }
 
@@ -125,7 +126,15 @@ service cloud.firestore {
       match /participants/{participantId} {
         allow read: if true;
         allow create: if true;
-        allow update: if isAdmin() || (request.resource.data.deviceId == resource.data.deviceId);
+        // Allows user to update completions locally using deviceId check. Identity/assignment fields remain immutable.
+        allow update: if isAdmin() || (
+          request.resource.data.deviceId == resource.data.deviceId &&
+          request.resource.data.name == resource.data.name &&
+          request.resource.data.phone == resource.data.phone &&
+          request.resource.data.assignedAdhyays == resource.data.assignedAdhyays &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['completions'])
+        );
+        // Public deletion is intended: participants do not log in and must be able to delete their own registrations from the UI using their deviceId
         allow delete: if isAdmin() || (resource.data.deviceId != null);
       }
     }
@@ -161,6 +170,7 @@ service cloud.firestore {
           request.resource.data.phone == resource.data.phone &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalCount', 'dailyCounts'])
         );
+        // Public deletion is intended: participants do not log in and must be able to delete their own registrations from the UI using their deviceId
         allow delete: if isAdmin() || (resource.data.deviceId != null);
       }
     }
