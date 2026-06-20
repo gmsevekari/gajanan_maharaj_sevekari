@@ -121,6 +121,7 @@ class _TypoReportDialogState extends State<TypoReportDialog> {
             TextField(
               controller: _typoController,
               maxLines: 3,
+              maxLength: 1999,
               decoration: InputDecoration(
                 labelText: localizations.reportTypoLabel,
                 alignLabelWithHint: true,
@@ -133,6 +134,7 @@ class _TypoReportDialogState extends State<TypoReportDialog> {
             TextField(
               controller: _correctionController,
               maxLines: 3,
+              maxLength: 1999,
               decoration: InputDecoration(
                 labelText: localizations.suggestedCorrectionLabel,
                 alignLabelWithHint: true,
