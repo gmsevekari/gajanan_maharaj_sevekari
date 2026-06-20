@@ -362,19 +362,29 @@ class _MyAppState extends State<MyApp> {
                   );
                 },
                 Routes.groupNamjapDetail: (context) {
-                  final args = ModalRoute.of(context)!.settings.arguments;
+                  final args = ModalRoute.of(context)?.settings.arguments;
                   String? eventId;
                   String? joinCode;
 
                   if (args is String) {
                     eventId = args;
                   } else if (args is Map) {
-                    eventId = args['id'];
-                    joinCode = args['joinCode'];
+                    eventId = args['id'] as String?;
+                    joinCode = args['joinCode'] as String?;
+                  }
+
+                  if (eventId == null) {
+                    return const Scaffold(
+                      body: Center(
+                        child: Text(
+                          'Error: Missing or invalid GroupNamjapDetail arguments',
+                        ),
+                      ),
+                    );
                   }
 
                   return GroupNamjapDetailScreen(
-                    eventId: eventId!,
+                    eventId: eventId,
                     prefilledJoinCode: joinCode,
                   );
                 },
@@ -505,6 +515,27 @@ class _MyAppState extends State<MyApp> {
                 final DeityConfig? deity = settings.arguments is DeityConfig
                     ? settings.arguments as DeityConfig
                     : null;
+
+                switch (settings.name) {
+                  case Routes.aarti:
+                  case Routes.aboutMaharaj:
+                  case Routes.donations:
+                  case Routes.signups:
+                  case Routes.socialMedia:
+                  case Routes.namavali:
+                  case Routes.stories:
+                  case Routes.songs:
+                    if (deity == null) {
+                      return MaterialPageRoute(
+                        builder: (context) => const Scaffold(
+                          body: Center(
+                            child: Text('Error: Missing DeityConfig arguments'),
+                          ),
+                        ),
+                      );
+                    }
+                    break;
+                }
 
                 switch (settings.name) {
                   case Routes.aarti:
