@@ -206,6 +206,9 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
         return;
       }
 
+      final startUtc = _convertToUtc(_startDate, _selectedTimezone);
+      final endUtc = _convertToUtc(_endDate, _selectedTimezone);
+
       final event = ParayanEvent(
         id: eventId,
         titleEn: _titleEnController.text.trim(),
@@ -213,8 +216,8 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
         descriptionEn: _descriptionEnController.text.trim(),
         descriptionMr: _descriptionMrController.text.trim(),
         type: _selectedType,
-        startDate: _startDate,
-        endDate: _endDate,
+        startDate: startUtc,
+        endDate: endUtc,
         status: 'upcoming',
         reminderTimes: formattedTimes,
         createdAt: DateTime.now(),
@@ -269,6 +272,56 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
         });
       }
     }
+  }
+
+  DateTime _convertToUtc(DateTime localTime, String timezone) {
+    if (timezone == 'Asia/Kolkata') {
+      return DateTime.utc(
+        localTime.year,
+        localTime.month,
+        localTime.day,
+        localTime.hour,
+        localTime.minute,
+        localTime.second,
+      ).subtract(const Duration(hours: 5, minutes: 30));
+    } else {
+      // America/Los_Angeles (Pacific Time)
+      final isDst = _isPacificDST(localTime);
+      final offsetHours = isDst ? 7 : 8;
+      return DateTime.utc(
+        localTime.year,
+        localTime.month,
+        localTime.day,
+        localTime.hour,
+        localTime.minute,
+        localTime.second,
+      ).add(Duration(hours: offsetHours));
+    }
+  }
+
+  bool _isPacificDST(DateTime date) {
+    if (date.month < 3 || date.month > 11) return false;
+    if (date.month > 3 && date.month < 11) return true;
+
+    if (date.month == 3) {
+      final march1 = DateTime(date.year, 3, 1);
+      final daysToFirstSunday = (7 - march1.weekday) % 7;
+      final secondSundayDay = 1 + daysToFirstSunday + 7;
+      if (date.day < secondSundayDay) return false;
+      if (date.day > secondSundayDay) return true;
+      return date.hour >= 2;
+    }
+
+    if (date.month == 11) {
+      final nov1 = DateTime(date.year, 11, 1);
+      final daysToFirstSunday = (7 - nov1.weekday) % 7;
+      final firstSundayDay = 1 + daysToFirstSunday;
+      if (date.day < firstSundayDay) return true;
+      if (date.day > firstSundayDay) return false;
+      return date.hour < 2;
+    }
+
+    return false;
   }
 
   @override

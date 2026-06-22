@@ -68,11 +68,14 @@ class _TypoReportDialogState extends State<TypoReportDialog> {
     try {
       await TypoReportService().submitReport(report);
       if (mounted) {
+        final messenger = ScaffoldMessenger.of(context);
+        final successText = AppLocalizations.of(context)!.reportTypoSuccess;
+        final successColor = Theme.of(context).appColors.success;
         Navigator.of(context).pop(true);
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.reportTypoSuccess),
-            backgroundColor: Theme.of(context).appColors.success,
+            content: Text(successText),
+            backgroundColor: successColor,
           ),
         );
       }

@@ -10,6 +10,7 @@ import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:intl/intl.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 
 class AdminParayanCoordinationDashboardScreen extends StatefulWidget {
   final AdminUser? adminUser;
@@ -29,13 +30,50 @@ class _AdminParayanCoordinationDashboardScreenState
   @override
   void initState() {
     super.initState();
-    _eventsStream = _parayanService.getAllEvents(widget.adminUser!.groupId!);
+    final groupId = widget.adminUser?.groupId;
+    if (groupId != null) {
+      _eventsStream = _parayanService.getAllEvents(groupId);
+    } else {
+      _eventsStream = Stream.value([]);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context)!;
+    final groupId = widget.adminUser?.groupId;
+
+    if (groupId == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(localizations.parayanCoordinationModuleTitle),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: theme.colorScheme.error,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  localizations.missingParayanGroupError,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -91,12 +129,15 @@ class _AdminParayanCoordinationDashboardScreenState
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: () => setState(() {
-                        // Re-initialize stream on retry
-                        _eventsStream = _parayanService.getAllEvents(
-                          widget.adminUser!.groupId!,
-                        );
-                      }),
+                      onPressed: () {
+                        final gId = widget.adminUser?.groupId;
+                        if (gId != null) {
+                          setState(() {
+                            // Re-initialize stream on retry
+                            _eventsStream = _parayanService.getAllEvents(gId);
+                          });
+                        }
+                      },
                       child: const Text('Retry'),
                     ),
                   ],
@@ -299,6 +340,7 @@ class _AdminParayanCoordinationDashboardScreenState
     int completed,
   ) {
     final localizations = AppLocalizations.of(context)!;
+    final langCode = Localizations.localeOf(context).languageCode;
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -306,14 +348,14 @@ class _AdminParayanCoordinationDashboardScreenState
           Expanded(
             child: _StatCard(
               label: localizations.activeLabel.toUpperCase(),
-              value: active.toString(),
+              value: formatNumberLocalized(active, langCode, pad: false),
             ),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: _StatCard(
               label: localizations.completedLabel.toUpperCase(),
-              value: completed.toString(),
+              value: formatNumberLocalized(completed, langCode, pad: false),
             ),
           ),
         ],
