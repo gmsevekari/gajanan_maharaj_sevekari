@@ -4094,6 +4094,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Journey Complete!'**
   String get vaariRouteComplete;
+
+  /// No description provided for @vaariGroupProgressLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Group'**
+  String get vaariGroupProgressLegend;
+
+  /// No description provided for @vaariActualPalkhiLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Actual Palkhi Today'**
+  String get vaariActualPalkhiLegend;
 }
 
 class _AppLocalizationsDelegate

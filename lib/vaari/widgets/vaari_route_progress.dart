@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/vaari_route.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/vaari_route_layout.dart';
+import 'package:gajanan_maharaj_sevekari/vaari/vaari_schedule.dart';
 
 /// Animates the group's collective walking distance along the fixed
 /// Alandi -> Pandharpur route ([dnyaneshwarPalkhiRoute]) as a snake-shaped
@@ -19,11 +20,16 @@ class VaariRouteProgress extends StatelessWidget {
   /// export card) that already provides its own card-like chrome.
   final bool showCard;
 
+  /// Today's date in India Standard Time, used to place the green "actual
+  /// Palkhi" marker. Defaults to [currentIstDate]; overridable for testing.
+  final DateTime? todayIst;
+
   const VaariRouteProgress({
     super.key,
     required this.totalDistance,
     required this.distanceUnit,
     this.showCard = true,
+    this.todayIst,
   });
 
   double get _totalRouteMiles => dnyaneshwarPalkhiRoute.last.cumulativeMiles;
@@ -49,6 +55,9 @@ class VaariRouteProgress extends StatelessWidget {
     final totalDisplay = formatDistanceLocalized(
       milesToDistanceUnit(_totalRouteMiles, distanceUnit),
       locale,
+    );
+    final scheduledStopIndex = scheduledStopIndexForDate(
+      todayIst ?? currentIstDate(),
     );
 
     final content = Column(
@@ -104,7 +113,24 @@ class VaariRouteProgress extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 12,
+          runSpacing: 4,
+          children: [
+            _buildLegendItem(
+              theme,
+              theme.colorScheme.primary,
+              localizations.vaariGroupProgressLegend,
+            ),
+            _buildLegendItem(
+              theme,
+              theme.appColors.success,
+              localizations.vaariActualPalkhiLegend,
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
         LayoutBuilder(
           builder: (context, constraints) {
             final layout = VaariRouteLayout(
@@ -113,7 +139,11 @@ class VaariRouteProgress extends StatelessWidget {
             return SizedBox(
               width: layout.contentWidth,
               height: layout.contentHeight,
-              child: _VaariRouteTimeline(layout: layout, covered: covered),
+              child: _VaariRouteTimeline(
+                layout: layout,
+                covered: covered,
+                scheduledStopIndex: scheduledStopIndex,
+              ),
             );
           },
         ),
@@ -127,19 +157,45 @@ class VaariRouteProgress extends StatelessWidget {
       child: Padding(padding: const EdgeInsets.all(16.0), child: content),
     );
   }
+
+  Widget _buildLegendItem(ThemeData theme, Color color, String label) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.appColors.secondaryText,
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _VaariRouteTimeline extends StatelessWidget {
   static const double _markerRadius = 11.0;
   static const double _flagRadius = 14.0;
   static const double _walkerRadius = 16.0;
+  static const double _scheduledWalkerRadius = 14.0;
   static const double _labelGap = 8.0;
   static const double _maxLabelWidth = 78.0;
 
   final VaariRouteLayout layout;
   final double covered;
+  final int scheduledStopIndex;
 
-  const _VaariRouteTimeline({required this.layout, required this.covered});
+  const _VaariRouteTimeline({
+    required this.layout,
+    required this.covered,
+    required this.scheduledStopIndex,
+  });
 
   /// Capped to the actual gap between stops so adjacent labels never
   /// overlap — on a narrow layout (e.g. the admin export card) stopSpacing
@@ -151,6 +207,7 @@ class _VaariRouteTimeline extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final targetArcLength = layout.arcLengthForMiles(covered);
+    final scheduledArcLength = layout.cumulativeArcLength[scheduledStopIndex];
 
     return Stack(
       clipBehavior: Clip.none,
@@ -190,12 +247,36 @@ class _VaariRouteTimeline extends StatelessWidget {
             );
           },
           child: CircleAvatar(
+            key: const Key('vaari-group-walker'),
             radius: _walkerRadius,
             backgroundColor: theme.colorScheme.primary,
             child: Icon(
               Icons.directions_walk,
               color: theme.colorScheme.onPrimary,
               size: 18,
+            ),
+          ),
+        ),
+        TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0, end: scheduledArcLength),
+          duration: const Duration(milliseconds: 900),
+          curve: Curves.easeInOut,
+          builder: (context, animatedArcLength, child) {
+            final position = layout.positionAtArcLength(animatedArcLength);
+            return Positioned(
+              left: position.dx - _scheduledWalkerRadius,
+              top: position.dy - _scheduledWalkerRadius,
+              child: child!,
+            );
+          },
+          child: CircleAvatar(
+            key: const Key('vaari-schedule-walker'),
+            radius: _scheduledWalkerRadius,
+            backgroundColor: theme.appColors.success,
+            child: Icon(
+              Icons.directions_walk,
+              color: theme.colorScheme.onPrimary,
+              size: 16,
             ),
           ),
         ),

@@ -2121,6 +2121,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vaariRouteComplete => 'Journey Complete!';
+
+  @override
+  String get vaariGroupProgressLegend => 'Your Group';
+
+  @override
+  String get vaariActualPalkhiLegend => 'Actual Palkhi Today';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

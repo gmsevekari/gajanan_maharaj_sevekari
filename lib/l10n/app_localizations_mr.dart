@@ -2127,4 +2127,10 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get vaariRouteComplete => 'प्रवास पूर्ण झाला!';
+
+  @override
+  String get vaariGroupProgressLegend => 'तुमचा गट';
+
+  @override
+  String get vaariActualPalkhiLegend => 'आजची प्रत्यक्ष वारी';
 }

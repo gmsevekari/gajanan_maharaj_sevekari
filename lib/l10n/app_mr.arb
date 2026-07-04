@@ -797,5 +797,7 @@
   "adminVaariShareError": "शेअर करता आले नाही. कृपया पुन्हा प्रयत्न करा.",
   "adminVaariLoadError": "डेटा लोड करण्यात त्रुटी",
   "vaariRouteProgressLabel": "मार्गातील प्रगती",
-  "vaariRouteComplete": "प्रवास पूर्ण झाला!"
+  "vaariRouteComplete": "प्रवास पूर्ण झाला!",
+  "vaariGroupProgressLegend": "तुमचा गट",
+  "vaariActualPalkhiLegend": "आजची प्रत्यक्ष वारी"
 }

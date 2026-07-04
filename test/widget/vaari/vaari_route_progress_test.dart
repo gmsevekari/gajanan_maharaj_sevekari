@@ -10,11 +10,13 @@ void main() {
     Locale? locale,
     bool showCard = true,
     double? maxWidth,
+    DateTime? todayIst,
   }) {
     final routeProgress = VaariRouteProgress(
       totalDistance: totalDistance,
       distanceUnit: distanceUnit,
       showCard: showCard,
+      todayIst: todayIst,
     );
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -89,7 +91,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final walkerCenter = tester.getCenter(find.byIcon(Icons.directions_walk));
+      final walkerCenter = tester.getCenter(
+        find.byKey(const Key('vaari-group-walker')),
+      );
       final flagCenter = tester.getCenter(find.byIcon(Icons.flag));
 
       expect(walkerCenter.dx, closeTo(flagCenter.dx, 1.0));
@@ -220,5 +224,79 @@ void main() {
 
       expect(velapurRect.right, lessThanOrEqualTo(bhandishegaonRect.left));
     });
+
+    testWidgets('renders the group/actual-Palkhi legend', (tester) async {
+      await tester.pumpWidget(
+        createWidget(totalDistance: 0, distanceUnit: 'mi'),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Your Group'), findsOneWidget);
+      expect(find.text('Actual Palkhi Today'), findsOneWidget);
+    });
+
+    testWidgets(
+      'places the actual-Palkhi marker at Alandi before the schedule starts',
+      (tester) async {
+        await tester.pumpWidget(
+          createWidget(
+            totalDistance: 0,
+            distanceUnit: 'mi',
+            todayIst: DateTime(2026, 1, 1),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final scheduleCenter = tester.getCenter(
+          find.byKey(const Key('vaari-schedule-walker')),
+        );
+        final alandiCenter = tester.getCenter(find.text('Alandi'));
+
+        expect(scheduleCenter.dx, closeTo(alandiCenter.dx, 1.0));
+      },
+    );
+
+    testWidgets(
+      'places the actual-Palkhi marker at the stop scheduled for today',
+      (tester) async {
+        await tester.pumpWidget(
+          createWidget(
+            totalDistance: 0,
+            distanceUnit: 'mi',
+            // Jejuri is scheduled for July 17, 2026.
+            todayIst: DateTime(2026, 7, 17),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final scheduleCenter = tester.getCenter(
+          find.byKey(const Key('vaari-schedule-walker')),
+        );
+        final jejuriCenter = tester.getCenter(find.text('Jejuri'));
+
+        expect(scheduleCenter.dx, closeTo(jejuriCenter.dx, 1.0));
+      },
+    );
+
+    testWidgets(
+      'places the actual-Palkhi marker at Pandharpur once the schedule ends',
+      (tester) async {
+        await tester.pumpWidget(
+          createWidget(
+            totalDistance: 0,
+            distanceUnit: 'mi',
+            todayIst: DateTime(2027, 1, 1),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final scheduleCenter = tester.getCenter(
+          find.byKey(const Key('vaari-schedule-walker')),
+        );
+        final flagCenter = tester.getCenter(find.byIcon(Icons.flag));
+
+        expect(scheduleCenter.dx, closeTo(flagCenter.dx, 1.0));
+      },
+    );
   });
 }

@@ -797,5 +797,7 @@
   "adminVaariShareError": "Unable to share. Please try again.",
   "adminVaariLoadError": "Error loading data",
   "vaariRouteProgressLabel": "ROUTE PROGRESS",
-  "vaariRouteComplete": "Journey Complete!"
+  "vaariRouteComplete": "Journey Complete!",
+  "vaariGroupProgressLegend": "Your Group",
+  "vaariActualPalkhiLegend": "Actual Palkhi Today"
 }
