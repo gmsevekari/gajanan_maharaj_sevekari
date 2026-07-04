@@ -25,7 +25,7 @@ class UpdateService {
   factory UpdateService() => _instance;
   UpdateService._internal();
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   Future<UpdateResult> checkForUpdate() async {
     try {

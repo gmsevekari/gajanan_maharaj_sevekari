@@ -44,7 +44,7 @@ void main() {
 
   setUpAll(() async {
     registerFallbackValue(const Locale('en'));
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({'first_run': false});
     PackageInfo.setMockInitialValues(
       appName: 'Test',
       packageName: 'com.test',
@@ -133,6 +133,17 @@ void main() {
               builder:
                   (_) => Scaffold(
                     appBar: AppBar(title: const Text('Parayan List')),
+                    body: Text(
+                      'Group: ${(settings.arguments as Map)['groupId']}',
+                    ),
+                  ),
+            );
+          }
+          if (settings.name == Routes.vaariList) {
+            return MaterialPageRoute(
+              builder:
+                  (_) => Scaffold(
+                    appBar: AppBar(title: const Text('Vaari List')),
                     body: Text(
                       'Group: ${(settings.arguments as Map)['groupId']}',
                     ),
@@ -262,4 +273,46 @@ void main() {
     });
   });
 
+  group('HomeScreen Vaari Card Navigation Tests', () {
+    testWidgets('navigates to VaariListScreen when single group selected', (tester) async {
+      tester.view.physicalSize = const Size(1200, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      when(() => mockGroupProvider.selectedGroupIds).thenReturn(['g1']);
+
+      await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
+
+      final vaariCard = find.byKey(const Key('vaari_card'));
+      expect(vaariCard, findsOneWidget);
+
+      await tester.tap(vaariCard);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Vaari List'), findsOneWidget);
+      expect(find.text('Group: g1'), findsOneWidget);
+    });
+
+    testWidgets('navigates to GajananMaharajGroupScreen when multiple groups selected', (tester) async {
+      tester.view.physicalSize = const Size(1200, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      when(() => mockGroupProvider.selectedGroupIds).thenReturn(['g1', 'g2']);
+
+      await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
+
+      final vaariCard = find.byKey(const Key('vaari_card'));
+      expect(vaariCard, findsOneWidget);
+
+      await tester.tap(vaariCard);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(GajananMaharajGroupScreen), findsOneWidget);
+    });
+  });
 }
