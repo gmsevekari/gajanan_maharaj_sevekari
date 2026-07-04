@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/models/vaari_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/vaari_participant.dart';
 
-class VaariService extends ChangeNotifier {
+class VaariService {
   final FirebaseFirestore _firestore;
 
   VaariService({FirebaseFirestore? firestore})
@@ -11,6 +11,13 @@ class VaariService extends ChangeNotifier {
 
   static const String eventsCollection = 'vaari_events';
   static const String participantsSubcollection = 'participants';
+
+  /// Sanitised participant document ID — strips slashes and collapses spaces.
+  String _getParticipantId(String deviceId, String memberName) {
+    final safeDevice = deviceId.replaceAll('/', '_');
+    final safeName = memberName.replaceAll('/', '_').replaceAll(' ', '_');
+    return '${safeDevice}_$safeName';
+  }
 
   Stream<List<VaariEvent>> getActiveEvents(String groupId) {
     return _firestore
@@ -44,7 +51,9 @@ class VaariService extends ChangeNotifier {
     return _firestore.collection(eventsCollection).doc(eventId).snapshots().map(
       (snapshot) {
         if (!snapshot.exists) return null;
-        return VaariEvent.fromMap(snapshot.id, snapshot.data()!);
+        final data = snapshot.data();
+        if (data == null) return null;
+        return VaariEvent.fromMap(snapshot.id, data);
       },
     );
   }
@@ -54,7 +63,7 @@ class VaariService extends ChangeNotifier {
     String deviceId,
     String memberName,
   ) {
-    final participantId = '${deviceId}_$memberName'.replaceAll(' ', '_');
+    final participantId = _getParticipantId(deviceId, memberName);
     return _firestore
         .collection(eventsCollection)
         .doc(eventId)
@@ -63,7 +72,9 @@ class VaariService extends ChangeNotifier {
         .snapshots()
         .map((snapshot) {
           if (!snapshot.exists) return null;
-          return VaariParticipant.fromMap(snapshot.data()!);
+          final data = snapshot.data();
+          if (data == null) return null;
+          return VaariParticipant.fromMap(data);
         });
   }
 
@@ -77,10 +88,15 @@ class VaariService extends ChangeNotifier {
   }
 
   Future<void> createEvent(VaariEvent event) async {
-    await _firestore
-        .collection(eventsCollection)
-        .doc(event.id)
-        .set(event.toMap());
+    try {
+      await _firestore
+          .collection(eventsCollection)
+          .doc(event.id)
+          .set(event.toMap());
+    } on FirebaseException catch (e) {
+      debugPrint('VaariService.createEvent Firestore error: $e');
+      rethrow;
+    }
   }
 
   Future<bool> joinEvent({
@@ -88,25 +104,31 @@ class VaariService extends ChangeNotifier {
     required String joinCode,
     required VaariParticipant participant,
   }) async {
-    final docRef = _firestore.collection(eventsCollection).doc(eventId);
-    final eventSnapshot = await docRef.get();
+    try {
+      final docRef = _firestore.collection(eventsCollection).doc(eventId);
+      final eventSnapshot = await docRef.get();
 
-    if (!eventSnapshot.exists) return false;
-    final data = eventSnapshot.data()!;
+      if (!eventSnapshot.exists) return false;
+      final data = eventSnapshot.data();
+      if (data == null) return false;
 
-    if (data['joinCode'] != joinCode) {
-      return false;
+      if (data['joinCode'] != joinCode) {
+        return false;
+      }
+
+      final participantId =
+          _getParticipantId(participant.deviceId, participant.memberName);
+
+      await docRef
+          .collection(participantsSubcollection)
+          .doc(participantId)
+          .set(participant.toMap());
+
+      return true;
+    } on FirebaseException catch (e) {
+      debugPrint('VaariService.joinEvent Firestore error: $e');
+      rethrow;
     }
-
-    final participantId = '${participant.deviceId}_${participant.memberName}'
-        .replaceAll(' ', '_');
-
-    await docRef
-        .collection(participantsSubcollection)
-        .doc(participantId)
-        .set(participant.toMap());
-
-    return true;
   }
 
   Future<void> submitSteps({
@@ -118,52 +140,67 @@ class VaariService extends ChangeNotifier {
   }) async {
     if (stepsToSubmit <= 0) return;
 
-    final eventRef = _firestore.collection(eventsCollection).doc(eventId);
-    final eventSnapshot = await eventRef.get();
-    if (!eventSnapshot.exists) return;
+    // Reject negative/zero distances when explicitly provided
+    if (distanceToSubmit != null && distanceToSubmit <= 0) return;
 
-    final eventData = eventSnapshot.data()!;
-    final unit = eventData['distanceUnit'] ?? 'km';
+    try {
+      final eventRef = _firestore.collection(eventsCollection).doc(eventId);
+      final eventSnapshot = await eventRef.get();
+      if (!eventSnapshot.exists) return;
 
-    double distance = distanceToSubmit ??
-        (stepsToSubmit * (unit == 'km' ? 0.0008 : 0.0005));
+      final eventData = eventSnapshot.data();
+      if (eventData == null) return;
 
-    final participantId = '${deviceId}_$memberName'.replaceAll(' ', '_');
-    final participantRef = eventRef
-        .collection(participantsSubcollection)
-        .doc(participantId);
+      final unit = eventData['distanceUnit'] ?? 'km';
 
-    final batch = _firestore.batch();
+      final double distance = distanceToSubmit ??
+          (stepsToSubmit * (unit == 'km' ? 0.0008 : 0.0005));
 
-    // Increment global counters
-    batch.update(eventRef, {
-      'totalSteps': FieldValue.increment(stepsToSubmit),
-      'totalDistance': FieldValue.increment(distance),
-    });
+      final participantId = _getParticipantId(deviceId, memberName);
+      final participantRef = eventRef
+          .collection(participantsSubcollection)
+          .doc(participantId);
 
-    // Increment user counters
-    batch.set(participantRef, {
-      'totalSteps': FieldValue.increment(stepsToSubmit),
-      'totalDistance': FieldValue.increment(distance),
-    }, SetOptions(merge: true));
+      final batch = _firestore.batch();
 
-    await batch.commit();
+      // Increment global counters
+      batch.update(eventRef, {
+        'totalSteps': FieldValue.increment(stepsToSubmit),
+        'totalDistance': FieldValue.increment(distance),
+      });
+
+      // Increment user counters
+      batch.set(participantRef, {
+        'totalSteps': FieldValue.increment(stepsToSubmit),
+        'totalDistance': FieldValue.increment(distance),
+      }, SetOptions(merge: true));
+
+      await batch.commit();
+    } on FirebaseException catch (e) {
+      debugPrint('VaariService.submitSteps Firestore error: $e');
+      rethrow;
+    }
   }
 
   Future<VaariParticipant?> checkParticipation(
     String eventId,
     String deviceId,
   ) async {
-    final querySnapshot = await _firestore
-        .collection(eventsCollection)
-        .doc(eventId)
-        .collection(participantsSubcollection)
-        .where('deviceId', isEqualTo: deviceId)
-        .limit(1)
-        .get();
+    try {
+      final querySnapshot = await _firestore
+          .collection(eventsCollection)
+          .doc(eventId)
+          .collection(participantsSubcollection)
+          .where('deviceId', isEqualTo: deviceId)
+          .limit(1)
+          .get();
 
-    if (querySnapshot.docs.isEmpty) return null;
-    return VaariParticipant.fromMap(querySnapshot.docs.first.data());
+      if (querySnapshot.docs.isEmpty) return null;
+      return VaariParticipant.fromMap(querySnapshot.docs.first.data());
+    } on FirebaseException catch (e) {
+      debugPrint('VaariService.checkParticipation Firestore error: $e');
+      rethrow;
+    }
   }
 
   Future<void> deleteParticipation({
@@ -171,12 +208,17 @@ class VaariService extends ChangeNotifier {
     required String deviceId,
     required String memberName,
   }) async {
-    final participantId = '${deviceId}_$memberName'.replaceAll(' ', '_');
-    await _firestore
-        .collection(eventsCollection)
-        .doc(eventId)
-        .collection(participantsSubcollection)
-        .doc(participantId)
-        .delete();
+    try {
+      final participantId = _getParticipantId(deviceId, memberName);
+      await _firestore
+          .collection(eventsCollection)
+          .doc(eventId)
+          .collection(participantsSubcollection)
+          .doc(participantId)
+          .delete();
+    } on FirebaseException catch (e) {
+      debugPrint('VaariService.deleteParticipation Firestore error: $e');
+      rethrow;
+    }
   }
 }

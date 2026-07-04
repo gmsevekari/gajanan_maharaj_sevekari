@@ -105,5 +105,43 @@ void main() {
       expect(copied.status, 'completed');
       expect(copied.groupId, 'gajanan_gunjan');
     });
+
+    test('should support copyWith with no changes (covers all fallback branches)', () {
+      final event = VaariEvent(
+        id: 'doc_123',
+        groupId: 'gajanan_gunjan',
+        joinCode: '123456',
+        nameEn: 'Weekly Vaari Challenge',
+        nameMr: 'साप्ताहिक वारी',
+        descriptionEn: 'Walk and report steps',
+        descriptionMr: 'चालून पायऱ्या रिपोर्ट करा',
+        startDate: now,
+        endDate: now.add(const Duration(days: 3)),
+        status: 'ongoing',
+        timezone: 'Asia/Kolkata',
+        totalSteps: 50000,
+        totalDistance: 40.0,
+        distanceUnit: 'km',
+        createdAt: now,
+      );
+
+      final copied = event.copyWith();
+
+      expect(copied.id, event.id);
+      expect(copied.groupId, event.groupId);
+      expect(copied.joinCode, event.joinCode);
+      expect(copied.nameEn, event.nameEn);
+      expect(copied.nameMr, event.nameMr);
+      expect(copied.descriptionEn, event.descriptionEn);
+      expect(copied.descriptionMr, event.descriptionMr);
+      expect(copied.startDate, event.startDate);
+      expect(copied.endDate, event.endDate);
+      expect(copied.status, event.status);
+      expect(copied.timezone, event.timezone);
+      expect(copied.totalSteps, event.totalSteps);
+      expect(copied.totalDistance, event.totalDistance);
+      expect(copied.distanceUnit, event.distanceUnit);
+      expect(copied.createdAt, event.createdAt);
+    });
   });
 }

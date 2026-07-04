@@ -10,7 +10,7 @@ class VaariProvider extends ChangeNotifier {
   String? _phone;
   bool _isLoading = false;
 
-  final Map<String, bool> _joinedEvents = {};
+  Map<String, bool> _joinedEvents = {};
 
   VaariProvider({required VaariService service}) : _service = service;
 
@@ -26,9 +26,13 @@ class VaariProvider extends ChangeNotifier {
   static const String keyPhone = 'vaari_phone';
 
   Future<void> loadLocalData() async {
-    final prefs = await SharedPreferences.getInstance();
-    _memberName = prefs.getString(keyMemberName);
-    _phone = prefs.getString(keyPhone);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _memberName = prefs.getString(keyMemberName);
+      _phone = prefs.getString(keyPhone);
+    } on Exception catch (e) {
+      debugPrint('VaariProvider.loadLocalData error: $e');
+    }
     notifyListeners();
   }
 
@@ -65,9 +69,12 @@ class VaariProvider extends ChangeNotifier {
 
         _memberName = memberName;
         _phone = phone;
-        _joinedEvents[eventId] = true;
+        _joinedEvents = Map<String, bool>.from(_joinedEvents)..[eventId] = true;
       }
       return success;
+    } on Exception catch (e) {
+      debugPrint('VaariProvider.signUp error: $e');
+      return false;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -89,10 +96,14 @@ class VaariProvider extends ChangeNotifier {
           _memberName = participant.memberName;
           _phone = participant.phone;
         }
-        _joinedEvents[eventId] = true;
+        _joinedEvents =
+            Map<String, bool>.from(_joinedEvents)..[eventId] = true;
       } else {
-        _joinedEvents[eventId] = false;
+        _joinedEvents =
+            Map<String, bool>.from(_joinedEvents)..[eventId] = false;
       }
+    } on Exception catch (e) {
+      debugPrint('VaariProvider.syncParticipation error: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -111,7 +122,10 @@ class VaariProvider extends ChangeNotifier {
         deviceId: deviceId,
         memberName: _memberName!,
       );
-      _joinedEvents[eventId] = false;
+      _joinedEvents =
+          Map<String, bool>.from(_joinedEvents)..[eventId] = false;
+    } on Exception catch (e) {
+      debugPrint('VaariProvider.deleteSignUp error: $e');
     } finally {
       _isLoading = false;
       notifyListeners();

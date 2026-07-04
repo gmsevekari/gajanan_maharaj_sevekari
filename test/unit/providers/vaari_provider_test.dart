@@ -17,7 +17,7 @@ void main() {
         memberName: '',
         deviceId: '',
         phone: '',
-        joinedAt: DateTime.now(),
+        joinedAt: DateTime(2000),
         totalSteps: 0,
         totalDistance: 0.0,
       ),
@@ -68,9 +68,36 @@ void main() {
       expect(success, true);
       expect(provider.memberName, 'New Walker');
       expect(provider.phone, '9876543210');
+      expect(provider.isJoined('event_1'), true);
 
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getString(VaariProvider.keyMemberName), 'New Walker');
+    });
+
+    test('signUp failure does not update local storage or state', () async {
+      when(
+        () => mockService.joinEvent(
+          eventId: any(named: 'eventId'),
+          joinCode: any(named: 'joinCode'),
+          participant: any(named: 'participant'),
+        ),
+      ).thenAnswer((_) async => false);
+
+      final success = await provider.signUp(
+        eventId: 'event_1',
+        joinCode: '000000',
+        memberName: 'New Walker',
+        phone: '9876543210',
+        deviceId: 'device_1',
+      );
+
+      expect(success, false);
+      expect(provider.memberName, isNull);
+      expect(provider.phone, isNull);
+      expect(provider.isJoined('event_1'), false);
+
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString(VaariProvider.keyMemberName), isNull);
     });
 
     test('syncParticipation updates state if participant found on server', () async {
@@ -78,7 +105,7 @@ void main() {
         memberName: 'Remote Walker',
         deviceId: 'device_1',
         phone: '5555555555',
-        joinedAt: DateTime.now(),
+        joinedAt: DateTime(2024),
         totalSteps: 0,
         totalDistance: 0.0,
       );
@@ -94,6 +121,16 @@ void main() {
       expect(provider.isJoined('event_1'), true);
     });
 
+    test('syncParticipation sets joined to false if participant not found on server', () async {
+      when(
+        () => mockService.checkParticipation('event_1', 'device_1'),
+      ).thenAnswer((_) async => null);
+
+      await provider.syncParticipation('event_1', 'device_1');
+
+      expect(provider.isJoined('event_1'), false);
+    });
+
     test('deleteSignUp calls service and updates state', () async {
       when(
         () => mockService.deleteParticipation(
@@ -101,7 +138,7 @@ void main() {
           deviceId: any(named: 'deviceId'),
           memberName: any(named: 'memberName'),
         ),
-      ).thenAnswer((_) async => {});
+      ).thenAnswer((_) async {});
 
       // Setup local profile details first
       SharedPreferences.setMockInitialValues({
@@ -112,6 +149,16 @@ void main() {
 
       await provider.deleteSignUp('event_1', 'device_1');
       expect(provider.isJoined('event_1'), false);
+    });
+
+    test('deleteSignUp is a no-op when memberName is null', () async {
+      // memberName is null (no profile loaded)
+      await provider.deleteSignUp('event_1', 'device_1');
+      verifyNever(() => mockService.deleteParticipation(
+            eventId: any(named: 'eventId'),
+            deviceId: any(named: 'deviceId'),
+            memberName: any(named: 'memberName'),
+          ));
     });
   });
 }

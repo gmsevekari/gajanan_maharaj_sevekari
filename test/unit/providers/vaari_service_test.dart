@@ -132,6 +132,18 @@ void main() {
       expect(event?.id, 'vaari_1');
     });
 
+    test('getEventStream returns null when document does not exist', () async {
+      final service = VaariService(firestore: mockFirestore);
+      final nonExistentSnapshot = MockDocumentSnapshot();
+      when(() => nonExistentSnapshot.exists).thenReturn(false);
+      when(() => nonExistentSnapshot.id).thenReturn('missing');
+      when(() => mockEventDoc.snapshots())
+          .thenAnswer((_) => Stream.value(nonExistentSnapshot));
+
+      final event = await service.getEventStream('missing').first;
+      expect(event, isNull);
+    });
+
     test('getParticipantStream returns correct model stream', () async {
       final service = VaariService(firestore: mockFirestore);
       
@@ -152,6 +164,18 @@ void main() {
 
       final participant = await stream.first;
       expect(participant?.memberName, 'Abhishek');
+    });
+
+    test('getParticipantStream returns null when participant does not exist', () async {
+      final service = VaariService(firestore: mockFirestore);
+      final noPartSnapshot = MockDocumentSnapshot();
+      when(() => noPartSnapshot.exists).thenReturn(false);
+      when(() => mockParticipantDoc.snapshots())
+          .thenAnswer((_) => Stream.value(noPartSnapshot));
+
+      final participant =
+          await service.getParticipantStream('vaari_1', 'device_1', 'Ghost').first;
+      expect(participant, isNull);
     });
 
     test('getParticipantsCountStream returns count stream', () async {
@@ -204,13 +228,53 @@ void main() {
       expect(result, isTrue);
     });
 
+    test('joinEvent returns false when event does not exist', () async {
+      final service = VaariService(firestore: mockFirestore);
+      when(() => mockSnapshot.exists).thenReturn(false);
+      when(() => mockSnapshot.data()).thenReturn(null);
+
+      final participant = VaariParticipant(
+        memberName: 'Abhishek',
+        deviceId: 'device_1',
+        phone: '123',
+        joinedAt: DateTime.now(),
+        totalSteps: 0,
+        totalDistance: 0.0,
+      );
+
+      final result = await service.joinEvent(
+        eventId: 'missing',
+        joinCode: '123456',
+        participant: participant,
+      );
+      expect(result, isFalse);
+    });
+
+    test('joinEvent returns false when joinCode does not match', () async {
+      final service = VaariService(firestore: mockFirestore);
+
+      final participant = VaariParticipant(
+        memberName: 'Abhishek',
+        deviceId: 'device_1',
+        phone: '123',
+        joinedAt: DateTime.now(),
+        totalSteps: 0,
+        totalDistance: 0.0,
+      );
+
+      final result = await service.joinEvent(
+        eventId: 'vaari_1',
+        joinCode: 'WRONG_CODE',
+        participant: participant,
+      );
+      expect(result, isFalse);
+    });
+
     test('submitSteps with provided distance uses provided value', () async {
       final service = VaariService(firestore: mockFirestore);
       final mockBatch = MockWriteBatch();
       when(() => mockFirestore.batch()).thenReturn(mockBatch);
       when(() => mockBatch.commit()).thenAnswer((_) async => {});
-      when(() => mockBatch.update(any(), any())).thenReturn(mockBatch);
-      when(() => mockBatch.set(any(), any(), any())).thenReturn(mockBatch);
 
       await service.submitSteps(
         eventId: 'vaari_1',
@@ -228,8 +292,6 @@ void main() {
       final mockBatch = MockWriteBatch();
       when(() => mockFirestore.batch()).thenReturn(mockBatch);
       when(() => mockBatch.commit()).thenAnswer((_) async => {});
-      when(() => mockBatch.update(any(), any())).thenReturn(mockBatch);
-      when(() => mockBatch.set(any(), any(), any())).thenReturn(mockBatch);
 
       // Unit is 'km' from stub, so 5000 steps * 0.0008 = 4.0 km
       await service.submitSteps(
@@ -240,6 +302,44 @@ void main() {
       );
 
       verify(() => mockBatch.commit()).called(1);
+    });
+
+    test('submitSteps is a no-op when stepsToSubmit <= 0', () async {
+      final service = VaariService(firestore: mockFirestore);
+      // batch() should never be called for zero steps
+      await service.submitSteps(
+        eventId: 'vaari_1',
+        deviceId: 'device_1',
+        memberName: 'Abhishek',
+        stepsToSubmit: 0,
+      );
+      verifyNever(() => mockFirestore.batch());
+    });
+
+    test('submitSteps is a no-op when distanceToSubmit <= 0', () async {
+      final service = VaariService(firestore: mockFirestore);
+      await service.submitSteps(
+        eventId: 'vaari_1',
+        deviceId: 'device_1',
+        memberName: 'Abhishek',
+        stepsToSubmit: 500,
+        distanceToSubmit: -1.0,
+      );
+      verifyNever(() => mockFirestore.batch());
+    });
+
+    test('submitSteps is a no-op when event does not exist', () async {
+      final service = VaariService(firestore: mockFirestore);
+      when(() => mockSnapshot.exists).thenReturn(false);
+      when(() => mockSnapshot.data()).thenReturn(null);
+
+      await service.submitSteps(
+        eventId: 'missing',
+        deviceId: 'device_1',
+        memberName: 'Abhishek',
+        stepsToSubmit: 500,
+      );
+      verifyNever(() => mockFirestore.batch());
     });
 
     test('checkParticipation returns participant if exists', () async {
@@ -262,6 +362,17 @@ void main() {
       expect(result?.memberName, 'Abhishek');
     });
 
+    test('checkParticipation returns null when no participant found', () async {
+      final service = VaariService(firestore: mockFirestore);
+      final mockQuerySnapshot = MockQuerySnapshot();
+      when(() => mockParticipantsCollection.get())
+          .thenAnswer((_) async => mockQuerySnapshot);
+      when(() => mockQuerySnapshot.docs).thenReturn([]);
+
+      final result = await service.checkParticipation('vaari_1', 'device_no_one');
+      expect(result, isNull);
+    });
+
     test('deleteParticipation removes participant document', () async {
       final service = VaariService(firestore: mockFirestore);
       await service.deleteParticipation(
@@ -271,6 +382,21 @@ void main() {
       );
 
       verify(() => mockParticipantDoc.delete()).called(1);
+    });
+
+    test('_getParticipantId sanitises slashes in deviceId and memberName', () async {
+      // Indirectly verified: getParticipantStream uses _getParticipantId internally.
+      // A deviceId or memberName with slashes must not cause a Firestore path split.
+      final service = VaariService(firestore: mockFirestore);
+      final noPartSnapshot = MockDocumentSnapshot();
+      when(() => noPartSnapshot.exists).thenReturn(false);
+      when(() => mockParticipantDoc.snapshots())
+          .thenAnswer((_) => Stream.value(noPartSnapshot));
+
+      // Should NOT throw — slashes are sanitised before building the doc path.
+      final stream =
+          service.getParticipantStream('vaari_1', 'dev/ice', 'John/Doe');
+      expect(await stream.first, isNull);
     });
   });
 }

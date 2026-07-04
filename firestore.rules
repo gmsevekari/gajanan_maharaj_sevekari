@@ -191,5 +191,42 @@ service cloud.firestore {
         allow delete: if isAdmin() || (resource.data.deviceId != null);
       }
     }
+
+    // Vaari Events: Publicly readable; Admin writable
+    match /vaari_events/{eventId} {
+      allow read: if true;
+      // Only admins can create or delete events
+      allow create, delete: if isAdmin();
+      // Allow atomic updates by participants to increment global step/distance counters only
+      allow update: if isAdmin() ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalSteps', 'totalDistance']);
+
+      match /participants/{participantId} {
+        allow read: if true;
+        // Any authenticated or anonymous user can register with valid fields
+        allow create: if request.resource.data.keys().hasAll(['memberName', 'deviceId', 'phone', 'joinedAt', 'totalSteps', 'totalDistance'])
+          && request.resource.data.keys().hasOnly(['memberName', 'deviceId', 'phone', 'joinedAt', 'totalSteps', 'totalDistance'])
+          && request.resource.data.memberName is string
+          && request.resource.data.memberName.size() > 0
+          && request.resource.data.memberName.size() < 100
+          && request.resource.data.deviceId is string
+          && request.resource.data.deviceId.size() > 0
+          && request.resource.data.deviceId.size() < 200
+          && request.resource.data.phone is string
+          && request.resource.data.phone.size() < 30
+          && request.resource.data.joinedAt is timestamp
+          && request.resource.data.totalSteps == 0
+          && request.resource.data.totalDistance == 0.0;
+        // Participants may only increment their own step/distance counts; identity fields are immutable
+        allow update: if isAdmin() || (
+          request.resource.data.deviceId == resource.data.deviceId &&
+          request.resource.data.memberName == resource.data.memberName &&
+          request.resource.data.phone == resource.data.phone &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalSteps', 'totalDistance'])
+        );
+        // Public deletion: participants do not log in and must be able to remove own registration via deviceId
+        allow delete: if isAdmin() || (resource.data.deviceId != null);
+      }
+    }
   }
 }

@@ -149,7 +149,7 @@ void main() async {
           update: (context, service, previous) =>
               previous ?? GroupNamjapProvider(service: service),
         ),
-        ChangeNotifierProvider(create: (_) => VaariService()),
+        Provider<VaariService>(create: (_) => VaariService()),
         ChangeNotifierProxyProvider<VaariService, VaariProvider>(
           create: (context) =>
               VaariProvider(service: context.read<VaariService>()),

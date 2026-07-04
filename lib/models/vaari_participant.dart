@@ -8,7 +8,7 @@ class VaariParticipant {
   final int totalSteps;
   final double totalDistance;
 
-  VaariParticipant({
+  const VaariParticipant({
     required this.memberName,
     required this.deviceId,
     required this.phone,
@@ -22,7 +22,7 @@ class VaariParticipant {
       memberName: data['memberName'] ?? '',
       deviceId: data['deviceId'] ?? '',
       phone: data['phone'] ?? '',
-      joinedAt: (data['joinedAt'] as Timestamp).toDate(),
+      joinedAt: (data['joinedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       totalSteps: data['totalSteps'] ?? 0,
       totalDistance: (data['totalDistance'] as num?)?.toDouble() ?? 0.0,
     );

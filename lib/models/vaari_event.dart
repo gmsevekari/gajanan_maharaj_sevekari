@@ -17,7 +17,7 @@ class VaariEvent {
   final double totalDistance;
   final String distanceUnit;
 
-  VaariEvent({
+  const VaariEvent({
     required this.id,
     required this.createdAt,
     required this.endDate,
@@ -38,15 +38,15 @@ class VaariEvent {
   factory VaariEvent.fromMap(String documentId, Map<String, dynamic> data) {
     return VaariEvent(
       id: documentId,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      endDate: (data['endDate'] as Timestamp).toDate(),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      endDate: (data['endDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       groupId: data['groupId'] ?? '',
       joinCode: data['joinCode'] ?? '',
       nameEn: data['name_en'] ?? '',
       nameMr: data['name_mr'] ?? '',
       descriptionEn: data['description_en'] ?? '',
       descriptionMr: data['description_mr'] ?? '',
-      startDate: (data['startDate'] as Timestamp).toDate(),
+      startDate: (data['startDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       status: data['status'] ?? 'upcoming',
       timezone: data['timezone'] ?? 'America/Los_Angeles',
       totalSteps: data['totalSteps'] ?? 0,
