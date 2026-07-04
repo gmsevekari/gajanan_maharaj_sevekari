@@ -17,6 +17,7 @@ enum LogicalIcon {
   about,
   person,
   groups,
+  walk,
 }
 
 class ThemedIcon extends StatelessWidget {
@@ -93,6 +94,8 @@ class ThemedIcon extends StatelessWidget {
         return Icons.person;
       case LogicalIcon.groups:
         return Icons.groups;
+      case LogicalIcon.walk:
+        return Icons.directions_walk;
     }
   }
 

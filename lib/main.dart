@@ -48,6 +48,8 @@ import 'package:gajanan_maharaj_sevekari/jap_mala/namjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/individual_namjap_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/group_namjap_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/group_namjap_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/vaari/vaari_list_screen.dart';
+import 'package:gajanan_maharaj_sevekari/vaari/vaari_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_add_group_admin_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_login_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_dashboard_screen.dart';
@@ -393,6 +395,41 @@ class _MyAppState extends State<MyApp> {
                   }
 
                   return GroupNamjapDetailScreen(
+                    eventId: eventId,
+                    prefilledJoinCode: joinCode,
+                  );
+                },
+                Routes.vaariList: (context) {
+                  final args =
+                      ModalRoute.of(context)?.settings.arguments as Map?;
+                  return VaariListScreen(
+                    groupId: args?['groupId'],
+                    groupName: args?['groupName'],
+                  );
+                },
+                Routes.vaariDetail: (context) {
+                  final args = ModalRoute.of(context)?.settings.arguments;
+                  String? eventId;
+                  String? joinCode;
+
+                  if (args is String) {
+                    eventId = args;
+                  } else if (args is Map) {
+                    eventId = args['id'] as String?;
+                    joinCode = args['joinCode'] as String?;
+                  }
+
+                  if (eventId == null) {
+                    return const Scaffold(
+                      body: Center(
+                        child: Text(
+                          'Error: Missing or invalid VaariDetail arguments',
+                        ),
+                      ),
+                    );
+                  }
+
+                  return VaariDetailScreen(
                     eventId: eventId,
                     prefilledJoinCode: joinCode,
                   );

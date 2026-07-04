@@ -258,6 +258,46 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
     cards.add(
       _buildIconGridItem(
+        key: const Key('vaari_card'),
+        context: context,
+        title: localizations.vaariTitle,
+        customWidget: const ThemedIcon(LogicalIcon.walk, size: 60.0),
+        onTap: () {
+          final selectedGroupIds =
+              context.read<GroupSelectionProvider>().selectedGroupIds;
+
+          if (selectedGroupIds.length == 1) {
+            final groupId = selectedGroupIds.first;
+            final configProvider = context.read<AppConfigProvider>();
+            final group = configProvider.appConfig?.gajananMaharajGroups
+                .firstWhere((g) => g.id == groupId);
+            final useMarathi = Localizations.localeOf(context).useMarathiContent;
+            final groupName = useMarathi ? group?.nameMr : group?.nameEn;
+
+            Navigator.pushNamed(
+              context,
+              Routes.vaariList,
+              arguments: {'groupId': groupId, 'groupName': groupName},
+            );
+          } else {
+            Navigator.pushNamed(
+              context,
+              Routes.gajananMaharajGroups,
+              arguments: GroupScreenConfig(
+                title: localizations.vaariTitle,
+                emptyMessage: selectedGroupIds.isEmpty
+                    ? localizations.noVaariGroupsSelectedMessage
+                    : localizations.noActiveVaaris,
+                targetRoute: Routes.vaariList,
+                filteredGroupIds: selectedGroupIds,
+              ),
+            );
+          }
+        },
+      ),
+    );
+    cards.add(
+      _buildIconGridItem(
         context: context,
         title: localizations.calendarTitle,
         customWidget: (isGaneshotsav || isDiwali)

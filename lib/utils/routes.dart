@@ -52,4 +52,7 @@ class Routes {
   static const String adminAddGroupAdmin = '/admin_add_group_admin';
   static const String adminCreateParayanWithAllocation =
       '/admin_create_parayan_with_allocation';
+
+  static const String vaariList = '/vaari_list';
+  static const String vaariDetail = '/vaari_detail';
 }
