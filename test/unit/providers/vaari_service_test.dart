@@ -56,11 +56,14 @@ void main() {
           any(),
           isEqualTo: any(named: 'isEqualTo'),
         )).thenReturn(mockParticipantsCollection);
+    when(() => mockParticipantsCollection.limit(any())).thenReturn(mockParticipantsCollection);
     when(() => mockParticipantsCollection.snapshots()).thenAnswer((_) => Stream.value(MockQuerySnapshot()));
+    when(() => mockParticipantsCollection.get()).thenAnswer((_) async => MockQuerySnapshot());
 
     when(() => mockParticipantDoc.get()).thenAnswer((_) async => mockSnapshot);
     when(() => mockParticipantDoc.update(any())).thenAnswer((_) async => {});
     when(() => mockParticipantDoc.set(any())).thenAnswer((_) async => {});
+    when(() => mockParticipantDoc.delete()).thenAnswer((_) async => {});
 
     when(() => mockSnapshot.exists).thenReturn(true);
     when(() => mockSnapshot.id).thenReturn('vaari_1');
@@ -83,17 +86,102 @@ void main() {
   });
 
   group('VaariService Tests', () {
-    test('getActiveEvents queries correct status values', () async {
+    test('VaariService constructor uses default Firestore instance if none provided', () {
+      expect(() => VaariService(), throwsA(isA<FirebaseException>()));
+    });
+
+    test('getActiveEvents and getCompletedEvents build queries correctly', () async {
       final service = VaariService(firestore: mockFirestore);
       
-      // Force test compilation of getActiveEvents
-      try {
-        service.getActiveEvents('gajanan_gunjan');
-      } catch (e) {
-        // expect failing state
-      }
+      final mockQuerySnapshot = MockQuerySnapshot();
+      final mockDocSnapshot = MockQueryDocumentSnapshot();
+      when(() => mockQuerySnapshot.docs).thenReturn([mockDocSnapshot]);
+      when(() => mockDocSnapshot.id).thenReturn('vaari_1');
+      when(() => mockDocSnapshot.data()).thenReturn({
+        'createdAt': Timestamp.now(),
+        'endDate': Timestamp.now(),
+        'groupId': 'gajanan_gunjan',
+        'joinCode': '123456',
+        'name_en': 'Weekly Vaari',
+        'name_mr': 'साप्ताहिक वारी',
+        'description_en': 'Walk',
+        'description_mr': 'चाला',
+        'startDate': Timestamp.now(),
+        'status': 'ongoing',
+        'timezone': 'Asia/Kolkata',
+        'totalSteps': 10000,
+        'totalDistance': 8.0,
+        'distanceUnit': 'km',
+      });
 
-      verify(() => mockFirestore.collection('vaari_events')).called(1);
+      when(() => mockEventsCollection.snapshots()).thenAnswer((_) => Stream.value(mockQuerySnapshot));
+
+      final activeEvents = await service.getActiveEvents('gajanan_gunjan').first;
+      final completedEvents = await service.getCompletedEvents('gajanan_gunjan').first;
+
+      expect(activeEvents, hasLength(1));
+      expect(completedEvents, hasLength(1));
+    });
+
+    test('getEventStream returns correct model stream', () async {
+      final service = VaariService(firestore: mockFirestore);
+      final stream = service.getEventStream('vaari_1');
+      expect(stream, isNotNull);
+
+      final event = await stream.first;
+      expect(event?.id, 'vaari_1');
+    });
+
+    test('getParticipantStream returns correct model stream', () async {
+      final service = VaariService(firestore: mockFirestore);
+      
+      final mockPartSnapshot = MockDocumentSnapshot();
+      when(() => mockPartSnapshot.exists).thenReturn(true);
+      when(() => mockPartSnapshot.data()).thenReturn({
+        'memberName': 'Abhishek',
+        'deviceId': 'device_1',
+        'phone': '123',
+        'joinedAt': Timestamp.now(),
+        'totalSteps': 5000,
+        'totalDistance': 4.0,
+      });
+      when(() => mockParticipantDoc.snapshots()).thenAnswer((_) => Stream.value(mockPartSnapshot));
+
+      final stream = service.getParticipantStream('vaari_1', 'device_1', 'Abhishek');
+      expect(stream, isNotNull);
+
+      final participant = await stream.first;
+      expect(participant?.memberName, 'Abhishek');
+    });
+
+    test('getParticipantsCountStream returns count stream', () async {
+      final service = VaariService(firestore: mockFirestore);
+      final stream = service.getParticipantsCountStream('vaari_1');
+      expect(stream, isNotNull);
+    });
+
+    test('createEvent successfully sets document', () async {
+      final service = VaariService(firestore: mockFirestore);
+      final event = VaariEvent(
+        id: 'vaari_1',
+        createdAt: DateTime.now(),
+        endDate: DateTime.now(),
+        groupId: 'gajanan_gunjan',
+        joinCode: '123',
+        nameEn: 'E',
+        nameMr: 'M',
+        descriptionEn: 'E',
+        descriptionMr: 'M',
+        startDate: DateTime.now(),
+        status: 'ongoing',
+        timezone: 'Asia/Kolkata',
+        totalSteps: 0,
+        totalDistance: 0.0,
+        distanceUnit: 'km',
+      );
+
+      await service.createEvent(event);
+      verify(() => mockEventDoc.set(any())).called(1);
     });
 
     test('joinEvent checks code and writes participant', () async {
@@ -152,6 +240,37 @@ void main() {
       );
 
       verify(() => mockBatch.commit()).called(1);
+    });
+
+    test('checkParticipation returns participant if exists', () async {
+      final service = VaariService(firestore: mockFirestore);
+      final mockQuerySnapshot = MockQuerySnapshot();
+      final mockDocSnapshot = MockQueryDocumentSnapshot();
+
+      when(() => mockParticipantsCollection.get()).thenAnswer((_) async => mockQuerySnapshot);
+      when(() => mockQuerySnapshot.docs).thenReturn([mockDocSnapshot]);
+      when(() => mockDocSnapshot.data()).thenReturn({
+        'memberName': 'Abhishek',
+        'deviceId': 'device_1',
+        'phone': '123',
+        'joinedAt': Timestamp.now(),
+        'totalSteps': 0,
+        'totalDistance': 0.0,
+      });
+
+      final result = await service.checkParticipation('vaari_1', 'device_1');
+      expect(result?.memberName, 'Abhishek');
+    });
+
+    test('deleteParticipation removes participant document', () async {
+      final service = VaariService(firestore: mockFirestore);
+      await service.deleteParticipation(
+        eventId: 'vaari_1',
+        deviceId: 'device_1',
+        memberName: 'Abhishek',
+      );
+
+      verify(() => mockParticipantDoc.delete()).called(1);
     });
   });
 }

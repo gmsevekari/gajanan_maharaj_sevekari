@@ -93,5 +93,25 @@ void main() {
       expect(provider.phone, '5555555555');
       expect(provider.isJoined('event_1'), true);
     });
+
+    test('deleteSignUp calls service and updates state', () async {
+      when(
+        () => mockService.deleteParticipation(
+          eventId: any(named: 'eventId'),
+          deviceId: any(named: 'deviceId'),
+          memberName: any(named: 'memberName'),
+        ),
+      ).thenAnswer((_) async => {});
+
+      // Setup local profile details first
+      SharedPreferences.setMockInitialValues({
+        VaariProvider.keyMemberName: 'Test Walker',
+        VaariProvider.keyPhone: '1234567890',
+      });
+      await provider.loadLocalData();
+
+      await provider.deleteSignUp('event_1', 'device_1');
+      expect(provider.isJoined('event_1'), false);
+    });
   });
 }
