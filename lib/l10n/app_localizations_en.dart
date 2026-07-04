@@ -1975,9 +1975,46 @@ class AppLocalizationsEn extends AppLocalizations {
       'Unable to open Vaari events: group not specified.';
 
   @override
-  String vaariDetailPlaceholder(String eventId) {
-    return 'Details for event $eventId coming soon.';
+  String get vaariEventDetails => 'Event Details';
+
+  @override
+  String get vaariEventNotFound => 'Event not found';
+
+  @override
+  String get deleteSignupConfirmMessageVaari =>
+      'Are you sure you want to delete your signup for this Vaari?';
+
+  @override
+  String get descriptionLabel => 'Description';
+
+  @override
+  String get totalStepsLabel => 'Total Steps';
+
+  @override
+  String get totalDistanceLabel => 'Total Distance';
+
+  @override
+  String get myStepsLabel => 'My Steps';
+
+  @override
+  String get myDistanceLabel => 'My Distance';
+
+  @override
+  String get vaariTotalParticipants => 'PARTICIPANTS';
+
+  @override
+  String get addStepsLabel => 'Add Steps';
+
+  @override
+  String get stepsLabel => 'Steps';
+
+  @override
+  String distanceOptionalLabel(String unit) {
+    return 'Distance in $unit (optional)';
   }
+
+  @override
+  String get stepsSubmittedSuccess => 'Steps submitted successfully';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

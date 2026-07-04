@@ -3813,11 +3813,83 @@ abstract class AppLocalizations {
   /// **'Unable to open Vaari events: group not specified.'**
   String get vaariInvalidGroupError;
 
-  /// No description provided for @vaariDetailPlaceholder.
+  /// No description provided for @vaariEventDetails.
   ///
   /// In en, this message translates to:
-  /// **'Details for event {eventId} coming soon.'**
-  String vaariDetailPlaceholder(String eventId);
+  /// **'Event Details'**
+  String get vaariEventDetails;
+
+  /// No description provided for @vaariEventNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Event not found'**
+  String get vaariEventNotFound;
+
+  /// No description provided for @deleteSignupConfirmMessageVaari.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your signup for this Vaari?'**
+  String get deleteSignupConfirmMessageVaari;
+
+  /// No description provided for @descriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get descriptionLabel;
+
+  /// No description provided for @totalStepsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Steps'**
+  String get totalStepsLabel;
+
+  /// No description provided for @totalDistanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Distance'**
+  String get totalDistanceLabel;
+
+  /// No description provided for @myStepsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'My Steps'**
+  String get myStepsLabel;
+
+  /// No description provided for @myDistanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'My Distance'**
+  String get myDistanceLabel;
+
+  /// No description provided for @vaariTotalParticipants.
+  ///
+  /// In en, this message translates to:
+  /// **'PARTICIPANTS'**
+  String get vaariTotalParticipants;
+
+  /// No description provided for @addStepsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Steps'**
+  String get addStepsLabel;
+
+  /// No description provided for @stepsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps'**
+  String get stepsLabel;
+
+  /// No description provided for @distanceOptionalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance in {unit} (optional)'**
+  String distanceOptionalLabel(String unit);
+
+  /// No description provided for @stepsSubmittedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps submitted successfully'**
+  String get stepsSubmittedSuccess;
 }
 
 class _AppLocalizationsDelegate

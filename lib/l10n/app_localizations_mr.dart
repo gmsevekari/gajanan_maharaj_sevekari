@@ -1980,7 +1980,44 @@ class AppLocalizationsMr extends AppLocalizations {
       'वारी इव्हेंट्स उघडता आले नाहीत: ग्रुप निर्दिष्ट केलेला नाही.';
 
   @override
-  String vaariDetailPlaceholder(String eventId) {
-    return 'इव्हेंट $eventId चा तपशील लवकरच उपलब्ध होईल.';
+  String get vaariEventDetails => 'इव्हेंट तपशील';
+
+  @override
+  String get vaariEventNotFound => 'इव्हेंट सापडला नाही';
+
+  @override
+  String get deleteSignupConfirmMessageVaari =>
+      'तुम्हाला या वारीसाठीची तुमची नोंदणी नक्की काढून टाकायची आहे का?';
+
+  @override
+  String get descriptionLabel => 'वर्णन';
+
+  @override
+  String get totalStepsLabel => 'एकूण स्टेप्स';
+
+  @override
+  String get totalDistanceLabel => 'एकूण अंतर';
+
+  @override
+  String get myStepsLabel => 'माझ्या स्टेप्स';
+
+  @override
+  String get myDistanceLabel => 'माझे अंतर';
+
+  @override
+  String get vaariTotalParticipants => 'सहभागी';
+
+  @override
+  String get addStepsLabel => 'स्टेप्स जोडा';
+
+  @override
+  String get stepsLabel => 'स्टेप्स';
+
+  @override
+  String distanceOptionalLabel(String unit) {
+    return 'अंतर $unit मध्ये (ऐच्छिक)';
   }
+
+  @override
+  String get stepsSubmittedSuccess => 'स्टेप्स यशस्वीरित्या सबमिट केल्या';
 }
