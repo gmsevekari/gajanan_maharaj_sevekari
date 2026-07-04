@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/vaari/vaari_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/widgets/vaari_signup_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/widgets/add_steps_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/widgets/vaari_participants_table.dart';
+import 'package:gajanan_maharaj_sevekari/vaari/widgets/vaari_route_progress.dart';
 import 'package:gajanan_maharaj_sevekari/models/vaari_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/vaari_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/vaari_service.dart';
@@ -140,6 +141,18 @@ void main() {
     expect(find.text('My Distance'.toUpperCase()), findsNothing);
   });
 
+  testWidgets('renders the Alandi-to-Pandharpur route progress', (
+    tester,
+  ) async {
+    await tester.pumpWidget(createWidget('test_event'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(VaariRouteProgress), findsOneWidget);
+    expect(find.text('ROUTE PROGRESS'), findsOneWidget);
+    // testEvent.totalDistance is 12.0 km.
+    expect(find.text('12.0 / 249.4 km'), findsOneWidget);
+  });
+
   testWidgets('renders event-not-found state when stream emits null', (
     tester,
   ) async {
@@ -254,6 +267,9 @@ void main() {
     await tester.pumpWidget(createWidget('test_event'));
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(
+      find.widgetWithText(ElevatedButton, 'Add Steps'),
+    );
     await tester.tap(find.widgetWithText(ElevatedButton, 'Add Steps'));
     await tester.pumpAndSettle();
 
@@ -293,6 +309,9 @@ void main() {
     await tester.pumpWidget(createWidget('test_event'));
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(
+      find.widgetWithText(ElevatedButton, 'Add Steps'),
+    );
     await tester.tap(find.widgetWithText(ElevatedButton, 'Add Steps'));
     await tester.pumpAndSettle();
 
@@ -321,6 +340,9 @@ void main() {
     await tester.pumpWidget(createWidget('test_event'));
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(
+      find.widgetWithText(ElevatedButton, 'Add Steps'),
+    );
     await tester.tap(find.widgetWithText(ElevatedButton, 'Add Steps'));
     await tester.pumpAndSettle();
 
@@ -357,6 +379,9 @@ void main() {
     await tester.pumpWidget(createWidget('test_event'));
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(
+      find.widgetWithText(ElevatedButton, 'Add Steps'),
+    );
     await tester.tap(find.widgetWithText(ElevatedButton, 'Add Steps'));
     await tester.pumpAndSettle();
 
@@ -632,6 +657,9 @@ void main() {
 
     expect(find.text('Total Distance (miles)'.toUpperCase()), findsOneWidget);
 
+    await tester.ensureVisible(
+      find.widgetWithText(ElevatedButton, 'Add Steps'),
+    );
     await tester.tap(find.widgetWithText(ElevatedButton, 'Add Steps'));
     await tester.pumpAndSettle();
 

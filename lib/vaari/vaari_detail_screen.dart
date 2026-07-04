@@ -13,6 +13,7 @@ import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/widgets/add_steps_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/widgets/vaari_signup_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/widgets/vaari_participants_table.dart';
+import 'package:gajanan_maharaj_sevekari/vaari/widgets/vaari_route_progress.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
@@ -152,6 +153,11 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
                               localizations,
                               theme,
                               locale,
+                            ),
+                            const SizedBox(height: 16),
+                            VaariRouteProgress(
+                              totalDistance: event.totalDistance,
+                              distanceUnit: event.distanceUnit,
                             ),
                             const SizedBox(height: 16),
                             Consumer<VaariProvider>(
