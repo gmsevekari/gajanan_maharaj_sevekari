@@ -12,6 +12,12 @@ class VaariService {
   static const String eventsCollection = 'vaari_events';
   static const String participantsSubcollection = 'participants';
 
+  /// Distance covered per step when distance unit is kilometres.
+  static const double _kmPerStep = 0.0008;
+
+  /// Distance covered per step when distance unit is miles.
+  static const double _milesPerStep = 0.0005; // ~2,000 steps per mile average
+
   /// Sanitised participant document ID — strips slashes and collapses spaces.
   String _getParticipantId(String deviceId, String memberName) {
     final safeDevice = deviceId.replaceAll('/', '_');
@@ -157,7 +163,7 @@ class VaariService {
 
       final double distance =
           distanceToSubmit ??
-          (stepsToSubmit * (unit == 'km' ? 0.0008 : 0.0005));
+          (stepsToSubmit * (unit == 'km' ? _kmPerStep : _milesPerStep));
 
       final participantId = _getParticipantId(deviceId, memberName);
       final participantRef = eventRef

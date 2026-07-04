@@ -3788,6 +3788,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please select a group to view Vaari events.'**
   String get noVaariGroupsSelectedMessage;
+
+  /// No description provided for @vaariStepsSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **' steps'**
+  String get vaariStepsSuffix;
+
+  /// No description provided for @vaariDistanceSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **' {unit}'**
+  String vaariDistanceSuffix(String unit);
 }
 
 class _AppLocalizationsDelegate

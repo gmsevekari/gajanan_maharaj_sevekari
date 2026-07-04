@@ -31,6 +31,11 @@ class _VaariListScreenState extends State<VaariListScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
+    assert(
+      widget.groupId != null,
+      'VaariListScreen: groupId should always be provided via route arguments.',
+    );
+
     final service = context.read<VaariService>();
     final effectiveGroupId = widget.groupId ?? GroupConstants.seattle;
     _activeEventsStream = service.getActiveEvents(effectiveGroupId);
@@ -93,19 +98,20 @@ class _VaariListScreenState extends State<VaariListScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        physics: const NeverScrollableScrollPhysics(),
         children: [
           _buildEventListStream(
             _activeEventsStream!,
             localizations.noActiveVaaris,
             locale,
             theme,
+            localizations,
           ),
           _buildEventListStream(
             _completedEventsStream!,
             localizations.noCompletedVaaris,
             locale,
             theme,
+            localizations,
           ),
         ],
       ),
@@ -117,6 +123,7 @@ class _VaariListScreenState extends State<VaariListScreen>
     String noDataText,
     String locale,
     ThemeData theme,
+    AppLocalizations localizations,
   ) {
     return StreamBuilder<List<VaariEvent>>(
       stream: stream,
@@ -164,10 +171,9 @@ class _VaariListScreenState extends State<VaariListScreen>
               locale,
             );
 
-            final stepSuffix = locale == 'mr' ? ' पायऱ्या' : ' steps';
-            final distSuffix = locale == 'mr'
-                ? ' किमी'
-                : ' ${event.distanceUnit}';
+            final stepSuffix = localizations.vaariStepsSuffix;
+            final distUnit = locale == 'mr' ? 'किमी' : event.distanceUnit;
+            final distSuffix = localizations.vaariDistanceSuffix(distUnit);
             final formattedSteps =
                 formatNumberLocalized(event.totalSteps, locale, pad: false) +
                 stepSuffix;

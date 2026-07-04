@@ -1962,4 +1962,12 @@ class AppLocalizationsMr extends AppLocalizations {
   @override
   String get noVaariGroupsSelectedMessage =>
       'वारी पाहण्यासाठी कृपया एक ग्रुप निवडा.';
+
+  @override
+  String get vaariStepsSuffix => ' पायऱ्या';
+
+  @override
+  String vaariDistanceSuffix(String unit) {
+    return ' $unit';
+  }
 }

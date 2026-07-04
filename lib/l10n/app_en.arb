@@ -732,5 +732,14 @@
   "vaariDescription": "Walk and report steps as part of a collective Vaari event.",
   "noActiveVaaris": "No active Vaari events currently",
   "noCompletedVaaris": "No completed Vaari events yet",
-  "noVaariGroupsSelectedMessage": "Please select a group to view Vaari events."
+  "noVaariGroupsSelectedMessage": "Please select a group to view Vaari events.",
+  "vaariStepsSuffix": " steps",
+  "vaariDistanceSuffix": " {unit}",
+  "@vaariDistanceSuffix": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -264,7 +264,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         key: const Key('vaari_card'),
         context: context,
         title: localizations.vaariTitle,
-        customWidget: const ThemedIcon(LogicalIcon.walk, size: 60.0),
+        imagePath: 'resources/images/icon/Vaari.png',
+        imageSize: 100.0,
         onTap: () {
           final selectedGroupIds = context
               .read<GroupSelectionProvider>()

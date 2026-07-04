@@ -1957,6 +1957,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noVaariGroupsSelectedMessage =>
       'Please select a group to view Vaari events.';
+
+  @override
+  String get vaariStepsSuffix => ' steps';
+
+  @override
+  String vaariDistanceSuffix(String unit) {
+    return ' $unit';
+  }
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).
