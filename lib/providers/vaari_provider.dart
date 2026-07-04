@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:gajanan_maharaj_sevekari/models/vaari_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/vaari_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VaariProvider extends ChangeNotifier {
   final VaariService _service;
@@ -24,7 +26,10 @@ class VaariProvider extends ChangeNotifier {
   static const String keyPhone = 'vaari_phone';
 
   Future<void> loadLocalData() async {
-    throw UnimplementedError();
+    final prefs = await SharedPreferences.getInstance();
+    _memberName = prefs.getString(keyMemberName);
+    _phone = prefs.getString(keyPhone);
+    notifyListeners();
   }
 
   Future<bool> signUp({
@@ -34,14 +39,82 @@ class VaariProvider extends ChangeNotifier {
     required String phone,
     required String deviceId,
   }) async {
-    throw UnimplementedError();
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final participant = VaariParticipant(
+        memberName: memberName,
+        deviceId: deviceId,
+        phone: phone,
+        joinedAt: DateTime.now(),
+        totalSteps: 0,
+        totalDistance: 0.0,
+      );
+
+      final success = await _service.joinEvent(
+        eventId: eventId,
+        joinCode: joinCode,
+        participant: participant,
+      );
+
+      if (success) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(keyMemberName, memberName);
+        await prefs.setString(keyPhone, phone);
+
+        _memberName = memberName;
+        _phone = phone;
+        _joinedEvents[eventId] = true;
+      }
+      return success;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> syncParticipation(String eventId, String deviceId) async {
-    throw UnimplementedError();
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final participant = await _service.checkParticipation(eventId, deviceId);
+      if (participant != null) {
+        if (_memberName == null || _phone == null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString(keyMemberName, participant.memberName);
+          await prefs.setString(keyPhone, participant.phone);
+
+          _memberName = participant.memberName;
+          _phone = participant.phone;
+        }
+        _joinedEvents[eventId] = true;
+      } else {
+        _joinedEvents[eventId] = false;
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> deleteSignUp(String eventId, String deviceId) async {
-    throw UnimplementedError();
+    if (_memberName == null) return;
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await _service.deleteParticipation(
+        eventId: eventId,
+        deviceId: deviceId,
+        memberName: _memberName!,
+      );
+      _joinedEvents[eventId] = false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }
