@@ -86,7 +86,11 @@ String formatTimeDetailed(DateTime time, String locale) {
 /// Formats a date into a medium format: "MMM d, yyyy" with optional time.
 ///
 /// When [includeTime] is true, appends " - hh:mm a" (e.g., "Jun 20, 2026 - 02:30 PM").
-String formatDateMedium(DateTime date, String locale, {bool includeTime = false}) {
+String formatDateMedium(
+  DateTime date,
+  String locale, {
+  bool includeTime = false,
+}) {
   final localDate = date.toLocal();
   final formatStr = includeTime ? 'MMM d, yyyy - hh:mm a' : 'MMM d, yyyy';
   final dateStr = DateFormat(formatStr, locale).format(localDate);
@@ -101,22 +105,31 @@ String formatMonthYear(DateTime date, String locale) {
 }
 
 /// Dynamically converts text timings in a block of text (like "स. १०:३०" or "10:30 am")
-/// based on the offset of a reference time. Assumes the first time in the text 
+/// based on the offset of a reference time. Assumes the first time in the text
 /// corresponds to the referenceLocalTime.
-String convertTextTimings(String text, DateTime referenceLocalTime, String locale) {
+String convertTextTimings(
+  String text,
+  DateTime referenceLocalTime,
+  String locale,
+) {
   if (text.trim().isEmpty) return text;
 
   // Match times with optional am/pm/marathi period prefixes or suffixes.
   // Supports both colon (:) and period (.) separators (e.g. 10:30 or 10.30).
-  final regex = RegExp(r'((?:स\.|दु\.|सं\.|रा\.|am|pm|AM|PM)\s+)?([०-९0-9]{1,2})[:\.]([०-९0-9]{2})(?:\s+(am|pm|AM|PM))?');
-  
+  final regex = RegExp(
+    r'((?:स\.|दु\.|सं\.|रा\.|am|pm|AM|PM)\s+)?([०-९0-9]{1,2})[:\.]([०-९0-9]{2})(?:\s+(am|pm|AM|PM))?',
+  );
+
   final firstMatch = regex.firstMatch(text);
   if (firstMatch == null) return text; // No times found
 
   int parseHour(String hourStr, String? periodPrefix, String? periodSuffix) {
     int h = int.parse(toEnglishNumerals(hourStr));
     final period = (periodPrefix ?? periodSuffix ?? '').toLowerCase().trim();
-    if (period == 'दु.' || period == 'सं.' || period == 'रा.' || period == 'pm') {
+    if (period == 'दु.' ||
+        period == 'सं.' ||
+        period == 'रा.' ||
+        period == 'pm') {
       if (h < 12) h += 12;
     } else if (period == 'स.' || period == 'am') {
       if (h == 12) h = 0;
@@ -124,19 +137,30 @@ String convertTextTimings(String text, DateTime referenceLocalTime, String local
     return h;
   }
 
-  int firstHour = parseHour(firstMatch.group(2)!, firstMatch.group(1), firstMatch.group(4));
+  int firstHour = parseHour(
+    firstMatch.group(2)!,
+    firstMatch.group(1),
+    firstMatch.group(4),
+  );
   int firstMin = int.parse(toEnglishNumerals(firstMatch.group(3)!));
 
-  int offsetMinutes = (referenceLocalTime.hour * 60 + referenceLocalTime.minute) - (firstHour * 60 + firstMin);
+  int offsetMinutes =
+      (referenceLocalTime.hour * 60 + referenceLocalTime.minute) -
+      (firstHour * 60 + firstMin);
 
   int lastParsedMinutes = -1;
 
   return text.replaceAllMapped(regex, (match) {
     int h = int.parse(toEnglishNumerals(match.group(2)!));
     int m = int.parse(toEnglishNumerals(match.group(3)!));
-    final period = (match.group(1) ?? match.group(4) ?? '').toLowerCase().trim();
+    final period = (match.group(1) ?? match.group(4) ?? '')
+        .toLowerCase()
+        .trim();
 
-    if (period == 'दु.' || period == 'सं.' || period == 'रा.' || period == 'pm') {
+    if (period == 'दु.' ||
+        period == 'सं.' ||
+        period == 'रा.' ||
+        period == 'pm') {
       if (h < 12) h += 12;
     } else if (period == 'स.' || period == 'am') {
       if (h == 12) h = 0;
@@ -145,7 +169,7 @@ String convertTextTimings(String text, DateTime referenceLocalTime, String local
     int currentTotalMinutes = h * 60 + m;
 
     // Sequential Time Guarantee: Schedules usually progress forward in time.
-    // If time jumps backwards (e.g. 11:30 AM -> 1:00 AM or 12:00 AM), 
+    // If time jumps backwards (e.g. 11:30 AM -> 1:00 AM or 12:00 AM),
     // it's likely a missing or incorrect AM/PM suffix.
     if (lastParsedMinutes != -1 && currentTotalMinutes < lastParsedMinutes) {
       if (h < 12) {
@@ -165,4 +189,54 @@ String convertTextTimings(String text, DateTime referenceLocalTime, String local
     final dummyDate = DateTime(2000, 1, 1, newHour, newMin);
     return formatTimeLocalized(dummyDate, locale);
   });
+}
+
+/// Formats a date into a short format explicitly applying the event's timezone offset
+/// to ensure cross-timezone users see the correct local day for the event.
+String formatDateShortWithEventTimezone(
+  DateTime utcDate,
+  String timezone,
+  String locale,
+) {
+  // Get the date strictly in the event's timezone instead of the user's device timezone
+  DateTime wallClockDate;
+  if (timezone == 'Asia/Kolkata') {
+    wallClockDate = utcDate.add(const Duration(hours: 5, minutes: 30));
+  } else {
+    // America/Los_Angeles
+    final isDst = isPacificDST(utcDate);
+    final offsetHours = isDst ? 7 : 8;
+    wallClockDate = utcDate.subtract(Duration(hours: offsetHours));
+  }
+
+  // Format the wall clock time, treating it as UTC to prevent DateFormat from applying local device offsets
+  final dateStr = locale == 'mr'
+      ? DateFormat('d MMMM', 'mr').format(wallClockDate.toUtc())
+      : DateFormat('MMMM d').format(wallClockDate.toUtc());
+  return locale == 'mr' ? toMarathiNumerals(dateStr) : dateStr;
+}
+
+bool isPacificDST(DateTime date) {
+  if (date.month < 3 || date.month > 11) return false;
+  if (date.month > 3 && date.month < 11) return true;
+
+  if (date.month == 3) {
+    final march1 = DateTime(date.year, 3, 1);
+    final daysToFirstSunday = (7 - march1.weekday) % 7;
+    final secondSundayDay = 1 + daysToFirstSunday + 7;
+    if (date.day < secondSundayDay) return false;
+    if (date.day > secondSundayDay) return true;
+    return date.hour >= 2;
+  }
+
+  if (date.month == 11) {
+    final nov1 = DateTime(date.year, 11, 1);
+    final daysToFirstSunday = (7 - nov1.weekday) % 7;
+    final firstSundayDay = 1 + daysToFirstSunday;
+    if (date.day < firstSundayDay) return true;
+    if (date.day > firstSundayDay) return false;
+    return date.hour < 2;
+  }
+
+  return false;
 }

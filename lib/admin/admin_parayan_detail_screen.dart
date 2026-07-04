@@ -1311,7 +1311,9 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                                         },
                                       );
                                     } catch (e) {
-                                      debugPrint('Failed to update member completion: $e');
+                                      debugPrint(
+                                        'Failed to update member completion: $e',
+                                      );
                                       if (context.mounted) {
                                         // Revert optimistic update on failure
                                         setDialogState(() {
@@ -1986,8 +1988,9 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
 
     String dayHeader(int dayOffset) {
       final date = event.startDate.add(Duration(days: dayOffset));
-      return formatDateShort(
-        date,
+      return formatDateShortWithEventTimezone(
+        date.toUtc(),
+        event.timezone,
         Localizations.localeOf(context).languageCode,
       );
     }
