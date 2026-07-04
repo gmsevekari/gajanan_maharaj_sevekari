@@ -2100,7 +2100,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get adminVaariInvalidTargetDistance =>
-      'कृपया वैध सकारात्मक संख्या टाका';
+      'कृपया योग्य सकारात्मक संख्या टाका';
 
   @override
   String get adminVaariSaveEvent => 'सेव्ह करा';
@@ -2121,4 +2121,10 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get adminVaariLoadError => 'डेटा लोड करण्यात त्रुटी';
+
+  @override
+  String get vaariRouteProgressLabel => 'मार्गातील प्रगती';
+
+  @override
+  String get vaariRouteComplete => 'प्रवास पूर्ण झाला!';
 }

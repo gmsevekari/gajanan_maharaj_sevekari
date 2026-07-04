@@ -4082,6 +4082,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error loading data'**
   String get adminVaariLoadError;
+
+  /// No description provided for @vaariRouteProgressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ROUTE PROGRESS'**
+  String get vaariRouteProgressLabel;
+
+  /// No description provided for @vaariRouteComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Journey Complete!'**
+  String get vaariRouteComplete;
 }
 
 class _AppLocalizationsDelegate

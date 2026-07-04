@@ -795,5 +795,7 @@
   "shareLinkTooltip": "लिंक शेअर करा",
   "adminVaariStatusUpdateError": "स्टेटस अपडेट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
   "adminVaariShareError": "शेअर करता आले नाही. कृपया पुन्हा प्रयत्न करा.",
-  "adminVaariLoadError": "डेटा लोड करण्यात त्रुटी"
+  "adminVaariLoadError": "डेटा लोड करण्यात त्रुटी",
+  "vaariRouteProgressLabel": "मार्गातील प्रगती",
+  "vaariRouteComplete": "प्रवास पूर्ण झाला!"
 }

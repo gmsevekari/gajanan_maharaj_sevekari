@@ -2115,6 +2115,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminVaariLoadError => 'Error loading data';
+
+  @override
+  String get vaariRouteProgressLabel => 'ROUTE PROGRESS';
+
+  @override
+  String get vaariRouteComplete => 'Journey Complete!';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

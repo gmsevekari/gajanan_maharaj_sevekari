@@ -795,5 +795,7 @@
   "shareLinkTooltip": "Share link",
   "adminVaariStatusUpdateError": "Failed to update status. Please try again.",
   "adminVaariShareError": "Unable to share. Please try again.",
-  "adminVaariLoadError": "Error loading data"
+  "adminVaariLoadError": "Error loading data",
+  "vaariRouteProgressLabel": "ROUTE PROGRESS",
+  "vaariRouteComplete": "Journey Complete!"
 }
