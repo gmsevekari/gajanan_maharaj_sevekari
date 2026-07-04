@@ -3987,23 +3987,23 @@ abstract class AppLocalizations {
   /// **'PARTICIPANTS LIST'**
   String get adminVaariParticipantsList;
 
-  /// No description provided for @deleteParticipantConfirmMessageVaari.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to remove this participant?'**
-  String get deleteParticipantConfirmMessageVaari;
-
-  /// No description provided for @deleteParticipantSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Participant removed successfully'**
-  String get deleteParticipantSuccess;
-
   /// No description provided for @vaariExportProgress.
   ///
   /// In en, this message translates to:
   /// **'Vaari Progress'**
   String get vaariExportProgress;
+
+  /// No description provided for @adminVaariTargetDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Distance'**
+  String get adminVaariTargetDistance;
+
+  /// No description provided for @adminVaariTargetDistancePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Target: '**
+  String get adminVaariTargetDistancePrefix;
 }
 
 class _AppLocalizationsDelegate

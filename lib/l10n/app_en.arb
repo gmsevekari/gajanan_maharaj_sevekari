@@ -780,7 +780,7 @@
   "adminVaariTotalSteps": "TOTAL STEPS",
   "adminVaariTotalDistance": "TOTAL DISTANCE",
   "adminVaariParticipantsList": "PARTICIPANTS LIST",
-  "deleteParticipantConfirmMessageVaari": "Are you sure you want to remove this participant?",
-  "deleteParticipantSuccess": "Participant removed successfully",
-  "vaariExportProgress": "Vaari Progress"
+  "vaariExportProgress": "Vaari Progress",
+  "adminVaariTargetDistance": "Target Distance",
+  "adminVaariTargetDistancePrefix": "Target: "
 }

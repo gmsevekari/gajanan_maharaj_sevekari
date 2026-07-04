@@ -2026,23 +2026,22 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get adminVaariModuleSubtitle =>
-      'कार्यक्रम तयार करा, सहभागी व्यवस्थापित करा आणि पायऱ्या डेटा पहा.';
+      'वारी तयार करा, सहभागी आणि स्टेप्स पहा';
 
   @override
-  String get createVaariTitle => 'वारी कार्यक्रम तयार करा';
+  String get createVaariTitle => 'वारी तयार करा';
 
   @override
-  String get vaariCreateSuccess => 'वारी कार्यक्रम यशस्वीरित्या तयार केला गेला';
+  String get vaariCreateSuccess => 'वारी यशस्वीरित्या तयार झाली';
 
   @override
-  String get adminVaariNoOngoing => 'सध्या कोणताही चालू वारी कार्यक्रम नाही';
+  String get adminVaariNoOngoing => 'सध्या कोणतीही चालू वारी नाही';
 
   @override
-  String get adminVaariNoUpcoming => 'कोणताही आगामी वारी कार्यक्रम नाही';
+  String get adminVaariNoUpcoming => 'कोणतीही आगामी वारी नाही';
 
   @override
-  String get adminVaariNoCompleted =>
-      'कोणताही पूर्ण झालेला वारी कार्यक्रम नाही';
+  String get adminVaariNoCompleted => 'कोणतीही पूर्ण झालेली वारी नाही';
 
   @override
   String get adminVaariOngoing => 'चालू वारी';
@@ -2054,7 +2053,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get adminVaariCompleted => 'पूर्ण वारी';
 
   @override
-  String get adminVaariSharePrefix => 'आमच्या वारी कार्यक्रमात सामील व्हा';
+  String get adminVaariSharePrefix => 'आमच्या वारीमध्ये सामील व्हा';
 
   @override
   String get adminVaariJoinCode => 'सामील होण्याचा कोड';
@@ -2072,12 +2071,11 @@ class AppLocalizationsMr extends AppLocalizations {
   String get adminVaariParticipantsList => 'सहभागींची यादी';
 
   @override
-  String get deleteParticipantConfirmMessageVaari =>
-      'आपण खरोखर या सहभाग्याला काढू इच्छिता?';
-
-  @override
-  String get deleteParticipantSuccess => 'सहभागी यशस्वीरित्या काढला गेला';
-
-  @override
   String get vaariExportProgress => 'वारीची प्रगती';
+
+  @override
+  String get adminVaariTargetDistance => 'लक्ष्य अंतर';
+
+  @override
+  String get adminVaariTargetDistancePrefix => 'लक्ष्य: ';
 }

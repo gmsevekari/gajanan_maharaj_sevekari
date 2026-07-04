@@ -2066,14 +2066,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminVaariParticipantsList => 'PARTICIPANTS LIST';
 
   @override
-  String get deleteParticipantConfirmMessageVaari =>
-      'Are you sure you want to remove this participant?';
-
-  @override
-  String get deleteParticipantSuccess => 'Participant removed successfully';
-
-  @override
   String get vaariExportProgress => 'Vaari Progress';
+
+  @override
+  String get adminVaariTargetDistance => 'Target Distance';
+
+  @override
+  String get adminVaariTargetDistancePrefix => 'Target: ';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).
