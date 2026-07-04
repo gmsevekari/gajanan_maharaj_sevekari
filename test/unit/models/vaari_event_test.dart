@@ -10,10 +10,10 @@ void main() {
       'endDate': Timestamp.fromDate(now.add(const Duration(days: 3))),
       'groupId': 'gajanan_gunjan',
       'joinCode': '123456',
-      'name_en': 'Weekly Vaari Challenge',
-      'name_mr': 'साप्ताहिक वारी',
-      'description_en': 'Walk and report steps',
-      'description_mr': 'चालून पायऱ्या रिपोर्ट करा',
+      'nameEn': 'Weekly Vaari Challenge',
+      'nameMr': 'साप्ताहिक वारी',
+      'descriptionEn': 'Walk and report steps',
+      'descriptionMr': 'चालून पायऱ्या रिपोर्ट करा',
       'startDate': Timestamp.fromDate(now),
       'status': 'ongoing',
       'timezone': 'Asia/Kolkata',
@@ -42,6 +42,34 @@ void main() {
       expect(event.createdAt, isA<DateTime>());
     });
 
+    test(
+      'should fall back to legacy snake_case keys when camelCase keys are absent',
+      () {
+        final legacyMap =
+            {
+              ...eventMap,
+              'name_en': 'Legacy Name En',
+              'name_mr': 'Legacy Name Mr',
+              'description_en': 'Legacy Description En',
+              'description_mr': 'Legacy Description Mr',
+            }..removeWhere(
+              (key, _) => [
+                'nameEn',
+                'nameMr',
+                'descriptionEn',
+                'descriptionMr',
+              ].contains(key),
+            );
+
+        final event = VaariEvent.fromMap('doc_123', legacyMap);
+
+        expect(event.nameEn, 'Legacy Name En');
+        expect(event.nameMr, 'Legacy Name Mr');
+        expect(event.descriptionEn, 'Legacy Description En');
+        expect(event.descriptionMr, 'Legacy Description Mr');
+      },
+    );
+
     test('should correctly serialize to Firestore map', () {
       final event = VaariEvent(
         id: 'doc_123',
@@ -65,10 +93,10 @@ void main() {
 
       expect(map['groupId'], 'gajanan_gunjan');
       expect(map['joinCode'], '123456');
-      expect(map['name_en'], 'Weekly Vaari Challenge');
-      expect(map['name_mr'], 'साप्ताहिक वारी');
-      expect(map['description_en'], 'Walk and report steps');
-      expect(map['description_mr'], 'चालून पायऱ्या रिपोर्ट करा');
+      expect(map['nameEn'], 'Weekly Vaari Challenge');
+      expect(map['nameMr'], 'साप्ताहिक वारी');
+      expect(map['descriptionEn'], 'Walk and report steps');
+      expect(map['descriptionMr'], 'चालून पायऱ्या रिपोर्ट करा');
       expect(map['status'], 'ongoing');
       expect(map['timezone'], 'Asia/Kolkata');
       expect(map['totalSteps'], 50000);

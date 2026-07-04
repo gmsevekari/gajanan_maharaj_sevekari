@@ -733,7 +733,7 @@
   "noActiveVaaris": "सध्या कोणतीही सक्रिय वारी उपलब्ध नाही",
   "noCompletedVaaris": "अजूनपर्यंत कोणतीही वारी पूर्ण झालेली नाही",
   "noVaariGroupsSelectedMessage": "वारी पाहण्यासाठी कृपया एक ग्रुप निवडा.",
-  "vaariStepsSuffix": " पायऱ्या",
+  "vaariStepsSuffix": " स्टेप्स",
   "vaariDistanceSuffix": " {unit}",
   "@vaariDistanceSuffix": {
     "placeholders": {

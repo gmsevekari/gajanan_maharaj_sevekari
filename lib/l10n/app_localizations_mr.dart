@@ -1964,7 +1964,7 @@ class AppLocalizationsMr extends AppLocalizations {
       'वारी पाहण्यासाठी कृपया एक ग्रुप निवडा.';
 
   @override
-  String get vaariStepsSuffix => ' पायऱ्या';
+  String get vaariStepsSuffix => ' स्टेप्स';
 
   @override
   String vaariDistanceSuffix(String unit) {

@@ -277,8 +277,8 @@ void main() {
       expect(find.text('सिएटल वारी'), findsOneWidget);
 
       // Verified: Numbers should be formatted in Marathi numerals
-      // 15,000 steps -> १५,००० पायऱ्या
-      expect(find.text('१५,००० पायऱ्या'), findsOneWidget);
+      // 15,000 steps -> १५,००० स्टेप्स
+      expect(find.text('१५,००० स्टेप्स'), findsOneWidget);
 
       // 12.0 km -> १२.० किमी
       expect(find.text('१२.० किमी'), findsOneWidget);
