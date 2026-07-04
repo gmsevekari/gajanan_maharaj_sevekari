@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/vaari_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/widgets/vaari_signup_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/widgets/add_steps_dialog.dart';
+import 'package:gajanan_maharaj_sevekari/vaari/widgets/vaari_participants_table.dart';
 import 'package:gajanan_maharaj_sevekari/models/vaari_event.dart';
+import 'package:gajanan_maharaj_sevekari/models/vaari_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/vaari_service.dart';
 import 'package:gajanan_maharaj_sevekari/providers/vaari_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
@@ -58,11 +60,11 @@ void main() {
       () => mockService.getEventStream(any()),
     ).thenAnswer((_) => Stream.value(testEvent));
     when(
-      () => mockService.getParticipantStream(any(), any(), any()),
-    ).thenAnswer((_) => Stream.value(null));
-    when(
       () => mockService.getParticipantsCountStream(any()),
     ).thenAnswer((_) => Stream.value(1));
+    when(
+      () => mockService.getAllParticipants(any()),
+    ).thenAnswer((_) => Stream.value([]));
 
     when(() => mockVaariProvider.loadLocalData()).thenAnswer((_) async {});
     when(
@@ -123,17 +125,19 @@ void main() {
     expect(find.text('Ongoing'), findsOneWidget);
   });
 
-  testWidgets('renders group and personal step/distance stat cards', (
+  testWidgets('renders only the group total steps and distance cards', (
     tester,
   ) async {
     await tester.pumpWidget(createWidget('test_event'));
     await tester.pumpAndSettle();
 
+    expect(find.text('Total Steps'.toUpperCase()), findsOneWidget);
+    expect(find.text('Total Distance (km)'.toUpperCase()), findsOneWidget);
     expect(find.text('15,000'), findsOneWidget);
     expect(find.text('12.0'), findsOneWidget);
-    // No participant record yet -> personal stats default to zero.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('0.0'), findsOneWidget);
+    // The old personal "My Steps"/"My Distance" cards must be gone.
+    expect(find.text('My Steps'.toUpperCase()), findsNothing);
+    expect(find.text('My Distance'.toUpperCase()), findsNothing);
   });
 
   testWidgets('renders event-not-found state when stream emits null', (
@@ -149,9 +153,7 @@ void main() {
     expect(find.text('Event not found'), findsOneWidget);
   });
 
-  testWidgets('Sign Up button is enabled for enrolling status', (
-    tester,
-  ) async {
+  testWidgets('Sign Up button is enabled for enrolling status', (tester) async {
     final enrollingEvent = testEvent.copyWith(
       id: 'enrolling_1',
       status: 'enrolling',
@@ -295,10 +297,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.enterText(find.widgetWithText(TextField, 'Steps'), '2000');
-    await tester.enterText(
-      find.byType(TextField).at(1),
-      '1.5',
-    );
+    await tester.enterText(find.byType(TextField).at(1), '1.5');
     await tester.tap(find.widgetWithText(ElevatedButton, 'Submit'));
     await tester.pumpAndSettle();
 
@@ -386,7 +385,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('चाचणी वर्णन'), findsOneWidget);
-    expect(find.text('Upcoming'.toUpperCase()) ,findsNothing);
+    expect(find.text('Upcoming'.toUpperCase()), findsNothing);
   });
 
   testWidgets('home button navigates to Home route', (tester) async {
@@ -433,9 +432,7 @@ void main() {
     expect(navigatedToSettings, isTrue);
   });
 
-  testWidgets('completing sign up updates participant stream', (
-    tester,
-  ) async {
+  testWidgets('completing sign up updates participant stream', (tester) async {
     when(() => mockVaariProvider.isJoined('test_event')).thenReturn(false);
     when(() => mockVaariProvider.hasProfile).thenReturn(false);
     when(
@@ -553,9 +550,9 @@ void main() {
     await tester.tap(find.widgetWithText(TextButton, 'Delete Signup').last);
     await tester.pumpAndSettle();
 
-    verify(() => mockVaariProvider.deleteSignUp('enrolling_1', any())).called(
-      1,
-    );
+    verify(
+      () => mockVaariProvider.deleteSignUp('enrolling_1', any()),
+    ).called(1);
     expect(find.text('Signup deleted successfully'), findsOneWidget);
   });
 
@@ -590,5 +587,54 @@ void main() {
 
     verifyNever(() => mockVaariProvider.deleteSignUp(any(), any()));
     expect(find.byType(VaariSignupDialog), findsOneWidget);
+  });
+
+  testWidgets('renders the participants table with each participant', (
+    tester,
+  ) async {
+    when(() => mockService.getAllParticipants('test_event')).thenAnswer(
+      (_) => Stream.value([
+        VaariParticipant(
+          memberName: 'Rahul Patil',
+          deviceId: 'device_9',
+          phone: '123',
+          joinedAt: DateTime.now(),
+          totalSteps: 8000,
+          totalDistance: 6.4,
+        ),
+      ]),
+    );
+
+    await tester.pumpWidget(createWidget('test_event'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(VaariParticipantsTable), findsOneWidget);
+    expect(find.text('Rahul Patil'), findsOneWidget);
+    expect(find.text('8,000'), findsOneWidget);
+    expect(find.text('6.4'), findsOneWidget);
+  });
+
+  testWidgets('displays "miles" instead of the raw "mi" code from Firestore', (
+    tester,
+  ) async {
+    final milesEvent = testEvent.copyWith(
+      id: 'miles_event',
+      distanceUnit: 'mi',
+    );
+    when(
+      () => mockService.getEventStream('miles_event'),
+    ).thenAnswer((_) => Stream.value(milesEvent));
+    when(() => mockVaariProvider.isJoined('miles_event')).thenReturn(true);
+    when(() => mockVaariProvider.memberName).thenReturn('Test User');
+
+    await tester.pumpWidget(createWidget('miles_event'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Total Distance (miles)'.toUpperCase()), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Add Steps'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Distance in miles (optional)'), findsOneWidget);
   });
 }

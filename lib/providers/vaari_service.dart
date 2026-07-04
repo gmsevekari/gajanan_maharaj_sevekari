@@ -84,6 +84,20 @@ class VaariService {
         });
   }
 
+  Stream<List<VaariParticipant>> getAllParticipants(String eventId) {
+    return _firestore
+        .collection(eventsCollection)
+        .doc(eventId)
+        .collection(participantsSubcollection)
+        .orderBy('joinedAt')
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs
+              .map((doc) => VaariParticipant.fromMap(doc.data()))
+              .toList();
+        });
+  }
+
   Stream<int> getParticipantsCountStream(String eventId) {
     return _firestore
         .collection(eventsCollection)
@@ -163,7 +177,7 @@ class VaariService {
 
       final double distance =
           distanceToSubmit ??
-          (stepsToSubmit * (unit == 'miles' ? _milesPerStep : _kmPerStep));
+          (stepsToSubmit * (unit == 'mi' ? _milesPerStep : _kmPerStep));
 
       final participantId = _getParticipantId(deviceId, memberName);
       final participantRef = eventRef

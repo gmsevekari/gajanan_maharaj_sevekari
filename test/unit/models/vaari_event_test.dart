@@ -174,5 +174,23 @@ void main() {
         expect(copied.createdAt, event.createdAt);
       },
     );
+
+    test('distanceUnitLabel maps the "mi" code to "miles"', () {
+      final event = VaariEvent.fromMap('doc_123', {
+        ...eventMap,
+        'distanceUnit': 'mi',
+      });
+
+      expect(event.distanceUnitLabel, 'miles');
+    });
+
+    test('distanceUnitLabel leaves non-"mi" units unchanged', () {
+      final event = VaariEvent.fromMap('doc_123', {
+        ...eventMap,
+        'distanceUnit': 'km',
+      });
+
+      expect(event.distanceUnitLabel, 'km');
+    });
   });
 }

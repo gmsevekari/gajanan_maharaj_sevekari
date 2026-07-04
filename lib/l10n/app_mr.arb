@@ -743,19 +743,18 @@
     }
   },
   "vaariLoadError": "वारी इव्हेंट्स लोड करता आले नाहीत. कृपया नंतर पुन्हा प्रयत्न करा.",
-  "vaariInvalidGroupError": "वारी इव्हेंट्स उघडता आले नाहीत: ग्रुप निर्दिष्ट केलेला नाही.",
+  "vaariInvalidGroupError": "वारी इव्हेंट्स उघडता आले नाहीत: ग्रुप निवडलेला नाही.",
   "vaariEventDetails": "इव्हेंट तपशील",
   "vaariEventNotFound": "इव्हेंट सापडला नाही",
   "deleteSignupConfirmMessageVaari": "तुम्हाला या वारीसाठीची तुमची नोंदणी नक्की काढून टाकायची आहे का?",
   "descriptionLabel": "वर्णन",
   "totalStepsLabel": "एकूण स्टेप्स",
   "totalDistanceLabel": "एकूण अंतर",
-  "myStepsLabel": "माझ्या स्टेप्स",
-  "myDistanceLabel": "माझे अंतर",
+  "distanceLabel": "अंतर",
   "vaariTotalParticipants": "सहभागी",
-  "addStepsLabel": "स्टेप्स जोडा",
+  "addStepsLabel": "स्टेप्स ॲड करा",
   "stepsLabel": "स्टेप्स",
-  "distanceOptionalLabel": "अंतर {unit} मध्ये (ऐच्छिक)",
+  "distanceOptionalLabel": "अंतर {unit} मध्ये",
   "@distanceOptionalLabel": {
     "placeholders": {
       "unit": {

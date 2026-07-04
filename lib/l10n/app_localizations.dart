@@ -3849,17 +3849,11 @@ abstract class AppLocalizations {
   /// **'Total Distance'**
   String get totalDistanceLabel;
 
-  /// No description provided for @myStepsLabel.
+  /// No description provided for @distanceLabel.
   ///
   /// In en, this message translates to:
-  /// **'My Steps'**
-  String get myStepsLabel;
-
-  /// No description provided for @myDistanceLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'My Distance'**
-  String get myDistanceLabel;
+  /// **'Distance'**
+  String get distanceLabel;
 
   /// No description provided for @vaariTotalParticipants.
   ///

@@ -1977,7 +1977,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get vaariInvalidGroupError =>
-      'वारी इव्हेंट्स उघडता आले नाहीत: ग्रुप निर्दिष्ट केलेला नाही.';
+      'वारी इव्हेंट्स उघडता आले नाहीत: ग्रुप निवडलेला नाही.';
 
   @override
   String get vaariEventDetails => 'इव्हेंट तपशील';
@@ -1999,23 +1999,20 @@ class AppLocalizationsMr extends AppLocalizations {
   String get totalDistanceLabel => 'एकूण अंतर';
 
   @override
-  String get myStepsLabel => 'माझ्या स्टेप्स';
-
-  @override
-  String get myDistanceLabel => 'माझे अंतर';
+  String get distanceLabel => 'अंतर';
 
   @override
   String get vaariTotalParticipants => 'सहभागी';
 
   @override
-  String get addStepsLabel => 'स्टेप्स जोडा';
+  String get addStepsLabel => 'स्टेप्स ॲड करा';
 
   @override
   String get stepsLabel => 'स्टेप्स';
 
   @override
   String distanceOptionalLabel(String unit) {
-    return 'अंतर $unit मध्ये (ऐच्छिक)';
+    return 'अंतर $unit मध्ये (optional)';
   }
 
   @override

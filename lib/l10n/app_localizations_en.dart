@@ -1994,10 +1994,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalDistanceLabel => 'Total Distance';
 
   @override
-  String get myStepsLabel => 'My Steps';
-
-  @override
-  String get myDistanceLabel => 'My Distance';
+  String get distanceLabel => 'Distance';
 
   @override
   String get vaariTotalParticipants => 'PARTICIPANTS';

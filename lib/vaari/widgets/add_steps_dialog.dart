@@ -124,10 +124,7 @@ class _AddStepsDialogState extends State<AddStepsDialog> {
           ),
           if (_errorText != null) ...[
             const SizedBox(height: 8),
-            Text(
-              _errorText!,
-              style: TextStyle(color: theme.appColors.error),
-            ),
+            Text(_errorText!, style: TextStyle(color: theme.appColors.error)),
           ],
         ],
       ),

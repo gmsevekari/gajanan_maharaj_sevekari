@@ -35,6 +35,10 @@ class VaariEvent {
     required this.distanceUnit,
   });
 
+  /// Human-readable unit for display — Firestore stores the short code
+  /// ('mi'), but the UI should read "miles" rather than the abbreviation.
+  String get distanceUnitLabel => distanceUnit == 'mi' ? 'miles' : distanceUnit;
+
   factory VaariEvent.fromMap(String documentId, Map<String, dynamic> data) {
     return VaariEvent(
       id: documentId,

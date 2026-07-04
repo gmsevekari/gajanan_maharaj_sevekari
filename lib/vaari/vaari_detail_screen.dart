@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/vaari_event.dart';
-import 'package:gajanan_maharaj_sevekari/models/vaari_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/vaari_service.dart';
 import 'package:gajanan_maharaj_sevekari/providers/vaari_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
@@ -12,6 +11,7 @@ import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/widgets/add_steps_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/widgets/vaari_signup_dialog.dart';
+import 'package:gajanan_maharaj_sevekari/vaari/widgets/vaari_participants_table.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 
@@ -31,7 +31,6 @@ class VaariDetailScreen extends StatefulWidget {
 
 class _VaariDetailScreenState extends State<VaariDetailScreen> {
   Stream<VaariEvent?>? _eventStream;
-  Stream<VaariParticipant?>? _participantStream;
   Stream<int>? _participantsCountStream;
 
   @override
@@ -52,26 +51,6 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
     final deviceId = await UniqueIdService.getUniqueId();
     if (mounted) {
       await provider.syncParticipation(widget.eventId, deviceId);
-      _updateParticipantStream();
-    }
-  }
-
-  void _updateParticipantStream() {
-    final provider = context.read<VaariProvider>();
-    final service = context.read<VaariService>();
-
-    if (provider.isJoined(widget.eventId)) {
-      UniqueIdService.getUniqueId().then((deviceId) {
-        if (mounted) {
-          setState(() {
-            _participantStream = service.getParticipantStream(
-              widget.eventId,
-              deviceId,
-              provider.memberName!,
-            );
-          });
-        }
-      });
     }
   }
 
@@ -89,7 +68,7 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
         eventId: widget.eventId,
         deviceId: deviceId,
         memberName: memberName,
-        distanceUnit: event.distanceUnit,
+        distanceUnit: event.distanceUnitLabel,
       ),
     );
 
@@ -186,8 +165,7 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
                                   width: double.infinity,
                                   height: 50,
                                   child: ElevatedButton.icon(
-                                    onPressed: () =>
-                                        _showAddStepsDialog(event),
+                                    onPressed: () => _showAddStepsDialog(event),
                                     icon: const Icon(Icons.directions_walk),
                                     label: Text(localizations.addStepsLabel),
                                     style: ElevatedButton.styleFrom(
@@ -196,14 +174,25 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
                                       foregroundColor:
                                           theme.colorScheme.onPrimary,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          20,
-                                        ),
+                                        borderRadius: BorderRadius.circular(20),
                                       ),
                                     ),
                                   ),
                                 );
                               },
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              localizations.vaariTotalParticipants,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.hintColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            VaariParticipantsTable(
+                              eventId: widget.eventId,
+                              distanceUnitLabel: event.distanceUnitLabel,
                             ),
                           ],
                         ),
@@ -400,20 +389,16 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
                               prefilledJoinCode: widget.prefilledJoinCode,
                             ),
                           );
-                          if (result == true) {
-                            _updateParticipantStream();
-                          } else if (result is Map &&
-                              result['deleted'] == true) {
-                            _updateParticipantStream();
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    localizations.deleteSignupSuccess,
-                                  ),
+                          if (result is Map &&
+                              result['deleted'] == true &&
+                              context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  localizations.deleteSignupSuccess,
                                 ),
-                              );
-                            }
+                              ),
+                            );
                           }
                         }
                       : null,
@@ -473,57 +458,24 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
     ThemeData theme,
     String locale,
   ) {
-    return Column(
+    return Row(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard(
-                theme,
-                localizations.totalStepsLabel,
-                formatNumberLocalized(event.totalSteps, locale, pad: false),
-                Icons.groups,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildStatCard(
-                theme,
-                localizations.totalDistanceLabel,
-                _formatDistance(event.totalDistance, locale),
-                Icons.social_distance,
-              ),
-            ),
-          ],
+        Expanded(
+          child: _buildStatCard(
+            theme,
+            localizations.totalStepsLabel,
+            formatNumberLocalized(event.totalSteps, locale, pad: false),
+            Icons.groups,
+          ),
         ),
-        const SizedBox(height: 12),
-        StreamBuilder<VaariParticipant?>(
-          stream: _participantStream,
-          builder: (context, snapshot) {
-            final mySteps = snapshot.data?.totalSteps ?? 0;
-            final myDistance = snapshot.data?.totalDistance ?? 0.0;
-            return Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    theme,
-                    localizations.myStepsLabel,
-                    formatNumberLocalized(mySteps, locale, pad: false),
-                    Icons.person,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    theme,
-                    localizations.myDistanceLabel,
-                    _formatDistance(myDistance, locale),
-                    Icons.person_pin_circle,
-                  ),
-                ),
-              ],
-            );
-          },
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildStatCard(
+            theme,
+            '${localizations.totalDistanceLabel} (${event.distanceUnitLabel})',
+            _formatDistance(event.totalDistance, locale),
+            Icons.social_distance,
+          ),
         ),
       ],
     );

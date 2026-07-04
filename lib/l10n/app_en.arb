@@ -750,12 +750,11 @@
   "descriptionLabel": "Description",
   "totalStepsLabel": "Total Steps",
   "totalDistanceLabel": "Total Distance",
-  "myStepsLabel": "My Steps",
-  "myDistanceLabel": "My Distance",
+  "distanceLabel": "Distance",
   "vaariTotalParticipants": "PARTICIPANTS",
   "addStepsLabel": "Add Steps",
   "stepsLabel": "Steps",
-  "distanceOptionalLabel": "Distance in {unit} (optional)",
+  "distanceOptionalLabel": "Distance in {unit}",
   "@distanceOptionalLabel": {
     "placeholders": {
       "unit": {

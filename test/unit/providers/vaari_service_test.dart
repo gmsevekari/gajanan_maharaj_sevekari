@@ -78,6 +78,9 @@ void main() {
       () => mockParticipantsCollection.limit(any()),
     ).thenReturn(mockParticipantsCollection);
     when(
+      () => mockParticipantsCollection.orderBy(any()),
+    ).thenReturn(mockParticipantsCollection);
+    when(
       () => mockParticipantsCollection.snapshots(),
     ).thenAnswer((_) => Stream.value(MockQuerySnapshot()));
     when(
@@ -232,6 +235,44 @@ void main() {
       expect(stream, isNotNull);
     });
 
+    test(
+      'getAllParticipants returns all participants ordered by join time',
+      () async {
+        final service = VaariService(firestore: mockFirestore);
+        final mockQuerySnapshot = MockQuerySnapshot();
+        final mockDocA = MockQueryDocumentSnapshot();
+        final mockDocB = MockQueryDocumentSnapshot();
+
+        when(() => mockDocA.data()).thenReturn({
+          'memberName': 'Abhishek',
+          'deviceId': 'device_1',
+          'phone': '123',
+          'joinedAt': Timestamp.now(),
+          'totalSteps': 5000,
+          'totalDistance': 4.0,
+        });
+        when(() => mockDocB.data()).thenReturn({
+          'memberName': 'Rahul',
+          'deviceId': 'device_2',
+          'phone': '456',
+          'joinedAt': Timestamp.now(),
+          'totalSteps': 3000,
+          'totalDistance': 2.4,
+        });
+        when(() => mockQuerySnapshot.docs).thenReturn([mockDocA, mockDocB]);
+        when(
+          () => mockParticipantsCollection.snapshots(),
+        ).thenAnswer((_) => Stream.value(mockQuerySnapshot));
+
+        final participants = await service.getAllParticipants('vaari_1').first;
+
+        expect(participants, hasLength(2));
+        expect(participants[0].memberName, 'Abhishek');
+        expect(participants[1].memberName, 'Rahul');
+        verify(() => mockParticipantsCollection.orderBy('joinedAt')).called(1);
+      },
+    );
+
     test('createEvent successfully sets document', () async {
       final service = VaariService(firestore: mockFirestore);
       final event = VaariEvent(
@@ -351,7 +392,55 @@ void main() {
           stepsToSubmit: 5000,
         );
 
+        verify(
+          () => mockBatch.update(mockEventDoc, {
+            'totalSteps': FieldValue.increment(5000),
+            'totalDistance': FieldValue.increment(4.0),
+          }),
+        ).called(1);
         verify(() => mockBatch.commit()).called(1);
+      },
+    );
+
+    test(
+      'submitSteps with null distance and unit "mi" uses the miles factor',
+      () async {
+        final service = VaariService(firestore: mockFirestore);
+        final mockBatch = MockWriteBatch();
+        when(() => mockFirestore.batch()).thenReturn(mockBatch);
+        when(() => mockBatch.commit()).thenAnswer((_) async => {});
+        when(() => mockSnapshot.data()).thenReturn({
+          'createdAt': Timestamp.now(),
+          'endDate': Timestamp.now(),
+          'groupId': 'gajanan_gunjan',
+          'joinCode': '123456',
+          'nameEn': 'Weekly Vaari',
+          'nameMr': 'साप्ताहिक वारी',
+          'descriptionEn': 'Walk',
+          'descriptionMr': 'चाला',
+          'startDate': Timestamp.now(),
+          'status': 'ongoing',
+          'timezone': 'Asia/Kolkata',
+          'totalSteps': 10000,
+          'totalDistance': 8.0,
+          // Firestore stores the short code 'mi', not the full word 'miles'.
+          'distanceUnit': 'mi',
+        });
+
+        // 5000 steps * 0.0005 = 2.5 miles
+        await service.submitSteps(
+          eventId: 'vaari_1',
+          deviceId: 'device_1',
+          memberName: 'Abhishek',
+          stepsToSubmit: 5000,
+        );
+
+        verify(
+          () => mockBatch.update(mockEventDoc, {
+            'totalSteps': FieldValue.increment(5000),
+            'totalDistance': FieldValue.increment(2.5),
+          }),
+        ).called(1);
       },
     );
 
@@ -376,7 +465,7 @@ void main() {
           'timezone': 'Asia/Kolkata',
           'totalSteps': 10000,
           'totalDistance': 8.0,
-          // Neither 'km' nor 'miles' — should not be silently treated as
+          // Neither 'km' nor 'mi' — should not be silently treated as
           // miles; must fall back to the km factor.
           'distanceUnit': 'furlongs',
         });
@@ -388,7 +477,12 @@ void main() {
           stepsToSubmit: 5000,
         );
 
-        verify(() => mockBatch.commit()).called(1);
+        verify(
+          () => mockBatch.update(mockEventDoc, {
+            'totalSteps': FieldValue.increment(5000),
+            'totalDistance': FieldValue.increment(4.0),
+          }),
+        ).called(1);
       },
     );
 
