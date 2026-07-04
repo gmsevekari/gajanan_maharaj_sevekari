@@ -134,12 +134,18 @@ class _VaariRouteTimeline extends StatelessWidget {
   static const double _flagRadius = 14.0;
   static const double _walkerRadius = 16.0;
   static const double _labelGap = 8.0;
-  static const double _labelWidth = 78.0;
+  static const double _maxLabelWidth = 78.0;
 
   final VaariRouteLayout layout;
   final double covered;
 
   const _VaariRouteTimeline({required this.layout, required this.covered});
+
+  /// Capped to the actual gap between stops so adjacent labels never
+  /// overlap — on a narrow layout (e.g. the admin export card) stopSpacing
+  /// can shrink below the label's natural width.
+  double get _labelWidth =>
+      layout.stopSpacing < _maxLabelWidth ? layout.stopSpacing : _maxLabelWidth;
 
   @override
   Widget build(BuildContext context) {

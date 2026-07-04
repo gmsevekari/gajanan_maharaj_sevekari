@@ -9,17 +9,21 @@ void main() {
     required String distanceUnit,
     Locale? locale,
     bool showCard = true,
+    double? maxWidth,
   }) {
+    final routeProgress = VaariRouteProgress(
+      totalDistance: totalDistance,
+      distanceUnit: distanceUnit,
+      showCard: showCard,
+    );
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: locale ?? const Locale('en'),
       home: Scaffold(
-        body: VaariRouteProgress(
-          totalDistance: totalDistance,
-          distanceUnit: distanceUnit,
-          showCard: showCard,
-        ),
+        body: maxWidth == null
+            ? routeProgress
+            : SizedBox(width: maxWidth, child: routeProgress),
       ),
     );
   }
@@ -193,6 +197,28 @@ void main() {
         ),
         findsNothing,
       );
+    });
+
+    testWidgets('does not overlap adjacent stop labels on a narrow layout '
+        '(regression: a fixed label width wider than the computed stop '
+        'spacing caused names like Velapur/Bhandishegaon to run together '
+        'in the narrower admin export card)', (tester) async {
+      // Matches the export card's inner width (380 card - 24*2 padding)
+      // and showCard:false, exactly as VaariExportCard embeds this widget.
+      await tester.pumpWidget(
+        createWidget(
+          totalDistance: 0,
+          distanceUnit: 'mi',
+          showCard: false,
+          maxWidth: 332,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final velapurRect = tester.getRect(find.text('Velapur'));
+      final bhandishegaonRect = tester.getRect(find.text('Bhandishegaon'));
+
+      expect(velapurRect.right, lessThanOrEqualTo(bhandishegaonRect.left));
     });
   });
 }
