@@ -728,11 +728,9 @@
   "failedToUpdateStatus": "इव्हेंट स्टेटस अपडेट करण्यात अयशस्वी.",
   "failedToUpdateCompletion": "इव्हेंट पूर्णता अपडेट करण्यात अयशस्वी.",
   "failedToExport": "ग्रुप्स एक्सपोर्ट करण्यात अयशस्वी.",
-  "vaariTitle": "ऑफलाईन वारी",
-  "vaariDescription": "सामूहिक वारीचा भाग म्हणून चालून पायऱ्या रिपोर्ट करा.",
+  "vaariTitle": "वारी",
+  "vaariDescription": "सामूहिक वारीचा भाग म्हणून चालून स्टेप्स रिपोर्ट करा.",
   "noActiveVaaris": "सध्या कोणतीही सक्रिय वारी उपलब्ध नाही",
   "noCompletedVaaris": "अजूनपर्यंत कोणतीही वारी पूर्ण झालेली नाही",
-  "noVaariGroupsSelectedMessage": "वारी पाहण्यासाठी कृपया एक ग्रुप निवडा.",
-  "upcomingActiveTab": "सक्रिय / आगामी",
-  "statusCompleted": "पूर्ण झालेले"
+  "noVaariGroupsSelectedMessage": "वारी पाहण्यासाठी कृपया एक ग्रुप निवडा."
 }

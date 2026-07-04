@@ -3336,7 +3336,7 @@ abstract class AppLocalizations {
   /// No description provided for @upcomingActiveTab.
   ///
   /// In en, this message translates to:
-  /// **'Active / Upcoming'**
+  /// **'Upcoming / Active'**
   String get upcomingActiveTab;
 
   /// No description provided for @previous.

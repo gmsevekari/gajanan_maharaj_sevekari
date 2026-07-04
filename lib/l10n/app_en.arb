@@ -728,11 +728,9 @@
   "failedToUpdateStatus": "Failed to update event status.",
   "failedToUpdateCompletion": "Failed to update completion status.",
   "failedToExport": "Failed to export groups.",
-  "vaariTitle": "Offline Vaari",
+  "vaariTitle": "Vaari",
   "vaariDescription": "Walk and report steps as part of a collective Vaari event.",
   "noActiveVaaris": "No active Vaari events currently",
   "noCompletedVaaris": "No completed Vaari events yet",
-  "noVaariGroupsSelectedMessage": "Please select a group to view Vaari events.",
-  "upcomingActiveTab": "Active / Upcoming",
-  "statusCompleted": "Completed"
+  "noVaariGroupsSelectedMessage": "Please select a group to view Vaari events."
 }

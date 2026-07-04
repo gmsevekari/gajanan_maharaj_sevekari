@@ -1717,7 +1717,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get groupNamjapTimezone => 'टाइमझोन';
 
   @override
-  String get upcomingActiveTab => 'सक्रिय / आगामी';
+  String get upcomingActiveTab => 'आगामी / सक्रिय';
 
   @override
   String get previous => 'मागील';

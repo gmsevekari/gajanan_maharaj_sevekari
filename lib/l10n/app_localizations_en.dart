@@ -1713,7 +1713,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupNamjapTimezone => 'Timezone';
 
   @override
-  String get upcomingActiveTab => 'Active / Upcoming';
+  String get upcomingActiveTab => 'Upcoming / Active';
 
   @override
   String get previous => 'Previous';

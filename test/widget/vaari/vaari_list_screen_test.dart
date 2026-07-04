@@ -58,7 +58,7 @@ void main() {
     when(() => mockService.getCompletedEvents(any())).thenAnswer((_) => Stream.value([]));
   });
 
-  Widget createListScreen({String? groupId, String? groupName, Map<String, WidgetBuilder>? mockRoutes}) {
+  Widget createListScreen({String? groupId, String? groupName, Map<String, WidgetBuilder>? mockRoutes, Locale? locale}) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
@@ -68,7 +68,7 @@ void main() {
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('en'),
+        locale: locale ?? const Locale('en'),
         home: VaariListScreen(
           groupId: groupId ?? 'g1',
           groupName: groupName,
@@ -85,7 +85,7 @@ void main() {
 
       expect(find.byType(AppBar), findsOneWidget);
       expect(find.text('Seattle Devotees'), findsOneWidget);
-      expect(find.text('Active / Upcoming'), findsOneWidget);
+      expect(find.text('Upcoming / Active'), findsOneWidget);
       expect(find.text('Completed'), findsOneWidget);
     });
 
@@ -158,6 +158,81 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('No completed Vaari events yet'), findsOneWidget);
+    });
+
+    testWidgets('navigates to Home screen when home button is pressed', (tester) async {
+      when(() => mockService.getActiveEvents('g1')).thenAnswer((_) => Stream.value([]));
+      
+      bool navigatedToHome = false;
+
+      await tester.pumpWidget(createListScreen(
+        mockRoutes: {
+          Routes.home: (context) {
+            navigatedToHome = true;
+            return const Scaffold();
+          }
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      final homeButton = find.byIcon(Icons.home);
+      expect(homeButton, findsOneWidget);
+
+      await tester.tap(homeButton);
+      await tester.pumpAndSettle();
+
+      expect(navigatedToHome, isTrue);
+    });
+
+    testWidgets('navigates to Settings screen when settings button is pressed', (tester) async {
+      when(() => mockService.getActiveEvents('g1')).thenAnswer((_) => Stream.value([]));
+      
+      bool navigatedToSettings = false;
+
+      await tester.pumpWidget(createListScreen(
+        mockRoutes: {
+          Routes.settings: (context) {
+            navigatedToSettings = true;
+            return const Scaffold();
+          }
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      final settingsButton = find.byIcon(Icons.settings);
+      expect(settingsButton, findsOneWidget);
+
+      await tester.tap(settingsButton);
+      await tester.pumpAndSettle();
+
+      expect(navigatedToSettings, isTrue);
+    });
+
+    testWidgets('renders error message when active stream emits error', (tester) async {
+      when(() => mockService.getActiveEvents('g1')).thenAnswer((_) => Stream.error('Database connection lost'));
+
+      await tester.pumpWidget(createListScreen());
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.error_outline), findsOneWidget);
+      expect(find.textContaining('Database connection lost'), findsOneWidget);
+    });
+
+    testWidgets('renders list elements correctly in Marathi locale', (tester) async {
+      when(() => mockService.getActiveEvents('g1')).thenAnswer((_) => Stream.value([mockActiveEvent]));
+
+      await tester.pumpWidget(createListScreen(locale: const Locale('mr')));
+      await tester.pumpAndSettle();
+
+      // Verified: 'Seattle Active Walk' in Marathi should use nameMr
+      expect(find.text('सिएटल वारी'), findsOneWidget);
+      
+      // Verified: Numbers should be formatted in Marathi numerals
+      // 15,000 steps -> १५,००० पायऱ्या
+      expect(find.text('१५,००० पायऱ्या'), findsOneWidget);
+      
+      // 12.0 km -> १२.० किमी
+      expect(find.text('१२.० किमी'), findsOneWidget);
     });
   });
 }
