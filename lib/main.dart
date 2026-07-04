@@ -220,20 +220,21 @@ class _MyAppState extends State<MyApp> {
     debugPrint('Deep Link Received: $uri');
     String? id;
 
+    const knownFeatures = ['parayan', 'namjap', 'vaari'];
+
     // 1. Handle Custom Scheme: gmsevekari://parayan/ID or gmsevekari:///parayan/ID
     if (uri.scheme == 'gmsevekari') {
-      if ((uri.host == 'parayan' || uri.host == 'namjap') &&
-          uri.pathSegments.isNotEmpty) {
+      if (knownFeatures.contains(uri.host) && uri.pathSegments.isNotEmpty) {
         id = uri.pathSegments.first;
       } else if (uri.pathSegments.length >= 2 &&
-          (uri.pathSegments[0] == 'parayan' ||
-              uri.pathSegments[0] == 'namjap')) {
+          knownFeatures.contains(uri.pathSegments[0])) {
         id = uri.pathSegments[1];
       }
     }
-    // 2. Handle Web Links: https://gajananmaharajsevekari.org/parayan/ID or /namjap/ID
+    // 2. Handle Web Links: https://gajananmaharajsevekari.org/parayan/ID,
+    // /namjap/ID, or /vaari/ID
     else if (uri.pathSegments.length >= 2 &&
-        (uri.pathSegments[0] == 'parayan' || uri.pathSegments[0] == 'namjap')) {
+        knownFeatures.contains(uri.pathSegments[0])) {
       id = uri.pathSegments[1];
     }
     // 3. Handle Legacy Query Parameters: /parayan_detail?id=ID
@@ -247,13 +248,21 @@ class _MyAppState extends State<MyApp> {
 
     final bool isNamjap =
         uri.toString().contains('/namjap/') || uri.host == 'namjap';
-    final String routeName = isNamjap
+    final bool isVaari =
+        uri.toString().contains('/vaari/') || uri.host == 'vaari';
+    final String routeName = isVaari
+        ? Routes.vaariDetail
+        : isNamjap
         ? Routes.groupNamjapDetail
         : Routes.parayanDetail;
 
     if (id != null) {
       debugPrint(
-        'Deep Link: Navigating to ${isNamjap ? "Namjap" : "Parayan"} ID: $id with code: $joinCode',
+        'Deep Link: Navigating to ${isVaari
+            ? "Vaari"
+            : isNamjap
+            ? "Namjap"
+            : "Parayan"} ID: $id with code: $joinCode',
       );
       DeepLinkManager.setPendingRoute(routeName, {
         'id': id,
