@@ -32,6 +32,8 @@ import 'package:gajanan_maharaj_sevekari/providers/group_selection_provider.dart
 import 'package:gajanan_maharaj_sevekari/providers/playlist_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_namjap_service.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_namjap_provider.dart';
+import 'package:gajanan_maharaj_sevekari/providers/vaari_service.dart';
+import 'package:gajanan_maharaj_sevekari/providers/vaari_provider.dart';
 import 'package:gajanan_maharaj_sevekari/sankalp/sankalp_screen.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/festival_overlay.dart';
@@ -146,6 +148,13 @@ void main() async {
               GroupNamjapProvider(service: context.read<GroupNamjapService>()),
           update: (context, service, previous) =>
               previous ?? GroupNamjapProvider(service: service),
+        ),
+        ChangeNotifierProvider(create: (_) => VaariService()),
+        ChangeNotifierProxyProvider<VaariService, VaariProvider>(
+          create: (context) =>
+              VaariProvider(service: context.read<VaariService>()),
+          update: (context, service, previous) =>
+              previous ?? VaariProvider(service: service),
         ),
         ChangeNotifierProvider.value(value: festivalProvider),
         ChangeNotifierProvider.value(value: groupSelectionProvider),
