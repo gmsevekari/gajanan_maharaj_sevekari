@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/vaari_event.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
+import 'package:gajanan_maharaj_sevekari/vaari/widgets/vaari_route_progress.dart';
 
 class VaariExportCard extends StatelessWidget {
   /// Fixed width of the exported PNG card, in logical pixels.
@@ -177,6 +178,15 @@ class VaariExportCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
+            Divider(color: theme.appColors.divider),
+            const SizedBox(height: 16),
+
+            // Row 6: Route Progress
+            VaariRouteProgress(
+              totalDistance: event.totalDistance,
+              distanceUnit: event.distanceUnit,
+              showCard: false,
+            ),
           ],
         ),
       ),

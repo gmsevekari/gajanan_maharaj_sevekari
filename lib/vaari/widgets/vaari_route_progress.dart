@@ -14,10 +14,16 @@ class VaariRouteProgress extends StatelessWidget {
   final double totalDistance;
   final String distanceUnit;
 
+  /// When false, renders the label and timeline directly without the
+  /// surrounding [Card] — for embedding inside a container (e.g. the admin
+  /// export card) that already provides its own card-like chrome.
+  final bool showCard;
+
   const VaariRouteProgress({
     super.key,
     required this.totalDistance,
     required this.distanceUnit,
+    this.showCard = true,
   });
 
   double get _totalRouteMiles => dnyaneshwarPalkhiRoute.last.cumulativeMiles;
@@ -45,68 +51,80 @@ class VaariRouteProgress extends StatelessWidget {
       locale,
     );
 
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  localizations.vaariRouteProgressLabel,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.hintColor,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                  ),
+            Flexible(
+              child: Text(
+                localizations.vaariRouteProgressLabel,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.hintColor,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
                 ),
-                if (isComplete)
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.celebration,
-                        size: 16,
-                        color: theme.colorScheme.primary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        localizations.vaariRouteComplete,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  )
-                else
-                  Text(
-                    '$coveredDisplay / $totalDisplay $unit',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-              ],
+              ),
             ),
-            const SizedBox(height: 24),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final layout = VaariRouteLayout(
-                  availableWidth: constraints.maxWidth,
-                );
-                return SizedBox(
-                  width: layout.contentWidth,
-                  height: layout.contentHeight,
-                  child: _VaariRouteTimeline(layout: layout, covered: covered),
-                );
-              },
+            const SizedBox(width: 8),
+            Flexible(
+              child: isComplete
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.celebration,
+                          size: 16,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            localizations.vaariRouteComplete,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      '$coveredDisplay / $totalDisplay $unit',
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
           ],
         ),
-      ),
+        const SizedBox(height: 24),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final layout = VaariRouteLayout(
+              availableWidth: constraints.maxWidth,
+            );
+            return SizedBox(
+              width: layout.contentWidth,
+              height: layout.contentHeight,
+              child: _VaariRouteTimeline(layout: layout, covered: covered),
+            );
+          },
+        ),
+      ],
+    );
+
+    if (!showCard) return content;
+
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(padding: const EdgeInsets.all(16.0), child: content),
     );
   }
 }

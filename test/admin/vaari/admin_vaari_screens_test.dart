@@ -428,5 +428,50 @@ void main() {
         expect(eventDoc.data()?['status'], 'completed');
       },
     );
+
+    testWidgets(
+      'includes the route progress timeline in the offscreen export card',
+      (tester) async {
+        setLargeScreen(tester);
+        addTearDown(() => resetScreen(tester));
+
+        final docRef = await firestore.collection('vaari_events').add({
+          'nameEn': 'Redmond Vaari',
+          'nameMr': 'रेडमंड वारी',
+          'descriptionEn': 'Walk Redmond',
+          'descriptionMr': 'रेडमंड वारी',
+          'startDate': Timestamp.fromDate(DateTime.now()),
+          'endDate': Timestamp.fromDate(
+            DateTime.now().add(const Duration(days: 7)),
+          ),
+          'status': 'ongoing',
+          'groupId': 'gajanan_maharaj_seattle',
+          'joinCode': 'REDMON',
+          'totalSteps': 10000,
+          'totalDistance': 8.0,
+          'distanceUnit': 'km',
+          'createdAt': Timestamp.now(),
+        });
+
+        await tester.pumpWidget(
+          createWidget(
+            AdminVaariDetailScreen(
+              eventId: docRef.id,
+              adminUser: adminUser,
+              firestore: firestore,
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // The export card is built off-screen (Positioned far outside the
+        // viewport) so it can be captured for sharing, but it's still part
+        // of the widget tree and should render the same route timeline.
+        expect(find.text('ROUTE PROGRESS'), findsOneWidget);
+        expect(find.text('Alandi'), findsOneWidget);
+        expect(find.text('Pandharpur'), findsOneWidget);
+      },
+    );
   });
 }

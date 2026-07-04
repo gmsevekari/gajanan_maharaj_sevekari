@@ -8,6 +8,7 @@ void main() {
     required double totalDistance,
     required String distanceUnit,
     Locale? locale,
+    bool showCard = true,
   }) {
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -17,6 +18,7 @@ void main() {
         body: VaariRouteProgress(
           totalDistance: totalDistance,
           distanceUnit: distanceUnit,
+          showCard: showCard,
         ),
       ),
     );
@@ -158,6 +160,39 @@ void main() {
 
       expect(find.text('मार्गातील प्रगती'), findsOneWidget);
       expect(find.text('४३.६ / १५५.० मैल'), findsOneWidget);
+    });
+
+    testWidgets('wraps itself in a Card by default', (tester) async {
+      await tester.pumpWidget(
+        createWidget(totalDistance: 0, distanceUnit: 'mi'),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.ancestor(
+          of: find.text('ROUTE PROGRESS'),
+          matching: find.byType(Card),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('renders without its own Card when showCard is false', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        createWidget(totalDistance: 0, distanceUnit: 'mi', showCard: false),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('ROUTE PROGRESS'), findsOneWidget);
+      expect(
+        find.ancestor(
+          of: find.text('ROUTE PROGRESS'),
+          matching: find.byType(Card),
+        ),
+        findsNothing,
+      );
     });
   });
 }
