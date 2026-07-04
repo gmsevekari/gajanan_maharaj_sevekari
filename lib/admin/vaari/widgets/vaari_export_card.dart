@@ -33,7 +33,9 @@ class VaariExportCard extends StatelessWidget {
       langCode,
       pad: false,
     );
-    final displayDistance = _formatDistance(event.totalDistance, langCode);
+    final totalDistanceStr = _formatDistance(event.totalDistance, langCode);
+    final targetDistanceStr = _formatDistance(event.targetDistance, langCode);
+    final displayDistance = '$totalDistanceStr / $targetDistanceStr';
 
     return Material(
       color: Colors.transparent,
@@ -158,7 +160,7 @@ class VaariExportCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '$displayDistance ${event.distanceUnitLabel}',
+              '$displayDistance ${langCode == 'mr' ? (event.distanceUnit == 'mi' ? 'मैल' : 'किमी') : event.distanceUnitLabel}',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

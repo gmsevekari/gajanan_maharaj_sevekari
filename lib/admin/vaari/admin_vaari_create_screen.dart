@@ -27,6 +27,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
   final _nameMrController = TextEditingController();
   final _descEnController = TextEditingController();
   final _descMrController = TextEditingController();
+  final _targetDistanceController = TextEditingController();
 
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now().add(const Duration(days: 7));
@@ -60,6 +61,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
     _nameMrController.dispose();
     _descEnController.dispose();
     _descMrController.dispose();
+    _targetDistanceController.dispose();
     super.dispose();
   }
 
@@ -110,6 +112,9 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
       final joinCode = _generateJoinCode();
       final docId = '${groupId}_${dateStr}_$joinCode';
 
+      final targetDistance =
+          double.tryParse(_targetDistanceController.text.trim()) ?? 0.0;
+
       final newEvent = VaariEvent(
         id: docId,
         nameEn: _nameEnController.text.trim(),
@@ -123,6 +128,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
         timezone: _selectedTimezone,
         totalSteps: 0,
         totalDistance: 0.0,
+        targetDistance: targetDistance,
         distanceUnit: _selectedUnit,
         joinCode: joinCode,
         createdAt: DateTime.now(),
@@ -264,6 +270,27 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                         if (val != null) {
                           setState(() => _selectedUnit = val);
                         }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _targetDistanceController,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      decoration: InputDecoration(
+                        labelText: localizations.adminVaariTargetDistance,
+                        border: const OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter target distance';
+                        }
+                        if (double.tryParse(value) == null ||
+                            double.parse(value) <= 0) {
+                          return 'Please enter a valid positive number';
+                        }
+                        return null;
                       },
                     ),
                     const SizedBox(height: 16),

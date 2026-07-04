@@ -21,6 +21,8 @@ import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/vaari/widgets/vaari_export_card.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 
+import 'dart:async';
+
 class AdminVaariDetailScreen extends StatefulWidget {
   final String eventId;
   final AdminUser adminUser;
@@ -60,6 +62,11 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
         .collection('participants')
         .orderBy('joinedAt', descending: false)
         .snapshots();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   Future<void> _shareDeepLink(
@@ -151,64 +158,6 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
     }
   }
 
-  Future<void> _deleteParticipant(VaariParticipant participant) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.deleteSignupLabel),
-        content: Text(l10n.deleteParticipantConfirmMessageVaari),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              foregroundColor: Theme.of(context).colorScheme.onError,
-            ),
-            child: Text(l10n.deleteSignupLabel),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm != true) return;
-
-    try {
-      final participantId = '${participant.deviceId}_${participant.memberName}';
-      await _firestore
-          .collection('vaari_events')
-          .doc(widget.eventId)
-          .collection('participants')
-          .doc(participantId)
-          .delete();
-
-      await AdminAuditService.logAction(
-        action: 'DELETE_VAARI_PARTICIPANT',
-        details: {
-          'event_id': widget.eventId,
-          'participant_id': participantId,
-          'member_name': participant.memberName,
-        },
-      );
-
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.deleteParticipantSuccess)));
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -232,6 +181,15 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () => _captureAndShare(localizations),
+          ),
+          IconButton(
+            icon: const ThemedIcon(LogicalIcon.home),
+            onPressed: () =>
+                Navigator.of(context).popUntil((route) => route.isFirst),
+          ),
+          IconButton(
+            icon: const ThemedIcon(LogicalIcon.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
           ),
         ],
       ),
@@ -398,17 +356,17 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
                               Text(dateRange, style: theme.textTheme.bodySmall),
                             ],
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 8),
                           Row(
                             children: [
                               Icon(
-                                Icons.access_time,
+                                Icons.flag_outlined,
                                 size: 14,
                                 color: theme.appColors.secondaryText,
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                event.timezone,
+                                "${localizations.adminVaariTargetDistance}: ${_formatDistance(event.targetDistance, langCode)} ${langCode == 'mr' ? (event.distanceUnit == 'mi' ? 'मैल' : 'किमी') : event.distanceUnitLabel}",
                                 style: theme.textTheme.bodySmall,
                               ),
                             ],
@@ -438,7 +396,7 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
                           child: StatCard(
                             label: localizations.adminVaariTotalDistance,
                             value:
-                                "${_formatDistance(event.totalDistance, langCode)} ${event.distanceUnitLabel}",
+                                "${_formatDistance(event.totalDistance, langCode)} ${langCode == 'mr' ? (event.distanceUnit == 'mi' ? 'मैल' : 'किमी') : event.distanceUnitLabel}",
                           ),
                         ),
                       ],
@@ -446,67 +404,7 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Status Control Card
-                  Card(
-                    margin: const EdgeInsets.only(bottom: 24),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              localizations.updateStatusLabel ?? 'Status',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              _isStatusLocked ? Icons.lock : Icons.lock_open,
-                              size: 20,
-                              color: theme.colorScheme.primary,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isStatusLocked = !_isStatusLocked;
-                              });
-                            },
-                          ),
-                          const SizedBox(width: 8),
-                          IgnorePointer(
-                            ignoring: _isStatusLocked,
-                            child: Opacity(
-                              opacity: _isStatusLocked ? 0.6 : 1.0,
-                              child: DropdownButton<String>(
-                                value: event.status,
-                                underline: const SizedBox(),
-                                items: const [
-                                  DropdownMenuItem(
-                                    value: 'upcoming',
-                                    child: Text('Upcoming'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'enrolling',
-                                    child: Text('Enrolling'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'ongoing',
-                                    child: Text('Ongoing'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'completed',
-                                    child: Text('Completed'),
-                                  ),
-                                ],
-                                onChanged: (val) => _updateStatus(event, val),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  _buildStatusUpdateSection(localizations, theme, event),
 
                   // Participants Header
                   Text(
@@ -534,6 +432,7 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
     AppLocalizations localizations,
     VaariEvent event,
   ) {
+    final langCode = Localizations.localeOf(context).languageCode;
     return StreamBuilder<QuerySnapshot>(
       stream: _participantsStream,
       builder: (context, snapshot) {
@@ -542,16 +441,21 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
         }
 
         final docs = snapshot.data!.docs;
-        _latestParticipantCount = docs.length;
+        if (_latestParticipantCount != docs.length) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                _latestParticipantCount = docs.length;
+              });
+            }
+          });
+        }
 
         if (docs.isEmpty) {
           return Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Text(
-                localizations
-                    .groupNamjapNoParticipants, // reuse general no participants translation
-              ),
+              child: Text(localizations.groupNamjapNoParticipants),
             ),
           );
         }
@@ -581,68 +485,51 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
                         ),
                       ),
                       DataColumn(
-                        label: Text(
-                          localizations.stepsLabel,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        label: Expanded(
+                          child: Text(
+                            localizations.stepsLabel,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
                       DataColumn(
-                        label: Text(
-                          localizations.distanceLabel,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        label: Expanded(
+                          child: Text(
+                            "${localizations.distanceLabel} (${langCode == 'mr' ? (event.distanceUnit == 'mi' ? 'मैल' : 'किमी') : event.distanceUnitLabel})",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
-                      const DataColumn(label: Text('')),
                     ],
                     rows: participants.map((p) {
-                      final langCode = Localizations.localeOf(
-                        context,
-                      ).languageCode;
                       return DataRow(
                         cells: [
                           DataCell(
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  p.memberName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                            Text(
+                              p.memberName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          DataCell(
+                            Center(
+                              child: Text(
+                                formatNumberLocalized(
+                                  p.totalSteps,
+                                  langCode,
+                                  pad: false,
                                 ),
-                                if (p.phone.isNotEmpty)
-                                  Text(
-                                    p.phone,
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: theme.appColors.secondaryText,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          DataCell(
-                            Text(
-                              formatNumberLocalized(
-                                p.totalSteps,
-                                langCode,
-                                pad: false,
                               ),
                             ),
                           ),
                           DataCell(
-                            Text(
-                              "${_formatDistance(p.totalDistance, langCode)} ${event.distanceUnitLabel}",
-                            ),
-                          ),
-                          DataCell(
-                            IconButton(
-                              icon: Icon(
-                                Icons.delete_outline,
-                                color: theme.colorScheme.error,
+                            Center(
+                              child: Text(
+                                _formatDistance(p.totalDistance, langCode),
                               ),
-                              onPressed: () => _deleteParticipant(p),
                             ),
                           ),
                         ],
@@ -655,6 +542,147 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildStatusUpdateSection(
+    AppLocalizations l10n,
+    ThemeData theme,
+    VaariEvent event,
+  ) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 24),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.groupNamjapStatusLabel.toUpperCase(),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    letterSpacing: 1.2,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    _isStatusLocked ? Icons.lock_outline : Icons.lock_open,
+                    size: 16,
+                    color: _isStatusLocked
+                        ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
+                        : theme.colorScheme.primary,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isStatusLocked = !_isStatusLocked;
+                    });
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            IgnorePointer(
+              ignoring: _isStatusLocked,
+              child: Opacity(
+                opacity: _isStatusLocked ? 0.6 : 1.0,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: SegmentedButton<String>(
+                        style: SegmentedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          textStyle: const TextStyle(fontSize: 10),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        emptySelectionAllowed: true,
+                        segments: [
+                          ButtonSegment(
+                            value: 'upcoming',
+                            label: Text(l10n.statusUpcoming),
+                            icon: const Icon(
+                              Icons.calendar_today_outlined,
+                              size: 14,
+                            ),
+                          ),
+                          ButtonSegment(
+                            value: 'enrolling',
+                            label: Text(l10n.statusEnrolling),
+                            icon: const Icon(
+                              Icons.person_add_outlined,
+                              size: 14,
+                            ),
+                          ),
+                        ],
+                        selected:
+                            ['upcoming', 'enrolling'].contains(event.status)
+                            ? {event.status}
+                            : {},
+                        onSelectionChanged: (Set<String> newSelection) {
+                          final value = newSelection.firstOrNull;
+                          if (value != null && value != event.status) {
+                            _updateStatus(event, value);
+                          }
+                        },
+                        showSelectedIcon: false,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: SegmentedButton<String>(
+                        style: SegmentedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          textStyle: const TextStyle(fontSize: 10),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        emptySelectionAllowed: true,
+                        segments: [
+                          ButtonSegment(
+                            value: 'ongoing',
+                            label: Text(l10n.statusOngoing),
+                            icon: const Icon(
+                              Icons.play_circle_outline,
+                              size: 14,
+                            ),
+                          ),
+                          ButtonSegment(
+                            value: 'completed',
+                            label: Text(l10n.statusCompleted),
+                            icon: const Icon(
+                              Icons.check_circle_outline,
+                              size: 14,
+                            ),
+                          ),
+                        ],
+                        selected:
+                            ['ongoing', 'completed'].contains(event.status)
+                            ? {event.status}
+                            : {},
+                        onSelectionChanged: (Set<String> newSelection) {
+                          final value = newSelection.firstOrNull;
+                          if (value != null && value != event.status) {
+                            _updateStatus(event, value);
+                          }
+                        },
+                        showSelectedIcon: false,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

@@ -398,7 +398,7 @@ class _OngoingCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "${AppLocalizations.of(context)!.adminVaariJoinCode}: ${event.joinCode}",
+                      "${AppLocalizations.of(context)!.adminVaariTargetDistancePrefix}${_formatDashboardDistance(event.targetDistance, Localizations.localeOf(context).languageCode)} ${event.distanceUnitLabel}",
                       style: theme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.primary,
@@ -496,7 +496,7 @@ class _UpcomingCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "${AppLocalizations.of(context)!.adminVaariJoinCode}: ${event.joinCode}",
+                  "${AppLocalizations.of(context)!.adminVaariTargetDistancePrefix}${_formatDashboardDistance(event.targetDistance, langCode)} ${event.distanceUnitLabel}",
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.primary,
@@ -509,4 +509,10 @@ class _UpcomingCard extends StatelessWidget {
       ),
     );
   }
+}
+
+String _formatDashboardDistance(double distance, String langCode) {
+  final formatted = distance.toStringAsFixed(1);
+  final useMarathi = langCode == 'mr';
+  return useMarathi ? toMarathiNumerals(formatted) : formatted;
 }
