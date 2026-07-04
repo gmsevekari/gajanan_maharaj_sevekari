@@ -6,7 +6,6 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
-import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:provider/provider.dart';
 
@@ -31,15 +30,12 @@ class _VaariListScreenState extends State<VaariListScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
-    assert(
-      widget.groupId != null,
-      'VaariListScreen: groupId should always be provided via route arguments.',
-    );
-
-    final service = context.read<VaariService>();
-    final effectiveGroupId = widget.groupId ?? GroupConstants.seattle;
-    _activeEventsStream = service.getActiveEvents(effectiveGroupId);
-    _completedEventsStream = service.getCompletedEvents(effectiveGroupId);
+    final groupId = widget.groupId;
+    if (groupId != null) {
+      final service = context.read<VaariService>();
+      _activeEventsStream = service.getActiveEvents(groupId);
+      _completedEventsStream = service.getCompletedEvents(groupId);
+    }
   }
 
   @override
@@ -53,6 +49,23 @@ class _VaariListScreenState extends State<VaariListScreen>
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final locale = Localizations.localeOf(context).languageCode;
+
+    if (widget.groupId == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            widget.groupName ?? localizations.vaariTitle,
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: theme.colorScheme.onPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: theme.appColors.primarySwatch,
+          iconTheme: IconThemeData(color: theme.colorScheme.onPrimary),
+        ),
+        body: _buildNoDataView(theme, localizations.vaariInvalidGroupError),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -129,6 +142,7 @@ class _VaariListScreenState extends State<VaariListScreen>
       stream: stream,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
+          debugPrint('VaariListScreen stream error: ${snapshot.error}');
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -138,7 +152,7 @@ class _VaariListScreenState extends State<VaariListScreen>
                   const Icon(Icons.error_outline, color: Colors.red, size: 48),
                   const SizedBox(height: 16),
                   Text(
-                    'Error loading data: ${snapshot.error}',
+                    localizations.vaariLoadError,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.red,
                     ),

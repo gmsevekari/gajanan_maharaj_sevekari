@@ -1970,4 +1970,17 @@ class AppLocalizationsMr extends AppLocalizations {
   String vaariDistanceSuffix(String unit) {
     return ' $unit';
   }
+
+  @override
+  String get vaariLoadError =>
+      'वारी इव्हेंट्स लोड करता आले नाहीत. कृपया नंतर पुन्हा प्रयत्न करा.';
+
+  @override
+  String get vaariInvalidGroupError =>
+      'वारी इव्हेंट्स उघडता आले नाहीत: ग्रुप निर्दिष्ट केलेला नाही.';
+
+  @override
+  String vaariDetailPlaceholder(String eventId) {
+    return 'इव्हेंट $eventId चा तपशील लवकरच उपलब्ध होईल.';
+  }
 }

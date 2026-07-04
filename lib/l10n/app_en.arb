@@ -741,5 +741,15 @@
         "type": "String"
       }
     }
+  },
+  "vaariLoadError": "Unable to load Vaari events. Please try again later.",
+  "vaariInvalidGroupError": "Unable to open Vaari events: group not specified.",
+  "vaariDetailPlaceholder": "Details for event {eventId} coming soon.",
+  "@vaariDetailPlaceholder": {
+    "placeholders": {
+      "eventId": {
+        "type": "String"
+      }
+    }
   }
 }

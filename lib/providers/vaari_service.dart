@@ -163,7 +163,7 @@ class VaariService {
 
       final double distance =
           distanceToSubmit ??
-          (stepsToSubmit * (unit == 'km' ? _kmPerStep : _milesPerStep));
+          (stepsToSubmit * (unit == 'miles' ? _milesPerStep : _kmPerStep));
 
       final participantId = _getParticipantId(deviceId, memberName);
       final participantRef = eventRef

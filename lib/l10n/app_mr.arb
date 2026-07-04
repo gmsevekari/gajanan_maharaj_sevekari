@@ -741,5 +741,15 @@
         "type": "String"
       }
     }
+  },
+  "vaariLoadError": "वारी इव्हेंट्स लोड करता आले नाहीत. कृपया नंतर पुन्हा प्रयत्न करा.",
+  "vaariInvalidGroupError": "वारी इव्हेंट्स उघडता आले नाहीत: ग्रुप निर्दिष्ट केलेला नाही.",
+  "vaariDetailPlaceholder": "इव्हेंट {eventId} चा तपशील लवकरच उपलब्ध होईल.",
+  "@vaariDetailPlaceholder": {
+    "placeholders": {
+      "eventId": {
+        "type": "String"
+      }
+    }
   }
 }

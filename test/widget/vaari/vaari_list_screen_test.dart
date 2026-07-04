@@ -260,7 +260,39 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
-      expect(find.textContaining('Database connection lost'), findsOneWidget);
+      // The raw exception must never reach the UI — only a generic,
+      // localized message should be shown.
+      expect(
+        find.text('Unable to load Vaari events. Please try again later.'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Database connection lost'), findsNothing);
+    });
+
+    testWidgets('renders invalid-group error view when groupId is null', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => ThemeProvider()),
+            ChangeNotifierProvider(create: (_) => FestivalProvider()),
+            Provider<VaariService>.value(value: mockService),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const VaariListScreen(groupId: null),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Unable to open Vaari events: group not specified.'),
+        findsOneWidget,
+      );
+      expect(find.byType(TabBar), findsNothing);
     });
 
     testWidgets('renders list elements correctly in Marathi locale', (

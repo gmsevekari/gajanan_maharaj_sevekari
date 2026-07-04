@@ -1965,6 +1965,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String vaariDistanceSuffix(String unit) {
     return ' $unit';
   }
+
+  @override
+  String get vaariLoadError =>
+      'Unable to load Vaari events. Please try again later.';
+
+  @override
+  String get vaariInvalidGroupError =>
+      'Unable to open Vaari events: group not specified.';
+
+  @override
+  String vaariDetailPlaceholder(String eventId) {
+    return 'Details for event $eventId coming soon.';
+  }
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

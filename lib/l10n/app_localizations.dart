@@ -3800,6 +3800,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **' {unit}'**
   String vaariDistanceSuffix(String unit);
+
+  /// No description provided for @vaariLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load Vaari events. Please try again later.'**
+  String get vaariLoadError;
+
+  /// No description provided for @vaariInvalidGroupError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open Vaari events: group not specified.'**
+  String get vaariInvalidGroupError;
+
+  /// No description provided for @vaariDetailPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Details for event {eventId} coming soon.'**
+  String vaariDetailPlaceholder(String eventId);
 }
 
 class _AppLocalizationsDelegate

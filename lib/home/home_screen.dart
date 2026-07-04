@@ -222,41 +222,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ? 'resources/images/festive_icons/diwali/parayan.png'
             : 'resources/images/icon/Parayan.png',
         imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 100.0,
-        onTap: () {
-          final selectedGroupIds = context
-              .read<GroupSelectionProvider>()
-              .selectedGroupIds;
-
-          if (selectedGroupIds.length == 1) {
-            final groupId = selectedGroupIds.first;
-            final configProvider = context.read<AppConfigProvider>();
-            final group = configProvider.appConfig?.gajananMaharajGroups
-                .firstWhere((g) => g.id == groupId);
-            final useMarathi = Localizations.localeOf(
-              context,
-            ).useMarathiContent;
-            final groupName = useMarathi ? group?.nameMr : group?.nameEn;
-
-            Navigator.pushNamed(
-              context,
-              Routes.parayanList,
-              arguments: {'groupId': groupId, 'groupName': groupName},
-            );
-          } else {
-            Navigator.pushNamed(
-              context,
-              Routes.gajananMaharajGroups,
-              arguments: GroupScreenConfig(
-                title: localizations.parayanTitle,
-                emptyMessage: selectedGroupIds.isEmpty
-                    ? localizations.noParayanGroupsSelectedMessage
-                    : localizations.noActiveParayans,
-                targetRoute: Routes.parayanList,
-                filteredGroupIds: selectedGroupIds,
-              ),
-            );
-          }
-        },
+        onTap: () => _navigateToGroupScopedList(
+          context: context,
+          targetRoute: Routes.parayanList,
+          title: localizations.parayanTitle,
+          noGroupSelectedMessage: localizations.noParayanGroupsSelectedMessage,
+          noActiveItemsMessage: localizations.noActiveParayans,
+        ),
       ),
     );
     cards.add(
@@ -266,41 +238,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         title: localizations.vaariTitle,
         imagePath: 'resources/images/icon/Vaari.png',
         imageSize: 100.0,
-        onTap: () {
-          final selectedGroupIds = context
-              .read<GroupSelectionProvider>()
-              .selectedGroupIds;
-
-          if (selectedGroupIds.length == 1) {
-            final groupId = selectedGroupIds.first;
-            final configProvider = context.read<AppConfigProvider>();
-            final group = configProvider.appConfig?.gajananMaharajGroups
-                .firstWhere((g) => g.id == groupId);
-            final useMarathi = Localizations.localeOf(
-              context,
-            ).useMarathiContent;
-            final groupName = useMarathi ? group?.nameMr : group?.nameEn;
-
-            Navigator.pushNamed(
-              context,
-              Routes.vaariList,
-              arguments: {'groupId': groupId, 'groupName': groupName},
-            );
-          } else {
-            Navigator.pushNamed(
-              context,
-              Routes.gajananMaharajGroups,
-              arguments: GroupScreenConfig(
-                title: localizations.vaariTitle,
-                emptyMessage: selectedGroupIds.isEmpty
-                    ? localizations.noVaariGroupsSelectedMessage
-                    : localizations.noActiveVaaris,
-                targetRoute: Routes.vaariList,
-                filteredGroupIds: selectedGroupIds,
-              ),
-            );
-          }
-        },
+        onTap: () => _navigateToGroupScopedList(
+          context: context,
+          targetRoute: Routes.vaariList,
+          title: localizations.vaariTitle,
+          noGroupSelectedMessage: localizations.noVaariGroupsSelectedMessage,
+          noActiveItemsMessage: localizations.noActiveVaaris,
+        ),
       ),
     );
     cards.add(
@@ -513,6 +457,51 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
 
     return scaffoldBase;
+  }
+
+  /// Navigates to [targetRoute] for the single selected group, or to the
+  /// multi-group selection screen when zero or multiple groups are selected.
+  /// Shared by the Parayan and Vaari home cards, which only differ in route
+  /// and copy.
+  void _navigateToGroupScopedList({
+    required BuildContext context,
+    required String targetRoute,
+    required String title,
+    required String noGroupSelectedMessage,
+    required String noActiveItemsMessage,
+  }) {
+    final selectedGroupIds = context
+        .read<GroupSelectionProvider>()
+        .selectedGroupIds;
+
+    if (selectedGroupIds.length == 1) {
+      final groupId = selectedGroupIds.first;
+      final configProvider = context.read<AppConfigProvider>();
+      final group = configProvider.appConfig?.gajananMaharajGroups.firstWhere(
+        (g) => g.id == groupId,
+      );
+      final useMarathi = Localizations.localeOf(context).useMarathiContent;
+      final groupName = useMarathi ? group?.nameMr : group?.nameEn;
+
+      Navigator.pushNamed(
+        context,
+        targetRoute,
+        arguments: {'groupId': groupId, 'groupName': groupName},
+      );
+    } else {
+      Navigator.pushNamed(
+        context,
+        Routes.gajananMaharajGroups,
+        arguments: GroupScreenConfig(
+          title: title,
+          emptyMessage: selectedGroupIds.isEmpty
+              ? noGroupSelectedMessage
+              : noActiveItemsMessage,
+          targetRoute: targetRoute,
+          filteredGroupIds: selectedGroupIds,
+        ),
+      );
+    }
   }
 
   void _triggerAnimationFromProvider(FestivalProvider provider) {
