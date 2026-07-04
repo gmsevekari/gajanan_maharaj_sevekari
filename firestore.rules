@@ -100,7 +100,7 @@ service cloud.firestore {
       && request.resource.data.suggestedCorrection.size() < 2000
       && request.resource.data.deviceId is string
       && request.resource.data.deviceId.size() < 200
-      && request.resource.data.timestamp == request.time;
+      && request.resource.data.timestamp is timestamp;
       allow read, delete: if isAdmin();
       allow update: if false;
     }
@@ -114,7 +114,7 @@ service cloud.firestore {
         && request.resource.data.admin_email.size() < 150
         && request.resource.data.action is string
         && request.resource.data.action.size() < 100
-        && request.resource.data.timestamp == request.time
+        && request.resource.data.timestamp is timestamp
         && request.resource.data.expires_at is timestamp
         && request.resource.data.details is map
         && request.resource.data.details.size() < 50;
