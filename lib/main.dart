@@ -66,6 +66,10 @@ import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_d
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_create_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/group_namjap/admin_group_namjap_list_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/vaari/admin_vaari_dashboard.dart';
+import 'package:gajanan_maharaj_sevekari/admin/vaari/admin_vaari_create_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/vaari/admin_vaari_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/vaari/admin_vaari_list_screen.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/user_notifications_screen.dart';
 import 'package:gajanan_maharaj_sevekari/onboarding/group_selection_screen.dart';
 import 'package:gajanan_maharaj_sevekari/providers/event_provider.dart';
@@ -539,6 +543,33 @@ class _MyAppState extends State<MyApp> {
                     ),
                   );
                 },
+                Routes.adminVaariDashboard: (context) {
+                  final args = ModalRoute.of(context)?.settings.arguments;
+                  if (args is Map<String, dynamic>) {
+                    return AdminVaariDashboard(
+                      adminUser: args['adminUser'] as AdminUser,
+                    );
+                  }
+                  if (args is AdminUser) {
+                    return AdminVaariDashboard(adminUser: args);
+                  }
+                  return const Scaffold(
+                    body: Center(
+                      child: Text('Error: Missing AdminUser arguments'),
+                    ),
+                  );
+                },
+                Routes.adminCreateVaari: (context) {
+                  final args = ModalRoute.of(context)!.settings.arguments;
+                  if (args is AdminUser) {
+                    return AdminVaariCreateScreen(adminUser: args);
+                  }
+                  return const Scaffold(
+                    body: Center(
+                      child: Text('Error: Missing AdminUser arguments'),
+                    ),
+                  );
+                },
                 Routes.onboarding: (context) => const GroupSelectionScreen(),
                 Routes.adminManageGroupAdmins: (context) {
                   final admin =
@@ -708,6 +739,44 @@ class _MyAppState extends State<MyApp> {
                         body: Center(
                           child: Text(
                             'Error: Missing AdminGroupNamjapListScreen arguments',
+                          ),
+                        ),
+                      ),
+                    );
+                  case Routes.adminVaariDetail:
+                    final args = settings.arguments;
+                    if (args is Map<String, dynamic>) {
+                      return MaterialPageRoute(
+                        builder: (context) => AdminVaariDetailScreen(
+                          eventId: args['eventId'] as String,
+                          adminUser: args['adminUser'] as AdminUser,
+                        ),
+                      );
+                    }
+                    return MaterialPageRoute(
+                      builder: (context) => const Scaffold(
+                        body: Center(
+                          child: Text(
+                            'Error: Missing AdminVaariDetailScreen arguments',
+                          ),
+                        ),
+                      ),
+                    );
+                  case Routes.adminVaariList:
+                    final args = settings.arguments;
+                    if (args is Map<String, dynamic>) {
+                      return MaterialPageRoute(
+                        builder: (context) => AdminVaariListScreen(
+                          status: args['status'] as String,
+                          adminUser: args['adminUser'] as AdminUser,
+                        ),
+                      );
+                    }
+                    return MaterialPageRoute(
+                      builder: (context) => const Scaffold(
+                        body: Center(
+                          child: Text(
+                            'Error: Missing AdminVaariListScreen arguments',
                           ),
                         ),
                       ),

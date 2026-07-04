@@ -15,6 +15,7 @@ class VaariEvent {
   final String timezone;
   final int totalSteps;
   final double totalDistance;
+  final double targetDistance;
   final String distanceUnit;
 
   const VaariEvent({
@@ -32,6 +33,7 @@ class VaariEvent {
     required this.timezone,
     required this.totalSteps,
     required this.totalDistance,
+    this.targetDistance = 0.0,
     required this.distanceUnit,
   });
 
@@ -55,6 +57,7 @@ class VaariEvent {
       timezone: data['timezone'] ?? 'America/Los_Angeles',
       totalSteps: data['totalSteps'] ?? 0,
       totalDistance: (data['totalDistance'] as num?)?.toDouble() ?? 0.0,
+      targetDistance: (data['targetDistance'] as num?)?.toDouble() ?? 0.0,
       distanceUnit: data['distanceUnit'] ?? 'km',
     );
   }
@@ -74,6 +77,7 @@ class VaariEvent {
       'timezone': timezone,
       'totalSteps': totalSteps,
       'totalDistance': totalDistance,
+      'targetDistance': targetDistance,
       'distanceUnit': distanceUnit,
     };
   }
@@ -93,6 +97,7 @@ class VaariEvent {
     String? timezone,
     int? totalSteps,
     double? totalDistance,
+    double? targetDistance,
     String? distanceUnit,
   }) {
     return VaariEvent(
@@ -110,6 +115,7 @@ class VaariEvent {
       timezone: timezone ?? this.timezone,
       totalSteps: totalSteps ?? this.totalSteps,
       totalDistance: totalDistance ?? this.totalDistance,
+      targetDistance: targetDistance ?? this.targetDistance,
       distanceUnit: distanceUnit ?? this.distanceUnit,
     );
   }

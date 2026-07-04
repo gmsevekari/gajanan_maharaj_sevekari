@@ -52,10 +52,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     if (user == null || user.email == null) return;
 
     try {
-      await firestore
-          .collection('admin_allowlist')
-          .doc(user.email)
-          .update({'typoNotificationsEnabled': enabled});
+      await firestore.collection('admin_allowlist').doc(user.email).update({
+        'typoNotificationsEnabled': enabled,
+      });
 
       await TypoReportService.setNotificationsEnabled(enabled);
     } catch (e) {
@@ -162,7 +161,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 child: StreamBuilder<DocumentSnapshot>(
                   stream: _adminStream,
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+                    if (snapshot.connectionState == ConnectionState.waiting &&
+                        !snapshot.hasData) {
                       return const Center(child: CircularProgressIndicator());
                     }
 

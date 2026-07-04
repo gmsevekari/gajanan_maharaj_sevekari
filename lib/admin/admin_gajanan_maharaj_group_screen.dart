@@ -29,6 +29,8 @@ class AdminGajananMaharajGroupScreen extends StatelessWidget {
         title: Text(
           mode == 'namjap'
               ? localizations.adminNamjapGroupTitle
+              : mode == 'vaari'
+              ? localizations.adminVaariGroupTitle
               : localizations.adminParayanGroupTitle,
         ),
         backgroundColor: theme.appColors.primarySwatch,
@@ -59,8 +61,9 @@ class AdminGajananMaharajGroupScreen extends StatelessWidget {
                     itemCount: groups.length,
                     itemBuilder: (context, index) {
                       final group = groups[index];
-                      final groupName =
-                          locale == 'mr' ? group.nameMr : group.nameEn;
+                      final groupName = locale == 'mr'
+                          ? group.nameMr
+                          : group.nameEn;
 
                       return Card(
                         elevation: theme.cardTheme.elevation,
@@ -72,8 +75,8 @@ class AdminGajananMaharajGroupScreen extends StatelessWidget {
                         ),
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor:
-                                theme.colorScheme.primary.withValues(alpha: 0.1),
+                            backgroundColor: theme.colorScheme.primary
+                                .withValues(alpha: 0.1),
                             child: group.icon != null && group.icon!.isNotEmpty
                                 ? Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -109,11 +112,18 @@ class AdminGajananMaharajGroupScreen extends StatelessWidget {
                                   adminUser.typoNotificationsEnabled,
                             );
 
+                            final String targetRoute;
+                            if (mode == 'namjap') {
+                              targetRoute = Routes.adminGroupNamjapDashboard;
+                            } else if (mode == 'vaari') {
+                              targetRoute = Routes.adminVaariDashboard;
+                            } else {
+                              targetRoute = Routes.adminParayanCoordination;
+                            }
+
                             Navigator.pushNamed(
                               context,
-                              mode == 'namjap'
-                                  ? Routes.adminGroupNamjapDashboard
-                                  : Routes.adminParayanCoordination,
+                              targetRoute,
                               arguments: selectedAdmin,
                             );
                           },
