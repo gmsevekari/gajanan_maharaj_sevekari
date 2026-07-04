@@ -139,6 +139,7 @@ class ThemedIcon extends StatelessWidget {
         break;
       case LogicalIcon.person:
       case LogicalIcon.groups:
+      case LogicalIcon.walk:
         // Fallback to default icons for now
         break;
     }

@@ -1717,7 +1717,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get groupNamjapTimezone => 'टाइमझोन';
 
   @override
-  String get upcomingActiveTab => 'आगामी / सक्रिय';
+  String get upcomingActiveTab => 'सक्रिय / आगामी';
 
   @override
   String get previous => 'मागील';
@@ -1945,4 +1945,21 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get failedToExport => 'ग्रुप्स एक्सपोर्ट करण्यात अयशस्वी.';
+
+  @override
+  String get vaariTitle => 'ऑफलाईन वारी';
+
+  @override
+  String get vaariDescription =>
+      'सामूहिक वारीचा भाग म्हणून चालून पायऱ्या रिपोर्ट करा.';
+
+  @override
+  String get noActiveVaaris => 'सध्या कोणतीही सक्रिय वारी उपलब्ध नाही';
+
+  @override
+  String get noCompletedVaaris => 'अजूनपर्यंत कोणतीही वारी पूर्ण झालेली नाही';
+
+  @override
+  String get noVaariGroupsSelectedMessage =>
+      'वारी पाहण्यासाठी कृपया एक ग्रुप निवडा.';
 }

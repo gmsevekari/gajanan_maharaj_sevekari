@@ -1713,7 +1713,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupNamjapTimezone => 'Timezone';
 
   @override
-  String get upcomingActiveTab => 'Upcoming / Active';
+  String get upcomingActiveTab => 'Active / Upcoming';
 
   @override
   String get previous => 'Previous';
@@ -1940,6 +1940,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failedToExport => 'Failed to export groups.';
+
+  @override
+  String get vaariTitle => 'Offline Vaari';
+
+  @override
+  String get vaariDescription =>
+      'Walk and report steps as part of a collective Vaari event.';
+
+  @override
+  String get noActiveVaaris => 'No active Vaari events currently';
+
+  @override
+  String get noCompletedVaaris => 'No completed Vaari events yet';
+
+  @override
+  String get noVaariGroupsSelectedMessage =>
+      'Please select a group to view Vaari events.';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

@@ -3336,7 +3336,7 @@ abstract class AppLocalizations {
   /// No description provided for @upcomingActiveTab.
   ///
   /// In en, this message translates to:
-  /// **'Upcoming / Active'**
+  /// **'Active / Upcoming'**
   String get upcomingActiveTab;
 
   /// No description provided for @previous.
@@ -3758,6 +3758,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to export groups.'**
   String get failedToExport;
+
+  /// No description provided for @vaariTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline Vaari'**
+  String get vaariTitle;
+
+  /// No description provided for @vaariDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk and report steps as part of a collective Vaari event.'**
+  String get vaariDescription;
+
+  /// No description provided for @noActiveVaaris.
+  ///
+  /// In en, this message translates to:
+  /// **'No active Vaari events currently'**
+  String get noActiveVaaris;
+
+  /// No description provided for @noCompletedVaaris.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed Vaari events yet'**
+  String get noCompletedVaaris;
+
+  /// No description provided for @noVaariGroupsSelectedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a group to view Vaari events.'**
+  String get noVaariGroupsSelectedMessage;
 }
 
 class _AppLocalizationsDelegate
