@@ -7,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/providers/vaari_service.dart';
 import 'package:gajanan_maharaj_sevekari/providers/vaari_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/vaari/widgets/add_steps_dialog.dart';
@@ -93,7 +94,7 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
         final event = snapshot.data;
         final title = event == null
             ? localizations.vaariEventDetails
-            : (locale == 'mr' ? event.nameMr : event.nameEn);
+            : Localizations.localeOf(context).localizedContent(event.nameEn, event.nameMr);
 
         return Scaffold(
           appBar: AppBar(

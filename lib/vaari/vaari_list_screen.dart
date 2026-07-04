@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:provider/provider.dart';
 
@@ -178,7 +179,7 @@ class _VaariListScreenState extends State<VaariListScreen>
           itemCount: events.length,
           itemBuilder: (context, index) {
             final event = events[index];
-            final title = locale == 'mr' ? event.nameMr : event.nameEn;
+            final title = Localizations.localeOf(context).localizedContent(event.nameEn, event.nameMr);
             final dateRange = _formatDateRange(
               event.startDate,
               event.endDate,
