@@ -74,6 +74,22 @@ void main() {
       expect(find.textContaining(' / '), findsNothing);
     });
 
+    testWidgets('places the walker exactly on the flag once the route is fully '
+        'covered (regression: the flag marker used to render shifted away '
+        'from its true grid position, so the walker and flag did not '
+        'visually coincide at the destination)', (tester) async {
+      await tester.pumpWidget(
+        createWidget(totalDistance: 200.0, distanceUnit: 'mi'),
+      );
+      await tester.pumpAndSettle();
+
+      final walkerCenter = tester.getCenter(find.byIcon(Icons.directions_walk));
+      final flagCenter = tester.getCenter(find.byIcon(Icons.flag));
+
+      expect(walkerCenter.dx, closeTo(flagCenter.dx, 1.0));
+      expect(walkerCenter.dy, closeTo(flagCenter.dy, 1.0));
+    });
+
     testWidgets('clamps negative-looking progress to the start of the route', (
       tester,
     ) async {

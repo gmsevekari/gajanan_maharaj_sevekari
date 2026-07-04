@@ -186,40 +186,45 @@ class _VaariRouteTimeline extends StatelessWidget {
     final center = layout.stopPositions[index];
     final radius = isDestination ? _flagRadius : _markerRadius;
 
+    // The label is wider than the marker circle, so the whole column must be
+    // fixed to _labelWidth and centered on `center.dx` — otherwise Column's
+    // default cross-axis centering widens the box to fit the label and
+    // re-centers the (narrower) circle within it, silently shifting every
+    // marker off its true grid position by a few pixels.
     return Positioned(
-      left: center.dx - radius,
+      left: center.dx - _labelWidth / 2,
       top: center.dy - radius,
-      child: Column(
-        children: [
-          Container(
-            width: radius * 2,
-            height: radius * 2,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isPassed
-                  ? theme.colorScheme.primary
-                  : theme.appColors.surface,
-              border: Border.all(
+      child: SizedBox(
+        width: _labelWidth,
+        child: Column(
+          children: [
+            Container(
+              width: radius * 2,
+              height: radius * 2,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
                 color: isPassed
                     ? theme.colorScheme.primary
-                    : theme.appColors.divider,
-                width: 2,
+                    : theme.appColors.surface,
+                border: Border.all(
+                  color: isPassed
+                      ? theme.colorScheme.primary
+                      : theme.appColors.divider,
+                  width: 2,
+                ),
               ),
+              child: isDestination
+                  ? Icon(
+                      Icons.flag,
+                      size: radius,
+                      color: isPassed
+                          ? theme.colorScheme.onPrimary
+                          : theme.appColors.secondaryText,
+                    )
+                  : null,
             ),
-            child: isDestination
-                ? Icon(
-                    Icons.flag,
-                    size: radius,
-                    color: isPassed
-                        ? theme.colorScheme.onPrimary
-                        : theme.appColors.secondaryText,
-                  )
-                : null,
-          ),
-          const SizedBox(height: _labelGap),
-          SizedBox(
-            width: _labelWidth,
-            child: Text(
+            const SizedBox(height: _labelGap),
+            Text(
               stop.name,
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -231,8 +236,8 @@ class _VaariRouteTimeline extends StatelessWidget {
                     : theme.appColors.secondaryText,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
