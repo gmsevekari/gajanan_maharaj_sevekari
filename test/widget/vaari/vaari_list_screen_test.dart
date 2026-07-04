@@ -133,8 +133,11 @@ void main() {
 
       // Verify event card is rendered
       expect(find.text('Seattle Active Walk'), findsOneWidget);
-      expect(find.text('15,000 steps'), findsOneWidget); // should format steps
-      expect(find.text('12.0 km'), findsOneWidget); // should format distance
+      expect(find.text('15,000'), findsOneWidget); // should format steps
+      expect(
+        find.text('12.0 / 0.0 km'),
+        findsOneWidget,
+      ); // should format distance
 
       // Tap card to navigate
       await tester.tap(find.text('Seattle Active Walk'));
@@ -168,8 +171,8 @@ void main() {
 
       // Verify completed event is rendered
       expect(find.text('Seattle Completed Walk'), findsOneWidget);
-      expect(find.text('45,000 steps'), findsOneWidget);
-      expect(find.text('36.0 km'), findsOneWidget);
+      expect(find.text('45,000'), findsOneWidget);
+      expect(find.text('36.0 / 0.0 km'), findsOneWidget);
     });
 
     testWidgets('renders completed empty state when no completed events', (
@@ -313,11 +316,11 @@ void main() {
       expect(find.text('सिएटल वारी'), findsOneWidget);
 
       // Verified: Numbers should be formatted in Marathi numerals
-      // 15,000 steps -> १५,००० स्टेप्स
-      expect(find.text('१५,००० स्टेप्स'), findsOneWidget);
+      // 15,000 -> १५,०००
+      expect(find.text('१५,०००'), findsOneWidget);
 
-      // 12.0 km -> १२.० किमी
-      expect(find.text('१२.० किमी'), findsOneWidget);
+      // 12.0 / 0.0 km -> १२.० / ०.० किमी
+      expect(find.text('१२.० / ०.० किमी'), findsOneWidget);
     });
   });
 }

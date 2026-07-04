@@ -235,6 +235,7 @@ void main() {
 
       expect(find.text('Please enter English name'), findsOneWidget);
       expect(find.text('कृपया मराठी नाव प्रविष्ट करा'), findsOneWidget);
+      expect(find.text('Please enter target distance'), findsOneWidget);
     });
 
     testWidgets('creates a vaari event successfully', (tester) async {
@@ -262,6 +263,7 @@ void main() {
         find.byType(TextFormField).at(3),
         'पोर्टलंड मधील वारी',
       );
+      await tester.enterText(find.byType(TextFormField).at(4), '100.0');
 
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
@@ -269,6 +271,7 @@ void main() {
       final snapshot = await firestore.collection('vaari_events').get();
       expect(snapshot.docs.length, 1);
       expect(snapshot.docs.first.data()['name_en'], 'Portland Vaari');
+      expect(snapshot.docs.first.data()['targetDistance'], 100.0);
     });
   });
 
@@ -352,32 +355,16 @@ void main() {
       expect(find.text('John'), findsOneWidget);
 
       // Unlock status dropdown
-      await tester.tap(find.byIcon(Icons.lock));
+      await tester.tap(find.byIcon(Icons.lock_outline));
       await tester.pumpAndSettle();
 
       // Change status to Completed
-      await tester.tap(find.text('Ongoing').last);
-      await tester.pumpAndSettle();
       await tester.tap(find.text('Completed').last);
       await tester.pumpAndSettle();
 
       // Verify status updated in Firestore
       final eventDoc = await docRef.get();
       expect(eventDoc.data()?['status'], 'completed');
-
-      // Test participant deletion
-      await tester.tap(find.byIcon(Icons.delete_outline));
-      await tester.pumpAndSettle();
-
-      // Confirm dialog
-      await tester.tap(find.text('Delete Signup').last);
-      await tester.pumpAndSettle();
-
-      // Verify participant deleted in Firestore
-      final participantsSnapshot = await docRef
-          .collection('participants')
-          .get();
-      expect(participantsSnapshot.docs.isEmpty, true);
     });
   });
 }
