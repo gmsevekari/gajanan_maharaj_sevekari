@@ -235,6 +235,13 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
                         description,
                       ),
                       const SizedBox(height: 8),
+                      _buildDetailItem(
+                        theme,
+                        Icons.flag_outlined,
+                        localizations.adminVaariTargetDistance,
+                        "${_formatDistance(event.targetDistance, context)} ${locale == 'mr' ? (event.distanceUnit == 'mi' ? 'मैल' : 'किमी') : event.distanceUnitLabel}",
+                      ),
+                      const SizedBox(height: 8),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [

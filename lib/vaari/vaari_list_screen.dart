@@ -188,17 +188,22 @@ class _VaariListScreenState extends State<VaariListScreen>
               locale,
             );
 
-            final stepSuffix = localizations.vaariStepsSuffix;
-            final distUnit = locale == 'mr' ? 'किमी' : event.distanceUnit;
-            final distSuffix = localizations.vaariDistanceSuffix(distUnit);
-            final formattedSteps =
-                formatNumberLocalized(event.totalSteps, locale, pad: false) +
-                stepSuffix;
+            final formattedSteps = formatNumberLocalized(
+              event.totalSteps,
+              locale,
+              pad: false,
+            );
+            final totalDistanceStr = locale == 'mr'
+                ? toMarathiNumerals(event.totalDistance.toStringAsFixed(1))
+                : event.totalDistance.toStringAsFixed(1);
+            final targetDistanceStr = locale == 'mr'
+                ? toMarathiNumerals(event.targetDistance.toStringAsFixed(1))
+                : event.targetDistance.toStringAsFixed(1);
+            final unitLabel = locale == 'mr'
+                ? (event.distanceUnit == 'mi' ? 'मैल' : 'किमी')
+                : event.distanceUnitLabel;
             final formattedDistance =
-                (locale == 'mr'
-                    ? toMarathiNumerals(event.totalDistance.toStringAsFixed(1))
-                    : event.totalDistance.toStringAsFixed(1)) +
-                distSuffix;
+                "$totalDistanceStr / $targetDistanceStr $unitLabel";
 
             return Card(
               elevation: theme.cardTheme.elevation,
