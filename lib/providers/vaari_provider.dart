@@ -96,11 +96,10 @@ class VaariProvider extends ChangeNotifier {
           _memberName = participant.memberName;
           _phone = participant.phone;
         }
-        _joinedEvents =
-            Map<String, bool>.from(_joinedEvents)..[eventId] = true;
+        _joinedEvents = Map<String, bool>.from(_joinedEvents)..[eventId] = true;
       } else {
-        _joinedEvents =
-            Map<String, bool>.from(_joinedEvents)..[eventId] = false;
+        _joinedEvents = Map<String, bool>.from(_joinedEvents)
+          ..[eventId] = false;
       }
     } on Exception catch (e) {
       debugPrint('VaariProvider.syncParticipation error: $e');
@@ -122,8 +121,7 @@ class VaariProvider extends ChangeNotifier {
         deviceId: deviceId,
         memberName: _memberName!,
       );
-      _joinedEvents =
-          Map<String, bool>.from(_joinedEvents)..[eventId] = false;
+      _joinedEvents = Map<String, bool>.from(_joinedEvents)..[eventId] = false;
     } on Exception catch (e) {
       debugPrint('VaariProvider.deleteSignUp error: $e');
     } finally {

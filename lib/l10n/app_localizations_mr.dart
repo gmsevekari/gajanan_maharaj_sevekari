@@ -1947,11 +1947,11 @@ class AppLocalizationsMr extends AppLocalizations {
   String get failedToExport => 'ग्रुप्स एक्सपोर्ट करण्यात अयशस्वी.';
 
   @override
-  String get vaariTitle => 'ऑफलाईन वारी';
+  String get vaariTitle => 'वारी';
 
   @override
   String get vaariDescription =>
-      'सामूहिक वारीचा भाग म्हणून चालून पायऱ्या रिपोर्ट करा.';
+      'सामूहिक वारीचा भाग म्हणून चालून स्टेप्स रिपोर्ट करा.';
 
   @override
   String get noActiveVaaris => 'सध्या कोणतीही सक्रिय वारी उपलब्ध नाही';

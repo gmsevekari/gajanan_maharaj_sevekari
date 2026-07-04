@@ -3762,7 +3762,7 @@ abstract class AppLocalizations {
   /// No description provided for @vaariTitle.
   ///
   /// In en, this message translates to:
-  /// **'Offline Vaari'**
+  /// **'Vaari'**
   String get vaariTitle;
 
   /// No description provided for @vaariDescription.

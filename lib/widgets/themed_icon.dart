@@ -43,7 +43,8 @@ class ThemedIcon extends StatelessWidget {
     final activeFestival = festivalProvider.activeFestival;
 
     // Only show festive icon if both a festival is active AND the matching theme is selected
-    final showFestive = activeFestival != null &&
+    final showFestive =
+        activeFestival != null &&
         themeProvider.themePreset == activeFestival.themePreset;
 
     if (showFestive) {
@@ -101,8 +102,9 @@ class ThemedIcon extends StatelessWidget {
 
   Widget _buildGaneshChaturthiIcon(BuildContext context) {
     final effectiveSize = size ?? Theme.of(context).iconTheme.size ?? 24.0;
-    
-    String fullPath = 'resources/images/festive/ganesh_donations.png'; // Fallback
+
+    String fullPath =
+        'resources/images/festive/ganesh_donations.png'; // Fallback
     switch (logicalIcon) {
       case LogicalIcon.home:
         fullPath = 'resources/images/festive_icons/ganesh_chaturthi/home.png';
@@ -114,7 +116,8 @@ class ThemedIcon extends StatelessWidget {
         fullPath = 'resources/images/festive/ganesh_tour.png';
         break;
       case LogicalIcon.calendar:
-        fullPath = 'resources/images/festive_icons/ganesh_chaturthi/calendar.png';
+        fullPath =
+            'resources/images/festive_icons/ganesh_chaturthi/calendar.png';
         break;
       case LogicalIcon.events:
         fullPath = 'resources/images/festive/ganesh_events.png';
@@ -129,13 +132,15 @@ class ThemedIcon extends StatelessWidget {
         fullPath = 'resources/images/festive/ganesh_about.png';
         break;
       case LogicalIcon.notifications:
-        fullPath = 'resources/images/festive_icons/ganesh_chaturthi/notifications.png';
+        fullPath =
+            'resources/images/festive_icons/ganesh_chaturthi/notifications.png';
         break;
       case LogicalIcon.search:
         fullPath = 'resources/images/festive_icons/ganesh_chaturthi/search.png';
         break;
       case LogicalIcon.settings:
-        fullPath = 'resources/images/festive_icons/ganesh_chaturthi/settings.png';
+        fullPath =
+            'resources/images/festive_icons/ganesh_chaturthi/settings.png';
         break;
       case LogicalIcon.person:
       case LogicalIcon.groups:
@@ -158,7 +163,7 @@ class ThemedIcon extends StatelessWidget {
 
   Widget _buildDiwaliIcon(BuildContext context) {
     final effectiveSize = size ?? Theme.of(context).iconTheme.size ?? 24.0;
-    
+
     String? fullPath;
     switch (logicalIcon) {
       case LogicalIcon.home:

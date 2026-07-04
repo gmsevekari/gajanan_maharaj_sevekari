@@ -31,34 +31,58 @@ void main() {
     mockSnapshot = MockDocumentSnapshot();
 
     // Default wiring
-    when(() => mockFirestore.collection(any())).thenReturn(mockEventsCollection);
+    when(
+      () => mockFirestore.collection(any()),
+    ).thenReturn(mockEventsCollection);
     when(() => mockEventsCollection.doc(any())).thenReturn(mockEventDoc);
-    when(() => mockEventsCollection.where(
-          any(),
-          isEqualTo: any(named: 'isEqualTo'),
-          whereIn: any(named: 'whereIn'),
-        )).thenReturn(mockEventsCollection);
-    when(() => mockEventsCollection.orderBy(
-          any(),
-          descending: any(named: 'descending'),
-        )).thenReturn(mockEventsCollection);
-    when(() => mockEventsCollection.orderBy(any())).thenReturn(mockEventsCollection);
-    when(() => mockEventsCollection.snapshots()).thenAnswer((_) => Stream.value(MockQuerySnapshot()));
+    when(
+      () => mockEventsCollection.where(
+        any(),
+        isEqualTo: any(named: 'isEqualTo'),
+        whereIn: any(named: 'whereIn'),
+      ),
+    ).thenReturn(mockEventsCollection);
+    when(
+      () => mockEventsCollection.orderBy(
+        any(),
+        descending: any(named: 'descending'),
+      ),
+    ).thenReturn(mockEventsCollection);
+    when(
+      () => mockEventsCollection.orderBy(any()),
+    ).thenReturn(mockEventsCollection);
+    when(
+      () => mockEventsCollection.snapshots(),
+    ).thenAnswer((_) => Stream.value(MockQuerySnapshot()));
 
-    when(() => mockEventDoc.collection(any())).thenReturn(mockParticipantsCollection);
+    when(
+      () => mockEventDoc.collection(any()),
+    ).thenReturn(mockParticipantsCollection);
     when(() => mockEventDoc.get()).thenAnswer((_) async => mockSnapshot);
     when(() => mockEventDoc.update(any())).thenAnswer((_) async => {});
     when(() => mockEventDoc.set(any())).thenAnswer((_) async => {});
-    when(() => mockEventDoc.snapshots()).thenAnswer((_) => Stream.value(mockSnapshot));
+    when(
+      () => mockEventDoc.snapshots(),
+    ).thenAnswer((_) => Stream.value(mockSnapshot));
 
-    when(() => mockParticipantsCollection.doc(any())).thenReturn(mockParticipantDoc);
-    when(() => mockParticipantsCollection.where(
-          any(),
-          isEqualTo: any(named: 'isEqualTo'),
-        )).thenReturn(mockParticipantsCollection);
-    when(() => mockParticipantsCollection.limit(any())).thenReturn(mockParticipantsCollection);
-    when(() => mockParticipantsCollection.snapshots()).thenAnswer((_) => Stream.value(MockQuerySnapshot()));
-    when(() => mockParticipantsCollection.get()).thenAnswer((_) async => MockQuerySnapshot());
+    when(
+      () => mockParticipantsCollection.doc(any()),
+    ).thenReturn(mockParticipantDoc);
+    when(
+      () => mockParticipantsCollection.where(
+        any(),
+        isEqualTo: any(named: 'isEqualTo'),
+      ),
+    ).thenReturn(mockParticipantsCollection);
+    when(
+      () => mockParticipantsCollection.limit(any()),
+    ).thenReturn(mockParticipantsCollection);
+    when(
+      () => mockParticipantsCollection.snapshots(),
+    ).thenAnswer((_) => Stream.value(MockQuerySnapshot()));
+    when(
+      () => mockParticipantsCollection.get(),
+    ).thenAnswer((_) async => MockQuerySnapshot());
 
     when(() => mockParticipantDoc.get()).thenAnswer((_) async => mockSnapshot);
     when(() => mockParticipantDoc.update(any())).thenAnswer((_) async => {});
@@ -86,42 +110,54 @@ void main() {
   });
 
   group('VaariService Tests', () {
-    test('VaariService constructor uses default Firestore instance if none provided', () {
-      expect(() => VaariService(), throwsA(isA<FirebaseException>()));
-    });
+    test(
+      'VaariService constructor uses default Firestore instance if none provided',
+      () {
+        expect(() => VaariService(), throwsA(isA<FirebaseException>()));
+      },
+    );
 
-    test('getActiveEvents and getCompletedEvents build queries correctly', () async {
-      final service = VaariService(firestore: mockFirestore);
-      
-      final mockQuerySnapshot = MockQuerySnapshot();
-      final mockDocSnapshot = MockQueryDocumentSnapshot();
-      when(() => mockQuerySnapshot.docs).thenReturn([mockDocSnapshot]);
-      when(() => mockDocSnapshot.id).thenReturn('vaari_1');
-      when(() => mockDocSnapshot.data()).thenReturn({
-        'createdAt': Timestamp.now(),
-        'endDate': Timestamp.now(),
-        'groupId': 'gajanan_gunjan',
-        'joinCode': '123456',
-        'name_en': 'Weekly Vaari',
-        'name_mr': 'साप्ताहिक वारी',
-        'description_en': 'Walk',
-        'description_mr': 'चाला',
-        'startDate': Timestamp.now(),
-        'status': 'ongoing',
-        'timezone': 'Asia/Kolkata',
-        'totalSteps': 10000,
-        'totalDistance': 8.0,
-        'distanceUnit': 'km',
-      });
+    test(
+      'getActiveEvents and getCompletedEvents build queries correctly',
+      () async {
+        final service = VaariService(firestore: mockFirestore);
 
-      when(() => mockEventsCollection.snapshots()).thenAnswer((_) => Stream.value(mockQuerySnapshot));
+        final mockQuerySnapshot = MockQuerySnapshot();
+        final mockDocSnapshot = MockQueryDocumentSnapshot();
+        when(() => mockQuerySnapshot.docs).thenReturn([mockDocSnapshot]);
+        when(() => mockDocSnapshot.id).thenReturn('vaari_1');
+        when(() => mockDocSnapshot.data()).thenReturn({
+          'createdAt': Timestamp.now(),
+          'endDate': Timestamp.now(),
+          'groupId': 'gajanan_gunjan',
+          'joinCode': '123456',
+          'name_en': 'Weekly Vaari',
+          'name_mr': 'साप्ताहिक वारी',
+          'description_en': 'Walk',
+          'description_mr': 'चाला',
+          'startDate': Timestamp.now(),
+          'status': 'ongoing',
+          'timezone': 'Asia/Kolkata',
+          'totalSteps': 10000,
+          'totalDistance': 8.0,
+          'distanceUnit': 'km',
+        });
 
-      final activeEvents = await service.getActiveEvents('gajanan_gunjan').first;
-      final completedEvents = await service.getCompletedEvents('gajanan_gunjan').first;
+        when(
+          () => mockEventsCollection.snapshots(),
+        ).thenAnswer((_) => Stream.value(mockQuerySnapshot));
 
-      expect(activeEvents, hasLength(1));
-      expect(completedEvents, hasLength(1));
-    });
+        final activeEvents = await service
+            .getActiveEvents('gajanan_gunjan')
+            .first;
+        final completedEvents = await service
+            .getCompletedEvents('gajanan_gunjan')
+            .first;
+
+        expect(activeEvents, hasLength(1));
+        expect(completedEvents, hasLength(1));
+      },
+    );
 
     test('getEventStream returns correct model stream', () async {
       final service = VaariService(firestore: mockFirestore);
@@ -137,8 +173,9 @@ void main() {
       final nonExistentSnapshot = MockDocumentSnapshot();
       when(() => nonExistentSnapshot.exists).thenReturn(false);
       when(() => nonExistentSnapshot.id).thenReturn('missing');
-      when(() => mockEventDoc.snapshots())
-          .thenAnswer((_) => Stream.value(nonExistentSnapshot));
+      when(
+        () => mockEventDoc.snapshots(),
+      ).thenAnswer((_) => Stream.value(nonExistentSnapshot));
 
       final event = await service.getEventStream('missing').first;
       expect(event, isNull);
@@ -146,7 +183,7 @@ void main() {
 
     test('getParticipantStream returns correct model stream', () async {
       final service = VaariService(firestore: mockFirestore);
-      
+
       final mockPartSnapshot = MockDocumentSnapshot();
       when(() => mockPartSnapshot.exists).thenReturn(true);
       when(() => mockPartSnapshot.data()).thenReturn({
@@ -157,26 +194,37 @@ void main() {
         'totalSteps': 5000,
         'totalDistance': 4.0,
       });
-      when(() => mockParticipantDoc.snapshots()).thenAnswer((_) => Stream.value(mockPartSnapshot));
+      when(
+        () => mockParticipantDoc.snapshots(),
+      ).thenAnswer((_) => Stream.value(mockPartSnapshot));
 
-      final stream = service.getParticipantStream('vaari_1', 'device_1', 'Abhishek');
+      final stream = service.getParticipantStream(
+        'vaari_1',
+        'device_1',
+        'Abhishek',
+      );
       expect(stream, isNotNull);
 
       final participant = await stream.first;
       expect(participant?.memberName, 'Abhishek');
     });
 
-    test('getParticipantStream returns null when participant does not exist', () async {
-      final service = VaariService(firestore: mockFirestore);
-      final noPartSnapshot = MockDocumentSnapshot();
-      when(() => noPartSnapshot.exists).thenReturn(false);
-      when(() => mockParticipantDoc.snapshots())
-          .thenAnswer((_) => Stream.value(noPartSnapshot));
+    test(
+      'getParticipantStream returns null when participant does not exist',
+      () async {
+        final service = VaariService(firestore: mockFirestore);
+        final noPartSnapshot = MockDocumentSnapshot();
+        when(() => noPartSnapshot.exists).thenReturn(false);
+        when(
+          () => mockParticipantDoc.snapshots(),
+        ).thenAnswer((_) => Stream.value(noPartSnapshot));
 
-      final participant =
-          await service.getParticipantStream('vaari_1', 'device_1', 'Ghost').first;
-      expect(participant, isNull);
-    });
+        final participant = await service
+            .getParticipantStream('vaari_1', 'device_1', 'Ghost')
+            .first;
+        expect(participant, isNull);
+      },
+    );
 
     test('getParticipantsCountStream returns count stream', () async {
       final service = VaariService(firestore: mockFirestore);
@@ -287,22 +335,25 @@ void main() {
       verify(() => mockBatch.commit()).called(1);
     });
 
-    test('submitSteps with null distance computes distance based on unit', () async {
-      final service = VaariService(firestore: mockFirestore);
-      final mockBatch = MockWriteBatch();
-      when(() => mockFirestore.batch()).thenReturn(mockBatch);
-      when(() => mockBatch.commit()).thenAnswer((_) async => {});
+    test(
+      'submitSteps with null distance computes distance based on unit',
+      () async {
+        final service = VaariService(firestore: mockFirestore);
+        final mockBatch = MockWriteBatch();
+        when(() => mockFirestore.batch()).thenReturn(mockBatch);
+        when(() => mockBatch.commit()).thenAnswer((_) async => {});
 
-      // Unit is 'km' from stub, so 5000 steps * 0.0008 = 4.0 km
-      await service.submitSteps(
-        eventId: 'vaari_1',
-        deviceId: 'device_1',
-        memberName: 'Abhishek',
-        stepsToSubmit: 5000,
-      );
+        // Unit is 'km' from stub, so 5000 steps * 0.0008 = 4.0 km
+        await service.submitSteps(
+          eventId: 'vaari_1',
+          deviceId: 'device_1',
+          memberName: 'Abhishek',
+          stepsToSubmit: 5000,
+        );
 
-      verify(() => mockBatch.commit()).called(1);
-    });
+        verify(() => mockBatch.commit()).called(1);
+      },
+    );
 
     test('submitSteps is a no-op when stepsToSubmit <= 0', () async {
       final service = VaariService(firestore: mockFirestore);
@@ -347,7 +398,9 @@ void main() {
       final mockQuerySnapshot = MockQuerySnapshot();
       final mockDocSnapshot = MockQueryDocumentSnapshot();
 
-      when(() => mockParticipantsCollection.get()).thenAnswer((_) async => mockQuerySnapshot);
+      when(
+        () => mockParticipantsCollection.get(),
+      ).thenAnswer((_) async => mockQuerySnapshot);
       when(() => mockQuerySnapshot.docs).thenReturn([mockDocSnapshot]);
       when(() => mockDocSnapshot.data()).thenReturn({
         'memberName': 'Abhishek',
@@ -365,11 +418,15 @@ void main() {
     test('checkParticipation returns null when no participant found', () async {
       final service = VaariService(firestore: mockFirestore);
       final mockQuerySnapshot = MockQuerySnapshot();
-      when(() => mockParticipantsCollection.get())
-          .thenAnswer((_) async => mockQuerySnapshot);
+      when(
+        () => mockParticipantsCollection.get(),
+      ).thenAnswer((_) async => mockQuerySnapshot);
       when(() => mockQuerySnapshot.docs).thenReturn([]);
 
-      final result = await service.checkParticipation('vaari_1', 'device_no_one');
+      final result = await service.checkParticipation(
+        'vaari_1',
+        'device_no_one',
+      );
       expect(result, isNull);
     });
 
@@ -390,12 +447,16 @@ void main() {
       final service = VaariService(firestore: mockFirestore);
       final noPartSnapshot = MockDocumentSnapshot();
       when(() => noPartSnapshot.exists).thenReturn(false);
-      when(() => mockParticipantDoc.snapshots())
-          .thenAnswer((_) => Stream.value(noPartSnapshot));
+      when(
+        () => mockParticipantDoc.snapshots(),
+      ).thenAnswer((_) => Stream.value(noPartSnapshot));
 
       // Should NOT throw — slashes are sanitised before building the doc path.
-      final stream =
-          service.getParticipantStream('vaari_1', 'dev/ice', 'John/Doe');
+      final stream = service.getParticipantStream(
+        'vaari_1',
+        'dev/ice',
+        'John/Doe',
+      );
       expect(await stream.first, isNull);
     });
   });

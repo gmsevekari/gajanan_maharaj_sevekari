@@ -13,12 +13,8 @@ class VaariDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Vaari Detail'),
-      ),
-      body: Center(
-        child: Text('Vaari Detail Screen for Event: $eventId'),
-      ),
+      appBar: AppBar(title: const Text('Vaari Detail')),
+      body: Center(child: Text('Vaari Detail Screen for Event: $eventId')),
     );
   }
 }

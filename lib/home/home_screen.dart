@@ -223,15 +223,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             : 'resources/images/icon/Parayan.png',
         imageSize: (isGaneshotsav || isDiwali) ? 84.0 : 100.0,
         onTap: () {
-          final selectedGroupIds =
-              context.read<GroupSelectionProvider>().selectedGroupIds;
+          final selectedGroupIds = context
+              .read<GroupSelectionProvider>()
+              .selectedGroupIds;
 
           if (selectedGroupIds.length == 1) {
             final groupId = selectedGroupIds.first;
             final configProvider = context.read<AppConfigProvider>();
             final group = configProvider.appConfig?.gajananMaharajGroups
                 .firstWhere((g) => g.id == groupId);
-            final useMarathi = Localizations.localeOf(context).useMarathiContent;
+            final useMarathi = Localizations.localeOf(
+              context,
+            ).useMarathiContent;
             final groupName = useMarathi ? group?.nameMr : group?.nameEn;
 
             Navigator.pushNamed(
@@ -263,15 +266,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         title: localizations.vaariTitle,
         customWidget: const ThemedIcon(LogicalIcon.walk, size: 60.0),
         onTap: () {
-          final selectedGroupIds =
-              context.read<GroupSelectionProvider>().selectedGroupIds;
+          final selectedGroupIds = context
+              .read<GroupSelectionProvider>()
+              .selectedGroupIds;
 
           if (selectedGroupIds.length == 1) {
             final groupId = selectedGroupIds.first;
             final configProvider = context.read<AppConfigProvider>();
             final group = configProvider.appConfig?.gajananMaharajGroups
                 .firstWhere((g) => g.id == groupId);
-            final useMarathi = Localizations.localeOf(context).useMarathiContent;
+            final useMarathi = Localizations.localeOf(
+              context,
+            ).useMarathiContent;
             final groupName = useMarathi ? group?.nameMr : group?.nameEn;
 
             Navigator.pushNamed(
@@ -655,12 +661,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       return _buildEmptyStateCard(context, localizations);
     }
 
-
-
     final screenWidth = MediaQuery.of(context).size.width;
     final double viewportFraction = (screenWidth - 24) / screenWidth;
-    final double targetFraction =
-        activeGroups.length > 1 ? viewportFraction : 1.0;
+    final double targetFraction = activeGroups.length > 1
+        ? viewportFraction
+        : 1.0;
 
     // Recreate controller if the fraction needs to change (e.g. 1 group vs multiple)
     if (_carouselPageController.viewportFraction != targetFraction) {
@@ -815,72 +820,67 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (showHeader) ...[
-                Text(
-                  groupName,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.appColors.primarySwatch[400],
-                    letterSpacing: 1.1,
-                  ),
-                ),
-                const SizedBox(height: 4),
-              ],
+          children: [
+            if (showHeader) ...[
               Text(
-                localizations.upcomingEvent,
+                groupName,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium?.copyWith(
+                style: theme.textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: theme.appColors.primarySwatch[600],
+                  color: theme.appColors.primarySwatch[400],
+                  letterSpacing: 1.1,
                 ),
               ),
-              const SizedBox(height: 4.0),
+              const SizedBox(height: 4),
+            ],
+            Text(
+              localizations.upcomingEvent,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.appColors.primarySwatch[600],
+              ),
+            ),
+            const SizedBox(height: 4.0),
+            Divider(
+              color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
+              height: 8.0,
+            ),
+            if (events.weeklyPooja != null)
+              _buildEventRow(
+                context,
+                events.weeklyPooja!,
+                Icons.event_repeat,
+                theme.appColors.primarySwatch,
+                localizations.weeklyPooja,
+                theme,
+              ),
+            if (events.weeklyPooja != null && events.specialEvent != null)
               Divider(
                 color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
                 height: 8.0,
               ),
-              if (events.weeklyPooja != null)
-                _buildEventRow(
-                  context,
-                  events.weeklyPooja!,
-                  Icons.event_repeat,
-                  theme.appColors.primarySwatch,
-                  localizations.weeklyPooja,
-                  theme,
-                ),
-              if (events.weeklyPooja != null && events.specialEvent != null)
+            if (events.specialEvent != null)
+              _buildEventRow(
+                context,
+                events.specialEvent!,
+                Icons.celebration,
+                theme.appColors.primarySwatch,
+                localizations.specialEvents,
+                theme,
+              ),
+            if (events.parayan != null) ...[
+              if (events.weeklyPooja != null || events.specialEvent != null)
                 Divider(
                   color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
                   height: 8.0,
                 ),
-              if (events.specialEvent != null)
-                _buildEventRow(
-                  context,
-                  events.specialEvent!,
-                  Icons.celebration,
-                  theme.appColors.primarySwatch,
-                  localizations.specialEvents,
-                  theme,
-                ),
-              if (events.parayan != null) ...[
-                if (events.weeklyPooja != null || events.specialEvent != null)
-                  Divider(
-                    color: theme.appColors.primarySwatch.withValues(alpha: 0.2),
-                    height: 8.0,
-                  ),
-                _buildParayanRow(
-                  context,
-                  events.parayan!,
-                  theme,
-                  localizations,
-                ),
-              ],
+              _buildParayanRow(context, events.parayan!, theme, localizations),
             ],
-          ),
+          ],
         ),
-      );
+      ),
+    );
 
     Widget decoratedCard;
     if (!isGaneshotsav && !isDiwali) {
@@ -1024,7 +1024,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final useMarathi = locale.useMarathiContent;
     final eventTitle = useMarathi ? event.titleMr : event.titleEn;
     final eventDate = event.startTime.toDate();
-    final eventDateString = formatDateWithDay(eventDate, useMarathi ? 'mr' : 'en');
+    final eventDateString = formatDateWithDay(
+      eventDate,
+      useMarathi ? 'mr' : 'en',
+    );
 
     return InkWell(
       onTap: () {
@@ -1125,7 +1128,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final locale = Localizations.localeOf(context);
     final useMarathi = locale.useMarathiContent;
     final title = useMarathi ? event.titleMr : event.titleEn;
-    final dateRange = event.getSmartDate(useMarathi ? 'mr' : 'en', includeTime: false);
+    final dateRange = event.getSmartDate(
+      useMarathi ? 'mr' : 'en',
+      includeTime: false,
+    );
 
     return InkWell(
       onTap: () {

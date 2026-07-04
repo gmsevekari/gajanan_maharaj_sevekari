@@ -165,14 +165,14 @@ class _VaariListScreenState extends State<VaariListScreen>
             );
 
             final stepSuffix = locale == 'mr' ? ' पायऱ्या' : ' steps';
-            final distSuffix = locale == 'mr' ? ' किमी' : ' ${event.distanceUnit}';
-            final formattedSteps = formatNumberLocalized(
-                  event.totalSteps,
-                  locale,
-                  pad: false,
-                ) +
+            final distSuffix = locale == 'mr'
+                ? ' किमी'
+                : ' ${event.distanceUnit}';
+            final formattedSteps =
+                formatNumberLocalized(event.totalSteps, locale, pad: false) +
                 stepSuffix;
-            final formattedDistance = (locale == 'mr'
+            final formattedDistance =
+                (locale == 'mr'
                     ? toMarathiNumerals(event.totalDistance.toStringAsFixed(1))
                     : event.totalDistance.toStringAsFixed(1)) +
                 distSuffix;
@@ -188,10 +188,7 @@ class _VaariListScreenState extends State<VaariListScreen>
                   Navigator.pushNamed(
                     context,
                     Routes.vaariDetail,
-                    arguments: {
-                      'id': event.id,
-                      'joinCode': event.joinCode,
-                    },
+                    arguments: {'id': event.id, 'joinCode': event.joinCode},
                   );
                 },
                 child: Padding(

@@ -1942,7 +1942,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToExport => 'Failed to export groups.';
 
   @override
-  String get vaariTitle => 'Offline Vaari';
+  String get vaariTitle => 'Vaari';
 
   @override
   String get vaariDescription =>

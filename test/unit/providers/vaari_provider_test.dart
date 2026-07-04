@@ -100,36 +100,42 @@ void main() {
       expect(prefs.getString(VaariProvider.keyMemberName), isNull);
     });
 
-    test('syncParticipation updates state if participant found on server', () async {
-      final participant = VaariParticipant(
-        memberName: 'Remote Walker',
-        deviceId: 'device_1',
-        phone: '5555555555',
-        joinedAt: DateTime(2024),
-        totalSteps: 0,
-        totalDistance: 0.0,
-      );
+    test(
+      'syncParticipation updates state if participant found on server',
+      () async {
+        final participant = VaariParticipant(
+          memberName: 'Remote Walker',
+          deviceId: 'device_1',
+          phone: '5555555555',
+          joinedAt: DateTime(2024),
+          totalSteps: 0,
+          totalDistance: 0.0,
+        );
 
-      when(
-        () => mockService.checkParticipation('event_1', 'device_1'),
-      ).thenAnswer((_) async => participant);
+        when(
+          () => mockService.checkParticipation('event_1', 'device_1'),
+        ).thenAnswer((_) async => participant);
 
-      await provider.syncParticipation('event_1', 'device_1');
+        await provider.syncParticipation('event_1', 'device_1');
 
-      expect(provider.memberName, 'Remote Walker');
-      expect(provider.phone, '5555555555');
-      expect(provider.isJoined('event_1'), true);
-    });
+        expect(provider.memberName, 'Remote Walker');
+        expect(provider.phone, '5555555555');
+        expect(provider.isJoined('event_1'), true);
+      },
+    );
 
-    test('syncParticipation sets joined to false if participant not found on server', () async {
-      when(
-        () => mockService.checkParticipation('event_1', 'device_1'),
-      ).thenAnswer((_) async => null);
+    test(
+      'syncParticipation sets joined to false if participant not found on server',
+      () async {
+        when(
+          () => mockService.checkParticipation('event_1', 'device_1'),
+        ).thenAnswer((_) async => null);
 
-      await provider.syncParticipation('event_1', 'device_1');
+        await provider.syncParticipation('event_1', 'device_1');
 
-      expect(provider.isJoined('event_1'), false);
-    });
+        expect(provider.isJoined('event_1'), false);
+      },
+    );
 
     test('deleteSignUp calls service and updates state', () async {
       when(
@@ -154,11 +160,13 @@ void main() {
     test('deleteSignUp is a no-op when memberName is null', () async {
       // memberName is null (no profile loaded)
       await provider.deleteSignUp('event_1', 'device_1');
-      verifyNever(() => mockService.deleteParticipation(
-            eventId: any(named: 'eventId'),
-            deviceId: any(named: 'deviceId'),
-            memberName: any(named: 'memberName'),
-          ));
+      verifyNever(
+        () => mockService.deleteParticipation(
+          eventId: any(named: 'eventId'),
+          deviceId: any(named: 'deviceId'),
+          memberName: any(named: 'memberName'),
+        ),
+      );
     });
   });
 }

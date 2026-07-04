@@ -7,7 +7,7 @@ class VaariService {
   final FirebaseFirestore _firestore;
 
   VaariService({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   static const String eventsCollection = 'vaari_events';
   static const String participantsSubcollection = 'participants';
@@ -116,8 +116,10 @@ class VaariService {
         return false;
       }
 
-      final participantId =
-          _getParticipantId(participant.deviceId, participant.memberName);
+      final participantId = _getParticipantId(
+        participant.deviceId,
+        participant.memberName,
+      );
 
       await docRef
           .collection(participantsSubcollection)
@@ -153,7 +155,8 @@ class VaariService {
 
       final unit = eventData['distanceUnit'] ?? 'km';
 
-      final double distance = distanceToSubmit ??
+      final double distance =
+          distanceToSubmit ??
           (stepsToSubmit * (unit == 'km' ? 0.0008 : 0.0005));
 
       final participantId = _getParticipantId(deviceId, memberName);
