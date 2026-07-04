@@ -118,5 +118,62 @@ void main() {
 
       expect(find.text('Manage Group Admins'), findsNothing);
     });
+
+    testWidgets('should show Vaari card for super_admin', (tester) async {
+      final mockSnapshot = MockDocumentSnapshot();
+      when(() => mockSnapshot.exists).thenReturn(true);
+      when(() => mockSnapshot.data()).thenReturn({
+        'roles': ['super_admin'],
+      });
+      when(() => mockDoc.snapshots()).thenAnswer((_) => Stream.value(mockSnapshot));
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Vaari'), findsOneWidget);
+    });
+
+    testWidgets('should show Vaari card for group_admin', (tester) async {
+      final mockSnapshot = MockDocumentSnapshot();
+      when(() => mockSnapshot.exists).thenReturn(true);
+      when(() => mockSnapshot.data()).thenReturn({
+        'roles': ['group_admin'],
+        'groupId': 'gajanan_maharaj_seattle',
+      });
+      when(() => mockDoc.snapshots()).thenAnswer((_) => Stream.value(mockSnapshot));
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Vaari'), findsOneWidget);
+    });
+
+    testWidgets('should show Vaari card for vaari_admin', (tester) async {
+      final mockSnapshot = MockDocumentSnapshot();
+      when(() => mockSnapshot.exists).thenReturn(true);
+      when(() => mockSnapshot.data()).thenReturn({
+        'roles': ['vaari_admin'],
+      });
+      when(() => mockDoc.snapshots()).thenAnswer((_) => Stream.value(mockSnapshot));
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Vaari'), findsOneWidget);
+    });
+
+    testWidgets('should NOT show Vaari card for other roles', (tester) async {
+      final mockSnapshot = MockDocumentSnapshot();
+      when(() => mockSnapshot.exists).thenReturn(true);
+      when(() => mockSnapshot.data()).thenReturn({
+        'roles': ['temple_admin'],
+      });
+      when(() => mockDoc.snapshots()).thenAnswer((_) => Stream.value(mockSnapshot));
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Vaari'), findsNothing);
+    });
   });
 }

@@ -55,4 +55,8 @@ class Routes {
 
   static const String vaariList = '/vaari_list';
   static const String vaariDetail = '/vaari_detail';
+  static const String adminVaariDashboard = '/admin_vaari_dashboard';
+  static const String adminCreateVaari = '/admin_create_vaari';
+  static const String adminVaariDetail = '/admin_vaari_detail';
+  static const String adminVaariList = '/admin_vaari_list';
 }
