@@ -26,6 +26,8 @@ import 'dart:async';
 class AdminVaariDetailScreen extends StatefulWidget {
   final String eventId;
   final AdminUser adminUser;
+
+  /// Injected for testing; defaults to [FirebaseFirestore.instance].
   final FirebaseFirestore? firestore;
 
   const AdminVaariDetailScreen({
@@ -40,12 +42,14 @@ class AdminVaariDetailScreen extends StatefulWidget {
 }
 
 class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
+  /// Positions the export card far enough off-screen that it never flashes
+  /// into view while still being capturable by [ScreenshotController].
+  static const double _offscreenExportOffset = 9999;
+
   late final FirebaseFirestore _firestore;
   late Stream<DocumentSnapshot> _eventStream;
   late Stream<QuerySnapshot> _participantsStream;
-  final ScreenshotController _screenshotController = ScreenshotController();
   final ScreenshotController _exportController = ScreenshotController();
-  int _latestParticipantCount = 0;
   bool _isStatusLocked = true;
 
   @override
@@ -64,11 +68,6 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
         .snapshots();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   Future<void> _shareDeepLink(
     VaariEvent event,
     AppLocalizations l10n,
@@ -83,7 +82,12 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
   Future<void> _updateStatus(VaariEvent event, String? newStatus) async {
     if (newStatus == null || newStatus == event.status) return;
 
+    // Capture everything derived from `context` before any `await` — the
+    // widget may be disposed mid-flight, and reusing `context` afterward
+    // risks acting on a stale element or the wrong route.
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
 
     showDialog(
       context: context,
@@ -120,22 +124,24 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
       );
 
       if (mounted) {
-        Navigator.of(context).pop(); // Close loading dialog
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.statusUpdateSuccess)));
+        navigator.pop(); // Close loading dialog
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.statusUpdateSuccess)),
+        );
       }
     } catch (e) {
+      debugPrint('AdminVaariDetailScreen._updateStatus error: $e');
       if (mounted) {
-        Navigator.of(context).pop(); // Close loading dialog
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        navigator.pop(); // Close loading dialog
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.adminVaariStatusUpdateError)),
+        );
       }
     }
   }
 
   Future<void> _captureAndShare(AppLocalizations l10n) async {
+    final messenger = ScaffoldMessenger.of(context);
     try {
       final directory = await getApplicationDocumentsDirectory();
       final imageBytes = await _exportController.capture(pixelRatio: 2.5);
@@ -150,10 +156,11 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
         ShareParams(files: [XFile(file.path)], text: l10n.vaariExportProgress),
       );
     } catch (e) {
+      debugPrint('AdminVaariDetailScreen._captureAndShare error: $e');
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Capture failed: $e')));
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.adminVaariShareError)),
+        );
       }
     }
   }
@@ -203,10 +210,16 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
           if (eventSnapshot.hasError ||
               !eventSnapshot.hasData ||
               !eventSnapshot.data!.exists) {
+            if (eventSnapshot.hasError) {
+              debugPrint(
+                'AdminVaariDetailScreen event stream error: ${eventSnapshot.error}',
+              );
+            }
             return Center(
               child: Text(
-                eventSnapshot.error?.toString() ??
-                    localizations.vaariEventNotFound,
+                eventSnapshot.hasError
+                    ? localizations.adminVaariLoadError
+                    : localizations.vaariEventNotFound,
               ),
             );
           }
@@ -225,183 +238,32 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
 
           return Stack(
             children: [
-              // Offscreen screenshot target
-              Positioned(
-                left: -9999,
-                top: -9999,
-                child: Screenshot(
-                  controller: _exportController,
-                  child: VaariExportCard(
-                    event: event,
-                    eventName: eventName,
-                    dateRange: dateRange,
-                    participantCount: _latestParticipantCount,
-                    groupName: groupName,
-                    l10n: localizations,
-                    theme: theme,
-                    langCode: langCode,
-                  ),
-                ),
+              _buildOffscreenExportTarget(
+                event,
+                eventName,
+                dateRange,
+                groupName,
+                localizations,
+                theme,
+                langCode,
               ),
 
               // Scrollable UI Content
               ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  // Join Code Card
                   if (event.joinCode.isNotEmpty)
-                    Card(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 6,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.vpn_key,
-                              size: 18,
-                              color: theme.colorScheme.primary,
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    localizations.adminVaariJoinCode,
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: theme.colorScheme.primary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    event.joinCode,
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 2.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                              tooltip: 'Copy',
-                              icon: const Icon(Icons.copy, size: 18),
-                              color: theme.colorScheme.primary,
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () {
-                                Clipboard.setData(
-                                  ClipboardData(text: event.joinCode),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Join code copied'),
-                                  ),
-                                );
-                              },
-                            ),
-                            const SizedBox(width: 12),
-                            IconButton(
-                              tooltip: 'Share link',
-                              icon: const Icon(Icons.share, size: 18),
-                              color: theme.colorScheme.primary,
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () => _shareDeepLink(
-                                event,
-                                localizations,
-                                isEnglish,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                  // Event Info Card
-                  Card(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            eventName,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          if (eventDesc.isNotEmpty) ...[
-                            const SizedBox(height: 6),
-                            Text(
-                              eventDesc,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.appColors.secondaryText,
-                              ),
-                            ),
-                          ],
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.calendar_today,
-                                size: 14,
-                                color: theme.appColors.secondaryText,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(dateRange, style: theme.textTheme.bodySmall),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.flag_outlined,
-                                size: 14,
-                                color: theme.appColors.secondaryText,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                "${localizations.adminVaariTargetDistance}: ${_formatDistance(event.targetDistance, langCode)} ${langCode == 'mr' ? (event.distanceUnit == 'mi' ? 'मैल' : 'किमी') : event.distanceUnitLabel}",
-                                style: theme.textTheme.bodySmall,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    _buildJoinCodeCard(event, localizations, theme, isEnglish),
+                  _buildEventInfoCard(
+                    event,
+                    eventName,
+                    eventDesc,
+                    dateRange,
+                    localizations,
+                    theme,
+                    langCode,
                   ),
-
-                  // Stats Row
-                  IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: StatCard(
-                            label: localizations.adminVaariTotalSteps,
-                            value: formatNumberLocalized(
-                              event.totalSteps,
-                              langCode,
-                              pad: false,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: StatCard(
-                            label: localizations.adminVaariTotalDistance,
-                            value:
-                                "${_formatDistance(event.totalDistance, langCode)} ${langCode == 'mr' ? (event.distanceUnit == 'mi' ? 'मैल' : 'किमी') : event.distanceUnitLabel}",
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  _buildStatsRow(event, localizations, langCode),
                   const SizedBox(height: 20),
 
                   _buildStatusUpdateSection(localizations, theme, event),
@@ -427,6 +289,204 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
     );
   }
 
+  /// Offscreen target the [Screenshot] controller captures for export.
+  /// Reads the participant count directly from [_participantsStream] rather
+  /// than caching it in state — avoids triggering a `setState` (and thus a
+  /// rebuild of this whole subtree) on every participants snapshot.
+  Widget _buildOffscreenExportTarget(
+    VaariEvent event,
+    String eventName,
+    String dateRange,
+    String groupName,
+    AppLocalizations localizations,
+    ThemeData theme,
+    String langCode,
+  ) {
+    return Positioned(
+      left: -_offscreenExportOffset,
+      top: -_offscreenExportOffset,
+      child: Screenshot(
+        controller: _exportController,
+        child: StreamBuilder<QuerySnapshot>(
+          stream: _participantsStream,
+          builder: (context, participantsSnapshot) {
+            final participantCount =
+                participantsSnapshot.data?.docs.length ?? 0;
+            return VaariExportCard(
+              event: event,
+              eventName: eventName,
+              dateRange: dateRange,
+              participantCount: participantCount,
+              groupName: groupName,
+              l10n: localizations,
+              theme: theme,
+              langCode: langCode,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildJoinCodeCard(
+    VaariEvent event,
+    AppLocalizations localizations,
+    ThemeData theme,
+    bool isEnglish,
+  ) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        child: Row(
+          children: [
+            Icon(Icons.vpn_key, size: 18, color: theme.colorScheme.primary),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    localizations.adminVaariJoinCode,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    event.joinCode,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              tooltip: localizations.copyTooltip,
+              icon: const Icon(Icons.copy, size: 18),
+              color: theme.colorScheme.primary,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: event.joinCode));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(localizations.joinCodeCopied)),
+                );
+              },
+            ),
+            const SizedBox(width: 12),
+            IconButton(
+              tooltip: localizations.shareLinkTooltip,
+              icon: const Icon(Icons.share, size: 18),
+              color: theme.colorScheme.primary,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onPressed: () => _shareDeepLink(event, localizations, isEnglish),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEventInfoCard(
+    VaariEvent event,
+    String eventName,
+    String eventDesc,
+    String dateRange,
+    AppLocalizations localizations,
+    ThemeData theme,
+    String langCode,
+  ) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              eventName,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (eventDesc.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(
+                eventDesc,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.appColors.secondaryText,
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  size: 14,
+                  color: theme.appColors.secondaryText,
+                ),
+                const SizedBox(width: 6),
+                Text(dateRange, style: theme.textTheme.bodySmall),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  Icons.flag_outlined,
+                  size: 14,
+                  color: theme.appColors.secondaryText,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  "${localizations.adminVaariTargetDistance}: ${formatDistanceLocalized(event.targetDistance, langCode)} ${localizedDistanceUnitLabel(event.distanceUnit, langCode)}",
+                  style: theme.textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsRow(
+    VaariEvent event,
+    AppLocalizations localizations,
+    String langCode,
+  ) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: StatCard(
+              label: localizations.adminVaariTotalSteps,
+              value: formatNumberLocalized(
+                event.totalSteps,
+                langCode,
+                pad: false,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: StatCard(
+              label: localizations.adminVaariTotalDistance,
+              value:
+                  "${formatDistanceLocalized(event.totalDistance, langCode)} ${localizedDistanceUnitLabel(event.distanceUnit, langCode)}",
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildParticipantsTable(
     ThemeData theme,
     AppLocalizations localizations,
@@ -441,15 +501,6 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
         }
 
         final docs = snapshot.data!.docs;
-        if (_latestParticipantCount != docs.length) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              setState(() {
-                _latestParticipantCount = docs.length;
-              });
-            }
-          });
-        }
 
         if (docs.isEmpty) {
           return Center(
@@ -496,7 +547,7 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
                       DataColumn(
                         label: Expanded(
                           child: Text(
-                            "${localizations.distanceLabel} (${langCode == 'mr' ? (event.distanceUnit == 'mi' ? 'मैल' : 'किमी') : event.distanceUnitLabel})",
+                            "${localizations.distanceLabel} (${localizedDistanceUnitLabel(event.distanceUnit, langCode)})",
                             style: const TextStyle(fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
@@ -528,7 +579,10 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
                           DataCell(
                             Center(
                               child: Text(
-                                _formatDistance(p.totalDistance, langCode),
+                                formatDistanceLocalized(
+                                  p.totalDistance,
+                                  langCode,
+                                ),
                               ),
                             ),
                           ),
@@ -684,11 +738,5 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
         ),
       ),
     );
-  }
-
-  String _formatDistance(double distance, String langCode) {
-    final formatted = distance.toStringAsFixed(1);
-    final useMarathi = langCode == 'mr';
-    return useMarathi ? toMarathiNumerals(formatted) : formatted;
   }
 }

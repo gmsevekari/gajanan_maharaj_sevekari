@@ -2030,6 +2030,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vaariCreateSuccess => 'Vaari event created successfully';
 
   @override
+  String get vaariCreateError =>
+      'Failed to create Vaari event. Please try again.';
+
+  @override
   String get adminVaariNoOngoing => 'No ongoing Vaari events';
 
   @override
@@ -2073,6 +2077,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminVaariTargetDistancePrefix => 'Target: ';
+
+  @override
+  String get adminVaariNameEnLabel => 'Event Name (English)';
+
+  @override
+  String get adminVaariNameMrLabel => 'Event Name (Marathi)';
+
+  @override
+  String get adminVaariDescEnLabel => 'Description (English)';
+
+  @override
+  String get adminVaariDescMrLabel => 'Description (Marathi)';
+
+  @override
+  String get distanceUnitDropdownLabel => 'Distance Unit';
+
+  @override
+  String get adminVaariInvalidTargetDistance =>
+      'Please enter a valid positive number';
+
+  @override
+  String get adminVaariSaveEvent => 'Save';
+
+  @override
+  String get copyTooltip => 'Copy';
+
+  @override
+  String get shareLinkTooltip => 'Share link';
+
+  @override
+  String get adminVaariStatusUpdateError =>
+      'Failed to update status. Please try again.';
+
+  @override
+  String get adminVaariShareError => 'Unable to share. Please try again.';
+
+  @override
+  String get adminVaariLoadError => 'Error loading data';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

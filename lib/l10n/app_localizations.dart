@@ -3915,6 +3915,12 @@ abstract class AppLocalizations {
   /// **'Vaari event created successfully'**
   String get vaariCreateSuccess;
 
+  /// No description provided for @vaariCreateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create Vaari event. Please try again.'**
+  String get vaariCreateError;
+
   /// No description provided for @adminVaariNoOngoing.
   ///
   /// In en, this message translates to:
@@ -4004,6 +4010,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Target: '**
   String get adminVaariTargetDistancePrefix;
+
+  /// No description provided for @adminVaariNameEnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Name (English)'**
+  String get adminVaariNameEnLabel;
+
+  /// No description provided for @adminVaariNameMrLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Name (Marathi)'**
+  String get adminVaariNameMrLabel;
+
+  /// No description provided for @adminVaariDescEnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (English)'**
+  String get adminVaariDescEnLabel;
+
+  /// No description provided for @adminVaariDescMrLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (Marathi)'**
+  String get adminVaariDescMrLabel;
+
+  /// No description provided for @distanceUnitDropdownLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance Unit'**
+  String get distanceUnitDropdownLabel;
+
+  /// No description provided for @adminVaariInvalidTargetDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid positive number'**
+  String get adminVaariInvalidTargetDistance;
+
+  /// No description provided for @adminVaariSaveEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get adminVaariSaveEvent;
+
+  /// No description provided for @copyTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copyTooltip;
+
+  /// No description provided for @shareLinkTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Share link'**
+  String get shareLinkTooltip;
+
+  /// No description provided for @adminVaariStatusUpdateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update status. Please try again.'**
+  String get adminVaariStatusUpdateError;
+
+  /// No description provided for @adminVaariShareError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to share. Please try again.'**
+  String get adminVaariShareError;
+
+  /// No description provided for @adminVaariLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading data'**
+  String get adminVaariLoadError;
 }
 
 class _AppLocalizationsDelegate

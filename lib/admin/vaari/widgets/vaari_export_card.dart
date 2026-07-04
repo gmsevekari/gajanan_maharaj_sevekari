@@ -5,6 +5,9 @@ import 'package:gajanan_maharaj_sevekari/models/vaari_event.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 
 class VaariExportCard extends StatelessWidget {
+  /// Fixed width of the exported PNG card, in logical pixels.
+  static const double _cardWidth = 380;
+
   final VaariEvent event;
   final String eventName;
   final String dateRange;
@@ -33,14 +36,20 @@ class VaariExportCard extends StatelessWidget {
       langCode,
       pad: false,
     );
-    final totalDistanceStr = _formatDistance(event.totalDistance, langCode);
-    final targetDistanceStr = _formatDistance(event.targetDistance, langCode);
+    final totalDistanceStr = formatDistanceLocalized(
+      event.totalDistance,
+      langCode,
+    );
+    final targetDistanceStr = formatDistanceLocalized(
+      event.targetDistance,
+      langCode,
+    );
     final displayDistance = '$totalDistanceStr / $targetDistanceStr';
 
     return Material(
       color: Colors.transparent,
       child: Container(
-        width: 380,
+        width: _cardWidth,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: theme.appColors.surface,
@@ -160,7 +169,7 @@ class VaariExportCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '$displayDistance ${langCode == 'mr' ? (event.distanceUnit == 'mi' ? 'मैल' : 'किमी') : event.distanceUnitLabel}',
+              '$displayDistance ${localizedDistanceUnitLabel(event.distanceUnit, langCode)}',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -172,11 +181,5 @@ class VaariExportCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _formatDistance(double distance, String langCode) {
-    final formatted = distance.toStringAsFixed(1);
-    final useMarathi = langCode == 'mr';
-    return useMarathi ? toMarathiNumerals(formatted) : formatted;
   }
 }

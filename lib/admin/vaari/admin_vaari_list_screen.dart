@@ -5,13 +5,14 @@ import 'package:gajanan_maharaj_sevekari/models/vaari_event.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
-import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 
 class AdminVaariListScreen extends StatefulWidget {
   final String status;
   final AdminUser adminUser;
+
+  /// Injected for testing; defaults to [FirebaseFirestore.instance].
   final FirebaseFirestore? firestore;
 
   const AdminVaariListScreen({
@@ -45,7 +46,7 @@ class _AdminVaariListScreenState extends State<AdminVaariListScreen> {
       query = query.where('groupId', isEqualTo: widget.adminUser.groupId);
     }
 
-    _eventsStream = query.snapshots();
+    _eventsStream = query.orderBy('startDate').snapshots();
   }
 
   @override
@@ -82,7 +83,10 @@ class _AdminVaariListScreenState extends State<AdminVaariListScreen> {
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
+            debugPrint(
+              'AdminVaariListScreen events stream error: ${snapshot.error}',
+            );
+            return Center(child: Text(localizations.adminVaariLoadError));
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -110,7 +114,6 @@ class _AdminVaariListScreenState extends State<AdminVaariListScreen> {
                 ),
               )
               .toList();
-          events.sort((a, b) => a.startDate.compareTo(b.startDate));
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),

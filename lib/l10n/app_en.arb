@@ -768,6 +768,7 @@
   "adminVaariModuleSubtitle": "Create events, manage participants and view steps data.",
   "createVaariTitle": "Create Vaari Event",
   "vaariCreateSuccess": "Vaari event created successfully",
+  "vaariCreateError": "Failed to create Vaari event. Please try again.",
   "adminVaariNoOngoing": "No ongoing Vaari events",
   "adminVaariNoUpcoming": "No upcoming Vaari events",
   "adminVaariNoCompleted": "No completed Vaari events",
@@ -782,5 +783,17 @@
   "adminVaariParticipantsList": "PARTICIPANTS LIST",
   "vaariExportProgress": "Vaari Progress",
   "adminVaariTargetDistance": "Target Distance",
-  "adminVaariTargetDistancePrefix": "Target: "
+  "adminVaariTargetDistancePrefix": "Target: ",
+  "adminVaariNameEnLabel": "Event Name (English)",
+  "adminVaariNameMrLabel": "Event Name (Marathi)",
+  "adminVaariDescEnLabel": "Description (English)",
+  "adminVaariDescMrLabel": "Description (Marathi)",
+  "distanceUnitDropdownLabel": "Distance Unit",
+  "adminVaariInvalidTargetDistance": "Please enter a valid positive number",
+  "adminVaariSaveEvent": "Save",
+  "copyTooltip": "Copy",
+  "shareLinkTooltip": "Share link",
+  "adminVaariStatusUpdateError": "Failed to update status. Please try again.",
+  "adminVaariShareError": "Unable to share. Please try again.",
+  "adminVaariLoadError": "Error loading data"
 }

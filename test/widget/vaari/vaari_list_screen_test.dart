@@ -134,10 +134,9 @@ void main() {
       // Verify event card is rendered
       expect(find.text('Seattle Active Walk'), findsOneWidget);
       expect(find.text('15,000'), findsOneWidget); // should format steps
-      expect(
-        find.text('12.0 / 0.0 km'),
-        findsOneWidget,
-      ); // should format distance
+      // No target distance was set — should show the plain total, not a
+      // confusing "12.0 / 0.0 km".
+      expect(find.text('12.0 km'), findsOneWidget);
 
       // Tap card to navigate
       await tester.tap(find.text('Seattle Active Walk'));
@@ -150,6 +149,23 @@ void main() {
       // it should only reach the detail screen via a deep link or manual
       // entry.
       expect(navigatedArgs.containsKey('joinCode'), isFalse);
+    });
+
+    testWidgets('shows "total / target" distance when a target is set', (
+      tester,
+    ) async {
+      final eventWithTarget = mockActiveEvent.copyWith(
+        id: 'vaari_active_2',
+        targetDistance: 20.0,
+      );
+      when(
+        () => mockService.getActiveEvents('g1'),
+      ).thenAnswer((_) => Stream.value([eventWithTarget]));
+
+      await tester.pumpWidget(createListScreen());
+      await tester.pumpAndSettle();
+
+      expect(find.text('12.0 / 20.0 km'), findsOneWidget);
     });
 
     testWidgets('switches to Completed tab and renders completed events', (
@@ -172,7 +188,7 @@ void main() {
       // Verify completed event is rendered
       expect(find.text('Seattle Completed Walk'), findsOneWidget);
       expect(find.text('45,000'), findsOneWidget);
-      expect(find.text('36.0 / 0.0 km'), findsOneWidget);
+      expect(find.text('36.0 km'), findsOneWidget);
     });
 
     testWidgets('renders completed empty state when no completed events', (
@@ -319,8 +335,8 @@ void main() {
       // 15,000 -> १५,०००
       expect(find.text('१५,०००'), findsOneWidget);
 
-      // 12.0 / 0.0 km -> १२.० / ०.० किमी
-      expect(find.text('१२.० / ०.० किमी'), findsOneWidget);
+      // 12.0 km -> १२.० किमी
+      expect(find.text('१२.० किमी'), findsOneWidget);
     });
   });
 }

@@ -135,7 +135,9 @@ void main() {
 
       await tester.pump();
       expect(find.text('Error loading data'), findsOneWidget);
-      expect(find.textContaining('simulated error'), findsOneWidget);
+      // The raw exception must never reach the UI — only the generic,
+      // localized message should be shown.
+      expect(find.textContaining('simulated error'), findsNothing);
     });
 
     testWidgets('shows empty states for ongoing and completed events', (
@@ -233,9 +235,9 @@ void main() {
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Please enter English name'), findsOneWidget);
-      expect(find.text('कृपया मराठी नाव प्रविष्ट करा'), findsOneWidget);
-      expect(find.text('Please enter target distance'), findsOneWidget);
+      // All four text fields plus the target distance field are empty, so
+      // "This field is required" should surface on each of them.
+      expect(find.text('This field is required'), findsNWidgets(5));
     });
 
     testWidgets('creates a vaari event successfully', (tester) async {
@@ -263,14 +265,17 @@ void main() {
         find.byType(TextFormField).at(3),
         'पोर्टलंड मधील वारी',
       );
-      await tester.enterText(find.byType(TextFormField).at(4), '100.0');
+      await tester.enterText(
+        find.byKey(const Key('targetDistanceField')),
+        '100.0',
+      );
 
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
       final snapshot = await firestore.collection('vaari_events').get();
       expect(snapshot.docs.length, 1);
-      expect(snapshot.docs.first.data()['name_en'], 'Portland Vaari');
+      expect(snapshot.docs.first.data()['nameEn'], 'Portland Vaari');
       expect(snapshot.docs.first.data()['targetDistance'], 100.0);
     });
   });
@@ -302,47 +307,12 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Bellevue Vaari'), findsOneWidget);
     });
-  });
 
-  group('AdminVaariDetailScreen Tests', () {
-    testWidgets('renders details, updates status and deletes participant', (
-      tester,
-    ) async {
-      setLargeScreen(tester);
-      addTearDown(() => resetScreen(tester));
-
-      final docRef = await firestore.collection('vaari_events').add({
-        'nameEn': 'Redmond Vaari',
-        'nameMr': 'रेडमंड वारी',
-        'descriptionEn': 'Walk Redmond',
-        'descriptionMr': 'रेडमंड वारी',
-        'startDate': Timestamp.fromDate(DateTime.now()),
-        'endDate': Timestamp.fromDate(
-          DateTime.now().add(const Duration(days: 7)),
-        ),
-        'status': 'ongoing',
-        'groupId': 'gajanan_maharaj_seattle',
-        'joinCode': 'REDMON',
-        'totalSteps': 10000,
-        'totalDistance': 8.0,
-        'distanceUnit': 'km',
-        'createdAt': Timestamp.now(),
-      });
-
-      final participantRef = docRef.collection('participants').doc('dev1_John');
-      await participantRef.set({
-        'memberName': 'John',
-        'deviceId': 'dev1',
-        'phone': '1234567890',
-        'joinedAt': Timestamp.now(),
-        'totalSteps': 5000,
-        'totalDistance': 4.0,
-      });
-
+    testWidgets('shows empty state when there are no events', (tester) async {
       await tester.pumpWidget(
         createWidget(
-          AdminVaariDetailScreen(
-            eventId: docRef.id,
+          AdminVaariListScreen(
+            status: 'ongoing',
             adminUser: adminUser,
             firestore: firestore,
           ),
@@ -350,21 +320,113 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-
-      expect(find.text('Redmond Vaari').first, findsOneWidget);
-      expect(find.text('John'), findsOneWidget);
-
-      // Unlock status dropdown
-      await tester.tap(find.byIcon(Icons.lock_outline));
-      await tester.pumpAndSettle();
-
-      // Change status to Completed
-      await tester.tap(find.text('Completed').last);
-      await tester.pumpAndSettle();
-
-      // Verify status updated in Firestore
-      final eventDoc = await docRef.get();
-      expect(eventDoc.data()?['status'], 'completed');
+      expect(find.text('No ongoing Vaari events'), findsOneWidget);
     });
+
+    testWidgets('shows a localized error message when the stream fails', (
+      tester,
+    ) async {
+      final mockFirestore = MockFirebaseFirestore();
+      final mockCollection = MockCollectionReference();
+      final mockQuery = MockQuery();
+
+      when(() => mockFirestore.collection(any())).thenReturn(mockCollection);
+      when(
+        () => mockCollection.where(any(), isEqualTo: any(named: 'isEqualTo')),
+      ).thenReturn(mockQuery);
+      when(
+        () => mockQuery.where(any(), isEqualTo: any(named: 'isEqualTo')),
+      ).thenReturn(mockQuery);
+      when(() => mockQuery.orderBy(any())).thenReturn(mockQuery);
+      when(
+        () => mockQuery.snapshots(
+          includeMetadataChanges: any(named: 'includeMetadataChanges'),
+          source: any(named: 'source'),
+        ),
+      ).thenAnswer((_) => Stream.error(Exception('simulated error')));
+
+      await tester.pumpWidget(
+        createWidget(
+          AdminVaariListScreen(
+            status: 'ongoing',
+            adminUser: adminUser,
+            firestore: mockFirestore,
+          ),
+        ),
+      );
+
+      await tester.pump();
+
+      expect(find.text('Error loading data'), findsOneWidget);
+      // The raw exception must never reach the UI.
+      expect(find.textContaining('simulated error'), findsNothing);
+    });
+  });
+
+  group('AdminVaariDetailScreen Tests', () {
+    testWidgets(
+      'renders event details, participants table, and updates status',
+      (tester) async {
+        setLargeScreen(tester);
+        addTearDown(() => resetScreen(tester));
+
+        final docRef = await firestore.collection('vaari_events').add({
+          'nameEn': 'Redmond Vaari',
+          'nameMr': 'रेडमंड वारी',
+          'descriptionEn': 'Walk Redmond',
+          'descriptionMr': 'रेडमंड वारी',
+          'startDate': Timestamp.fromDate(DateTime.now()),
+          'endDate': Timestamp.fromDate(
+            DateTime.now().add(const Duration(days: 7)),
+          ),
+          'status': 'ongoing',
+          'groupId': 'gajanan_maharaj_seattle',
+          'joinCode': 'REDMON',
+          'totalSteps': 10000,
+          'totalDistance': 8.0,
+          'distanceUnit': 'km',
+          'createdAt': Timestamp.now(),
+        });
+
+        final participantRef = docRef
+            .collection('participants')
+            .doc('dev1_John');
+        await participantRef.set({
+          'memberName': 'John',
+          'deviceId': 'dev1',
+          'phone': '1234567890',
+          'joinedAt': Timestamp.now(),
+          'totalSteps': 5000,
+          'totalDistance': 4.0,
+        });
+
+        await tester.pumpWidget(
+          createWidget(
+            AdminVaariDetailScreen(
+              eventId: docRef.id,
+              adminUser: adminUser,
+              firestore: firestore,
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        expect(find.text('Redmond Vaari').first, findsOneWidget);
+        expect(find.text('John'), findsOneWidget);
+
+        // Unlock status dropdown
+        await tester.tap(find.byIcon(Icons.lock_outline));
+        await tester.pumpAndSettle();
+
+        // Change status to Completed
+        await tester.tap(find.text('Completed').last);
+        await tester.pumpAndSettle();
+
+        // Verify status updated in Firestore
+        final eventDoc = await docRef.get();
+        expect(eventDoc.data()?['status'], 'completed');
+      },
+    );
   });
 }

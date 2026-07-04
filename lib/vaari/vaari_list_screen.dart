@@ -114,14 +114,14 @@ class _VaariListScreenState extends State<VaariListScreen>
         controller: _tabController,
         children: [
           _buildEventListStream(
-            _activeEventsStream!,
+            _activeEventsStream,
             localizations.noActiveVaaris,
             locale,
             theme,
             localizations,
           ),
           _buildEventListStream(
-            _completedEventsStream!,
+            _completedEventsStream,
             localizations.noCompletedVaaris,
             locale,
             theme,
@@ -133,12 +133,20 @@ class _VaariListScreenState extends State<VaariListScreen>
   }
 
   Widget _buildEventListStream(
-    Stream<List<VaariEvent>> stream,
+    Stream<List<VaariEvent>>? stream,
     String noDataText,
     String locale,
     ThemeData theme,
     AppLocalizations localizations,
   ) {
+    // Defensive: stream is only ever null if groupId was null at initState
+    // time, which build() already redirects to the invalid-group view above
+    // — this guards against a future reorder or a widget update that
+    // changes groupId without re-running initState.
+    if (stream == null) {
+      return _buildNoDataView(theme, localizations.vaariInvalidGroupError);
+    }
+
     return StreamBuilder<List<VaariEvent>>(
       stream: stream,
       builder: (context, snapshot) {
@@ -150,12 +158,16 @@ class _VaariListScreenState extends State<VaariListScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                  Icon(
+                    Icons.error_outline,
+                    color: theme.colorScheme.error,
+                    size: 48,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     localizations.vaariLoadError,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: Colors.red,
+                      color: theme.colorScheme.error,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -193,17 +205,19 @@ class _VaariListScreenState extends State<VaariListScreen>
               locale,
               pad: false,
             );
-            final totalDistanceStr = locale == 'mr'
-                ? toMarathiNumerals(event.totalDistance.toStringAsFixed(1))
-                : event.totalDistance.toStringAsFixed(1);
-            final targetDistanceStr = locale == 'mr'
-                ? toMarathiNumerals(event.targetDistance.toStringAsFixed(1))
-                : event.targetDistance.toStringAsFixed(1);
-            final unitLabel = locale == 'mr'
-                ? (event.distanceUnit == 'mi' ? 'मैल' : 'किमी')
-                : event.distanceUnitLabel;
-            final formattedDistance =
-                "$totalDistanceStr / $targetDistanceStr $unitLabel";
+            final totalDistanceStr = formatDistanceLocalized(
+              event.totalDistance,
+              locale,
+            );
+            final unitLabel = localizedDistanceUnitLabel(
+              event.distanceUnit,
+              locale,
+            );
+            // Hide the "/ target" portion when no target was set, instead
+            // of showing a confusing "12.0 / 0.0 km".
+            final formattedDistance = event.targetDistance > 0
+                ? "$totalDistanceStr / ${formatDistanceLocalized(event.targetDistance, locale)} $unitLabel"
+                : "$totalDistanceStr $unitLabel";
 
             return Card(
               elevation: theme.cardTheme.elevation,

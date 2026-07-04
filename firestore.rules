@@ -209,8 +209,13 @@ service cloud.firestore {
     // Vaari Events: Publicly readable; Admin writable
     match /vaari_events/{eventId} {
       allow read: if true;
-      // Only admins can create or delete events
-      allow create, delete: if isAdmin();
+      // Only admins can create or delete events; targetDistance is bounded
+      // to a plausible range to prevent negative or absurd values.
+      allow create: if isAdmin()
+        && request.resource.data.get('targetDistance', 0.0) is number
+        && request.resource.data.get('targetDistance', 0.0) >= 0
+        && request.resource.data.get('targetDistance', 0.0) <= 100000;
+      allow delete: if isAdmin();
       // Allow atomic updates by participants to increment global step/distance counters only,
       // bounded to a single plausible submission (see isValidVaariCounterIncrement)
       allow update: if isAdmin() || (

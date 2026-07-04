@@ -93,10 +93,10 @@ void main() {
 
       expect(map['groupId'], 'gajanan_gunjan');
       expect(map['joinCode'], '123456');
-      expect(map['name_en'], 'Weekly Vaari Challenge');
-      expect(map['name_mr'], 'साप्ताहिक वारी');
-      expect(map['description_en'], 'Walk and report steps');
-      expect(map['description_mr'], 'चालून पायऱ्या रिपोर्ट करा');
+      expect(map['nameEn'], 'Weekly Vaari Challenge');
+      expect(map['nameMr'], 'साप्ताहिक वारी');
+      expect(map['descriptionEn'], 'Walk and report steps');
+      expect(map['descriptionMr'], 'चालून पायऱ्या रिपोर्ट करा');
       expect(map['status'], 'ongoing');
       expect(map['timezone'], 'Asia/Kolkata');
       expect(map['totalSteps'], 50000);

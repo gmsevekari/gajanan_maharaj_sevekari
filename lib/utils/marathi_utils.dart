@@ -56,3 +56,21 @@ String formatLocalizedText(String text, Locale locale) {
   }
   return text;
 }
+
+/// Formats a distance value to one decimal place, converting digits to
+/// Marathi numerals when [languageCode] is 'mr'.
+String formatDistanceLocalized(double distance, String languageCode) {
+  final formatted = distance.toStringAsFixed(1);
+  return languageCode == 'mr' ? toMarathiNumerals(formatted) : formatted;
+}
+
+/// Human-readable distance unit label for the given [languageCode] —
+/// Firestore stores the short code ('mi'/'km'), but the UI should show
+/// "miles"/"मैल" and "किमी" rather than the raw code.
+String localizedDistanceUnitLabel(String distanceUnit, String languageCode) {
+  final isMiles = distanceUnit == 'mi';
+  if (languageCode == 'mr') {
+    return isMiles ? 'मैल' : 'किमी';
+  }
+  return isMiles ? 'miles' : distanceUnit;
+}

@@ -67,7 +67,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
 
   String _generateJoinCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final rnd = Random();
+    final rnd = Random.secure();
     return String.fromCharCodes(
       Iterable.generate(6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))),
     );
@@ -91,7 +91,9 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
             _endDate = _startDate.add(const Duration(days: 1));
           }
         } else {
-          _endDate = pickedDate;
+          _endDate = pickedDate.isBefore(_startDate)
+              ? _startDate.add(const Duration(days: 1))
+              : pickedDate;
         }
       });
     }
@@ -145,10 +147,13 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
         Navigator.pop(context);
       }
     } catch (e) {
+      debugPrint('AdminVaariCreateScreen._submit error: $e');
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.vaariCreateError),
+          ),
+        );
       }
     } finally {
       if (mounted) {
@@ -175,13 +180,13 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                   children: [
                     TextFormField(
                       controller: _nameEnController,
-                      decoration: const InputDecoration(
-                        labelText: 'Event Name (English)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: localizations.adminVaariNameEnLabel,
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Please enter English name';
+                          return localizations.fieldRequired;
                         }
                         return null;
                       },
@@ -189,13 +194,13 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _nameMrController,
-                      decoration: const InputDecoration(
-                        labelText: 'कार्यक्रम नाव (मराठी)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: localizations.adminVaariNameMrLabel,
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'कृपया मराठी नाव प्रविष्ट करा';
+                          return localizations.fieldRequired;
                         }
                         return null;
                       },
@@ -204,13 +209,13 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                     TextFormField(
                       controller: _descEnController,
                       maxLines: 3,
-                      decoration: const InputDecoration(
-                        labelText: 'Description (English)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: localizations.adminVaariDescEnLabel,
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Please enter English description';
+                          return localizations.fieldRequired;
                         }
                         return null;
                       },
@@ -219,13 +224,13 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                     TextFormField(
                       controller: _descMrController,
                       maxLines: 3,
-                      decoration: const InputDecoration(
-                        labelText: 'वर्णन (मराठी)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: localizations.adminVaariDescMrLabel,
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'कृपया मराठी वर्णन प्रविष्ट करा';
+                          return localizations.fieldRequired;
                         }
                         return null;
                       },
@@ -233,9 +238,9 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       value: _selectedTimezone,
-                      decoration: const InputDecoration(
-                        labelText: 'Timezone',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: localizations.timezoneLabel,
+                        border: const OutlineInputBorder(),
                       ),
                       items: _timezones
                           .map(
@@ -254,9 +259,9 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       value: _selectedUnit,
-                      decoration: const InputDecoration(
-                        labelText: 'Distance Unit',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: localizations.distanceUnitDropdownLabel,
+                        border: const OutlineInputBorder(),
                       ),
                       items: _units
                           .map(
@@ -274,6 +279,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      key: const Key('targetDistanceField'),
                       controller: _targetDistanceController,
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
@@ -284,11 +290,11 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Please enter target distance';
+                          return localizations.fieldRequired;
                         }
                         if (double.tryParse(value) == null ||
                             double.parse(value) <= 0) {
-                          return 'Please enter a valid positive number';
+                          return localizations.adminVaariInvalidTargetDistance;
                         }
                         return null;
                       },
@@ -300,7 +306,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                           child: OutlinedButton.icon(
                             icon: const Icon(Icons.calendar_today),
                             label: Text(
-                              'Start: ${DateFormat('yyyy-MM-dd').format(_startDate)}',
+                              '${localizations.startDateLabel}: ${DateFormat('yyyy-MM-dd').format(_startDate)}',
                             ),
                             onPressed: () => _selectDate(context, true),
                           ),
@@ -310,7 +316,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                           child: OutlinedButton.icon(
                             icon: const Icon(Icons.calendar_today),
                             label: Text(
-                              'End: ${DateFormat('yyyy-MM-dd').format(_endDate)}',
+                              '${localizations.endDateLabel}: ${DateFormat('yyyy-MM-dd').format(_endDate)}',
                             ),
                             onPressed: () => _selectDate(context, false),
                           ),
@@ -325,7 +331,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                         foregroundColor: theme.colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: Text(localizations.finishOnboarding),
+                      child: Text(localizations.adminVaariSaveEvent),
                     ),
                   ],
                 ),

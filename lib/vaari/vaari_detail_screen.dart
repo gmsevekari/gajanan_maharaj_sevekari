@@ -187,7 +187,10 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
                             const SizedBox(height: 16),
                             VaariParticipantsTable(
                               eventId: widget.eventId,
-                              distanceUnitLabel: event.distanceUnitLabel,
+                              distanceUnitLabel: localizedDistanceUnitLabel(
+                                event.distanceUnit,
+                                locale,
+                              ),
                             ),
                           ],
                         ),
@@ -239,7 +242,7 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
                         theme,
                         Icons.flag_outlined,
                         localizations.adminVaariTargetDistance,
-                        "${_formatDistance(event.targetDistance, context)} ${locale == 'mr' ? (event.distanceUnit == 'mi' ? 'मैल' : 'किमी') : event.distanceUnitLabel}",
+                        "${formatDistanceLocalized(event.targetDistance, locale)} ${localizedDistanceUnitLabel(event.distanceUnit, locale)}",
                       ),
                       const SizedBox(height: 8),
                       Row(
@@ -475,19 +478,13 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
         Expanded(
           child: _buildStatCard(
             theme,
-            '${localizations.totalDistanceLabel} (${event.distanceUnitLabel})',
-            _formatDistance(event.totalDistance, context),
+            '${localizations.totalDistanceLabel} (${localizedDistanceUnitLabel(event.distanceUnit, locale)})',
+            formatDistanceLocalized(event.totalDistance, locale),
             Icons.social_distance,
           ),
         ),
       ],
     );
-  }
-
-  String _formatDistance(double distance, BuildContext context) {
-    final formatted = distance.toStringAsFixed(1);
-    final useMarathi = Localizations.localeOf(context).useMarathiContent;
-    return useMarathi ? toMarathiNumerals(formatted) : formatted;
   }
 
   Widget _buildStatCard(

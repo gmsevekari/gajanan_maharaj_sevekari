@@ -768,6 +768,7 @@
   "adminVaariModuleSubtitle": "वारी तयार करा, सहभागी आणि स्टेप्स पहा",
   "createVaariTitle": "वारी तयार करा",
   "vaariCreateSuccess": "वारी यशस्वीरित्या तयार झाली",
+  "vaariCreateError": "वारी तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
   "adminVaariNoOngoing": "सध्या कोणतीही चालू वारी नाही",
   "adminVaariNoUpcoming": "कोणतीही आगामी वारी नाही",
   "adminVaariNoCompleted": "कोणतीही पूर्ण झालेली वारी नाही",
@@ -782,5 +783,17 @@
   "adminVaariParticipantsList": "सहभागींची यादी",
   "vaariExportProgress": "वारीची प्रगती",
   "adminVaariTargetDistance": "लक्ष्य अंतर",
-  "adminVaariTargetDistancePrefix": "लक्ष्य: "
+  "adminVaariTargetDistancePrefix": "लक्ष्य: ",
+  "adminVaariNameEnLabel": "इव्हेंटचे नाव (इंग्रजी)",
+  "adminVaariNameMrLabel": "इव्हेंटचे नाव (मराठी)",
+  "adminVaariDescEnLabel": "वर्णन (इंग्रजी)",
+  "adminVaariDescMrLabel": "वर्णन (मराठी)",
+  "distanceUnitDropdownLabel": "अंतराचे एकक",
+  "adminVaariInvalidTargetDistance": "कृपया योग्य सकारात्मक संख्या टाका",
+  "adminVaariSaveEvent": "सेव्ह करा",
+  "copyTooltip": "कॉपी करा",
+  "shareLinkTooltip": "लिंक शेअर करा",
+  "adminVaariStatusUpdateError": "स्टेटस अपडेट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+  "adminVaariShareError": "शेअर करता आले नाही. कृपया पुन्हा प्रयत्न करा.",
+  "adminVaariLoadError": "डेटा लोड करण्यात त्रुटी"
 }

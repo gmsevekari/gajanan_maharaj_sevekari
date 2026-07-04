@@ -12,6 +12,8 @@ import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 
 class AdminVaariDashboard extends StatefulWidget {
   final AdminUser adminUser;
+
+  /// Injected for testing; defaults to [FirebaseFirestore.instance].
   final FirebaseFirestore? firestore;
 
   const AdminVaariDashboard({
@@ -25,6 +27,10 @@ class AdminVaariDashboard extends StatefulWidget {
 }
 
 class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
+  /// Ongoing events are capped at this many cards on the dashboard; the
+  /// full list is one tap away via "View All" (Routes.adminVaariList).
+  static const int _maxOngoingCardsShown = 5;
+
   late final FirebaseFirestore _firestore;
   late Stream<QuerySnapshot> _eventsStream;
 
@@ -67,6 +73,9 @@ class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
           }
 
           if (snapshot.hasError) {
+            debugPrint(
+              'AdminVaariDashboard events stream error: ${snapshot.error}',
+            );
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -78,15 +87,8 @@ class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Error loading data',
+                    localizations.adminVaariLoadError,
                     style: theme.textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    snapshot.error.toString(),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.appColors.secondaryText,
-                    ),
                   ),
                 ],
               ),
@@ -140,7 +142,7 @@ class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
                       ),
                       const SizedBox(height: 32),
                       _buildSectionHeader(
-                        context,
+                        localizations,
                         theme,
                         localizations.adminVaariCompleted,
                         showViewAll: true,
@@ -154,6 +156,9 @@ class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
                         ),
                       ),
                       const SizedBox(height: 12),
+                      // Intentional: only the most recent completed event is
+                      // previewed here; the "View All" link above opens the
+                      // full completed list.
                       if (completedEvents.isNotEmpty)
                         _UpcomingCard(
                           event: completedEvents.first,
@@ -168,7 +173,7 @@ class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
                         ),
                       const SizedBox(height: 32),
                       _buildSectionHeader(
-                        context,
+                        localizations,
                         theme,
                         localizations.adminVaariOngoing,
                         showViewAll: false,
@@ -201,8 +206,8 @@ class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
                         event: activeEvents[index],
                         adminUser: widget.adminUser,
                       ),
-                      childCount: activeEvents.length > 5
-                          ? 5
+                      childCount: activeEvents.length > _maxOngoingCardsShown
+                          ? _maxOngoingCardsShown
                           : activeEvents.length,
                     ),
                   ),
@@ -217,7 +222,7 @@ class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
                   ),
                   sliver: SliverToBoxAdapter(
                     child: _buildSectionHeader(
-                      context,
+                      localizations,
                       theme,
                       localizations.adminVaariUpcoming,
                       showViewAll: true,
@@ -232,6 +237,8 @@ class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
                     ),
                   ),
                 ),
+                // Intentional: only the next upcoming event is previewed
+                // here; the "View All" link above opens the full list.
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   sliver: SliverToBoxAdapter(
@@ -305,7 +312,7 @@ class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
   }
 
   Widget _buildSectionHeader(
-    BuildContext context,
+    AppLocalizations localizations,
     ThemeData theme,
     String title, {
     bool showViewAll = true,
@@ -328,7 +335,7 @@ class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
           TextButton(
             onPressed: onViewAll,
             child: Text(
-              AppLocalizations.of(context)!.viewAllLabel,
+              localizations.viewAllLabel,
               style: TextStyle(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w600,
@@ -349,7 +356,9 @@ class _OngoingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isEnglish = Localizations.localeOf(context).languageCode == 'en';
+    final localizations = AppLocalizations.of(context)!;
+    final langCode = Localizations.localeOf(context).languageCode;
+    final isEnglish = langCode == 'en';
     final title = isEnglish ? event.nameEn : event.nameMr;
 
     return Card(
@@ -389,7 +398,7 @@ class _OngoingCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "${formatDateShort(event.startDate, Localizations.localeOf(context).languageCode)} - ${formatDateShort(event.endDate, Localizations.localeOf(context).languageCode)}",
+                      "${formatDateShort(event.startDate, langCode)} - ${formatDateShort(event.endDate, langCode)}",
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withValues(
                           alpha: 0.5,
@@ -398,7 +407,7 @@ class _OngoingCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "${AppLocalizations.of(context)!.adminVaariTargetDistancePrefix}${_formatDashboardDistance(event.targetDistance, Localizations.localeOf(context).languageCode)} ${event.distanceUnitLabel}",
+                      "${localizations.adminVaariTargetDistancePrefix}${formatDistanceLocalized(event.targetDistance, langCode)} ${localizedDistanceUnitLabel(event.distanceUnit, langCode)}",
                       style: theme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.primary,
@@ -496,7 +505,7 @@ class _UpcomingCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "${AppLocalizations.of(context)!.adminVaariTargetDistancePrefix}${_formatDashboardDistance(event.targetDistance, langCode)} ${event.distanceUnitLabel}",
+                  "${AppLocalizations.of(context)!.adminVaariTargetDistancePrefix}${formatDistanceLocalized(event.targetDistance, langCode)} ${localizedDistanceUnitLabel(event.distanceUnit, langCode)}",
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.primary,
@@ -509,10 +518,4 @@ class _UpcomingCard extends StatelessWidget {
       ),
     );
   }
-}
-
-String _formatDashboardDistance(double distance, String langCode) {
-  final formatted = distance.toStringAsFixed(1);
-  final useMarathi = langCode == 'mr';
-  return useMarathi ? toMarathiNumerals(formatted) : formatted;
 }

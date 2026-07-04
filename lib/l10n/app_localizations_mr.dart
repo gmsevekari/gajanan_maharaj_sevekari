@@ -2035,6 +2035,10 @@ class AppLocalizationsMr extends AppLocalizations {
   String get vaariCreateSuccess => 'वारी यशस्वीरित्या तयार झाली';
 
   @override
+  String get vaariCreateError =>
+      'वारी तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
   String get adminVaariNoOngoing => 'सध्या कोणतीही चालू वारी नाही';
 
   @override
@@ -2078,4 +2082,43 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get adminVaariTargetDistancePrefix => 'लक्ष्य: ';
+
+  @override
+  String get adminVaariNameEnLabel => 'इव्हेंटचे नाव (इंग्रजी)';
+
+  @override
+  String get adminVaariNameMrLabel => 'इव्हेंटचे नाव (मराठी)';
+
+  @override
+  String get adminVaariDescEnLabel => 'वर्णन (इंग्रजी)';
+
+  @override
+  String get adminVaariDescMrLabel => 'वर्णन (मराठी)';
+
+  @override
+  String get distanceUnitDropdownLabel => 'अंतराचे एकक';
+
+  @override
+  String get adminVaariInvalidTargetDistance =>
+      'कृपया वैध सकारात्मक संख्या टाका';
+
+  @override
+  String get adminVaariSaveEvent => 'सेव्ह करा';
+
+  @override
+  String get copyTooltip => 'कॉपी करा';
+
+  @override
+  String get shareLinkTooltip => 'लिंक शेअर करा';
+
+  @override
+  String get adminVaariStatusUpdateError =>
+      'स्टेटस अपडेट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get adminVaariShareError =>
+      'शेअर करता आले नाही. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get adminVaariLoadError => 'डेटा लोड करण्यात त्रुटी';
 }
