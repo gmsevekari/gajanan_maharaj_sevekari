@@ -143,6 +143,10 @@ void main() {
       expect(navigatedRoute, Routes.vaariDetail);
       expect(navigatedArgs, isA<Map>());
       expect(navigatedArgs['id'], 'vaari_active_1');
+      // The join code must never be handed over just by browsing the list —
+      // it should only reach the detail screen via a deep link or manual
+      // entry.
+      expect(navigatedArgs.containsKey('joinCode'), isFalse);
     });
 
     testWidgets('switches to Completed tab and renders completed events', (

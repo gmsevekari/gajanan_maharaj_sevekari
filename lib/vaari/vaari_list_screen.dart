@@ -205,10 +205,13 @@ class _VaariListScreenState extends State<VaariListScreen>
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
+                  // Deliberately omit joinCode: it must come from a deep
+                  // link or manual entry, not be handed over just by
+                  // browsing the list.
                   Navigator.pushNamed(
                     context,
                     Routes.vaariDetail,
-                    arguments: {'id': event.id, 'joinCode': event.joinCode},
+                    arguments: {'id': event.id},
                   );
                 },
                 child: Padding(
