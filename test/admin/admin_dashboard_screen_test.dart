@@ -69,10 +69,19 @@ void main() {
       });
       when(() => mockDoc.snapshots()).thenAnswer((_) => Stream.value(mockSnapshot));
 
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('Manage Group Admins'), findsOneWidget);
+      final itemFinder = find.text('Manage Group Admins');
+      expect(itemFinder, findsOneWidget);
+      expect(itemFinder, findsOneWidget);
     });
 
     testWidgets('should show Manage Group Admins card for group_admin with groupId', (tester) async {

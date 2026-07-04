@@ -2012,6 +2012,68 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepsSubmittedSuccess => 'Steps submitted successfully';
+
+  @override
+  String get adminVaariDashboardTitle => 'Vaari Dashboard';
+
+  @override
+  String get adminVaariGroupTitle => 'Select Group for Vaari';
+
+  @override
+  String get adminVaariModuleSubtitle =>
+      'Create events, manage participants and view steps data.';
+
+  @override
+  String get createVaariTitle => 'Create Vaari Event';
+
+  @override
+  String get vaariCreateSuccess => 'Vaari event created successfully';
+
+  @override
+  String get adminVaariNoOngoing => 'No ongoing Vaari events';
+
+  @override
+  String get adminVaariNoUpcoming => 'No upcoming Vaari events';
+
+  @override
+  String get adminVaariNoCompleted => 'No completed Vaari events';
+
+  @override
+  String get adminVaariOngoing => 'Ongoing Vaari';
+
+  @override
+  String get adminVaariUpcoming => 'Upcoming Vaari';
+
+  @override
+  String get adminVaariCompleted => 'Completed Vaari';
+
+  @override
+  String get adminVaariSharePrefix => 'Join our Vaari event';
+
+  @override
+  String get adminVaariJoinCode => 'Join Code';
+
+  @override
+  String get adminVaariShareLinkPrefix => 'Join via this link';
+
+  @override
+  String get adminVaariTotalSteps => 'TOTAL STEPS';
+
+  @override
+  String get adminVaariTotalDistance => 'TOTAL DISTANCE';
+
+  @override
+  String get adminVaariParticipantsList => 'PARTICIPANTS LIST';
+
+  @override
+  String get deleteParticipantConfirmMessageVaari =>
+      'Are you sure you want to remove this participant?';
+
+  @override
+  String get deleteParticipantSuccess => 'Participant removed successfully';
+
+  @override
+  String get vaariExportProgress => 'Vaari Progress';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

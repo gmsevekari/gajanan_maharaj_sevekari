@@ -82,6 +82,22 @@ void main() {
     expect(find.text(Routes.adminGroupNamjapDashboard), findsOneWidget);
   });
 
+  testWidgets('shows Vaari title when mode is vaari', (tester) async {
+    await tester.pumpWidget(createTestWidget(mode: 'vaari'));
+    await tester.pumpAndSettle();
+    expect(find.text('Select Group for Vaari'), findsOneWidget);
+  });
+
+  testWidgets('navigates to Vaari Dashboard when mode is vaari', (tester) async {
+    await tester.pumpWidget(createTestWidget(mode: 'vaari'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Group 1'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(Routes.adminVaariDashboard), findsOneWidget);
+  });
+
   testWidgets('navigates to home when home button is pressed', (tester) async {
     await tester.pumpWidget(createTestWidget());
     await tester.pumpAndSettle();

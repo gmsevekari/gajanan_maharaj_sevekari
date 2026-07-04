@@ -182,7 +182,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       snapshot.data!.data() as Map<String, dynamic>,
                       user?.email ?? '',
                     );
-
                     return ListView(
                       children: [
                         if (adminUser.hasRole('temple_admin'))
@@ -245,6 +244,33 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                   arguments: {
                                     'adminUser': adminUser,
                                     'mode': 'namjap',
+                                  },
+                                );
+                              }
+                            },
+                          ),
+                        if (adminUser.hasRole('group_admin') ||
+                            adminUser.hasRole('vaari_admin'))
+                          _buildModuleCard(
+                            context: context,
+                            title: localizations.vaariTitle,
+                            subtitle: localizations.adminVaariModuleSubtitle,
+                            icon: Icons.directions_walk,
+                            color: theme.appColors.primarySwatch[600]!,
+                            onTap: () {
+                              if (adminUser.groupId != null) {
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.adminVaariDashboard,
+                                  arguments: adminUser,
+                                );
+                              } else {
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.adminGajananMaharajGroups,
+                                  arguments: {
+                                    'adminUser': adminUser,
+                                    'mode': 'vaari',
                                   },
                                 );
                               }

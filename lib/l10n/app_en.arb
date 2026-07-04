@@ -762,5 +762,25 @@
       }
     }
   },
-  "stepsSubmittedSuccess": "Steps submitted successfully"
+  "stepsSubmittedSuccess": "Steps submitted successfully",
+  "adminVaariDashboardTitle": "Vaari Dashboard",
+  "adminVaariGroupTitle": "Select Group for Vaari",
+  "adminVaariModuleSubtitle": "Create events, manage participants and view steps data.",
+  "createVaariTitle": "Create Vaari Event",
+  "vaariCreateSuccess": "Vaari event created successfully",
+  "adminVaariNoOngoing": "No ongoing Vaari events",
+  "adminVaariNoUpcoming": "No upcoming Vaari events",
+  "adminVaariNoCompleted": "No completed Vaari events",
+  "adminVaariOngoing": "Ongoing Vaari",
+  "adminVaariUpcoming": "Upcoming Vaari",
+  "adminVaariCompleted": "Completed Vaari",
+  "adminVaariSharePrefix": "Join our Vaari event",
+  "adminVaariJoinCode": "Join Code",
+  "adminVaariShareLinkPrefix": "Join via this link",
+  "adminVaariTotalSteps": "TOTAL STEPS",
+  "adminVaariTotalDistance": "TOTAL DISTANCE",
+  "adminVaariParticipantsList": "PARTICIPANTS LIST",
+  "deleteParticipantConfirmMessageVaari": "Are you sure you want to remove this participant?",
+  "deleteParticipantSuccess": "Participant removed successfully",
+  "vaariExportProgress": "Vaari Progress"
 }

@@ -3884,6 +3884,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Steps submitted successfully'**
   String get stepsSubmittedSuccess;
+
+  /// No description provided for @adminVaariDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaari Dashboard'**
+  String get adminVaariDashboardTitle;
+
+  /// No description provided for @adminVaariGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Group for Vaari'**
+  String get adminVaariGroupTitle;
+
+  /// No description provided for @adminVaariModuleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create events, manage participants and view steps data.'**
+  String get adminVaariModuleSubtitle;
+
+  /// No description provided for @createVaariTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Vaari Event'**
+  String get createVaariTitle;
+
+  /// No description provided for @vaariCreateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaari event created successfully'**
+  String get vaariCreateSuccess;
+
+  /// No description provided for @adminVaariNoOngoing.
+  ///
+  /// In en, this message translates to:
+  /// **'No ongoing Vaari events'**
+  String get adminVaariNoOngoing;
+
+  /// No description provided for @adminVaariNoUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming Vaari events'**
+  String get adminVaariNoUpcoming;
+
+  /// No description provided for @adminVaariNoCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed Vaari events'**
+  String get adminVaariNoCompleted;
+
+  /// No description provided for @adminVaariOngoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing Vaari'**
+  String get adminVaariOngoing;
+
+  /// No description provided for @adminVaariUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Vaari'**
+  String get adminVaariUpcoming;
+
+  /// No description provided for @adminVaariCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Vaari'**
+  String get adminVaariCompleted;
+
+  /// No description provided for @adminVaariSharePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Join our Vaari event'**
+  String get adminVaariSharePrefix;
+
+  /// No description provided for @adminVaariJoinCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Code'**
+  String get adminVaariJoinCode;
+
+  /// No description provided for @adminVaariShareLinkPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Join via this link'**
+  String get adminVaariShareLinkPrefix;
+
+  /// No description provided for @adminVaariTotalSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'TOTAL STEPS'**
+  String get adminVaariTotalSteps;
+
+  /// No description provided for @adminVaariTotalDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'TOTAL DISTANCE'**
+  String get adminVaariTotalDistance;
+
+  /// No description provided for @adminVaariParticipantsList.
+  ///
+  /// In en, this message translates to:
+  /// **'PARTICIPANTS LIST'**
+  String get adminVaariParticipantsList;
+
+  /// No description provided for @deleteParticipantConfirmMessageVaari.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove this participant?'**
+  String get deleteParticipantConfirmMessageVaari;
+
+  /// No description provided for @deleteParticipantSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Participant removed successfully'**
+  String get deleteParticipantSuccess;
+
+  /// No description provided for @vaariExportProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaari Progress'**
+  String get vaariExportProgress;
 }
 
 class _AppLocalizationsDelegate
