@@ -94,7 +94,9 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
         final event = snapshot.data;
         final title = event == null
             ? localizations.vaariEventDetails
-            : Localizations.localeOf(context).localizedContent(event.nameEn, event.nameMr);
+            : Localizations.localeOf(
+                context,
+              ).localizedContent(event.nameEn, event.nameMr);
 
         return Scaffold(
           appBar: AppBar(
@@ -134,7 +136,7 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildTopEventCard(event, localizations, theme, locale),
+                      _buildTopEventCard(event, localizations, theme, context),
                       const SizedBox(height: 12),
                       _buildActionRow(event, localizations, theme, locale),
                       Padding(
@@ -182,15 +184,7 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
                                 );
                               },
                             ),
-                            const SizedBox(height: 24),
-                            Text(
-                              localizations.vaariTotalParticipants,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.hintColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 16),
                             VaariParticipantsTable(
                               eventId: widget.eventId,
                               distanceUnitLabel: event.distanceUnitLabel,
@@ -210,11 +204,12 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
     VaariEvent event,
     AppLocalizations localizations,
     ThemeData theme,
-    String locale,
+    BuildContext context,
   ) {
-    final description = locale == 'mr'
-        ? event.descriptionMr
-        : event.descriptionEn;
+    final description = Localizations.localeOf(
+      context,
+    ).localizedContent(event.descriptionEn, event.descriptionMr);
+    final locale = Localizations.localeOf(context).languageCode;
     final dateRange =
         '${formatDateShort(event.startDate, locale)} - ${formatDateShort(event.endDate, locale)}';
 
@@ -474,7 +469,7 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
           child: _buildStatCard(
             theme,
             '${localizations.totalDistanceLabel} (${event.distanceUnitLabel})',
-            _formatDistance(event.totalDistance, locale),
+            _formatDistance(event.totalDistance, context),
             Icons.social_distance,
           ),
         ),
@@ -482,9 +477,10 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
     );
   }
 
-  String _formatDistance(double distance, String locale) {
+  String _formatDistance(double distance, BuildContext context) {
     final formatted = distance.toStringAsFixed(1);
-    return locale == 'mr' ? toMarathiNumerals(formatted) : formatted;
+    final useMarathi = Localizations.localeOf(context).useMarathiContent;
+    return useMarathi ? toMarathiNumerals(formatted) : formatted;
   }
 
   Widget _buildStatCard(

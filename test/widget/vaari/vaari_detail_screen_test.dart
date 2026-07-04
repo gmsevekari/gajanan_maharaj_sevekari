@@ -635,6 +635,6 @@ void main() {
     await tester.tap(find.widgetWithText(ElevatedButton, 'Add Steps'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Distance in miles (optional)'), findsOneWidget);
+    expect(find.text('Distance in miles'), findsOneWidget);
   });
 }

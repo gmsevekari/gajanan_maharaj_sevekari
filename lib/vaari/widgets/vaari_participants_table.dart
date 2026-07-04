@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/vaari_participant.dart';
 import 'package:gajanan_maharaj_sevekari/providers/vaari_service.dart';
+import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:provider/provider.dart';
 
@@ -138,7 +139,7 @@ class _VaariParticipantsTableState extends State<VaariParticipantsTable> {
                             _buildCell(
                               _formatDistance(
                                 participant.totalDistance,
-                                locale,
+                                context,
                               ),
                               theme,
                               alignCenter: true,
@@ -154,9 +155,10 @@ class _VaariParticipantsTableState extends State<VaariParticipantsTable> {
     );
   }
 
-  String _formatDistance(double distance, String locale) {
+  String _formatDistance(double distance, BuildContext context) {
     final formatted = distance.toStringAsFixed(1);
-    return locale == 'mr' ? toMarathiNumerals(formatted) : formatted;
+    final useMarathi = Localizations.localeOf(context).useMarathiContent;
+    return useMarathi ? toMarathiNumerals(formatted) : formatted;
   }
 
   Widget _buildHeaderCell(String label, ThemeData theme) {

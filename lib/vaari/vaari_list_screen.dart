@@ -179,7 +179,9 @@ class _VaariListScreenState extends State<VaariListScreen>
           itemCount: events.length,
           itemBuilder: (context, index) {
             final event = events[index];
-            final title = Localizations.localeOf(context).localizedContent(event.nameEn, event.nameMr);
+            final title = Localizations.localeOf(
+              context,
+            ).localizedContent(event.nameEn, event.nameMr);
             final dateRange = _formatDateRange(
               event.startDate,
               event.endDate,

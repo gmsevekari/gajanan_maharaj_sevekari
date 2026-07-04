@@ -3876,7 +3876,7 @@ abstract class AppLocalizations {
   /// No description provided for @distanceOptionalLabel.
   ///
   /// In en, this message translates to:
-  /// **'Distance in {unit} (optional)'**
+  /// **'Distance in {unit}'**
   String distanceOptionalLabel(String unit);
 
   /// No description provided for @stepsSubmittedSuccess.

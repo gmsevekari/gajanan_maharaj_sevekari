@@ -2012,7 +2012,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String distanceOptionalLabel(String unit) {
-    return 'अंतर $unit मध्ये (optional)';
+    return 'अंतर $unit मध्ये';
   }
 
   @override

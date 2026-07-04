@@ -2007,7 +2007,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String distanceOptionalLabel(String unit) {
-    return 'Distance in $unit (optional)';
+    return 'Distance in $unit';
   }
 
   @override
