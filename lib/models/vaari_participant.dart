@@ -18,10 +18,24 @@ class VaariParticipant {
   });
 
   factory VaariParticipant.fromMap(Map<String, dynamic> data) {
-    throw UnimplementedError();
+    return VaariParticipant(
+      memberName: data['memberName'] ?? '',
+      deviceId: data['deviceId'] ?? '',
+      phone: data['phone'] ?? '',
+      joinedAt: (data['joinedAt'] as Timestamp).toDate(),
+      totalSteps: data['totalSteps'] ?? 0,
+      totalDistance: (data['totalDistance'] as num?)?.toDouble() ?? 0.0,
+    );
   }
 
   Map<String, dynamic> toMap() {
-    throw UnimplementedError();
+    return {
+      'memberName': memberName,
+      'deviceId': deviceId,
+      'phone': phone,
+      'joinedAt': Timestamp.fromDate(joinedAt),
+      'totalSteps': totalSteps,
+      'totalDistance': totalDistance,
+    };
   }
 }

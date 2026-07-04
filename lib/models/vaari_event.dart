@@ -36,11 +36,42 @@ class VaariEvent {
   });
 
   factory VaariEvent.fromMap(String documentId, Map<String, dynamic> data) {
-    throw UnimplementedError();
+    return VaariEvent(
+      id: documentId,
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      endDate: (data['endDate'] as Timestamp).toDate(),
+      groupId: data['groupId'] ?? '',
+      joinCode: data['joinCode'] ?? '',
+      nameEn: data['name_en'] ?? '',
+      nameMr: data['name_mr'] ?? '',
+      descriptionEn: data['description_en'] ?? '',
+      descriptionMr: data['description_mr'] ?? '',
+      startDate: (data['startDate'] as Timestamp).toDate(),
+      status: data['status'] ?? 'upcoming',
+      timezone: data['timezone'] ?? 'America/Los_Angeles',
+      totalSteps: data['totalSteps'] ?? 0,
+      totalDistance: (data['totalDistance'] as num?)?.toDouble() ?? 0.0,
+      distanceUnit: data['distanceUnit'] ?? 'km',
+    );
   }
 
   Map<String, dynamic> toMap() {
-    throw UnimplementedError();
+    return {
+      'createdAt': Timestamp.fromDate(createdAt),
+      'endDate': Timestamp.fromDate(endDate),
+      'groupId': groupId,
+      'joinCode': joinCode,
+      'name_en': nameEn,
+      'name_mr': nameMr,
+      'description_en': descriptionEn,
+      'description_mr': descriptionMr,
+      'startDate': Timestamp.fromDate(startDate),
+      'status': status,
+      'timezone': timezone,
+      'totalSteps': totalSteps,
+      'totalDistance': totalDistance,
+      'distanceUnit': distanceUnit,
+    };
   }
 
   VaariEvent copyWith({
@@ -60,6 +91,22 @@ class VaariEvent {
     double? totalDistance,
     String? distanceUnit,
   }) {
-    throw UnimplementedError();
+    return VaariEvent(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      endDate: endDate ?? this.endDate,
+      groupId: groupId ?? this.groupId,
+      joinCode: joinCode ?? this.joinCode,
+      nameEn: nameEn ?? this.nameEn,
+      nameMr: nameMr ?? this.nameMr,
+      descriptionEn: descriptionEn ?? this.descriptionEn,
+      descriptionMr: descriptionMr ?? this.descriptionMr,
+      startDate: startDate ?? this.startDate,
+      status: status ?? this.status,
+      timezone: timezone ?? this.timezone,
+      totalSteps: totalSteps ?? this.totalSteps,
+      totalDistance: totalDistance ?? this.totalDistance,
+      distanceUnit: distanceUnit ?? this.distanceUnit,
+    );
   }
 }
