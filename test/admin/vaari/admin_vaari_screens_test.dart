@@ -18,6 +18,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:gajanan_maharaj_sevekari/providers/vaari_service.dart';
 
 class MockFirebaseFirestore extends Mock implements FirebaseFirestore {}
 
@@ -81,6 +82,9 @@ void main() {
         ),
         ChangeNotifierProvider(create: (_) => FontProvider()),
         ChangeNotifierProvider(create: (_) => FestivalProvider()),
+        Provider<VaariService>(
+          create: (_) => VaariService(firestore: firestore),
+        ),
       ],
       child: MaterialApp(
         theme: AppTheme.lightTheme,
@@ -236,8 +240,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // All four text fields plus the target distance field are empty, so
-      // "This field is required" should surface on each of them.
-      expect(find.text('This field is required'), findsNWidgets(5));
+      // specific validation messages should surface on each of them.
+      expect(find.text('Please enter English name'), findsOneWidget);
+      expect(find.text('Please enter Marathi name'), findsOneWidget);
+      expect(find.text('Please enter English description'), findsOneWidget);
+      expect(find.text('Please enter Marathi description'), findsOneWidget);
+      expect(find.text('Please enter target distance'), findsOneWidget);
     });
 
     testWidgets('creates a vaari event successfully', (tester) async {
