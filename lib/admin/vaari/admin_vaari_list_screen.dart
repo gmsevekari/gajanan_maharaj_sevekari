@@ -13,6 +13,7 @@ class AdminVaariListScreen extends StatefulWidget {
   final AdminUser adminUser;
 
   /// Injected for testing; defaults to [FirebaseFirestore.instance].
+  @visibleForTesting
   final FirebaseFirestore? firestore;
 
   const AdminVaariListScreen({
