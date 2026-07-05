@@ -59,5 +59,10 @@ void main() {
       expect(today.minute, 0);
       expect(today.second, 0);
     });
+
+    test('returns a UTC date-only value', () {
+      final today = currentIstDate();
+      expect(today.isUtc, true);
+    });
   });
 }

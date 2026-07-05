@@ -1,11 +1,20 @@
 /// A single named stop along [dnyaneshwarPalkhiRoute].
 class VaariRouteStop {
-  final String name;
+  final String nameEn;
+  final String nameMr;
 
   /// Distance from the route's starting stop (Alandi), in miles.
   final double cumulativeMiles;
 
-  const VaariRouteStop({required this.name, required this.cumulativeMiles});
+  const VaariRouteStop({
+    required this.nameEn,
+    required this.nameMr,
+    required this.cumulativeMiles,
+  });
+
+  String get name => nameEn;
+
+  String localizedName(String langCode) => langCode == 'mr' ? nameMr : nameEn;
 }
 
 /// The Sant Dnyaneshwar Maharaj Palkhi route: Alandi -> Pandharpur.
@@ -13,22 +22,23 @@ class VaariRouteStop {
 /// leg-by-leg distances so the full route totals the event's 155-mile
 /// target distance.
 const List<VaariRouteStop> dnyaneshwarPalkhiRoute = [
-  VaariRouteStop(name: 'Alandi', cumulativeMiles: 0.0),
-  VaariRouteStop(name: 'Pune', cumulativeMiles: 13.1),
-  VaariRouteStop(name: 'Saswad', cumulativeMiles: 31.6),
-  VaariRouteStop(name: 'Jejuri', cumulativeMiles: 41.8),
-  VaariRouteStop(name: 'Valhe', cumulativeMiles: 52.0),
-  VaariRouteStop(name: 'Lonand', cumulativeMiles: 65.7),
-  VaariRouteStop(name: 'Taradgaon', cumulativeMiles: 69.8),
-  VaariRouteStop(name: 'Phaltan', cumulativeMiles: 83.5),
-  VaariRouteStop(name: 'Barad', cumulativeMiles: 94.8),
-  VaariRouteStop(name: 'Natepute', cumulativeMiles: 109.1),
-  VaariRouteStop(name: 'Purandawade', cumulativeMiles: 116.3),
-  VaariRouteStop(name: 'Velapur', cumulativeMiles: 130.0),
-  VaariRouteStop(name: 'Bhandishegaon', cumulativeMiles: 143.7),
-  VaariRouteStop(name: 'Wakhari', cumulativeMiles: 150.9),
-  VaariRouteStop(name: 'Pandharpur', cumulativeMiles: 155.0),
+  VaariRouteStop(nameEn: 'Alandi', nameMr: 'आळंदी', cumulativeMiles: 0.0),
+  VaariRouteStop(nameEn: 'Pune', nameMr: 'पुणे', cumulativeMiles: 13.1),
+  VaariRouteStop(nameEn: 'Saswad', nameMr: 'सासवड', cumulativeMiles: 31.6),
+  VaariRouteStop(nameEn: 'Jejuri', nameMr: 'जेजुरी', cumulativeMiles: 41.8),
+  VaariRouteStop(nameEn: 'Valhe', nameMr: 'वाल्हे', cumulativeMiles: 52.0),
+  VaariRouteStop(nameEn: 'Lonand', nameMr: 'लोणंद', cumulativeMiles: 65.7),
+  VaariRouteStop(nameEn: 'Taradgaon', nameMr: 'तरडगाव', cumulativeMiles: 69.8),
+  VaariRouteStop(nameEn: 'Phaltan', nameMr: 'फलटण', cumulativeMiles: 83.5),
+  VaariRouteStop(nameEn: 'Barad', nameMr: 'बरड', cumulativeMiles: 94.8),
+  VaariRouteStop(nameEn: 'Natepute', nameMr: 'नातेपुते', cumulativeMiles: 109.1),
+  VaariRouteStop(nameEn: 'Purandawade', nameMr: 'पुरंदावडे', cumulativeMiles: 116.3),
+  VaariRouteStop(nameEn: 'Velapur', nameMr: 'वेळापूर', cumulativeMiles: 130.0),
+  VaariRouteStop(nameEn: 'Bhandishegaon', nameMr: 'भंडीशेगाव', cumulativeMiles: 143.7),
+  VaariRouteStop(nameEn: 'Wakhari', nameMr: 'वाखारी', cumulativeMiles: 150.9),
+  VaariRouteStop(nameEn: 'Pandharpur', nameMr: 'पंढरपूर', cumulativeMiles: 155.0),
 ];
+
 
 const double _kmPerMile = 1.60934;
 

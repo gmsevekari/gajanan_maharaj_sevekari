@@ -10,6 +10,18 @@ void main() {
       expect(layout.stopsPerRow, greaterThanOrEqualTo(2));
     });
 
+    test('throws ArgumentError when stopCount is less than 2', () {
+      expect(
+        () => VaariRouteLayout(availableWidth: 300, stopCount: 1),
+        throwsArgumentError,
+      );
+      expect(
+        () => VaariRouteLayout(availableWidth: 300, stopCount: 0),
+        throwsArgumentError,
+      );
+    });
+
+
     test('computes more stops per row on a wider layout', () {
       final narrow = VaariRouteLayout(availableWidth: 250, stopCount: 15);
       final wide = VaariRouteLayout(availableWidth: 500, stopCount: 15);

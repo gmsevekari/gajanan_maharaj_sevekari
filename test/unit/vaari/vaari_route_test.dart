@@ -13,6 +13,15 @@ void main() {
       expect(dnyaneshwarPalkhiRoute.last.cumulativeMiles, 155.0);
     });
 
+    test('returns localized stop name based on language code', () {
+      final firstStop = dnyaneshwarPalkhiRoute.first;
+      expect(firstStop.nameEn, 'Alandi');
+      expect(firstStop.nameMr, 'आळंदी');
+      expect(firstStop.localizedName('en'), 'Alandi');
+      expect(firstStop.localizedName('mr'), 'आळंदी');
+      expect(firstStop.name, 'Alandi');
+    });
+
     test('cumulative distance is strictly increasing', () {
       for (var i = 1; i < dnyaneshwarPalkhiRoute.length; i++) {
         expect(

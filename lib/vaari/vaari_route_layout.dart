@@ -50,6 +50,9 @@ class VaariRouteLayout {
     this.targetStopsPerRow = 5,
     this.minStopSpacing = 56,
   }) : stopCount = stopCount ?? dnyaneshwarPalkhiRoute.length {
+    if (this.stopCount < 2) {
+      throw ArgumentError('VaariRouteLayout requires at least 2 stops to compute spacing and render segments.');
+    }
     turnRadius = rowHeight / 2;
     sidePadding = turnRadius + 12;
     _resolveSpacing(availableWidth, stopSpacingOverride);

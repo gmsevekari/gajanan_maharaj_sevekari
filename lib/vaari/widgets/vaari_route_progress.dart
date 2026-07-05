@@ -207,7 +207,11 @@ class _VaariRouteTimeline extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final targetArcLength = layout.arcLengthForMiles(covered);
-    final scheduledArcLength = layout.cumulativeArcLength[scheduledStopIndex];
+    final scheduledStopIndexClamped =
+        scheduledStopIndex.clamp(0, layout.cumulativeArcLength.length - 1);
+    final scheduledArcLength = layout.cumulativeArcLength.isEmpty
+        ? 0.0
+        : layout.cumulativeArcLength[scheduledStopIndexClamped];
 
     return Stack(
       clipBehavior: Clip.none,
@@ -219,8 +223,8 @@ class _VaariRouteTimeline extends StatelessWidget {
             trackColor: theme.appColors.divider,
           ),
         ),
-        for (var i = 0; i < dnyaneshwarPalkhiRoute.length; i++)
-          _buildStopMarker(theme, i),
+        for (var i = 0; i < layout.stopPositions.length; i++)
+          _buildStopMarker(context, theme, i),
         TweenAnimationBuilder<double>(
           tween: Tween(begin: 0, end: targetArcLength),
           duration: const Duration(milliseconds: 900),
@@ -284,12 +288,16 @@ class _VaariRouteTimeline extends StatelessWidget {
     );
   }
 
-  Widget _buildStopMarker(ThemeData theme, int index) {
+  Widget _buildStopMarker(BuildContext context, ThemeData theme, int index) {
+    if (index >= dnyaneshwarPalkhiRoute.length) {
+      return const SizedBox.shrink();
+    }
     final stop = dnyaneshwarPalkhiRoute[index];
     final isPassed = covered >= stop.cumulativeMiles;
     final isDestination = index == dnyaneshwarPalkhiRoute.length - 1;
     final center = layout.stopPositions[index];
     final radius = isDestination ? _flagRadius : _markerRadius;
+    final locale = Localizations.localeOf(context).languageCode;
 
     // The label is wider than the marker circle, so the whole column must be
     // fixed to _labelWidth and centered on `center.dx` — otherwise Column's
@@ -330,7 +338,7 @@ class _VaariRouteTimeline extends StatelessWidget {
             ),
             const SizedBox(height: _labelGap),
             Text(
-              stop.name,
+              stop.localizedName(locale),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
