@@ -43,15 +43,15 @@ void main() {
     });
 
     test(
-      'should fall back to legacy snake_case keys when camelCase keys are absent',
+      'should return empty strings for missing camelCase keys (legacy snake_case fallback removed)',
       () {
+        // Migration complete: toMap() writes camelCase exclusively.
+        // fromMap() no longer falls back to name_en / description_en etc.
+        // Documents written before the migration should have been migrated
+        // or re-written; if not, the fields will be empty strings.
         final legacyMap =
             {
               ...eventMap,
-              'name_en': 'Legacy Name En',
-              'name_mr': 'Legacy Name Mr',
-              'description_en': 'Legacy Description En',
-              'description_mr': 'Legacy Description Mr',
             }..removeWhere(
               (key, _) => [
                 'nameEn',
@@ -63,10 +63,10 @@ void main() {
 
         final event = VaariEvent.fromMap('doc_123', legacyMap);
 
-        expect(event.nameEn, 'Legacy Name En');
-        expect(event.nameMr, 'Legacy Name Mr');
-        expect(event.descriptionEn, 'Legacy Description En');
-        expect(event.descriptionMr, 'Legacy Description Mr');
+        expect(event.nameEn, '');
+        expect(event.nameMr, '');
+        expect(event.descriptionEn, '');
+        expect(event.descriptionMr, '');
       },
     );
 

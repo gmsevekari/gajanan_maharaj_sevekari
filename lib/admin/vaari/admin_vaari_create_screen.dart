@@ -35,15 +35,6 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
   String _selectedUnit = 'km';
   bool _isLoading = false;
 
-  final List<Map<String, String>> _timezones = [
-    {'label': 'Seattle (Pacific Time)', 'value': 'America/Los_Angeles'},
-    {'label': 'India (IST)', 'value': 'Asia/Kolkata'},
-  ];
-
-  final List<Map<String, String>> _units = [
-    {'label': 'Kilometers (km)', 'value': 'km'},
-    {'label': 'Miles (mi)', 'value': 'mi'},
-  ];
 
   late final FirebaseFirestore _firestore;
   late final VaariService _service;
@@ -167,6 +158,15 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
+    final timezones = [
+      {'label': localizations.timezoneSeattle, 'value': 'America/Los_Angeles'},
+      {'label': localizations.timezoneIndia, 'value': 'Asia/Kolkata'},
+    ];
+    final units = [
+      {'label': localizations.distanceUnitKilometers, 'value': 'km'},
+      {'label': localizations.distanceUnitMiles, 'value': 'mi'},
+    ];
+
     return Scaffold(
       appBar: AppBar(title: Text(localizations.createVaariTitle)),
       body: _isLoading
@@ -186,7 +186,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return localizations.fieldRequired;
+                          return localizations.adminVaariNameEnRequired;
                         }
                         return null;
                       },
@@ -200,7 +200,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return localizations.fieldRequired;
+                          return localizations.adminVaariNameMrRequired;
                         }
                         return null;
                       },
@@ -215,7 +215,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return localizations.fieldRequired;
+                          return localizations.adminVaariDescEnRequired;
                         }
                         return null;
                       },
@@ -230,7 +230,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return localizations.fieldRequired;
+                          return localizations.adminVaariDescMrRequired;
                         }
                         return null;
                       },
@@ -242,7 +242,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                         labelText: localizations.timezoneLabel,
                         border: const OutlineInputBorder(),
                       ),
-                      items: _timezones
+                      items: timezones
                           .map(
                             (tz) => DropdownMenuItem(
                               value: tz['value'],
@@ -263,7 +263,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                         labelText: localizations.distanceUnitDropdownLabel,
                         border: const OutlineInputBorder(),
                       ),
-                      items: _units
+                      items: units
                           .map(
                             (u) => DropdownMenuItem(
                               value: u['value'],
@@ -290,7 +290,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return localizations.fieldRequired;
+                          return localizations.adminVaariTargetDistanceRequired;
                         }
                         if (double.tryParse(value) == null ||
                             double.parse(value) <= 0) {

@@ -46,6 +46,21 @@ class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
   }
 
   @override
+  void didUpdateWidget(covariant AdminVaariDashboard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.adminUser.groupId != oldWidget.adminUser.groupId) {
+      Query query = _firestore.collection('vaari_events');
+      if (widget.adminUser.groupId != null) {
+        query = query.where('groupId', isEqualTo: widget.adminUser.groupId);
+      }
+      setState(() {
+        _eventsStream = query.snapshots();
+      });
+    }
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
@@ -487,7 +502,19 @@ class _UpcomingCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        event.status.toUpperCase(),
+                        () {
+                          final l10n = AppLocalizations.of(context)!;
+                          switch (event.status) {
+                            case 'ongoing':
+                              return l10n.statusOngoing;
+                            case 'enrolling':
+                              return l10n.statusEnrolling;
+                            case 'completed':
+                              return l10n.statusCompleted;
+                            default:
+                              return l10n.statusUpcoming;
+                          }
+                        }(),
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.bold,

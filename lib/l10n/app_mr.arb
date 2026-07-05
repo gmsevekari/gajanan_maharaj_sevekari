@@ -799,5 +799,14 @@
   "vaariRouteProgressLabel": "मार्गातील प्रगती",
   "vaariRouteComplete": "प्रवास पूर्ण झाला!",
   "vaariGroupProgressLegend": "तुमचा गट",
-  "vaariActualPalkhiLegend": "आजची प्रत्यक्ष वारी"
+  "vaariActualPalkhiLegend": "आजची प्रत्यक्ष वारी",
+  "adminVaariNameEnRequired": "कृपया इंग्रजी नाव प्रविष्ट करा",
+  "adminVaariNameMrRequired": "कृपया मराठी नाव प्रविष्ट करा",
+  "adminVaariDescEnRequired": "कृपया इंग्रजी वर्णन प्रविष्ट करा",
+  "adminVaariDescMrRequired": "कृपया मराठी वर्णन प्रविष्ट करा",
+  "adminVaariTargetDistanceRequired": "कृपया लक्ष्य अंतर प्रविष्ट करा",
+  "vaariSignUpError": "नोंदणी करण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.",
+  "vaariAddStepsError": "पावले जोडण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.",
+  "distanceUnitKilometers": "किलोमीटर (कि.मी.)",
+  "distanceUnitMiles": "मैल (mi)"
 }

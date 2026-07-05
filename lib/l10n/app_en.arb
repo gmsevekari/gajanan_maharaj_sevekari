@@ -799,5 +799,14 @@
   "vaariRouteProgressLabel": "ROUTE PROGRESS",
   "vaariRouteComplete": "Journey Complete!",
   "vaariGroupProgressLegend": "Your Group",
-  "vaariActualPalkhiLegend": "Actual Palkhi Today"
+  "vaariActualPalkhiLegend": "Actual Palkhi Today",
+  "adminVaariNameEnRequired": "Please enter English name",
+  "adminVaariNameMrRequired": "Please enter Marathi name",
+  "adminVaariDescEnRequired": "Please enter English description",
+  "adminVaariDescMrRequired": "Please enter Marathi description",
+  "adminVaariTargetDistanceRequired": "Please enter target distance",
+  "vaariSignUpError": "Failed to sign up. Please try again.",
+  "vaariAddStepsError": "Failed to add steps. Please try again.",
+  "distanceUnitKilometers": "Kilometers (km)",
+  "distanceUnitMiles": "Miles (mi)"
 }
