@@ -46,6 +46,22 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
     _initSync();
   }
 
+  @override
+  void didUpdateWidget(covariant VaariDetailScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.eventId != oldWidget.eventId) {
+      final service = context.read<VaariService>();
+      setState(() {
+        _eventStream = service.getEventStream(widget.eventId);
+        _participantsCountStream = service.getParticipantsCountStream(
+          widget.eventId,
+        );
+      });
+      _initSync();
+    }
+  }
+
+
   Future<void> _initSync() async {
     final provider = context.read<VaariProvider>();
     await provider.loadLocalData();
@@ -243,14 +259,15 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
                         localizations.descriptionLabel,
                         description,
                       ),
-                      const SizedBox(height: 8),
-                      _buildDetailItem(
-                        theme,
-                        Icons.flag_outlined,
-                        localizations.adminVaariTargetDistance,
-                        "${formatDistanceLocalized(event.targetDistance, locale)} ${localizedDistanceUnitLabel(event.distanceUnit, locale)}",
-                      ),
-                      const SizedBox(height: 8),
+                      if (event.targetDistance > 0) ...[
+                        _buildDetailItem(
+                          theme,
+                          Icons.flag_outlined,
+                          localizations.adminVaariTargetDistance,
+                          "${formatDistanceLocalized(event.targetDistance, locale)} ${localizedDistanceUnitLabel(event.distanceUnit, locale)}",
+                        ),
+                        const SizedBox(height: 8),
+                      ],
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [

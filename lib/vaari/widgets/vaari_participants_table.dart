@@ -137,9 +137,9 @@ class _VaariParticipantsTableState extends State<VaariParticipantsTable> {
                               alignCenter: true,
                             ),
                             _buildCell(
-                              _formatDistance(
+                              formatDistanceLocalized(
                                 participant.totalDistance,
-                                context,
+                                locale,
                               ),
                               theme,
                               alignCenter: true,
@@ -155,11 +155,6 @@ class _VaariParticipantsTableState extends State<VaariParticipantsTable> {
     );
   }
 
-  String _formatDistance(double distance, BuildContext context) {
-    final formatted = distance.toStringAsFixed(1);
-    final useMarathi = Localizations.localeOf(context).useMarathiContent;
-    return useMarathi ? toMarathiNumerals(formatted) : formatted;
-  }
 
   Widget _buildHeaderCell(String label, ThemeData theme) {
     return Padding(

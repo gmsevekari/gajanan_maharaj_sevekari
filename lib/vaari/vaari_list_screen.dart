@@ -40,6 +40,26 @@ class _VaariListScreenState extends State<VaariListScreen>
   }
 
   @override
+  void didUpdateWidget(covariant VaariListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.groupId != oldWidget.groupId) {
+      final groupId = widget.groupId;
+      if (groupId != null) {
+        final service = context.read<VaariService>();
+        setState(() {
+          _activeEventsStream = service.getActiveEvents(groupId);
+          _completedEventsStream = service.getCompletedEvents(groupId);
+        });
+      } else {
+        setState(() {
+          _activeEventsStream = const Stream.empty();
+          _completedEventsStream = const Stream.empty();
+        });
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
