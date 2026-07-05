@@ -34,6 +34,10 @@ class _AdminVaariListScreenState extends State<AdminVaariListScreen> {
   void initState() {
     super.initState();
     _firestore = widget.firestore ?? FirebaseFirestore.instance;
+    _initializeStream();
+  }
+
+  void _initializeStream() {
     Query query = _firestore.collection('vaari_events');
 
     if (widget.status == 'upcoming') {
@@ -48,6 +52,18 @@ class _AdminVaariListScreenState extends State<AdminVaariListScreen> {
 
     _eventsStream = query.orderBy('startDate').snapshots();
   }
+
+  @override
+  void didUpdateWidget(covariant AdminVaariListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.status != oldWidget.status ||
+        widget.adminUser.groupId != oldWidget.adminUser.groupId) {
+      setState(() {
+        _initializeStream();
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

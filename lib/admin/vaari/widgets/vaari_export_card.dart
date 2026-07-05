@@ -45,7 +45,9 @@ class VaariExportCard extends StatelessWidget {
       event.targetDistance,
       langCode,
     );
-    final displayDistance = '$totalDistanceStr / $targetDistanceStr';
+    final displayDistance = event.targetDistance > 0
+        ? '$totalDistanceStr / $targetDistanceStr'
+        : totalDistanceStr;
 
     return Material(
       color: Colors.transparent,

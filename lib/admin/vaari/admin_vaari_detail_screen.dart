@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/vaari_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/vaari_participant.dart';
+import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
@@ -19,8 +20,7 @@ import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/admin/widgets/admin_stats_widgets.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
 import 'package:gajanan_maharaj_sevekari/admin/vaari/widgets/vaari_export_card.dart';
-import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
-
+import 'package:gajanan_maharaj_sevekari/vaari/widgets/vaari_participants_table.dart';
 import 'dart:async';
 
 class AdminVaariDetailScreen extends StatefulWidget {
@@ -51,6 +51,7 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
   late Stream<QuerySnapshot> _participantsStream;
   final ScreenshotController _exportController = ScreenshotController();
   bool _isStatusLocked = true;
+  bool _isUpdatingStatus = false;
 
   @override
   void initState() {
@@ -68,6 +69,11 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
         .snapshots();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> _shareDeepLink(
     VaariEvent event,
     AppLocalizations l10n,
@@ -82,32 +88,12 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
   Future<void> _updateStatus(VaariEvent event, String? newStatus) async {
     if (newStatus == null || newStatus == event.status) return;
 
-    // Capture everything derived from `context` before any `await` — the
-    // widget may be disposed mid-flight, and reusing `context` afterward
-    // risks acting on a stale element or the wrong route.
     final l10n = AppLocalizations.of(context)!;
-    final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircularProgressIndicator(),
-                const SizedBox(height: 16),
-                Text(l10n.updatingStatus),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+    setState(() {
+      _isUpdatingStatus = true;
+    });
 
     try {
       await _firestore.collection('vaari_events').doc(event.id).update({
@@ -124,7 +110,6 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
       );
 
       if (mounted) {
-        navigator.pop(); // Close loading dialog
         messenger.showSnackBar(
           SnackBar(content: Text(l10n.statusUpdateSuccess)),
         );
@@ -132,10 +117,15 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
     } catch (e) {
       debugPrint('AdminVaariDetailScreen._updateStatus error: $e');
       if (mounted) {
-        navigator.pop(); // Close loading dialog
         messenger.showSnackBar(
           SnackBar(content: Text(l10n.adminVaariStatusUpdateError)),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUpdatingStatus = false;
+        });
       }
     }
   }
@@ -279,9 +269,36 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
                   const SizedBox(height: 8),
 
                   // Participants Table
-                  _buildParticipantsTable(theme, localizations, event),
+                  VaariParticipantsTable(
+                    eventId: event.id,
+                    distanceUnitLabel: localizedDistanceUnitLabel(
+                      event.distanceUnit,
+                      langCode,
+                    ),
+                  ),
                 ],
               ),
+              if (_isUpdatingStatus)
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black.withOpacity(0.3),
+                    child: Center(
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const CircularProgressIndicator(),
+                              const SizedBox(height: 16),
+                              Text(localizations.updatingStatus),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           );
         },
@@ -434,21 +451,23 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
                 Text(dateRange, style: theme.textTheme.bodySmall),
               ],
             ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(
-                  Icons.flag_outlined,
-                  size: 14,
-                  color: theme.appColors.secondaryText,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  "${localizations.adminVaariTargetDistance}: ${formatDistanceLocalized(event.targetDistance, langCode)} ${localizedDistanceUnitLabel(event.distanceUnit, langCode)}",
-                  style: theme.textTheme.bodySmall,
-                ),
-              ],
-            ),
+            if (event.targetDistance > 0) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(
+                    Icons.flag_outlined,
+                    size: 14,
+                    color: theme.appColors.secondaryText,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    "${localizations.adminVaariTargetDistance}: ${formatDistanceLocalized(event.targetDistance, langCode)} ${localizedDistanceUnitLabel(event.distanceUnit, langCode)}",
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -484,118 +503,6 @@ class _AdminVaariDetailScreenState extends State<AdminVaariDetailScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildParticipantsTable(
-    ThemeData theme,
-    AppLocalizations localizations,
-    VaariEvent event,
-  ) {
-    final langCode = Localizations.localeOf(context).languageCode;
-    return StreamBuilder<QuerySnapshot>(
-      stream: _participantsStream,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        final docs = snapshot.data!.docs;
-
-        if (docs.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Text(localizations.groupNamjapNoParticipants),
-            ),
-          );
-        }
-
-        final participants = docs
-            .map(
-              (doc) =>
-                  VaariParticipant.fromMap(doc.data() as Map<String, dynamic>),
-            )
-            .toList();
-
-        return Card(
-          margin: EdgeInsets.zero,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minWidth: constraints.maxWidth),
-                  child: DataTable(
-                    columnSpacing: 16,
-                    columns: [
-                      DataColumn(
-                        label: Text(
-                          localizations.groupNamjapTableColName,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Expanded(
-                          child: Text(
-                            localizations.stepsLabel,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Expanded(
-                          child: Text(
-                            "${localizations.distanceLabel} (${localizedDistanceUnitLabel(event.distanceUnit, langCode)})",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ],
-                    rows: participants.map((p) {
-                      return DataRow(
-                        cells: [
-                          DataCell(
-                            Text(
-                              p.memberName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          DataCell(
-                            Center(
-                              child: Text(
-                                formatNumberLocalized(
-                                  p.totalSteps,
-                                  langCode,
-                                  pad: false,
-                                ),
-                              ),
-                            ),
-                          ),
-                          DataCell(
-                            Center(
-                              child: Text(
-                                formatDistanceLocalized(
-                                  p.totalDistance,
-                                  langCode,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    }).toList(),
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
     );
   }
 
