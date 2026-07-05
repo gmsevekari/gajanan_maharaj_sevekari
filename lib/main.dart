@@ -246,10 +246,23 @@ class _MyAppState extends State<MyApp> {
     String? joinCode =
         uri.queryParameters['joinCode'] ?? uri.queryParameters['code'];
 
+    final idRegExp = RegExp(r'^[a-zA-Z0-9_\-]+$');
+    final codeRegExp = RegExp(r'^[a-zA-Z0-9]{6}$');
+
+    if (id != null && !idRegExp.hasMatch(id)) {
+      debugPrint('Deep Link: Invalid id rejected: $id');
+      return;
+    }
+    if (joinCode != null && !codeRegExp.hasMatch(joinCode)) {
+      debugPrint('Deep Link: Invalid joinCode rejected: $joinCode');
+      return;
+    }
+
     final bool isNamjap =
         uri.toString().contains('/namjap/') || uri.host == 'namjap';
     final bool isVaari =
         uri.toString().contains('/vaari/') || uri.host == 'vaari';
+
     final String routeName = isVaari
         ? Routes.vaariDetail
         : isNamjap
@@ -450,15 +463,21 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminLogin: (context) => const AdminLoginScreen(),
                 Routes.adminDashboard: (context) =>
                     const AdminDashboardScreen(),
-                Routes.adminTempleNotifications: (context) =>
-                    const AdminTempleNotificationsScreen(),
+                Routes.adminTempleNotifications: (context) {
+                  final args = ModalRoute.of(context)?.settings.arguments;
+                  if (args is! AdminUser || !args.hasRole('temple_admin')) {
+                    return const Scaffold(
+                      body: Center(child: Text('Access Denied')),
+                    );
+                  }
+                  return const AdminTempleNotificationsScreen();
+                },
                 Routes.adminParayanCoordination: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
-                  if (args is! AdminUser) {
+                  if (args is! AdminUser ||
+                      !args.hasAnyRole(['parayan_coordinator', 'group_admin'])) {
                     return const Scaffold(
-                      body: Center(
-                        child: Text('Error: Missing AdminUser arguments'),
-                      ),
+                      body: Center(child: Text('Access Denied')),
                     );
                   }
                   return AdminParayanCoordinationDashboardScreen(
@@ -467,22 +486,20 @@ class _MyAppState extends State<MyApp> {
                 },
                 Routes.adminCreateParayan: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
-                  if (args is! AdminUser) {
+                  if (args is! AdminUser ||
+                      !args.hasAnyRole(['parayan_coordinator', 'group_admin'])) {
                     return const Scaffold(
-                      body: Center(
-                        child: Text('Error: Missing AdminUser arguments'),
-                      ),
+                      body: Center(child: Text('Access Denied')),
                     );
                   }
                   return AdminParayanCreateScreen(adminUser: args);
                 },
                 Routes.adminCreateParayanWithAllocation: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
-                  if (args is! AdminUser) {
+                  if (args is! AdminUser ||
+                      !args.hasAnyRole(['parayan_coordinator', 'group_admin'])) {
                     return const Scaffold(
-                      body: Center(
-                        child: Text('Error: Missing AdminUser arguments'),
-                      ),
+                      body: Center(child: Text('Access Denied')),
                     );
                   }
                   return AdminParayanCreateWithAllocationScreen(
@@ -491,19 +508,34 @@ class _MyAppState extends State<MyApp> {
                 },
                 Routes.adminGajananMaharajGroups: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
+                  AdminUser? adminUser;
+                  String? mode;
                   if (args is Map<String, dynamic>) {
-                    return AdminGajananMaharajGroupScreen(
-                      adminUser: args['adminUser'] as AdminUser,
-                      mode: args['mode'] as String,
+                    adminUser = args['adminUser'] as AdminUser?;
+                    mode = args['mode'] as String?;
+                  } else if (args is AdminUser) {
+                    adminUser = args;
+                  }
+                  if (adminUser == null) {
+                    return const Scaffold(
+                      body: Center(
+                        child: Text('Error: Missing AdminUser arguments'),
+                      ),
                     );
                   }
-                  if (args is AdminUser) {
-                    return AdminGajananMaharajGroupScreen(adminUser: args);
+                  if (!adminUser.hasAnyRole([
+                    'parayan_coordinator',
+                    'namjap_coordinator',
+                    'vaari_admin',
+                    'group_admin'
+                  ])) {
+                    return const Scaffold(
+                      body: Center(child: Text('Access Denied')),
+                    );
                   }
-                  return const Scaffold(
-                    body: Center(
-                      child: Text('Error: Missing AdminUser arguments'),
-                    ),
+                  return AdminGajananMaharajGroupScreen(
+                    adminUser: adminUser,
+                    mode: mode ?? '',
                   );
                 },
                 Routes.userNotifications: (context) =>
@@ -523,79 +555,121 @@ class _MyAppState extends State<MyApp> {
                 Routes.favorites: (context) => const FavoritesScreen(),
                 Routes.favoriteItemList: (context) =>
                     const FavoriteItemListScreen(),
-                Routes.adminTypoReports: (context) =>
-                    const AdminTypoReportsScreen(),
-                Routes.adminGroupNamjapDashboard: (context) {
+                Routes.adminTypoReports: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
-                  if (args is Map<String, dynamic>) {
-                    return AdminGroupNamjapDashboard(
-                      adminUser: args['adminUser'] as AdminUser,
+                  if (args is! AdminUser || !args.hasRole('app_developer')) {
+                    return const Scaffold(
+                      body: Center(child: Text('Access Denied')),
                     );
                   }
-                  if (args is AdminUser) {
-                    return AdminGroupNamjapDashboard(adminUser: args);
+                  return const AdminTypoReportsScreen();
+                },
+                Routes.adminGroupNamjapDashboard: (context) {
+                  final args = ModalRoute.of(context)?.settings.arguments;
+                  AdminUser? adminUser;
+                  if (args is Map<String, dynamic>) {
+                    adminUser = args['adminUser'] as AdminUser?;
+                  } else if (args is AdminUser) {
+                    adminUser = args;
                   }
-                  return const Scaffold(
-                    body: Center(
-                      child: Text('Error: Missing AdminUser arguments'),
-                    ),
-                  );
+                  if (adminUser == null) {
+                    return const Scaffold(
+                      body: Center(
+                        child: Text('Error: Missing AdminUser arguments'),
+                      ),
+                    );
+                  }
+                  if (!adminUser.hasAnyRole(['namjap_coordinator', 'group_admin'])) {
+                    return const Scaffold(
+                      body: Center(child: Text('Access Denied')),
+                    );
+                  }
+                  return AdminGroupNamjapDashboard(adminUser: adminUser);
                 },
                 Routes.adminCreateGroupNamjap: (context) {
                   final args = ModalRoute.of(context)!.settings.arguments;
-                  if (args is AdminUser) {
-                    return AdminGroupNamjapCreateScreen(adminUser: args);
+                  if (args is! AdminUser ||
+                      !args.hasAnyRole(['namjap_coordinator', 'group_admin'])) {
+                    return const Scaffold(
+                      body: Center(child: Text('Access Denied')),
+                    );
                   }
-                  return const Scaffold(
-                    body: Center(
-                      child: Text('Error: Missing AdminUser arguments'),
-                    ),
-                  );
+                  return AdminGroupNamjapCreateScreen(adminUser: args);
                 },
                 Routes.adminVaariDashboard: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
+                  AdminUser? adminUser;
                   if (args is Map<String, dynamic>) {
-                    return AdminVaariDashboard(
-                      adminUser: args['adminUser'] as AdminUser,
+                    adminUser = args['adminUser'] as AdminUser?;
+                  } else if (args is AdminUser) {
+                    adminUser = args;
+                  }
+                  if (adminUser == null) {
+                    return const Scaffold(
+                      body: Center(
+                        child: Text('Error: Missing AdminUser arguments'),
+                      ),
                     );
                   }
-                  if (args is AdminUser) {
-                    return AdminVaariDashboard(adminUser: args);
+                  if (!adminUser.hasAnyRole(['vaari_admin', 'group_admin'])) {
+                    return const Scaffold(
+                      body: Center(child: Text('Access Denied')),
+                    );
                   }
-                  return const Scaffold(
-                    body: Center(
-                      child: Text('Error: Missing AdminUser arguments'),
-                    ),
-                  );
+                  return AdminVaariDashboard(adminUser: adminUser);
                 },
                 Routes.adminCreateVaari: (context) {
                   final args = ModalRoute.of(context)!.settings.arguments;
-                  if (args is AdminUser) {
-                    return AdminVaariCreateScreen(adminUser: args);
+                  if (args is! AdminUser ||
+                      !args.hasAnyRole(['vaari_admin', 'group_admin'])) {
+                    return const Scaffold(
+                      body: Center(child: Text('Access Denied')),
+                    );
                   }
-                  return const Scaffold(
-                    body: Center(
-                      child: Text('Error: Missing AdminUser arguments'),
-                    ),
-                  );
+                  return AdminVaariCreateScreen(adminUser: args);
                 },
                 Routes.onboarding: (context) => const GroupSelectionScreen(),
                 Routes.adminManageGroupAdmins: (context) {
                   final admin =
                       ModalRoute.of(context)!.settings.arguments as AdminUser;
+                  if (!admin.hasRole('super_admin') &&
+                      (!admin.hasRole('group_admin') || admin.groupId == null)) {
+                    return const Scaffold(
+                      body: Center(child: Text('Access Denied')),
+                    );
+                  }
                   return AdminManageGroupAdminsScreen(currentAdmin: admin);
                 },
                 Routes.adminAddGroupAdmin: (context) {
                   final args = ModalRoute.of(context)!.settings.arguments;
+                  AdminUser? currentAdmin;
+                  AdminUser? adminToEdit;
                   if (args is Map<String, dynamic>) {
-                    return AdminAddGroupAdminScreen(
-                      currentAdmin: args['currentAdmin'] as AdminUser,
-                      adminToEdit: args['adminToEdit'] as AdminUser?,
+                    currentAdmin = args['currentAdmin'] as AdminUser?;
+                    adminToEdit = args['adminToEdit'] as AdminUser?;
+                  } else if (args is AdminUser) {
+                    currentAdmin = args;
+                  }
+                  if (currentAdmin == null) {
+                    return const Scaffold(
+                      body: Center(
+                        child: Text('Error: Missing AdminUser arguments'),
+                      ),
                     );
                   }
-                  final admin = args as AdminUser;
-                  return AdminAddGroupAdminScreen(currentAdmin: admin);
+                  if (!currentAdmin.hasRole('super_admin') &&
+                      (!currentAdmin.hasRole('group_admin') ||
+                          currentAdmin.groupId == null)) {
+                    return const Scaffold(
+                      body: Center(child: Text('Access Denied')),
+                    );
+                  }
+                  return AdminAddGroupAdminScreen(
+                    currentAdmin: currentAdmin,
+                    adminToEdit: adminToEdit,
+                  );
                 },
+
               },
               onGenerateRoute: (settings) {
                 final DeityConfig? deity = settings.arguments is DeityConfig
@@ -717,6 +791,14 @@ class _MyAppState extends State<MyApp> {
                   case Routes.adminGroupNamjapDetail:
                     final args = settings.arguments;
                     if (args is Map<String, dynamic>) {
+                      final adminUser = args['adminUser'] as AdminUser?;
+                      if (adminUser == null || !adminUser.hasAnyRole(['namjap_coordinator', 'group_admin'])) {
+                        return MaterialPageRoute(
+                          builder: (context) => const Scaffold(
+                            body: Center(child: Text('Access Denied')),
+                          ),
+                        );
+                      }
                       return MaterialPageRoute(
                         builder: (context) => AdminGroupNamjapDetailScreen(
                           eventId: args['eventId'] as String,
@@ -736,6 +818,14 @@ class _MyAppState extends State<MyApp> {
                   case Routes.adminGroupNamjapList:
                     final args = settings.arguments;
                     if (args is Map<String, dynamic>) {
+                      final adminUser = args['adminUser'] as AdminUser?;
+                      if (adminUser == null || !adminUser.hasAnyRole(['namjap_coordinator', 'group_admin'])) {
+                        return MaterialPageRoute(
+                          builder: (context) => const Scaffold(
+                            body: Center(child: Text('Access Denied')),
+                          ),
+                        );
+                      }
                       return MaterialPageRoute(
                         builder: (context) => AdminGroupNamjapListScreen(
                           status: args['status'] as String,
@@ -755,6 +845,14 @@ class _MyAppState extends State<MyApp> {
                   case Routes.adminVaariDetail:
                     final args = settings.arguments;
                     if (args is Map<String, dynamic>) {
+                      final adminUser = args['adminUser'] as AdminUser?;
+                      if (adminUser == null || !adminUser.hasAnyRole(['vaari_admin', 'group_admin'])) {
+                        return MaterialPageRoute(
+                          builder: (context) => const Scaffold(
+                            body: Center(child: Text('Access Denied')),
+                          ),
+                        );
+                      }
                       return MaterialPageRoute(
                         builder: (context) => AdminVaariDetailScreen(
                           eventId: args['eventId'] as String,
@@ -774,6 +872,14 @@ class _MyAppState extends State<MyApp> {
                   case Routes.adminVaariList:
                     final args = settings.arguments;
                     if (args is Map<String, dynamic>) {
+                      final adminUser = args['adminUser'] as AdminUser?;
+                      if (adminUser == null || !adminUser.hasAnyRole(['vaari_admin', 'group_admin'])) {
+                        return MaterialPageRoute(
+                          builder: (context) => const Scaffold(
+                            body: Center(child: Text('Access Denied')),
+                          ),
+                        );
+                      }
                       return MaterialPageRoute(
                         builder: (context) => AdminVaariListScreen(
                           status: args['status'] as String,

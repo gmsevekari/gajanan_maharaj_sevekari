@@ -196,6 +196,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               Navigator.pushNamed(
                                 context,
                                 Routes.adminTempleNotifications,
+                                arguments: adminUser,
                               );
                             },
                           ),
@@ -306,6 +307,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               Navigator.pushNamed(
                                 context,
                                 Routes.adminTypoReports,
+                                arguments: adminUser,
                               );
                             },
                           ),
