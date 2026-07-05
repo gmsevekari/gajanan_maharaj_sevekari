@@ -21,7 +21,6 @@ void main() {
       );
     });
 
-
     test('computes more stops per row on a wider layout', () {
       final narrow = VaariRouteLayout(availableWidth: 250, stopCount: 15);
       final wide = VaariRouteLayout(availableWidth: 500, stopCount: 15);

@@ -2127,6 +2127,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vaariActualPalkhiLegend => 'Actual Palkhi Today';
+
+  @override
+  String get adminVaariNameEnRequired => 'Please enter English name';
+
+  @override
+  String get adminVaariNameMrRequired => 'Please enter Marathi name';
+
+  @override
+  String get adminVaariDescEnRequired => 'Please enter English description';
+
+  @override
+  String get adminVaariDescMrRequired => 'Please enter Marathi description';
+
+  @override
+  String get adminVaariTargetDistanceRequired => 'Please enter target distance';
+
+  @override
+  String get vaariSignUpError => 'Failed to sign up. Please try again.';
+
+  @override
+  String get vaariAddStepsError => 'Failed to add steps. Please try again.';
+
+  @override
+  String get distanceUnitKilometers => 'Kilometers (km)';
+
+  @override
+  String get distanceUnitMiles => 'Miles (mi)';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

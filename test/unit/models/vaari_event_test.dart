@@ -49,17 +49,15 @@ void main() {
         // fromMap() no longer falls back to name_en / description_en etc.
         // Documents written before the migration should have been migrated
         // or re-written; if not, the fields will be empty strings.
-        final legacyMap =
-            {
-              ...eventMap,
-            }..removeWhere(
-              (key, _) => [
-                'nameEn',
-                'nameMr',
-                'descriptionEn',
-                'descriptionMr',
-              ].contains(key),
-            );
+        final legacyMap = {...eventMap}
+          ..removeWhere(
+            (key, _) => [
+              'nameEn',
+              'nameMr',
+              'descriptionEn',
+              'descriptionMr',
+            ].contains(key),
+          );
 
         final event = VaariEvent.fromMap('doc_123', legacyMap);
 

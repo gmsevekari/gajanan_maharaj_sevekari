@@ -475,7 +475,10 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminParayanCoordination: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
                   if (args is! AdminUser ||
-                      !args.hasAnyRole(['parayan_coordinator', 'group_admin'])) {
+                      !args.hasAnyRole([
+                        'parayan_coordinator',
+                        'group_admin',
+                      ])) {
                     return const Scaffold(
                       body: Center(child: Text('Access Denied')),
                     );
@@ -487,7 +490,10 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminCreateParayan: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
                   if (args is! AdminUser ||
-                      !args.hasAnyRole(['parayan_coordinator', 'group_admin'])) {
+                      !args.hasAnyRole([
+                        'parayan_coordinator',
+                        'group_admin',
+                      ])) {
                     return const Scaffold(
                       body: Center(child: Text('Access Denied')),
                     );
@@ -497,7 +503,10 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminCreateParayanWithAllocation: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
                   if (args is! AdminUser ||
-                      !args.hasAnyRole(['parayan_coordinator', 'group_admin'])) {
+                      !args.hasAnyRole([
+                        'parayan_coordinator',
+                        'group_admin',
+                      ])) {
                     return const Scaffold(
                       body: Center(child: Text('Access Denied')),
                     );
@@ -527,7 +536,7 @@ class _MyAppState extends State<MyApp> {
                     'parayan_coordinator',
                     'namjap_coordinator',
                     'vaari_admin',
-                    'group_admin'
+                    'group_admin',
                   ])) {
                     return const Scaffold(
                       body: Center(child: Text('Access Denied')),
@@ -579,7 +588,10 @@ class _MyAppState extends State<MyApp> {
                       ),
                     );
                   }
-                  if (!adminUser.hasAnyRole(['namjap_coordinator', 'group_admin'])) {
+                  if (!adminUser.hasAnyRole([
+                    'namjap_coordinator',
+                    'group_admin',
+                  ])) {
                     return const Scaffold(
                       body: Center(child: Text('Access Denied')),
                     );
@@ -633,7 +645,8 @@ class _MyAppState extends State<MyApp> {
                   final admin =
                       ModalRoute.of(context)!.settings.arguments as AdminUser;
                   if (!admin.hasRole('super_admin') &&
-                      (!admin.hasRole('group_admin') || admin.groupId == null)) {
+                      (!admin.hasRole('group_admin') ||
+                          admin.groupId == null)) {
                     return const Scaffold(
                       body: Center(child: Text('Access Denied')),
                     );
@@ -669,7 +682,6 @@ class _MyAppState extends State<MyApp> {
                     adminToEdit: adminToEdit,
                   );
                 },
-
               },
               onGenerateRoute: (settings) {
                 final DeityConfig? deity = settings.arguments is DeityConfig
@@ -792,7 +804,11 @@ class _MyAppState extends State<MyApp> {
                     final args = settings.arguments;
                     if (args is Map<String, dynamic>) {
                       final adminUser = args['adminUser'] as AdminUser?;
-                      if (adminUser == null || !adminUser.hasAnyRole(['namjap_coordinator', 'group_admin'])) {
+                      if (adminUser == null ||
+                          !adminUser.hasAnyRole([
+                            'namjap_coordinator',
+                            'group_admin',
+                          ])) {
                         return MaterialPageRoute(
                           builder: (context) => const Scaffold(
                             body: Center(child: Text('Access Denied')),
@@ -819,7 +835,11 @@ class _MyAppState extends State<MyApp> {
                     final args = settings.arguments;
                     if (args is Map<String, dynamic>) {
                       final adminUser = args['adminUser'] as AdminUser?;
-                      if (adminUser == null || !adminUser.hasAnyRole(['namjap_coordinator', 'group_admin'])) {
+                      if (adminUser == null ||
+                          !adminUser.hasAnyRole([
+                            'namjap_coordinator',
+                            'group_admin',
+                          ])) {
                         return MaterialPageRoute(
                           builder: (context) => const Scaffold(
                             body: Center(child: Text('Access Denied')),
@@ -846,7 +866,11 @@ class _MyAppState extends State<MyApp> {
                     final args = settings.arguments;
                     if (args is Map<String, dynamic>) {
                       final adminUser = args['adminUser'] as AdminUser?;
-                      if (adminUser == null || !adminUser.hasAnyRole(['vaari_admin', 'group_admin'])) {
+                      if (adminUser == null ||
+                          !adminUser.hasAnyRole([
+                            'vaari_admin',
+                            'group_admin',
+                          ])) {
                         return MaterialPageRoute(
                           builder: (context) => const Scaffold(
                             body: Center(child: Text('Access Denied')),
@@ -873,7 +897,11 @@ class _MyAppState extends State<MyApp> {
                     final args = settings.arguments;
                     if (args is Map<String, dynamic>) {
                       final adminUser = args['adminUser'] as AdminUser?;
-                      if (adminUser == null || !adminUser.hasAnyRole(['vaari_admin', 'group_admin'])) {
+                      if (adminUser == null ||
+                          !adminUser.hasAnyRole([
+                            'vaari_admin',
+                            'group_admin',
+                          ])) {
                         return MaterialPageRoute(
                           builder: (context) => const Scaffold(
                             body: Center(child: Text('Access Denied')),

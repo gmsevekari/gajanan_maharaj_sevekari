@@ -59,7 +59,6 @@ class _AdminVaariDashboardState extends State<AdminVaariDashboard> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;

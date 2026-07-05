@@ -64,7 +64,6 @@ class _AdminVaariListScreenState extends State<AdminVaariListScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

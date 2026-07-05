@@ -116,4 +116,3 @@ int scheduledStopIndexForDate(DateTime date) {
   }
   return dnyaneshwarPalkhiSchedule.last.stopIndex;
 }
-

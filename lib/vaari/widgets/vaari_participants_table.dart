@@ -155,7 +155,6 @@ class _VaariParticipantsTableState extends State<VaariParticipantsTable> {
     );
   }
 
-
   Widget _buildHeaderCell(String label, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),

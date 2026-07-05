@@ -4106,6 +4106,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Actual Palkhi Today'**
   String get vaariActualPalkhiLegend;
+
+  /// No description provided for @adminVaariNameEnRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter English name'**
+  String get adminVaariNameEnRequired;
+
+  /// No description provided for @adminVaariNameMrRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter Marathi name'**
+  String get adminVaariNameMrRequired;
+
+  /// No description provided for @adminVaariDescEnRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter English description'**
+  String get adminVaariDescEnRequired;
+
+  /// No description provided for @adminVaariDescMrRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter Marathi description'**
+  String get adminVaariDescMrRequired;
+
+  /// No description provided for @adminVaariTargetDistanceRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter target distance'**
+  String get adminVaariTargetDistanceRequired;
+
+  /// No description provided for @vaariSignUpError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to sign up. Please try again.'**
+  String get vaariSignUpError;
+
+  /// No description provided for @vaariAddStepsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add steps. Please try again.'**
+  String get vaariAddStepsError;
+
+  /// No description provided for @distanceUnitKilometers.
+  ///
+  /// In en, this message translates to:
+  /// **'Kilometers (km)'**
+  String get distanceUnitKilometers;
+
+  /// No description provided for @distanceUnitMiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Miles (mi)'**
+  String get distanceUnitMiles;
 }
 
 class _AppLocalizationsDelegate

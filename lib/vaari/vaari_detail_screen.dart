@@ -61,7 +61,6 @@ class _VaariDetailScreenState extends State<VaariDetailScreen> {
     }
   }
 
-
   Future<void> _initSync() async {
     final provider = context.read<VaariProvider>();
     await provider.loadLocalData();

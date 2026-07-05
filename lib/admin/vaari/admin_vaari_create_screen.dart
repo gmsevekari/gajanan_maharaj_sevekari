@@ -35,7 +35,6 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
   String _selectedUnit = 'km';
   bool _isLoading = false;
 
-
   late final FirebaseFirestore _firestore;
   late final VaariService _service;
 

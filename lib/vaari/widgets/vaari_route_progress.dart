@@ -207,8 +207,10 @@ class _VaariRouteTimeline extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final targetArcLength = layout.arcLengthForMiles(covered);
-    final scheduledStopIndexClamped =
-        scheduledStopIndex.clamp(0, layout.cumulativeArcLength.length - 1);
+    final scheduledStopIndexClamped = scheduledStopIndex.clamp(
+      0,
+      layout.cumulativeArcLength.length - 1,
+    );
     final scheduledArcLength = layout.cumulativeArcLength.isEmpty
         ? 0.0
         : layout.cumulativeArcLength[scheduledStopIndexClamped];

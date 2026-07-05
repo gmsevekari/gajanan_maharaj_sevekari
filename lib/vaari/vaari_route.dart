@@ -31,14 +31,29 @@ const List<VaariRouteStop> dnyaneshwarPalkhiRoute = [
   VaariRouteStop(nameEn: 'Taradgaon', nameMr: 'तरडगाव', cumulativeMiles: 69.8),
   VaariRouteStop(nameEn: 'Phaltan', nameMr: 'फलटण', cumulativeMiles: 83.5),
   VaariRouteStop(nameEn: 'Barad', nameMr: 'बरड', cumulativeMiles: 94.8),
-  VaariRouteStop(nameEn: 'Natepute', nameMr: 'नातेपुते', cumulativeMiles: 109.1),
-  VaariRouteStop(nameEn: 'Purandawade', nameMr: 'पुरंदावडे', cumulativeMiles: 116.3),
+  VaariRouteStop(
+    nameEn: 'Natepute',
+    nameMr: 'नातेपुते',
+    cumulativeMiles: 109.1,
+  ),
+  VaariRouteStop(
+    nameEn: 'Purandawade',
+    nameMr: 'पुरंदावडे',
+    cumulativeMiles: 116.3,
+  ),
   VaariRouteStop(nameEn: 'Velapur', nameMr: 'वेळापूर', cumulativeMiles: 130.0),
-  VaariRouteStop(nameEn: 'Bhandishegaon', nameMr: 'भंडीशेगाव', cumulativeMiles: 143.7),
+  VaariRouteStop(
+    nameEn: 'Bhandishegaon',
+    nameMr: 'भंडीशेगाव',
+    cumulativeMiles: 143.7,
+  ),
   VaariRouteStop(nameEn: 'Wakhari', nameMr: 'वाखारी', cumulativeMiles: 150.9),
-  VaariRouteStop(nameEn: 'Pandharpur', nameMr: 'पंढरपूर', cumulativeMiles: 155.0),
+  VaariRouteStop(
+    nameEn: 'Pandharpur',
+    nameMr: 'पंढरपूर',
+    cumulativeMiles: 155.0,
+  ),
 ];
-
 
 const double _kmPerMile = 1.60934;
 

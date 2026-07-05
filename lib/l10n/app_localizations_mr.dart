@@ -2133,4 +2133,34 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get vaariActualPalkhiLegend => 'आजची प्रत्यक्ष वारी';
+
+  @override
+  String get adminVaariNameEnRequired => 'कृपया इंग्रजी नाव प्रविष्ट करा';
+
+  @override
+  String get adminVaariNameMrRequired => 'कृपया मराठी नाव प्रविष्ट करा';
+
+  @override
+  String get adminVaariDescEnRequired => 'कृपया इंग्रजी वर्णन प्रविष्ट करा';
+
+  @override
+  String get adminVaariDescMrRequired => 'कृपया मराठी वर्णन प्रविष्ट करा';
+
+  @override
+  String get adminVaariTargetDistanceRequired =>
+      'कृपया लक्ष्य अंतर प्रविष्ट करा';
+
+  @override
+  String get vaariSignUpError =>
+      'नोंदणी करण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get vaariAddStepsError =>
+      'पावले जोडण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get distanceUnitKilometers => 'किलोमीटर (कि.मी.)';
+
+  @override
+  String get distanceUnitMiles => 'मैल (mi)';
 }
