@@ -76,6 +76,7 @@ void main() {
         reminderTimes: [],
         createdAt: DateTime.now(),
         groupId: 'gajanan_gunjan',
+        timezone: 'Asia/Kolkata',
         is4DayParayan: true,
         extraDayTithi: 'ekadashi',
       );
@@ -93,10 +94,6 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Check header row labels.
-      // Day 1: July 12
-      // Day 2 (Ekadashi repeating): July 13 & July 14
-      // Day 3: July 15
       expect(find.textContaining('July 12'), findsOneWidget);
       expect(find.textContaining('July 13 & July 14'), findsOneWidget);
       expect(find.textContaining('July 15'), findsOneWidget);

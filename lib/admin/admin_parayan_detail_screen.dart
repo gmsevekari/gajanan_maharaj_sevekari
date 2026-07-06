@@ -182,6 +182,7 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
 
     return StreamBuilder<ParayanEvent>(
       stream: _eventStream,
@@ -1693,7 +1694,7 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                           vertical: 4.0,
                         ),
                         child: Text(
-                          l10n.day1Label,
+                          "${l10n.day1Label}\n(${event.getFormattedDateHeaderForDayIndex(0, locale)})",
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
@@ -1707,7 +1708,7 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                           vertical: 4.0,
                         ),
                         child: Text(
-                          l10n.day2Label,
+                          "${l10n.day2Label}\n(${event.getFormattedDateHeaderForDayIndex(1, locale)})",
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
@@ -1721,7 +1722,7 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                           vertical: 4.0,
                         ),
                         child: Text(
-                          l10n.day3Label,
+                          "${l10n.day3Label}\n(${event.getFormattedDateHeaderForDayIndex(2, locale)})",
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
@@ -1986,11 +1987,9 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
     final int daysCount = event.type.daysCount;
     final double dayColW = (380.0 - nameColW) / daysCount;
 
-    String dayHeader(int dayOffset) {
-      final date = event.startDate.add(Duration(days: dayOffset));
-      return formatDateShortWithEventTimezone(
-        date.toUtc(),
-        event.timezone,
+    String dayHeader(int dayIndex) {
+      return event.getFormattedDateHeaderForDayIndex(
+        dayIndex,
         Localizations.localeOf(context).languageCode,
       );
     }

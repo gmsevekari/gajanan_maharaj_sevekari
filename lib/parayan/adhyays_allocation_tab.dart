@@ -122,9 +122,18 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                             ),
                           ),
                           if (isThreeDay) ...[
-                            _buildHeaderCell(localizations.day1Label, theme),
-                            _buildHeaderCell(localizations.day2Label, theme),
-                            _buildHeaderCell(localizations.day3Label, theme),
+                            _buildHeaderCell(
+                              "${localizations.day1Label}\n(${widget.event.getFormattedDateHeaderForDayIndex(0, Localizations.localeOf(context).languageCode)})",
+                              theme,
+                            ),
+                            _buildHeaderCell(
+                              "${localizations.day2Label}\n(${widget.event.getFormattedDateHeaderForDayIndex(1, Localizations.localeOf(context).languageCode)})",
+                              theme,
+                            ),
+                            _buildHeaderCell(
+                              "${localizations.day3Label}\n(${widget.event.getFormattedDateHeaderForDayIndex(2, Localizations.localeOf(context).languageCode)})",
+                              theme,
+                            ),
                           ] else
                             Padding(
                               padding: const EdgeInsets.symmetric(
