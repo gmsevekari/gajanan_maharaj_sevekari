@@ -2011,6 +2011,19 @@ class AppLocalizationsMr extends AppLocalizations {
   String get addStepsLabel => 'स्टेप्स ॲड करा';
 
   @override
+  String get addStepsOrDistanceTitle => 'पावले / अंतर जोडा';
+
+  @override
+  String estimatedDistance(String distance, String unit) {
+    return 'अंदाजित अंतर: $distance $unit';
+  }
+
+  @override
+  String estimatedSteps(String steps) {
+    return 'अंदाजित पावले: $steps';
+  }
+
+  @override
   String get stepsLabel => 'स्टेप्स';
 
   @override

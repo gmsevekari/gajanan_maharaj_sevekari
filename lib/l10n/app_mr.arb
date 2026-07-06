@@ -754,6 +754,26 @@
   "distanceLabel": "अंतर",
   "vaariTotalParticipants": "सहभागी",
   "addStepsLabel": "स्टेप्स ॲड करा",
+  "addStepsOrDistanceTitle": "पावले / अंतर जोडा",
+  "estimatedDistance": "अंदाजित अंतर: {distance} {unit}",
+  "@estimatedDistance": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "estimatedSteps": "अंदाजित पावले: {steps}",
+  "@estimatedSteps": {
+    "placeholders": {
+      "steps": {
+        "type": "String"
+      }
+    }
+  },
   "stepsLabel": "स्टेप्स",
   "distanceOptionalLabel": "अंतर {unit} मध्ये",
   "@distanceOptionalLabel": {

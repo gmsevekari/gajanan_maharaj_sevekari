@@ -2006,6 +2006,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addStepsLabel => 'Add Steps';
 
   @override
+  String get addStepsOrDistanceTitle => 'Add Steps / Distance';
+
+  @override
+  String estimatedDistance(String distance, String unit) {
+    return 'Estimated Distance: $distance $unit';
+  }
+
+  @override
+  String estimatedSteps(String steps) {
+    return 'Estimated Steps: $steps';
+  }
+
+  @override
   String get stepsLabel => 'Steps';
 
   @override

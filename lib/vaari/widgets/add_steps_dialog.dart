@@ -3,12 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/providers/vaari_service.dart';
+import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:provider/provider.dart';
 
-/// A single, immediate step/distance submission — Vaari has no live
-/// "counting" ritual to stage locally, so this submits directly on tap
-/// rather than accumulating in a provider first (unlike the Namjap mala
-/// counting flow).
+/// Allows users to choose between entering steps or distance, and shows the
+/// calculated estimate of the other field in real-time.
 class AddStepsDialog extends StatefulWidget {
   final String eventId;
   final String deviceId;
@@ -28,35 +27,74 @@ class AddStepsDialog extends StatefulWidget {
 }
 
 class _AddStepsDialogState extends State<AddStepsDialog> {
-  final _stepsController = TextEditingController();
-  final _distanceController = TextEditingController();
+  final _inputController = TextEditingController();
+  String _inputType = 'steps'; // 'steps' or 'distance'
   bool _isLoading = false;
   String? _errorText;
 
   @override
+  void initState() {
+    super.initState();
+    _inputController.addListener(_onInputChange);
+  }
+
+  @override
   void dispose() {
-    _stepsController.dispose();
-    _distanceController.dispose();
+    _inputController.removeListener(_onInputChange);
+    _inputController.dispose();
     super.dispose();
+  }
+
+  void _onInputChange() {
+    if (_errorText != null) {
+      setState(() => _errorText = null);
+    }
+  }
+
+  double get _factor => widget.distanceUnit == 'mi' ? 0.0005 : 0.0008;
+
+  void _toggleInputType(String newType) {
+    if (newType == _inputType) return;
+    setState(() {
+      final text = _inputController.text.trim();
+      if (newType == 'distance') {
+        final steps = int.tryParse(text) ?? 0;
+        final distance = steps * _factor;
+        _inputController.text = distance > 0 ? distance.toStringAsFixed(2) : '';
+      } else {
+        final distance = double.tryParse(text) ?? 0.0;
+        final steps = (distance / _factor).round();
+        _inputController.text = steps > 0 ? steps.toString() : '';
+      }
+      _inputType = newType;
+      _errorText = null;
+    });
   }
 
   Future<void> _handleSubmit() async {
     final localizations = AppLocalizations.of(context)!;
-    final steps = int.tryParse(_stepsController.text) ?? 0;
-    if (steps <= 0) {
-      setState(() => _errorText = localizations.fieldRequired);
-      return;
-    }
+    final text = _inputController.text.trim();
 
-    final distanceText = _distanceController.text.trim();
-    final parsedDistance = distanceText.isEmpty
-        ? null
-        : double.tryParse(distanceText);
-    // A zero/negative override would make VaariService.submitSteps() reject
-    // the whole submission (steps included); treat it as "no override".
-    final distanceOverride = (parsedDistance != null && parsedDistance > 0)
-        ? parsedDistance
-        : null;
+    int stepsToSubmit = 0;
+    double? distanceToSubmit;
+
+    if (_inputType == 'steps') {
+      final steps = int.tryParse(text) ?? 0;
+      if (steps <= 0) {
+        setState(() => _errorText = localizations.fieldRequired);
+        return;
+      }
+      stepsToSubmit = steps;
+      distanceToSubmit = null; // Service will calculate using factor
+    } else {
+      final distance = double.tryParse(text) ?? 0.0;
+      if (distance <= 0) {
+        setState(() => _errorText = localizations.fieldRequired);
+        return;
+      }
+      stepsToSubmit = (distance / _factor).round();
+      distanceToSubmit = distance;
+    }
 
     setState(() {
       _isLoading = true;
@@ -69,8 +107,8 @@ class _AddStepsDialogState extends State<AddStepsDialog> {
         eventId: widget.eventId,
         deviceId: widget.deviceId,
         memberName: widget.memberName,
-        stepsToSubmit: steps,
-        distanceToSubmit: distanceOverride,
+        stepsToSubmit: stepsToSubmit,
+        distanceToSubmit: distanceToSubmit,
       );
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
@@ -87,46 +125,92 @@ class _AddStepsDialogState extends State<AddStepsDialog> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
+    final text = _inputController.text.trim();
+
+    String calculationLabel = '';
+    if (text.isNotEmpty) {
+      if (_inputType == 'steps') {
+        final steps = int.tryParse(text) ?? 0;
+        final distance = steps * _factor;
+        calculationLabel = localizations.estimatedDistance(
+          formatDistanceLocalized(distance, locale),
+          widget.distanceUnit,
+        );
+      } else {
+        final distance = double.tryParse(text) ?? 0.0;
+        final steps = (distance / _factor).round();
+        calculationLabel = localizations.estimatedSteps(
+          formatNumberLocalized(steps, locale, pad: false),
+        );
+      }
+    }
 
     return AlertDialog(
-      title: Text(localizations.addStepsLabel),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: _stepsController,
-            autofocus: true,
-            decoration: InputDecoration(
-              labelText: localizations.stepsLabel,
-              hintText: '0',
-              border: const OutlineInputBorder(),
-              prefixIcon: const Icon(Icons.directions_walk),
-            ),
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            onChanged: (_) => setState(() => _errorText = null),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _distanceController,
-            decoration: InputDecoration(
-              labelText: localizations.distanceOptionalLabel(
-                widget.distanceUnit,
+      title: Text(localizations.addStepsOrDistanceTitle),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SegmentedButton<String>(
+              style: SegmentedButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              hintText: '0.0',
-              border: const OutlineInputBorder(),
-              prefixIcon: const Icon(Icons.straighten),
+              segments: [
+                ButtonSegment(
+                  value: 'steps',
+                  label: Text(localizations.stepsLabel),
+                  icon: const Icon(Icons.directions_walk, size: 16),
+                ),
+                ButtonSegment(
+                  value: 'distance',
+                  label: Text(localizations.distanceLabel),
+                  icon: const Icon(Icons.straighten, size: 16),
+                ),
+              ],
+              selected: {_inputType},
+              onSelectionChanged: (value) => _toggleInputType(value.first),
             ),
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+            const SizedBox(height: 24),
+            TextField(
+              controller: _inputController,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: _inputType == 'steps'
+                    ? localizations.stepsLabel
+                    : localizations.distanceOptionalLabel(widget.distanceUnit),
+                hintText: _inputType == 'steps' ? '0' : '0.0',
+                border: const OutlineInputBorder(),
+                prefixIcon: Icon(
+                  _inputType == 'steps' ? Icons.directions_walk : Icons.straighten,
+                ),
+              ),
+              keyboardType: _inputType == 'steps'
+                  ? TextInputType.number
+                  : const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: _inputType == 'steps'
+                  ? [FilteringTextInputFormatter.digitsOnly]
+                  : [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+            ),
+            if (calculationLabel.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                calculationLabel,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: theme.appColors.secondaryText,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
-          ),
-          if (_errorText != null) ...[
-            const SizedBox(height: 8),
-            Text(_errorText!, style: TextStyle(color: theme.appColors.error)),
+            if (_errorText != null) ...[
+              const SizedBox(height: 12),
+              Text(_errorText!, style: TextStyle(color: theme.appColors.error)),
+            ],
           ],
-        ],
+        ),
       ),
       actions: [
         TextButton(

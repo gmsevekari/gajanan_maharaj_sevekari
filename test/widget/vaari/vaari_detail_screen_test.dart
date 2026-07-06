@@ -315,8 +315,9 @@ void main() {
     await tester.tap(find.widgetWithText(ElevatedButton, 'Add Steps'));
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextField, 'Steps'), '2000');
-    await tester.enterText(find.byType(TextField).at(1), '1.5');
+    await tester.tap(find.text('Distance'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '1.6');
     await tester.tap(find.widgetWithText(ElevatedButton, 'Submit'));
     await tester.pumpAndSettle();
 
@@ -326,7 +327,7 @@ void main() {
         deviceId: any(named: 'deviceId'),
         memberName: 'Test User',
         stepsToSubmit: 2000,
-        distanceToSubmit: 1.5,
+        distanceToSubmit: 1.6,
       ),
     ).called(1);
   });
@@ -661,6 +662,9 @@ void main() {
       find.widgetWithText(ElevatedButton, 'Add Steps'),
     );
     await tester.tap(find.widgetWithText(ElevatedButton, 'Add Steps'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Distance'));
     await tester.pumpAndSettle();
 
     expect(find.text('Distance in miles'), findsOneWidget);

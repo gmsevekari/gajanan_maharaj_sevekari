@@ -754,6 +754,26 @@
   "distanceLabel": "Distance",
   "vaariTotalParticipants": "PARTICIPANTS",
   "addStepsLabel": "Add Steps",
+  "addStepsOrDistanceTitle": "Add Steps / Distance",
+  "estimatedDistance": "Estimated Distance: {distance} {unit}",
+  "@estimatedDistance": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "estimatedSteps": "Estimated Steps: {steps}",
+  "@estimatedSteps": {
+    "placeholders": {
+      "steps": {
+        "type": "String"
+      }
+    }
+  },
   "stepsLabel": "Steps",
   "distanceOptionalLabel": "Distance in {unit}",
   "@distanceOptionalLabel": {

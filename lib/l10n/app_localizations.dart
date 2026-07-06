@@ -3873,6 +3873,24 @@ abstract class AppLocalizations {
   /// **'Add Steps'**
   String get addStepsLabel;
 
+  /// No description provided for @addStepsOrDistanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Steps / Distance'**
+  String get addStepsOrDistanceTitle;
+
+  /// No description provided for @estimatedDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated Distance: {distance} {unit}'**
+  String estimatedDistance(String distance, String unit);
+
+  /// No description provided for @estimatedSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated Steps: {steps}'**
+  String estimatedSteps(String steps);
+
   /// No description provided for @stepsLabel.
   ///
   /// In en, this message translates to:
