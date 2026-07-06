@@ -12,7 +12,11 @@ class AdhyaysAllocationTab extends StatefulWidget {
   final ParayanEvent event;
   final ParayanService? parayanService;
 
-  const AdhyaysAllocationTab({super.key, required this.event, this.parayanService});
+  const AdhyaysAllocationTab({
+    super.key,
+    required this.event,
+    this.parayanService,
+  });
 
   @override
   State<AdhyaysAllocationTab> createState() => _AdhyaysAllocationTabState();
@@ -34,9 +38,7 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
   }
 
   String _formatNumber(BuildContext context, int number, {bool pad = false}) {
-    final numStr = pad
-        ? number.toString().padLeft(2, '0')
-        : number.toString();
+    final numStr = pad ? number.toString().padLeft(2, '0') : number.toString();
     return Localizations.localeOf(context).useMarathiContent
         ? toMarathiNumerals(numStr)
         : numStr;
@@ -89,7 +91,9 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                   decoration: BoxDecoration(
                     color:
                         theme.cardTheme.color?.withValues(alpha: 0.8) ??
-                        theme.colorScheme.surfaceContainer.withValues(alpha: 0.8),
+                        theme.colorScheme.surfaceContainer.withValues(
+                          alpha: 0.8,
+                        ),
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
                     ),
@@ -161,7 +165,9 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                   decoration: BoxDecoration(
                     color:
                         theme.cardTheme.color?.withValues(alpha: 0.3) ??
-                        theme.colorScheme.surfaceContainer.withValues(alpha: 0.3),
+                        theme.colorScheme.surfaceContainer.withValues(
+                          alpha: 0.3,
+                        ),
                     borderRadius: const BorderRadius.vertical(
                       bottom: Radius.circular(12),
                     ),
@@ -265,9 +271,8 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                                         final rowDecoration = BoxDecoration(
                                           color: isEven
                                               ? Colors.transparent
-                                              : theme.appColors.secondaryText.withValues(
-                                                  alpha: 0.03,
-                                                ),
+                                              : theme.appColors.secondaryText
+                                                    .withValues(alpha: 0.03),
                                         );
 
                                         final nameWidget = Padding(
@@ -300,11 +305,23 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
                                             children: [
                                               nameWidget,
                                               if (isThreeDay) ...[
-                                                _buildStatusCell(context, theme),
-                                                _buildStatusCell(context, theme),
-                                                _buildStatusCell(context, theme),
+                                                _buildStatusCell(
+                                                  context,
+                                                  theme,
+                                                ),
+                                                _buildStatusCell(
+                                                  context,
+                                                  theme,
+                                                ),
+                                                _buildStatusCell(
+                                                  context,
+                                                  theme,
+                                                ),
                                               ] else
-                                                _buildStatusCell(context, theme),
+                                                _buildStatusCell(
+                                                  context,
+                                                  theme,
+                                                ),
                                             ],
                                           );
                                         }
@@ -436,7 +453,9 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
       decoration: BoxDecoration(
         color: theme.appColors.secondaryText.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: theme.appColors.secondaryText.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: theme.appColors.secondaryText.withValues(alpha: 0.1),
+        ),
       ),
       child: Text(
         localizations.notAllocated,
@@ -487,7 +506,8 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
       children: [
         circle,
         Positioned(
-          right: -16, // Anchor checkmark to the right without shifting the circle
+          right:
+              -16, // Anchor checkmark to the right without shifting the circle
           child: Icon(
             Icons.check_circle,
             color: theme.appColors.success,

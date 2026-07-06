@@ -118,74 +118,96 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      expect(find.byType(TextFormField), findsNWidgets(4)); // Title/Desc (En & Mr)
-      expect(find.text('Is this a 4-day parayan?'), findsNothing); // Type is One Day initially
+      expect(
+        find.byType(TextFormField),
+        findsNWidgets(4),
+      ); // Title/Desc (En & Mr)
+      expect(
+        find.text('Is this a 4-day parayan?'),
+        findsNothing,
+      ); // Type is One Day initially
     });
 
-    testWidgets('displays 4-day options on 3-day parayan type selection and submits correctly', (tester) async {
-      await tester.pumpWidget(
-        createTestWidget(
-          AdminParayanCreateScreen(
-            adminUser: const AdminUser(
-              email: 'admin@test.com',
-              groupId: GroupConstants.gunjan,
-              roles: ['parayan_coordinator'],
+    testWidgets(
+      'displays 4-day options on 3-day parayan type selection and submits correctly',
+      (tester) async {
+        await tester.pumpWidget(
+          createTestWidget(
+            AdminParayanCreateScreen(
+              adminUser: const AdminUser(
+                email: 'admin@test.com',
+                groupId: GroupConstants.gunjan,
+                roles: ['parayan_coordinator'],
+              ),
+              parayanService: mockService,
             ),
-            parayanService: mockService,
           ),
-        ),
-      );
+        );
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      // Enter titles
-      await tester.enterText(find.byType(TextFormField).at(0), 'Test Event En');
-      await tester.enterText(find.byType(TextFormField).at(1), 'Test Event Mr');
-      await tester.enterText(find.byType(TextFormField).at(2), 'Desc En');
-      await tester.enterText(find.byType(TextFormField).at(3), 'Desc Mr');
+        // Enter titles
+        await tester.enterText(
+          find.byType(TextFormField).at(0),
+          'Test Event En',
+        );
+        await tester.enterText(
+          find.byType(TextFormField).at(1),
+          'Test Event Mr',
+        );
+        await tester.enterText(find.byType(TextFormField).at(2), 'Desc En');
+        await tester.enterText(find.byType(TextFormField).at(3), 'Desc Mr');
 
-      // Scroll the ListView to reveal the dropdown
-      await tester.drag(find.byType(ListView), const Offset(0, -500));
-      await tester.pumpAndSettle();
+        // Scroll the ListView to reveal the dropdown
+        await tester.drag(find.byType(ListView), const Offset(0, -500));
+        await tester.pumpAndSettle();
 
-      final dropdownFinder = find.byType(DropdownButtonFormField<ParayanType>);
-      await tester.tap(dropdownFinder);
-      await tester.pumpAndSettle();
+        final dropdownFinder = find.byType(
+          DropdownButtonFormField<ParayanType>,
+        );
+        await tester.tap(dropdownFinder);
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.text('3-Day Parayan').last);
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('3-Day Parayan').last);
+        await tester.pumpAndSettle();
 
-      // Switch should be visible now
-      final switchFinder = find.byType(SwitchListTile);
-      expect(switchFinder, findsOneWidget);
+        // Switch should be visible now
+        final switchFinder = find.byType(SwitchListTile);
+        expect(switchFinder, findsOneWidget);
 
-      // Toggle switch to true
-      await tester.ensureVisible(switchFinder);
-      await tester.pumpAndSettle();
-      await tester.tap(switchFinder);
-      await tester.pumpAndSettle();
+        // Toggle switch to true
+        await tester.ensureVisible(switchFinder);
+        await tester.pumpAndSettle();
+        await tester.tap(switchFinder);
+        await tester.pumpAndSettle();
 
-      // Dropdown should be visible
-      expect(find.text('Tithi spanning 2 days'), findsOneWidget);
+        // Dropdown should be visible
+        expect(find.text('Tithi spanning 2 days'), findsOneWidget);
 
-      // Select Ekadashi
-      await tester.tap(find.text('Dashami (Day 1)'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Ekadashi (Day 2)').last);
-      await tester.pumpAndSettle();
+        // Select Ekadashi
+        await tester.tap(find.text('Dashami (Day 1)'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Ekadashi (Day 2)').last);
+        await tester.pumpAndSettle();
 
-      // Submit
-      final submitBtn = find.byType(ElevatedButton);
-      await tester.ensureVisible(submitBtn);
-      await tester.pumpAndSettle();
-      await tester.tap(submitBtn);
-      await tester.pumpAndSettle();
+        // Submit
+        final submitBtn = find.byType(ElevatedButton);
+        await tester.ensureVisible(submitBtn);
+        await tester.pumpAndSettle();
+        await tester.tap(submitBtn);
+        await tester.pumpAndSettle();
 
-      // Verify createEvent is called
-      final captured = verify(() => mockService.createEvent(captureAny())).captured.single as ParayanEvent;
-      expect(captured.is4DayParayan, true);
-      expect(captured.extraDayTithi, 'ekadashi');
-      expect(captured.endDate.difference(captured.startDate).inDays, 3); // 4 days span
-    });
+        // Verify createEvent is called
+        final captured =
+            verify(() => mockService.createEvent(captureAny())).captured.single
+                as ParayanEvent;
+        expect(captured.is4DayParayan, true);
+        expect(captured.extraDayTithi, 'ekadashi');
+        expect(
+          captured.endDate.difference(captured.startDate).inDays,
+          3,
+        ); // 4 days span
+      },
+    );
   });
 }

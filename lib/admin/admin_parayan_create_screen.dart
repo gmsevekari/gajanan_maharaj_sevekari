@@ -17,7 +17,11 @@ class AdminParayanCreateScreen extends StatefulWidget {
   final AdminUser? adminUser;
   final ParayanService? parayanService;
 
-  const AdminParayanCreateScreen({super.key, this.adminUser, this.parayanService});
+  const AdminParayanCreateScreen({
+    super.key,
+    this.adminUser,
+    this.parayanService,
+  });
 
   @override
   State<AdminParayanCreateScreen> createState() =>
@@ -65,16 +69,30 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
   }
 
   /// Computes the end date based on the parayan type and start date.
-  static DateTime _computeEndDate(ParayanType type, DateTime startDate, {bool is4DayParayan = false}) {
+  static DateTime _computeEndDate(
+    ParayanType type,
+    DateTime startDate, {
+    bool is4DayParayan = false,
+  }) {
     switch (type) {
       case ParayanType.threeDay:
         final targetEnd = startDate.add(Duration(days: is4DayParayan ? 3 : 2));
         return DateTime(
-          targetEnd.year, targetEnd.month, targetEnd.day, 23, 59, 59,
+          targetEnd.year,
+          targetEnd.month,
+          targetEnd.day,
+          23,
+          59,
+          59,
         );
       case ParayanType.oneDay:
         return DateTime(
-          startDate.year, startDate.month, startDate.day, 23, 59, 59,
+          startDate.year,
+          startDate.month,
+          startDate.day,
+          23,
+          59,
+          59,
         );
       case ParayanType.guruPushya:
         return startDate;
@@ -110,7 +128,11 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
       );
       if (isStartDate) {
         _startDate = newDateTime;
-        _endDate = _computeEndDate(_selectedType, _startDate, is4DayParayan: _is4DayParayan);
+        _endDate = _computeEndDate(
+          _selectedType,
+          _startDate,
+          is4DayParayan: _is4DayParayan,
+        );
       } else {
         _endDate = newDateTime;
         _isEndDateSetManually = true;
@@ -131,7 +153,11 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
     setState(() {
       if (isStartDate) {
         _startDate = picked;
-        _endDate = _computeEndDate(_selectedType, _startDate, is4DayParayan: _is4DayParayan);
+        _endDate = _computeEndDate(
+          _selectedType,
+          _startDate,
+          is4DayParayan: _is4DayParayan,
+        );
       } else {
         _endDate = DateTime(picked.year, picked.month, picked.day, 23, 59, 59);
         _isEndDateSetManually = true;
@@ -515,7 +541,11 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                       if (value != null) {
                         setState(() {
                           _selectedType = value;
-                          _endDate = _computeEndDate(_selectedType, _startDate, is4DayParayan: _is4DayParayan);
+                          _endDate = _computeEndDate(
+                            _selectedType,
+                            _startDate,
+                            is4DayParayan: _is4DayParayan,
+                          );
                           if (_selectedType == ParayanType.guruPushya) {
                             _isEndDateSetManually = false;
                           }
@@ -527,15 +557,25 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
 
                   if (_selectedType == ParayanType.threeDay) ...[
                     SwitchListTile(
-                      title: Text(isMarathi ? '४ दिवसांचे पारायण?' : 'Is this a 4-day parayan?'),
-                      subtitle: Text(isMarathi
-                          ? 'जर तिथी (दशमी/एकादशी/द्वादशी) २ दिवस असेल तर निवडा'
-                          : 'Select if a tithi (dashami/ekadashi/dwadashi) spans 2 days'),
+                      title: Text(
+                        isMarathi
+                            ? '४ दिवसांचे पारायण?'
+                            : 'Is this a 4-day parayan?',
+                      ),
+                      subtitle: Text(
+                        isMarathi
+                            ? 'जर तिथी (दशमी/एकादशी/द्वादशी) २ दिवस असेल तर निवडा'
+                            : 'Select if a tithi (dashami/ekadashi/dwadashi) spans 2 days',
+                      ),
                       value: _is4DayParayan,
                       onChanged: (bool value) {
                         setState(() {
                           _is4DayParayan = value;
-                          _endDate = _computeEndDate(_selectedType, _startDate, is4DayParayan: _is4DayParayan);
+                          _endDate = _computeEndDate(
+                            _selectedType,
+                            _startDate,
+                            is4DayParayan: _is4DayParayan,
+                          );
                         });
                       },
                     ),
@@ -544,20 +584,32 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                       DropdownButtonFormField<String>(
                         value: _selectedExtraDayTithi,
                         decoration: InputDecoration(
-                          labelText: isMarathi ? '२ दिवस असणारी तिथी' : 'Tithi spanning 2 days',
+                          labelText: isMarathi
+                              ? '२ दिवस असणारी तिथी'
+                              : 'Tithi spanning 2 days',
                         ),
                         items: [
                           DropdownMenuItem(
                             value: 'dashami',
-                            child: Text(isMarathi ? 'दशमी (दिवस १)' : 'Dashami (Day 1)'),
+                            child: Text(
+                              isMarathi ? 'दशमी (दिवस १)' : 'Dashami (Day 1)',
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'ekadashi',
-                            child: Text(isMarathi ? 'एकादशी (दिवस २)' : 'Ekadashi (Day 2)'),
+                            child: Text(
+                              isMarathi
+                                  ? 'एकादशी (दिवस २)'
+                                  : 'Ekadashi (Day 2)',
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'dwadashi',
-                            child: Text(isMarathi ? 'द्वादशी (दिवस ३)' : 'Dwadashi (Day 3)'),
+                            child: Text(
+                              isMarathi
+                                  ? 'द्वादशी (दिवस ३)'
+                                  : 'Dwadashi (Day 3)',
+                            ),
                           ),
                         ],
                         onChanged: (value) {
@@ -596,7 +648,12 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                   if (_selectedType == ParayanType.oneDay)
                     ListTile(
                       title: Text(localizations.parayanDateLabel),
-                      subtitle: Text(formatDateMedium(_startDate, Localizations.localeOf(context).languageCode)),
+                      subtitle: Text(
+                        formatDateMedium(
+                          _startDate,
+                          Localizations.localeOf(context).languageCode,
+                        ),
+                      ),
                       trailing: const Icon(Icons.calendar_today),
                       onTap: () => _selectDate(true),
                     )
@@ -618,14 +675,23 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                     if (_selectedType == ParayanType.threeDay)
                       ListTile(
                         title: Text(localizations.endDateLabel),
-                        subtitle: Text(formatDateMedium(_endDate, Localizations.localeOf(context).languageCode)),
+                        subtitle: Text(
+                          formatDateMedium(
+                            _endDate,
+                            Localizations.localeOf(context).languageCode,
+                          ),
+                        ),
                         enabled: false,
                       )
                     else // guruPushya
                       ListTile(
                         title: Text(localizations.endDateLabel),
                         subtitle: Text(
-                          formatDateMedium(_endDate, Localizations.localeOf(context).languageCode, includeTime: true),
+                          formatDateMedium(
+                            _endDate,
+                            Localizations.localeOf(context).languageCode,
+                            includeTime: true,
+                          ),
                         ),
                         trailing: const Icon(Icons.calendar_today),
                         onTap: () => _selectDateTime(false),

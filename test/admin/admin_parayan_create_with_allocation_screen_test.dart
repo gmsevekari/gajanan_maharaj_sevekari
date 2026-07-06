@@ -338,7 +338,9 @@ void main() {
       );
     });
 
-    testWidgets('displays 4-day options and submits with correct dates', (tester) async {
+    testWidgets('displays 4-day options and submits with correct dates', (
+      tester,
+    ) async {
       final lastEvent = ParayanEvent(
         id: 'gunjan_last',
         titleEn: 'Gunjan Last Event',
@@ -354,13 +356,19 @@ void main() {
         status: 'completed',
       );
 
-      when(() => mockService.getGunjanEvents()).thenAnswer((_) async => [lastEvent]);
+      when(
+        () => mockService.getGunjanEvents(),
+      ).thenAnswer((_) async => [lastEvent]);
       when(() => mockService.exists(any())).thenAnswer((_) async => false);
-      when(() => mockService.getParticipantsOnce(any())).thenAnswer((_) async => []);
-      when(() => mockService.createEventWithParticipants(
-        event: any(named: 'event'),
-        participants: any(named: 'participants'),
-      )).thenAnswer((_) async => {});
+      when(
+        () => mockService.getParticipantsOnce(any()),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockService.createEventWithParticipants(
+          event: any(named: 'event'),
+          participants: any(named: 'participants'),
+        ),
+      ).thenAnswer((_) async => {});
 
       await tester.pumpWidget(
         createTestWidget(
@@ -404,14 +412,21 @@ void main() {
       await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
-      final captured = verify(() => mockService.createEventWithParticipants(
-        event: captureAny(named: 'event'),
-        participants: any(named: 'participants'),
-      )).captured.single as ParayanEvent;
+      final captured =
+          verify(
+                () => mockService.createEventWithParticipants(
+                  event: captureAny(named: 'event'),
+                  participants: any(named: 'participants'),
+                ),
+              ).captured.single
+              as ParayanEvent;
 
       expect(captured.is4DayParayan, true);
       expect(captured.extraDayTithi, 'dwadashi');
-      expect(captured.endDate.difference(captured.startDate).inDays, 3); // 4 days span
+      expect(
+        captured.endDate.difference(captured.startDate).inDays,
+        3,
+      ); // 4 days span
     });
   });
 }

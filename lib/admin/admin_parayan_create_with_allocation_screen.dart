@@ -404,10 +404,16 @@ class _AdminParayanCreateWithAllocationScreenState
                       ),
                       const SizedBox(height: 20.0),
                       SwitchListTile(
-                        title: Text(isMarathi ? '४ दिवसांचे पारायण?' : 'Is this a 4-day parayan?'),
-                        subtitle: Text(isMarathi
-                            ? 'जर तिथी (दशमी/एकादशी/द्वादशी) २ दिवस असेल तर निवडा'
-                            : 'Select if a tithi (dashami/ekadashi/dwadashi) spans 2 days'),
+                        title: Text(
+                          isMarathi
+                              ? '४ दिवसांचे पारायण?'
+                              : 'Is this a 4-day parayan?',
+                        ),
+                        subtitle: Text(
+                          isMarathi
+                              ? 'जर तिथी (दशमी/एकादशी/द्वादशी) २ दिवस असेल तर निवडा'
+                              : 'Select if a tithi (dashami/ekadashi/dwadashi) spans 2 days',
+                        ),
                         value: _is4DayParayan,
                         onChanged: (bool value) {
                           setState(() {
@@ -421,20 +427,32 @@ class _AdminParayanCreateWithAllocationScreenState
                         DropdownButtonFormField<String>(
                           value: _selectedExtraDayTithi,
                           decoration: InputDecoration(
-                            labelText: isMarathi ? '२ दिवस असणारी तिथी' : 'Tithi spanning 2 days',
+                            labelText: isMarathi
+                                ? '२ दिवस असणारी तिथी'
+                                : 'Tithi spanning 2 days',
                           ),
                           items: [
                             DropdownMenuItem(
                               value: 'dashami',
-                              child: Text(isMarathi ? 'दशमी (दिवस १)' : 'Dashami (Day 1)'),
+                              child: Text(
+                                isMarathi ? 'दशमी (दिवस १)' : 'Dashami (Day 1)',
+                              ),
                             ),
                             DropdownMenuItem(
                               value: 'ekadashi',
-                              child: Text(isMarathi ? 'एकादशी (दिवस २)' : 'Ekadashi (Day 2)'),
+                              child: Text(
+                                isMarathi
+                                    ? 'एकादशी (दिवस २)'
+                                    : 'Ekadashi (Day 2)',
+                              ),
                             ),
                             DropdownMenuItem(
                               value: 'dwadashi',
-                              child: Text(isMarathi ? 'द्वादशी (दिवस ३)' : 'Dwadashi (Day 3)'),
+                              child: Text(
+                                isMarathi
+                                    ? 'द्वादशी (दिवस ३)'
+                                    : 'Dwadashi (Day 3)',
+                              ),
                             ),
                           ],
                           onChanged: (value) {

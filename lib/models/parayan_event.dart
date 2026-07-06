@@ -116,19 +116,28 @@ class ParayanEvent {
 
     switch (extraDayTithi) {
       case 'dashami':
-        if (index == 0) return [startDate, startDate.add(const Duration(days: 1))];
+        if (index == 0)
+          return [startDate, startDate.add(const Duration(days: 1))];
         if (index == 1) return [startDate.add(const Duration(days: 2))];
         if (index == 2) return [startDate.add(const Duration(days: 3))];
         break;
       case 'ekadashi':
         if (index == 0) return [startDate];
-        if (index == 1) return [startDate.add(const Duration(days: 1)), startDate.add(const Duration(days: 2))];
+        if (index == 1)
+          return [
+            startDate.add(const Duration(days: 1)),
+            startDate.add(const Duration(days: 2)),
+          ];
         if (index == 2) return [startDate.add(const Duration(days: 3))];
         break;
       case 'dwadashi':
         if (index == 0) return [startDate];
         if (index == 1) return [startDate.add(const Duration(days: 1))];
-        if (index == 2) return [startDate.add(const Duration(days: 2)), startDate.add(const Duration(days: 3))];
+        if (index == 2)
+          return [
+            startDate.add(const Duration(days: 2)),
+            startDate.add(const Duration(days: 3)),
+          ];
         break;
     }
     return [startDate.add(Duration(days: index))];
@@ -138,10 +147,22 @@ class ParayanEvent {
   String getFormattedDateHeaderForDayIndex(int index, String locale) {
     final dates = getDatesForDayIndex(index);
     if (dates.length == 1) {
-      return formatDateShortWithEventTimezone(dates[0].toUtc(), timezone, locale);
+      return formatDateShortWithEventTimezone(
+        dates[0].toUtc(),
+        timezone,
+        locale,
+      );
     } else {
-      final d1 = formatDateShortWithEventTimezone(dates[0].toUtc(), timezone, locale);
-      final d2 = formatDateShortWithEventTimezone(dates[1].toUtc(), timezone, locale);
+      final d1 = formatDateShortWithEventTimezone(
+        dates[0].toUtc(),
+        timezone,
+        locale,
+      );
+      final d2 = formatDateShortWithEventTimezone(
+        dates[1].toUtc(),
+        timezone,
+        locale,
+      );
       return locale == 'mr' ? '$d1 आणि $d2' : '$d1 & $d2';
     }
   }

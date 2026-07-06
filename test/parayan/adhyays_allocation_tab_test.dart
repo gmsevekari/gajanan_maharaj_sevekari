@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/adhyays_allocation_tab.dart';
-import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
@@ -62,7 +61,9 @@ void main() {
   }
 
   group('AdhyaysAllocationTab Tests', () {
-    testWidgets('displays double dates for 4-day parayan in headers', (tester) async {
+    testWidgets('displays double dates for 4-day parayan in headers', (
+      tester,
+    ) async {
       final fourDayEvent = ParayanEvent(
         id: 'e_4day',
         titleEn: '4-Day En',
@@ -81,7 +82,9 @@ void main() {
         extraDayTithi: 'ekadashi',
       );
 
-      when(() => mockService.getAllParticipants(any())).thenAnswer((_) => Stream.value([]));
+      when(
+        () => mockService.getAllParticipants(any()),
+      ).thenAnswer((_) => Stream.value([]));
 
       await tester.pumpWidget(
         createTestWidget(

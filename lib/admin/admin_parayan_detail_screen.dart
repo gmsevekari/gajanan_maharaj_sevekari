@@ -1556,6 +1556,7 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
     required ThemeData theme,
   }) {
     final date = dateString;
+    final locale = Localizations.localeOf(context).languageCode;
     return Material(
       color: Colors.transparent,
       child: Container(
