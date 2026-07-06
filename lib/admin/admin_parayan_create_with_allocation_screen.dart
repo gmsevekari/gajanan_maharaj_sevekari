@@ -49,6 +49,9 @@ class _AdminParayanCreateWithAllocationScreenState
   List<ParayanEvent> _gunjanEvents = [];
   ParayanEvent? _selectedLastParayan;
 
+  bool _is4DayParayan = false;
+  String _selectedExtraDayTithi = 'dashami';
+
   @override
   void initState() {
     super.initState();
@@ -98,7 +101,7 @@ class _AdminParayanCreateWithAllocationScreenState
 
   void _updateEndDates(ParayanType type) {
     if (type == ParayanType.threeDay) {
-      final targetEnd = _startDate.add(const Duration(days: 2));
+      final targetEnd = _startDate.add(Duration(days: _is4DayParayan ? 3 : 2));
       _endDate = DateTime(
         targetEnd.year,
         targetEnd.month,
@@ -193,6 +196,8 @@ class _AdminParayanCreateWithAllocationScreenState
     required ParayanType eventType,
     required DateTime startUtc,
     required DateTime endUtc,
+    required bool is4DayParayan,
+    required String? extraDayTithi,
   }) {
     final List<String> formattedTimes = const ["13:00", "16:00", "19:00"];
     return ParayanEvent(
@@ -211,6 +216,8 @@ class _AdminParayanCreateWithAllocationScreenState
       joinCode: const Uuid().v4().substring(0, 6).toUpperCase(),
       groupId: groupId,
       timezone: 'Asia/Kolkata',
+      is4DayParayan: is4DayParayan,
+      extraDayTithi: extraDayTithi,
     );
   }
 
@@ -294,6 +301,8 @@ class _AdminParayanCreateWithAllocationScreenState
         eventType: eventType,
         startUtc: startUtc,
         endUtc: endUtc,
+        is4DayParayan: _is4DayParayan,
+        extraDayTithi: _is4DayParayan ? _selectedExtraDayTithi : null,
       );
 
       await _parayanService.createEventWithParticipants(
@@ -393,6 +402,50 @@ class _AdminParayanCreateWithAllocationScreenState
                         localizations: localizations,
                         onTap: () => _selectDate(context),
                       ),
+                      const SizedBox(height: 20.0),
+                      SwitchListTile(
+                        title: Text(isMarathi ? '४ दिवसांचे पारायण?' : 'Is this a 4-day parayan?'),
+                        subtitle: Text(isMarathi
+                            ? 'जर तिथी (दशमी/एकादशी/द्वादशी) २ दिवस असेल तर निवडा'
+                            : 'Select if a tithi (dashami/ekadashi/dwadashi) spans 2 days'),
+                        value: _is4DayParayan,
+                        onChanged: (bool value) {
+                          setState(() {
+                            _is4DayParayan = value;
+                            _updateEndDates(_selectedLastParayan!.type);
+                          });
+                        },
+                      ),
+                      if (_is4DayParayan) ...[
+                        const SizedBox(height: 12.0),
+                        DropdownButtonFormField<String>(
+                          value: _selectedExtraDayTithi,
+                          decoration: InputDecoration(
+                            labelText: isMarathi ? '२ दिवस असणारी तिथी' : 'Tithi spanning 2 days',
+                          ),
+                          items: [
+                            DropdownMenuItem(
+                              value: 'dashami',
+                              child: Text(isMarathi ? 'दशमी (दिवस १)' : 'Dashami (Day 1)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'ekadashi',
+                              child: Text(isMarathi ? 'एकादशी (दिवस २)' : 'Ekadashi (Day 2)'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'dwadashi',
+                              child: Text(isMarathi ? 'द्वादशी (दिवस ३)' : 'Dwadashi (Day 3)'),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _selectedExtraDayTithi = value;
+                              });
+                            }
+                          },
+                        ),
+                      ],
                       const SizedBox(height: 24.0),
                       _SubmitButton(
                         isLoading: _isLoading,

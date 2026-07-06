@@ -3,7 +3,7 @@ import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
-import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
@@ -15,8 +15,9 @@ import 'package:uuid/uuid.dart';
 
 class AdminParayanCreateScreen extends StatefulWidget {
   final AdminUser? adminUser;
+  final ParayanService? parayanService;
 
-  const AdminParayanCreateScreen({super.key, this.adminUser});
+  const AdminParayanCreateScreen({super.key, this.adminUser, this.parayanService});
 
   @override
   State<AdminParayanCreateScreen> createState() =>
@@ -27,7 +28,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
   static final _alphanumericRegExp = RegExp('[a-zA-Z0-9 \u0900-\u097F]');
 
   final _formKey = GlobalKey<FormState>();
-  final _parayanService = ParayanService();
+  late final ParayanService _parayanService;
 
   final _titleEnController = TextEditingController();
   final _titleMrController = TextEditingController();
@@ -41,10 +42,13 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
   String _selectedTimezone = 'America/Los_Angeles';
 
   bool _isLoading = false;
+  bool _is4DayParayan = false;
+  String _selectedExtraDayTithi = 'dashami';
 
   @override
   void initState() {
     super.initState();
+    _parayanService = widget.parayanService ?? ParayanService();
     _selectedGroupId = widget.adminUser?.groupId;
     final now = DateTime.now();
     _startDate = DateTime(now.year, now.month, now.day);
@@ -61,10 +65,10 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
   }
 
   /// Computes the end date based on the parayan type and start date.
-  static DateTime _computeEndDate(ParayanType type, DateTime startDate) {
+  static DateTime _computeEndDate(ParayanType type, DateTime startDate, {bool is4DayParayan = false}) {
     switch (type) {
       case ParayanType.threeDay:
-        final targetEnd = startDate.add(const Duration(days: 2));
+        final targetEnd = startDate.add(Duration(days: is4DayParayan ? 3 : 2));
         return DateTime(
           targetEnd.year, targetEnd.month, targetEnd.day, 23, 59, 59,
         );
@@ -106,7 +110,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
       );
       if (isStartDate) {
         _startDate = newDateTime;
-        _endDate = _computeEndDate(_selectedType, _startDate);
+        _endDate = _computeEndDate(_selectedType, _startDate, is4DayParayan: _is4DayParayan);
       } else {
         _endDate = newDateTime;
         _isEndDateSetManually = true;
@@ -127,7 +131,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
     setState(() {
       if (isStartDate) {
         _startDate = picked;
-        _endDate = _computeEndDate(_selectedType, _startDate);
+        _endDate = _computeEndDate(_selectedType, _startDate, is4DayParayan: _is4DayParayan);
       } else {
         _endDate = DateTime(picked.year, picked.month, picked.day, 23, 59, 59);
         _isEndDateSetManually = true;
@@ -225,6 +229,8 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
         joinCode: const Uuid().v4().substring(0, 6).toUpperCase(),
         groupId: groupId,
         timezone: _selectedTimezone,
+        is4DayParayan: _is4DayParayan,
+        extraDayTithi: _is4DayParayan ? _selectedExtraDayTithi : null,
       );
 
       await _parayanService.createEvent(event);
@@ -245,11 +251,10 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
       final eventTitle = isMarathi ? event.titleMr : event.titleEn;
 
       // Navigate to detail screen and show snackbar
-      Navigator.pushReplacement(
+      Navigator.pushReplacementNamed(
         context,
-        MaterialPageRoute(
-          builder: (context) => AdminParayanDetailScreen(event: event),
-        ),
+        Routes.adminParayanDetail,
+        arguments: event,
       );
 
       messenger.showSnackBar(
@@ -328,6 +333,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
 
     final List<TextInputFormatter> alphanumericFormatter = [
       FilteringTextInputFormatter.allow(_alphanumericRegExp),
@@ -509,7 +515,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                       if (value != null) {
                         setState(() {
                           _selectedType = value;
-                          _endDate = _computeEndDate(_selectedType, _startDate);
+                          _endDate = _computeEndDate(_selectedType, _startDate, is4DayParayan: _is4DayParayan);
                           if (_selectedType == ParayanType.guruPushya) {
                             _isEndDateSetManually = false;
                           }
@@ -518,6 +524,53 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
+
+                  if (_selectedType == ParayanType.threeDay) ...[
+                    SwitchListTile(
+                      title: Text(isMarathi ? '४ दिवसांचे पारायण?' : 'Is this a 4-day parayan?'),
+                      subtitle: Text(isMarathi
+                          ? 'जर तिथी (दशमी/एकादशी/द्वादशी) २ दिवस असेल तर निवडा'
+                          : 'Select if a tithi (dashami/ekadashi/dwadashi) spans 2 days'),
+                      value: _is4DayParayan,
+                      onChanged: (bool value) {
+                        setState(() {
+                          _is4DayParayan = value;
+                          _endDate = _computeEndDate(_selectedType, _startDate, is4DayParayan: _is4DayParayan);
+                        });
+                      },
+                    ),
+                    if (_is4DayParayan) ...[
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: _selectedExtraDayTithi,
+                        decoration: InputDecoration(
+                          labelText: isMarathi ? '२ दिवस असणारी तिथी' : 'Tithi spanning 2 days',
+                        ),
+                        items: [
+                          DropdownMenuItem(
+                            value: 'dashami',
+                            child: Text(isMarathi ? 'दशमी (दिवस १)' : 'Dashami (Day 1)'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'ekadashi',
+                            child: Text(isMarathi ? 'एकादशी (दिवस २)' : 'Ekadashi (Day 2)'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'dwadashi',
+                            child: Text(isMarathi ? 'द्वादशी (दिवस ३)' : 'Dwadashi (Day 3)'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedExtraDayTithi = value;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                  ],
 
                   DropdownButtonFormField<String>(
                     initialValue: _selectedTimezone,

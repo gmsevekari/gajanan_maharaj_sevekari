@@ -379,6 +379,39 @@ void main() {
 
       final switchFinder = find.byType(SwitchListTile);
       expect(switchFinder, findsOneWidget);
+
+      SwitchListTile switchWidget = tester.widget(switchFinder);
+      expect(switchWidget.value, false);
+
+      await tester.ensureVisible(switchFinder);
+      await tester.pumpAndSettle();
+
+      await tester.tap(switchFinder);
+      await tester.pumpAndSettle();
+
+      switchWidget = tester.widget(switchFinder);
+      expect(switchWidget.value, true);
+
+      expect(find.text('Tithi spanning 2 days'), findsOneWidget);
+
+      await tester.tap(find.text('Dashami (Day 1)'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Dwadashi (Day 3)').last);
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      final captured = verify(() => mockService.createEventWithParticipants(
+        event: captureAny(named: 'event'),
+        participants: any(named: 'participants'),
+      )).captured.single as ParayanEvent;
+
+      expect(captured.is4DayParayan, true);
+      expect(captured.extraDayTithi, 'dwadashi');
+      expect(captured.endDate.difference(captured.startDate).inDays, 3); // 4 days span
     });
   });
 }
