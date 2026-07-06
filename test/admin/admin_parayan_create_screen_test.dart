@@ -16,7 +16,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
-import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import '../mocks.dart';
 
 void main() {

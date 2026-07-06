@@ -182,7 +182,6 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final locale = Localizations.localeOf(context).languageCode;
 
     return StreamBuilder<ParayanEvent>(
       stream: _eventStream,
