@@ -19,6 +19,8 @@ class ParayanEvent {
   final String? joinCode;
   final String groupId;
   final String timezone;
+  final bool is4DayParayan;
+  final String? extraDayTithi;
 
   const ParayanEvent({
     required this.id,
@@ -37,6 +39,8 @@ class ParayanEvent {
     this.joinCode,
     required this.groupId,
     this.timezone = 'America/Los_Angeles',
+    this.is4DayParayan = false,
+    this.extraDayTithi,
   });
 
   factory ParayanEvent.fromFirestore(DocumentSnapshot doc) {
@@ -69,6 +73,8 @@ class ParayanEvent {
       joinCode: data['joinCode'],
       groupId: data['groupId'] ?? GroupConstants.seattle,
       timezone: data['timezone'] ?? 'America/Los_Angeles',
+      is4DayParayan: data['is4DayParayan'] ?? false,
+      extraDayTithi: data['extraDayTithi'],
     );
   }
 
@@ -96,6 +102,18 @@ class ParayanEvent {
       if (joinCode != null) 'joinCode': joinCode,
       'groupId': groupId,
       'timezone': timezone,
+      'is4DayParayan': is4DayParayan,
+      if (extraDayTithi != null) 'extraDayTithi': extraDayTithi,
     };
+  }
+
+  /// Placeholder: Returns the calendar dates corresponding to a day index (0, 1, 2)
+  List<DateTime> getDatesForDayIndex(int index) {
+    return [startDate.add(Duration(days: index))];
+  }
+
+  /// Placeholder: Formats the date header for the given day index
+  String getFormattedDateHeaderForDayIndex(int index, String locale) {
+    return '';
   }
 }

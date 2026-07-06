@@ -112,5 +112,92 @@ void main() {
       );
       expect(event2.toFirestore()['type'], 'guruPushya');
     });
+
+    test('serialization of 4-day parayan fields', () {
+      final event = ParayanEvent(
+        id: 'test_4day',
+        titleEn: '4-Day Event',
+        titleMr: '४-दिवस इव्हेंट',
+        descriptionEn: 'Desc En',
+        descriptionMr: 'Desc Mr',
+        type: ParayanType.threeDay,
+        startDate: startDate,
+        endDate: endDate,
+        status: 'ongoing',
+        reminderTimes: ['20:00'],
+        createdAt: createdAt,
+        groupId: 'test_group',
+        timezone: 'Asia/Kolkata',
+        is4DayParayan: true,
+        extraDayTithi: 'ekadashi',
+      );
+
+      final map = event.toFirestore();
+      expect(map['is4DayParayan'], true);
+      expect(map['extraDayTithi'], 'ekadashi');
+
+      final doc = FakeDocumentSnapshot('test_4day', map);
+      final deserialized = ParayanEvent.fromFirestore(doc);
+      expect(deserialized.is4DayParayan, true);
+      expect(deserialized.extraDayTithi, 'ekadashi');
+    });
+
+    test('getDatesForDayIndex maps tithi correct day offsets', () {
+      final event = ParayanEvent(
+        id: 'test_4day',
+        titleEn: '4-Day Event',
+        titleMr: '४-दिवस इव्हेंट',
+        descriptionEn: 'Desc En',
+        descriptionMr: 'Desc Mr',
+        type: ParayanType.threeDay,
+        startDate: startDate,
+        endDate: endDate,
+        status: 'ongoing',
+        reminderTimes: ['20:00'],
+        createdAt: createdAt,
+        groupId: 'test_group',
+        timezone: 'Asia/Kolkata',
+        is4DayParayan: true,
+        extraDayTithi: 'ekadashi',
+      );
+
+      // Ekadashi spans offset 1 and 2
+      final dates0 = event.getDatesForDayIndex(0); // Day 1: Alandi (offset 0)
+      final dates1 = event.getDatesForDayIndex(1); // Day 2: Pune (offset 1 & 2)
+      final dates2 = event.getDatesForDayIndex(2); // Day 3: Saswad (offset 3)
+
+      expect(dates0.length, 1);
+      expect(dates0[0], startDate);
+      expect(dates1.length, 2);
+      expect(dates1[0], startDate.add(const Duration(days: 1)));
+      expect(dates1[1], startDate.add(const Duration(days: 2)));
+      expect(dates2.length, 1);
+      expect(dates2[0], startDate.add(const Duration(days: 3)));
+    });
+
+    test('getFormattedDateHeaderForDayIndex returns correct string representation', () {
+      final event = ParayanEvent(
+        id: 'test_4day',
+        titleEn: '4-Day Event',
+        titleMr: '४-दिवस इव्हेंट',
+        descriptionEn: 'Desc En',
+        descriptionMr: 'Desc Mr',
+        type: ParayanType.threeDay,
+        startDate: DateTime.utc(2026, 7, 12),
+        endDate: DateTime.utc(2026, 7, 16),
+        status: 'ongoing',
+        reminderTimes: ['20:00'],
+        createdAt: createdAt,
+        groupId: 'test_group',
+        timezone: 'Asia/Kolkata',
+        is4DayParayan: true,
+        extraDayTithi: 'ekadashi',
+      );
+
+      expect(event.getFormattedDateHeaderForDayIndex(0, 'en'), 'July 12');
+      expect(event.getFormattedDateHeaderForDayIndex(1, 'en'), 'July 13 & 14');
+      expect(event.getFormattedDateHeaderForDayIndex(1, 'mr'), '१३ जुलै आणि १४ जुलै');
+      expect(event.getFormattedDateHeaderForDayIndex(2, 'en'), 'July 15');
+    });
   });
 }
