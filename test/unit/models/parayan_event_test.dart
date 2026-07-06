@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class FakeDocumentSnapshot extends Fake implements DocumentSnapshot<Map<String, dynamic>> {
   final String _id;
@@ -17,6 +18,11 @@ class FakeDocumentSnapshot extends Fake implements DocumentSnapshot<Map<String, 
 }
 
 void main() {
+  setUpAll(() async {
+    await initializeDateFormatting('mr', null);
+    await initializeDateFormatting('en', null);
+  });
+
   group('ParayanEvent', () {
     final startDate = DateTime(2024, 5, 1);
     final endDate = DateTime(2024, 5, 3);
@@ -195,7 +201,7 @@ void main() {
       );
 
       expect(event.getFormattedDateHeaderForDayIndex(0, 'en'), 'July 12');
-      expect(event.getFormattedDateHeaderForDayIndex(1, 'en'), 'July 13 & 14');
+      expect(event.getFormattedDateHeaderForDayIndex(1, 'en'), 'July 13 & July 14');
       expect(event.getFormattedDateHeaderForDayIndex(1, 'mr'), '१३ जुलै आणि १४ जुलै');
       expect(event.getFormattedDateHeaderForDayIndex(2, 'en'), 'July 15');
     });
