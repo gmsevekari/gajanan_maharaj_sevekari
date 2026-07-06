@@ -20,78 +20,78 @@ class VaariScheduleEntry {
 final List<VaariScheduleEntry> dnyaneshwarPalkhiSchedule = [
   VaariScheduleEntry(
     stopIndex: 0, // Alandi
-    startDate: DateTime.utc(2026, 7, 12),
-    endDate: DateTime.utc(2026, 7, 12),
+    startDate: DateTime.utc(2026, 7, 8),
+    endDate: DateTime.utc(2026, 7, 8),
   ),
   VaariScheduleEntry(
     stopIndex: 1, // Pune
-    startDate: DateTime.utc(2026, 7, 13),
-    endDate: DateTime.utc(2026, 7, 14),
+    startDate: DateTime.utc(2026, 7, 9),
+    endDate: DateTime.utc(2026, 7, 10),
   ),
   VaariScheduleEntry(
     stopIndex: 2, // Saswad
-    startDate: DateTime.utc(2026, 7, 15),
-    endDate: DateTime.utc(2026, 7, 16),
+    startDate: DateTime.utc(2026, 7, 11),
+    endDate: DateTime.utc(2026, 7, 12),
   ),
   VaariScheduleEntry(
     stopIndex: 3, // Jejuri
+    startDate: DateTime.utc(2026, 7, 13),
+    endDate: DateTime.utc(2026, 7, 13),
+  ),
+  VaariScheduleEntry(
+    stopIndex: 4, // Valhe
+    startDate: DateTime.utc(2026, 7, 14),
+    endDate: DateTime.utc(2026, 7, 14),
+  ),
+  VaariScheduleEntry(
+    stopIndex: 5, // Lonand
+    startDate: DateTime.utc(2026, 7, 15),
+    endDate: DateTime.utc(2026, 7, 15),
+  ),
+  VaariScheduleEntry(
+    stopIndex: 6, // Taradgaon
+    startDate: DateTime.utc(2026, 7, 16),
+    endDate: DateTime.utc(2026, 7, 16),
+  ),
+  VaariScheduleEntry(
+    stopIndex: 7, // Phaltan
     startDate: DateTime.utc(2026, 7, 17),
     endDate: DateTime.utc(2026, 7, 17),
   ),
   VaariScheduleEntry(
-    stopIndex: 4, // Valhe
+    stopIndex: 8, // Barad
     startDate: DateTime.utc(2026, 7, 18),
     endDate: DateTime.utc(2026, 7, 18),
   ),
   VaariScheduleEntry(
-    stopIndex: 5, // Lonand
+    stopIndex: 9, // Natepute
     startDate: DateTime.utc(2026, 7, 19),
     endDate: DateTime.utc(2026, 7, 19),
   ),
   VaariScheduleEntry(
-    stopIndex: 6, // Taradgaon
+    stopIndex: 10, // Malshiras
     startDate: DateTime.utc(2026, 7, 20),
     endDate: DateTime.utc(2026, 7, 20),
   ),
   VaariScheduleEntry(
-    stopIndex: 7, // Phaltan
+    stopIndex: 11, // Velapur
     startDate: DateTime.utc(2026, 7, 21),
     endDate: DateTime.utc(2026, 7, 21),
   ),
   VaariScheduleEntry(
-    stopIndex: 8, // Barad
+    stopIndex: 12, // Bhandishegaon
     startDate: DateTime.utc(2026, 7, 22),
     endDate: DateTime.utc(2026, 7, 22),
   ),
   VaariScheduleEntry(
-    stopIndex: 9, // Natepute
+    stopIndex: 13, // Wakhari
     startDate: DateTime.utc(2026, 7, 23),
     endDate: DateTime.utc(2026, 7, 23),
   ),
   VaariScheduleEntry(
-    stopIndex: 10, // Purandawade
+    stopIndex: 14, // Pandharpur
     startDate: DateTime.utc(2026, 7, 24),
     endDate: DateTime.utc(2026, 7, 24),
-  ),
-  VaariScheduleEntry(
-    stopIndex: 11, // Velapur
-    startDate: DateTime.utc(2026, 7, 25),
-    endDate: DateTime.utc(2026, 7, 25),
-  ),
-  VaariScheduleEntry(
-    stopIndex: 12, // Bhandishegaon
-    startDate: DateTime.utc(2026, 7, 26),
-    endDate: DateTime.utc(2026, 7, 26),
-  ),
-  VaariScheduleEntry(
-    stopIndex: 13, // Wakhari
-    startDate: DateTime.utc(2026, 7, 27),
-    endDate: DateTime.utc(2026, 7, 27),
-  ),
-  VaariScheduleEntry(
-    stopIndex: 14, // Pandharpur
-    startDate: DateTime.utc(2026, 7, 28),
-    endDate: DateTime.utc(2026, 7, 28),
   ),
 ];
 
