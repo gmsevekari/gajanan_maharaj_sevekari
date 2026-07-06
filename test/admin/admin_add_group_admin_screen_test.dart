@@ -146,6 +146,7 @@ void main() {
       expect(find.text('Group Admin'), findsOneWidget); // Role checkbox
       expect(find.text('Parayan Admin'), findsOneWidget);
       expect(find.text('Namjap Admin'), findsOneWidget);
+      expect(find.text('Vaari Coordinator'), findsOneWidget);
 
       // Select Group Admin to show group dropdown
       await tester.tap(find.text('Group Admin'));
@@ -277,7 +278,7 @@ void main() {
       expect(find.text('Select Group'), findsOneWidget);
     });
 
-    testWidgets('toggles Super Admin, Parayan Admin and Namjap Admin roles', (
+    testWidgets('toggles Super Admin, Parayan Admin, Namjap Admin and Vaari Coordinator roles', (
       tester,
     ) async {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
@@ -302,6 +303,12 @@ void main() {
       await tester.tap(find.text('Namjap Admin'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Namjap Admin'));
+      await tester.pumpAndSettle();
+
+      // Toggle Vaari Coordinator
+      await tester.tap(find.text('Vaari Coordinator'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Vaari Coordinator'));
       await tester.pumpAndSettle();
     });
 
@@ -564,7 +571,9 @@ void main() {
       await tester.tap(find.text('Launch Edit'));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(TextButton, 'Delete Admin'));
+      final deleteButton = find.widgetWithText(TextButton, 'Delete Admin');
+      await tester.ensureVisible(deleteButton);
+      await tester.tap(deleteButton);
       await tester.pumpAndSettle();
 
       expect(find.widgetWithText(AlertDialog, 'Delete Admin'), findsOneWidget);

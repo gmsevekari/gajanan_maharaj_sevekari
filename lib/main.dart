@@ -535,7 +535,7 @@ class _MyAppState extends State<MyApp> {
                   if (!adminUser.hasAnyRole([
                     'parayan_coordinator',
                     'namjap_coordinator',
-                    'vaari_admin',
+                    'vaari_coordinator',
                     'group_admin',
                   ])) {
                     return const Scaffold(
@@ -623,7 +623,7 @@ class _MyAppState extends State<MyApp> {
                       ),
                     );
                   }
-                  if (!adminUser.hasAnyRole(['vaari_admin', 'group_admin'])) {
+                  if (!adminUser.hasAnyRole(['vaari_coordinator', 'group_admin'])) {
                     return const Scaffold(
                       body: Center(child: Text('Access Denied')),
                     );
@@ -633,7 +633,7 @@ class _MyAppState extends State<MyApp> {
                 Routes.adminCreateVaari: (context) {
                   final args = ModalRoute.of(context)!.settings.arguments;
                   if (args is! AdminUser ||
-                      !args.hasAnyRole(['vaari_admin', 'group_admin'])) {
+                      !args.hasAnyRole(['vaari_coordinator', 'group_admin'])) {
                     return const Scaffold(
                       body: Center(child: Text('Access Denied')),
                     );
@@ -868,7 +868,7 @@ class _MyAppState extends State<MyApp> {
                       final adminUser = args['adminUser'] as AdminUser?;
                       if (adminUser == null ||
                           !adminUser.hasAnyRole([
-                            'vaari_admin',
+                            'vaari_coordinator',
                             'group_admin',
                           ])) {
                         return MaterialPageRoute(
@@ -899,7 +899,7 @@ class _MyAppState extends State<MyApp> {
                       final adminUser = args['adminUser'] as AdminUser?;
                       if (adminUser == null ||
                           !adminUser.hasAnyRole([
-                            'vaari_admin',
+                            'vaari_coordinator',
                             'group_admin',
                           ])) {
                         return MaterialPageRoute(

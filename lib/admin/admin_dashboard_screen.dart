@@ -251,7 +251,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             },
                           ),
                         if (adminUser.hasRole('group_admin') ||
-                            adminUser.hasRole('vaari_admin'))
+                            adminUser.hasRole('vaari_coordinator'))
                           _buildModuleCard(
                             context: context,
                             title: localizations.vaariTitle,

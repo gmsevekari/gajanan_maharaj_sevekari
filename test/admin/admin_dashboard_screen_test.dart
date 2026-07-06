@@ -180,11 +180,11 @@ void main() {
       expect(find.text('Vaari'), findsOneWidget);
     });
 
-    testWidgets('should show Vaari card for vaari_admin', (tester) async {
+    testWidgets('should show Vaari card for vaari_coordinator', (tester) async {
       final mockSnapshot = MockDocumentSnapshot();
       when(() => mockSnapshot.exists).thenReturn(true);
       when(() => mockSnapshot.data()).thenReturn({
-        'roles': ['vaari_admin'],
+        'roles': ['vaari_coordinator'],
       });
       when(
         () => mockDoc.snapshots(),

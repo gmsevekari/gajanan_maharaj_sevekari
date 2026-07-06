@@ -345,6 +345,20 @@ class _AdminAddGroupAdminScreenState extends State<AdminAddGroupAdminScreen> {
                             });
                           },
                         ),
+                        _buildRoleCheckbox(
+                          context,
+                          localizations.roleVaariCoordinator,
+                          _selectedRoles.contains('vaari_coordinator'),
+                          (value) {
+                            setState(() {
+                              if (value == true) {
+                                _selectedRoles.add('vaari_coordinator');
+                              } else {
+                                _selectedRoles.remove('vaari_coordinator');
+                              }
+                            });
+                          },
+                        ),
                         FormField<Set<String>>(
                           validator: (value) {
                             if (_selectedRoles.isEmpty) {

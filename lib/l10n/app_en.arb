@@ -679,6 +679,7 @@
   "roleGroupAdmin": "Group Admin",
   "roleParayanCoordinator": "Parayan Admin",
   "roleNamjapCoordinator": "Namjap Admin",
+  "roleVaariCoordinator": "Vaari Coordinator",
   "atLeastOneRoleRequired": "At least one role must be selected",
   "groupRequired": "Please select a group",
   "savingLabel": "Saving...",

@@ -1826,6 +1826,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roleNamjapCoordinator => 'Namjap Admin';
 
   @override
+  String get roleVaariCoordinator => 'Vaari Coordinator';
+
+  @override
   String get atLeastOneRoleRequired => 'At least one role must be selected';
 
   @override

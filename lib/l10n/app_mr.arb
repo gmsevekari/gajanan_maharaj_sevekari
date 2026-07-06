@@ -679,6 +679,7 @@
   "roleGroupAdmin": "ग्रुप ॲडमिन",
   "roleParayanCoordinator": "पारायण ॲडमिन",
   "roleNamjapCoordinator": "नामजप ॲडमिन",
+  "roleVaariCoordinator": "वारी ॲडमिन",
   "atLeastOneRoleRequired": "किमान एक रोल निवडणे आवश्यक आहे",
   "groupRequired": "कृपया एक ग्रुप निवडा",
   "savingLabel": "सेव्ह करत आहे...",

@@ -3549,6 +3549,12 @@ abstract class AppLocalizations {
   /// **'Namjap Admin'**
   String get roleNamjapCoordinator;
 
+  /// No description provided for @roleVaariCoordinator.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaari Coordinator'**
+  String get roleVaariCoordinator;
+
   /// No description provided for @atLeastOneRoleRequired.
   ///
   /// In en, this message translates to:
