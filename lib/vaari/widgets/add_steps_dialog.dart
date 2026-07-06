@@ -138,8 +138,12 @@ class _AddStepsDialogState extends State<AddStepsDialog> {
       if (_inputType == 'steps') {
         final steps = int.tryParse(text) ?? 0;
         final distance = steps * _factor;
+        final distStr = distance.toStringAsFixed(2);
+        final localizedDist = locale == 'mr'
+            ? toMarathiNumerals(distStr)
+            : distStr;
         calculationLabel = localizations.estimatedDistance(
-          formatDistanceLocalized(distance, locale),
+          localizedDist,
           widget.distanceUnit,
         );
       } else {

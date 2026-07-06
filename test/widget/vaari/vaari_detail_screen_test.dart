@@ -667,7 +667,7 @@ void main() {
     // Verify 2000 steps estimates to 1.0 miles
     await tester.enterText(find.byType(TextField), '2000');
     await tester.pumpAndSettle();
-    expect(find.text('Estimated Distance: 1.0 miles'), findsOneWidget);
+    expect(find.text('Estimated Distance: 1.00 miles'), findsOneWidget);
 
     // Toggle to Distance
     await tester.tap(find.text('Distance'));
