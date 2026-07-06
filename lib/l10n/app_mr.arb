@@ -754,7 +754,7 @@
   "distanceLabel": "अंतर",
   "vaariTotalParticipants": "सहभागी",
   "addStepsLabel": "स्टेप्स ॲड करा",
-  "addStepsOrDistanceTitle": "पावले / अंतर जोडा",
+  "addStepsOrDistanceTitle": "स्टेप्स / अंतर ॲड करा",
   "estimatedDistance": "अंदाजित अंतर: {distance} {unit}",
   "@estimatedDistance": {
     "placeholders": {
@@ -827,7 +827,7 @@
   "adminVaariDescMrRequired": "कृपया मराठी वर्णन एंटर करा",
   "adminVaariTargetDistanceRequired": "कृपया लक्ष्य अंतर एंटर करा",
   "vaariSignUpError": "नोंदणी करण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.",
-  "vaariAddStepsError": "पावले जोडण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.",
+  "vaariAddStepsError": "स्टेप्स ॲड करण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.",
   "distanceUnitKilometers": "किलोमीटर (कि.मी.)",
   "distanceUnitMiles": "मैल (mi)"
 }

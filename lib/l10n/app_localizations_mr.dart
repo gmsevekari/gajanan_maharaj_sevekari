@@ -2011,7 +2011,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get addStepsLabel => 'स्टेप्स ॲड करा';
 
   @override
-  String get addStepsOrDistanceTitle => 'पावले / अंतर जोडा';
+  String get addStepsOrDistanceTitle => 'स्टेप्स / अंतर ॲड करा';
 
   @override
   String estimatedDistance(String distance, String unit) {
@@ -2171,7 +2171,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get vaariAddStepsError =>
-      'पावले जोडण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.';
+      'स्टेप्स ॲड करण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.';
 
   @override
   String get distanceUnitKilometers => 'किलोमीटर (कि.मी.)';
