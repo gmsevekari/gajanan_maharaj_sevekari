@@ -664,9 +664,19 @@ void main() {
     await tester.tap(find.widgetWithText(ElevatedButton, 'Add Steps'));
     await tester.pumpAndSettle();
 
+    // Verify 2000 steps estimates to 1.0 miles
+    await tester.enterText(find.byType(TextField), '2000');
+    await tester.pumpAndSettle();
+    expect(find.text('Estimated Distance: 1.0 miles'), findsOneWidget);
+
+    // Toggle to Distance
     await tester.tap(find.text('Distance'));
     await tester.pumpAndSettle();
 
+    // Verify text field holds '1.00' and estimates back to 2,000 steps
+    final txtField = tester.widget<TextField>(find.byType(TextField));
+    expect(txtField.controller?.text, '1.00');
+    expect(find.text('Estimated Steps: 2,000'), findsOneWidget);
     expect(find.text('Distance in miles'), findsOneWidget);
   });
 }

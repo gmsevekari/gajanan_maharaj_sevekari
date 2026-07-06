@@ -46,12 +46,17 @@ class _AddStepsDialogState extends State<AddStepsDialog> {
   }
 
   void _onInputChange() {
-    if (_errorText != null) {
-      setState(() => _errorText = null);
-    }
+    setState(() {
+      if (_errorText != null) {
+        _errorText = null;
+      }
+    });
   }
 
-  double get _factor => widget.distanceUnit == 'mi' ? 0.0005 : 0.0008;
+  double get _factor =>
+      (widget.distanceUnit == 'mi' || widget.distanceUnit == 'miles')
+      ? 0.0005
+      : 0.0008;
 
   void _toggleInputType(String newType) {
     if (newType == _inputType) return;
@@ -184,7 +189,9 @@ class _AddStepsDialogState extends State<AddStepsDialog> {
                 hintText: _inputType == 'steps' ? '0' : '0.0',
                 border: const OutlineInputBorder(),
                 prefixIcon: Icon(
-                  _inputType == 'steps' ? Icons.directions_walk : Icons.straighten,
+                  _inputType == 'steps'
+                      ? Icons.directions_walk
+                      : Icons.straighten,
                 ),
               ),
               keyboardType: _inputType == 'steps'

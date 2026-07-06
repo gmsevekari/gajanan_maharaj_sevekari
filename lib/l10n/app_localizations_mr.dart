@@ -2020,7 +2020,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String estimatedSteps(String steps) {
-    return 'अंदाजित पावले: $steps';
+    return 'अंदाजित स्टेप्स: $steps';
   }
 
   @override
@@ -2151,20 +2151,19 @@ class AppLocalizationsMr extends AppLocalizations {
   String get vaariActualPalkhiLegend => 'आजची प्रत्यक्ष वारी';
 
   @override
-  String get adminVaariNameEnRequired => 'कृपया इंग्रजी नाव प्रविष्ट करा';
+  String get adminVaariNameEnRequired => 'कृपया इंग्रजी नाव एंटर करा';
 
   @override
-  String get adminVaariNameMrRequired => 'कृपया मराठी नाव प्रविष्ट करा';
+  String get adminVaariNameMrRequired => 'कृपया मराठी नाव एंटर करा';
 
   @override
-  String get adminVaariDescEnRequired => 'कृपया इंग्रजी वर्णन प्रविष्ट करा';
+  String get adminVaariDescEnRequired => 'कृपया इंग्रजी वर्णन एंटर करा';
 
   @override
-  String get adminVaariDescMrRequired => 'कृपया मराठी वर्णन प्रविष्ट करा';
+  String get adminVaariDescMrRequired => 'कृपया मराठी वर्णन एंटर करा';
 
   @override
-  String get adminVaariTargetDistanceRequired =>
-      'कृपया लक्ष्य अंतर प्रविष्ट करा';
+  String get adminVaariTargetDistanceRequired => 'कृपया लक्ष्य अंतर एंटर करा';
 
   @override
   String get vaariSignUpError =>
