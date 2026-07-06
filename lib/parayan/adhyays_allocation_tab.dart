@@ -10,8 +10,9 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 class AdhyaysAllocationTab extends StatefulWidget {
   final ParayanEvent event;
+  final ParayanService? parayanService;
 
-  const AdhyaysAllocationTab({super.key, required this.event});
+  const AdhyaysAllocationTab({super.key, required this.event, this.parayanService});
 
   @override
   State<AdhyaysAllocationTab> createState() => _AdhyaysAllocationTabState();
@@ -19,7 +20,7 @@ class AdhyaysAllocationTab extends StatefulWidget {
 
 class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
     with AutomaticKeepAliveClientMixin {
-  final ParayanService _parayanService = ParayanService();
+  late final ParayanService _parayanService;
   late Stream<List<ParayanMember>> _participantsStream;
 
   @override
@@ -28,6 +29,7 @@ class _AdhyaysAllocationTabState extends State<AdhyaysAllocationTab>
   @override
   void initState() {
     super.initState();
+    _parayanService = widget.parayanService ?? ParayanService();
     _participantsStream = _parayanService.getAllParticipants(widget.event.id);
   }
 
