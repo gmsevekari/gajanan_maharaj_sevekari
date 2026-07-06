@@ -174,6 +174,7 @@ class _AdminParayanCreateWithAllocationScreenState
       newParticipants.add({
         'docId': docId,
         'name': lastParticipant.name,
+        'memberName': lastParticipant.name,
         'deviceId': lastParticipant.deviceId,
         'phone': lastParticipant.phone,
         'globalIndex': lastParticipant.globalIndex,
