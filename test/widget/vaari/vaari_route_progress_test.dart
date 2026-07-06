@@ -263,8 +263,8 @@ void main() {
           createWidget(
             totalDistance: 0,
             distanceUnit: 'mi',
-            // Jejuri is scheduled for July 17, 2026.
-            todayIst: DateTime(2026, 7, 17),
+            // Jejuri is scheduled for July 13, 2026.
+            todayIst: DateTime(2026, 7, 13),
           ),
         );
         await tester.pumpAndSettle();
