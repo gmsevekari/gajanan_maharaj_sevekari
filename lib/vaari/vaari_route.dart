@@ -37,8 +37,8 @@ const List<VaariRouteStop> dnyaneshwarPalkhiRoute = [
     cumulativeMiles: 109.1,
   ),
   VaariRouteStop(
-    nameEn: 'Purandawade',
-    nameMr: 'पुरंदावडे',
+    nameEn: 'Malshiras',
+    nameMr: 'माळशिरस',
     cumulativeMiles: 116.3,
   ),
   VaariRouteStop(nameEn: 'Velapur', nameMr: 'वेळापूर', cumulativeMiles: 130.0),
