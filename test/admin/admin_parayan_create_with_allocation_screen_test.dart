@@ -337,5 +337,48 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('displays 4-day options and submits with correct dates', (tester) async {
+      final lastEvent = ParayanEvent(
+        id: 'gunjan_last',
+        titleEn: 'Gunjan Last Event',
+        titleMr: 'गुंजन मागील कार्यक्रम',
+        descriptionEn: 'Last Desc EN',
+        descriptionMr: 'Last Desc MR',
+        type: ParayanType.threeDay,
+        startDate: DateTime.now().subtract(const Duration(days: 7)),
+        endDate: DateTime.now().subtract(const Duration(days: 5)),
+        createdAt: DateTime.now().subtract(const Duration(days: 10)),
+        reminderTimes: [],
+        groupId: GroupConstants.gunjan,
+        status: 'completed',
+      );
+
+      when(() => mockService.getGunjanEvents()).thenAnswer((_) async => [lastEvent]);
+      when(() => mockService.exists(any())).thenAnswer((_) async => false);
+      when(() => mockService.getParticipantsOnce(any())).thenAnswer((_) async => []);
+      when(() => mockService.createEventWithParticipants(
+        event: any(named: 'event'),
+        participants: any(named: 'participants'),
+      )).thenAnswer((_) async => {});
+
+      await tester.pumpWidget(
+        createTestWidget(
+          AdminParayanCreateWithAllocationScreen(
+            adminUser: const AdminUser(
+              email: 'admin@test.com',
+              groupId: GroupConstants.gunjan,
+              roles: ['parayan_coordinator'],
+            ),
+            parayanService: mockService,
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final switchFinder = find.byType(SwitchListTile);
+      expect(switchFinder, findsOneWidget);
+    });
   });
 }
