@@ -220,7 +220,10 @@ void main() {
           extraDayTithi: 'ekadashi',
         );
 
-        expect(event.getFormattedDateHeaderForDayIndex(0, 'en', ' & '), 'July 12');
+        expect(
+          event.getFormattedDateHeaderForDayIndex(0, 'en', ' & '),
+          'July 12',
+        );
         expect(
           event.getFormattedDateHeaderForDayIndex(1, 'en', ' & '),
           'July 13 & July 14',
@@ -229,7 +232,10 @@ void main() {
           event.getFormattedDateHeaderForDayIndex(1, 'mr', ' आणि '),
           '१३ जुलै आणि १४ जुलै',
         );
-        expect(event.getFormattedDateHeaderForDayIndex(2, 'en', ' & '), 'July 15');
+        expect(
+          event.getFormattedDateHeaderForDayIndex(2, 'en', ' & '),
+          'July 15',
+        );
       },
     );
   });
