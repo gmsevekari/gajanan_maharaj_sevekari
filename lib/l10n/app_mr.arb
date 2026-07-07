@@ -829,5 +829,12 @@
   "vaariSignUpError": "नोंदणी करण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.",
   "vaariAddStepsError": "स्टेप्स ॲड करण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.",
   "distanceUnitKilometers": "किलोमीटर (कि.मी.)",
-  "distanceUnitMiles": "मैल (mi)"
+  "distanceUnitMiles": "मैल (mi)",
+  "is4DayParayanLabel": "४ दिवसांचे पारायण?",
+  "is4DayParayanSubtitle": "जर तिथी (दशमी/एकादशी/द्वादशी) २ दिवस असेल तर निवडा",
+  "extraDayTithiLabel": "२ दिवस असणारी तिथी",
+  "dashamiOptionLabel": "दशमी (दिवस १)",
+  "ekadashiOptionLabel": "एकादशी (दिवस २)",
+  "dwadashiOptionLabel": "द्वादशी (दिवस ३)",
+  "andSeparator": " आणि "
 }

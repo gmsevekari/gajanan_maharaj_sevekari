@@ -2170,6 +2170,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get distanceUnitMiles => 'Miles (mi)';
+
+  @override
+  String get is4DayParayanLabel => 'Is this a 4-day parayan?';
+
+  @override
+  String get is4DayParayanSubtitle =>
+      'Select if a tithi (dashami/ekadashi/dwadashi) spans 2 days';
+
+  @override
+  String get extraDayTithiLabel => 'Tithi spanning 2 days';
+
+  @override
+  String get dashamiOptionLabel => 'Dashami (Day 1)';
+
+  @override
+  String get ekadashiOptionLabel => 'Ekadashi (Day 2)';
+
+  @override
+  String get dwadashiOptionLabel => 'Dwadashi (Day 3)';
+
+  @override
+  String get andSeparator => ' & ';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

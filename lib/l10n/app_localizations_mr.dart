@@ -2178,4 +2178,26 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get distanceUnitMiles => 'मैल (mi)';
+
+  @override
+  String get is4DayParayanLabel => '४ दिवसांचे पारायण?';
+
+  @override
+  String get is4DayParayanSubtitle =>
+      'जर तिथी (दशमी/एकादशी/द्वादशी) २ दिवस असेल तर निवडा';
+
+  @override
+  String get extraDayTithiLabel => '२ दिवस असणारी तिथी';
+
+  @override
+  String get dashamiOptionLabel => 'दशमी (दिवस १)';
+
+  @override
+  String get ekadashiOptionLabel => 'एकादशी (दिवस २)';
+
+  @override
+  String get dwadashiOptionLabel => 'द्वादशी (दिवस ३)';
+
+  @override
+  String get andSeparator => ' आणि ';
 }

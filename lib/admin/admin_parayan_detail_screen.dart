@@ -1694,7 +1694,7 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                           vertical: 4.0,
                         ),
                         child: Text(
-                          "${l10n.day1Label}\n(${event.getFormattedDateHeaderForDayIndex(0, locale)})",
+                          "${l10n.day1Label}\n(${event.getFormattedDateHeaderForDayIndex(0, locale, l10n.andSeparator)})",
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
@@ -1708,7 +1708,7 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                           vertical: 4.0,
                         ),
                         child: Text(
-                          "${l10n.day2Label}\n(${event.getFormattedDateHeaderForDayIndex(1, locale)})",
+                          "${l10n.day2Label}\n(${event.getFormattedDateHeaderForDayIndex(1, locale, l10n.andSeparator)})",
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
@@ -1722,7 +1722,7 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                           vertical: 4.0,
                         ),
                         child: Text(
-                          "${l10n.day3Label}\n(${event.getFormattedDateHeaderForDayIndex(2, locale)})",
+                          "${l10n.day3Label}\n(${event.getFormattedDateHeaderForDayIndex(2, locale, l10n.andSeparator)})",
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
@@ -1991,6 +1991,7 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
       return event.getFormattedDateHeaderForDayIndex(
         dayIndex,
         Localizations.localeOf(context).languageCode,
+        l10n.andSeparator,
       );
     }
 

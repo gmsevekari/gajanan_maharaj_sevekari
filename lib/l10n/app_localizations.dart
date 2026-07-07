@@ -4184,6 +4184,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Miles (mi)'**
   String get distanceUnitMiles;
+
+  /// No description provided for @is4DayParayanLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Is this a 4-day parayan?'**
+  String get is4DayParayanLabel;
+
+  /// No description provided for @is4DayParayanSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select if a tithi (dashami/ekadashi/dwadashi) spans 2 days'**
+  String get is4DayParayanSubtitle;
+
+  /// No description provided for @extraDayTithiLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tithi spanning 2 days'**
+  String get extraDayTithiLabel;
+
+  /// No description provided for @dashamiOptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashami (Day 1)'**
+  String get dashamiOptionLabel;
+
+  /// No description provided for @ekadashiOptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ekadashi (Day 2)'**
+  String get ekadashiOptionLabel;
+
+  /// No description provided for @dwadashiOptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Dwadashi (Day 3)'**
+  String get dwadashiOptionLabel;
+
+  /// No description provided for @andSeparator.
+  ///
+  /// In en, this message translates to:
+  /// **' & '**
+  String get andSeparator;
 }
 
 class _AppLocalizationsDelegate

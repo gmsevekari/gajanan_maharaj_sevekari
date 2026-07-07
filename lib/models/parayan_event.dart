@@ -116,35 +116,54 @@ class ParayanEvent {
 
     switch (extraDayTithi) {
       case 'dashami':
-        if (index == 0)
+        if (index == 0) {
           return [startDate, startDate.add(const Duration(days: 1))];
-        if (index == 1) return [startDate.add(const Duration(days: 2))];
-        if (index == 2) return [startDate.add(const Duration(days: 3))];
+        }
+        if (index == 1) {
+          return [startDate.add(const Duration(days: 2))];
+        }
+        if (index == 2) {
+          return [startDate.add(const Duration(days: 3))];
+        }
         break;
       case 'ekadashi':
-        if (index == 0) return [startDate];
-        if (index == 1)
+        if (index == 0) {
+          return [startDate];
+        }
+        if (index == 1) {
           return [
             startDate.add(const Duration(days: 1)),
             startDate.add(const Duration(days: 2)),
           ];
-        if (index == 2) return [startDate.add(const Duration(days: 3))];
+        }
+        if (index == 2) {
+          return [startDate.add(const Duration(days: 3))];
+        }
         break;
       case 'dwadashi':
-        if (index == 0) return [startDate];
-        if (index == 1) return [startDate.add(const Duration(days: 1))];
-        if (index == 2)
+        if (index == 0) {
+          return [startDate];
+        }
+        if (index == 1) {
+          return [startDate.add(const Duration(days: 1))];
+        }
+        if (index == 2) {
           return [
             startDate.add(const Duration(days: 2)),
             startDate.add(const Duration(days: 3)),
           ];
+        }
         break;
     }
     return [startDate.add(Duration(days: index))];
   }
 
   /// Formats the date header for the given day index
-  String getFormattedDateHeaderForDayIndex(int index, String locale) {
+  String getFormattedDateHeaderForDayIndex(
+    int index,
+    String locale,
+    String andSeparator,
+  ) {
     final dates = getDatesForDayIndex(index);
     if (dates.length == 1) {
       return formatDateShortWithEventTimezone(
@@ -163,7 +182,44 @@ class ParayanEvent {
         timezone,
         locale,
       );
-      return locale == 'mr' ? '$d1 आणि $d2' : '$d1 & $d2';
+      return '$d1$andSeparator$d2';
     }
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ParayanEvent &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          titleEn == other.titleEn &&
+          titleMr == other.titleMr &&
+          descriptionEn == other.descriptionEn &&
+          descriptionMr == other.descriptionMr &&
+          type == other.type &&
+          startDate == other.startDate &&
+          endDate == other.endDate &&
+          status == other.status &&
+          joinCode == other.joinCode &&
+          groupId == other.groupId &&
+          timezone == other.timezone &&
+          is4DayParayan == other.is4DayParayan &&
+          extraDayTithi == other.extraDayTithi;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      titleEn.hashCode ^
+      titleMr.hashCode ^
+      descriptionEn.hashCode ^
+      descriptionMr.hashCode ^
+      type.hashCode ^
+      startDate.hashCode ^
+      endDate.hashCode ^
+      status.hashCode ^
+      joinCode.hashCode ^
+      groupId.hashCode ^
+      timezone.hashCode ^
+      is4DayParayan.hashCode ^
+      extraDayTithi.hashCode;
 }

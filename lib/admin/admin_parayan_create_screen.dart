@@ -359,7 +359,6 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
 
     final List<TextInputFormatter> alphanumericFormatter = [
       FilteringTextInputFormatter.allow(_alphanumericRegExp),
@@ -557,16 +556,8 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
 
                   if (_selectedType == ParayanType.threeDay) ...[
                     SwitchListTile(
-                      title: Text(
-                        isMarathi
-                            ? '४ दिवसांचे पारायण?'
-                            : 'Is this a 4-day parayan?',
-                      ),
-                      subtitle: Text(
-                        isMarathi
-                            ? 'जर तिथी (दशमी/एकादशी/द्वादशी) २ दिवस असेल तर निवडा'
-                            : 'Select if a tithi (dashami/ekadashi/dwadashi) spans 2 days',
-                      ),
+                      title: Text(localizations.is4DayParayanLabel),
+                      subtitle: Text(localizations.is4DayParayanSubtitle),
                       value: _is4DayParayan,
                       onChanged: (bool value) {
                         setState(() {
@@ -582,34 +573,22 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                     if (_is4DayParayan) ...[
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: _selectedExtraDayTithi,
+                        initialValue: _selectedExtraDayTithi,
                         decoration: InputDecoration(
-                          labelText: isMarathi
-                              ? '२ दिवस असणारी तिथी'
-                              : 'Tithi spanning 2 days',
+                          labelText: localizations.extraDayTithiLabel,
                         ),
                         items: [
                           DropdownMenuItem(
                             value: 'dashami',
-                            child: Text(
-                              isMarathi ? 'दशमी (दिवस १)' : 'Dashami (Day 1)',
-                            ),
+                            child: Text(localizations.dashamiOptionLabel),
                           ),
                           DropdownMenuItem(
                             value: 'ekadashi',
-                            child: Text(
-                              isMarathi
-                                  ? 'एकादशी (दिवस २)'
-                                  : 'Ekadashi (Day 2)',
-                            ),
+                            child: Text(localizations.ekadashiOptionLabel),
                           ),
                           DropdownMenuItem(
                             value: 'dwadashi',
-                            child: Text(
-                              isMarathi
-                                  ? 'द्वादशी (दिवस ३)'
-                                  : 'Dwadashi (Day 3)',
-                            ),
+                            child: Text(localizations.dwadashiOptionLabel),
                           ),
                         ],
                         onChanged: (value) {

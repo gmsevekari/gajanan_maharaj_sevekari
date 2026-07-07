@@ -829,5 +829,12 @@
   "vaariSignUpError": "Failed to sign up. Please try again.",
   "vaariAddStepsError": "Failed to add steps. Please try again.",
   "distanceUnitKilometers": "Kilometers (km)",
-  "distanceUnitMiles": "Miles (mi)"
+  "distanceUnitMiles": "Miles (mi)",
+  "is4DayParayanLabel": "Is this a 4-day parayan?",
+  "is4DayParayanSubtitle": "Select if a tithi (dashami/ekadashi/dwadashi) spans 2 days",
+  "extraDayTithiLabel": "Tithi spanning 2 days",
+  "dashamiOptionLabel": "Dashami (Day 1)",
+  "ekadashiOptionLabel": "Ekadashi (Day 2)",
+  "dwadashiOptionLabel": "Dwadashi (Day 3)",
+  "andSeparator": " & "
 }
