@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/admin/admin_audit_service.dart';
@@ -64,6 +65,14 @@ class _AdminParayanCreateWithAllocationScreenState
     _titleEnController.dispose();
     _titleMrController.dispose();
     super.dispose();
+  }
+
+  String _generateJoinCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final rnd = Random.secure();
+    return String.fromCharCodes(
+      Iterable.generate(6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))),
+    );
   }
 
   Future<void> _loadGunjanEvents() async {
@@ -213,7 +222,7 @@ class _AdminParayanCreateWithAllocationScreenState
       reminderTimes: formattedTimes,
       createdAt: DateTime.now(),
       sentReminders: const {},
-      joinCode: const Uuid().v4().substring(0, 6).toUpperCase(),
+      joinCode: _generateJoinCode(),
       groupId: groupId,
       timezone: 'Asia/Kolkata',
       is4DayParayan: is4DayParayan,
@@ -553,6 +562,7 @@ class _EnglishDetailsSection extends StatelessWidget {
         const SizedBox(height: 8.0),
         TextFormField(
           controller: titleController,
+          maxLength: 100,
           decoration: InputDecoration(
             labelText: localizations.parayanNameLabel,
             border: const OutlineInputBorder(),
@@ -614,6 +624,7 @@ class _MarathiDetailsSection extends StatelessWidget {
         const SizedBox(height: 8.0),
         TextFormField(
           controller: titleController,
+          maxLength: 100,
           decoration: InputDecoration(
             labelText: localizations.parayanNameMrLabel,
             border: const OutlineInputBorder(),

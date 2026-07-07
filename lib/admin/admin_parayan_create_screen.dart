@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:flutter/services.dart';
@@ -66,6 +67,14 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
     _descriptionEnController.dispose();
     _descriptionMrController.dispose();
     super.dispose();
+  }
+
+  String _generateJoinCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final rnd = Random.secure();
+    return String.fromCharCodes(
+      Iterable.generate(6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))),
+    );
   }
 
   /// Computes the end date based on the parayan type and start date.
@@ -252,7 +261,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
         reminderTimes: formattedTimes,
         createdAt: DateTime.now(),
         sentReminders: const {},
-        joinCode: const Uuid().v4().substring(0, 6).toUpperCase(),
+        joinCode: _generateJoinCode(),
         groupId: groupId,
         timezone: _selectedTimezone,
         is4DayParayan: _is4DayParayan,
@@ -459,6 +468,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                   TextFormField(
                     controller: _titleEnController,
                     inputFormatters: alphanumericFormatter,
+                    maxLength: 100,
                     decoration: InputDecoration(
                       labelText: localizations.parayanNameLabel,
                       hintText: localizations.parayanNameHint,
@@ -471,6 +481,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                   TextFormField(
                     controller: _descriptionEnController,
                     inputFormatters: alphanumericFormatter,
+                    maxLength: 500,
                     decoration: InputDecoration(
                       labelText: localizations.parayanDescriptionLabel,
                       hintText: localizations.parayanDescriptionHint,
@@ -494,6 +505,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                     // but user requested "alphanumeric characters and spaces" ONLY.
                     // Strictly following that for Marathi field too as requested.
                     inputFormatters: alphanumericFormatter,
+                    maxLength: 100,
                     decoration: InputDecoration(
                       labelText: localizations.parayanNameMrLabel,
                       hintText: localizations.parayanNameMrHint,
@@ -506,6 +518,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
                   TextFormField(
                     controller: _descriptionMrController,
                     inputFormatters: alphanumericFormatter,
+                    maxLength: 500,
                     decoration: InputDecoration(
                       labelText: localizations.parayanDescriptionMrLabel,
                       hintText: localizations.parayanDescriptionMrHint,
