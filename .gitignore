@@ -68,3 +68,5 @@ ios/fastlane/Preview.html
 /ios/fastlane/report.xml
 ios/fastlane/screenshots/
 /android/fastlane/report.xml
+ios/build/
+android/.kotlin/
