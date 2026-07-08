@@ -6,7 +6,8 @@
         "appID": "6RCJF8XAM3.com.gajanan.maharaj.sevekari",
         "paths": [
           "/parayan/*",
-          "/namjap/*"
+          "/namjap/*",
+          "/vaari/*"
         ],
         "components": [
           {
@@ -14,6 +15,9 @@
           },
           {
             "/": "/namjap/*"
+          },
+          {
+            "/": "/vaari/*"
           }
         ]
       }
