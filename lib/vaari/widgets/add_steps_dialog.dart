@@ -198,9 +198,7 @@ class _AddStepsDialogState extends State<AddStepsDialog> {
                       : Icons.straighten,
                 ),
               ),
-              keyboardType: _inputType == 'steps'
-                  ? TextInputType.number
-                  : const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: _inputType == 'steps'
                   ? [FilteringTextInputFormatter.digitsOnly]
                   : [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
