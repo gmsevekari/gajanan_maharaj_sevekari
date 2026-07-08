@@ -47,7 +47,7 @@ const List<VaariRouteStop> dnyaneshwarPalkhiRoute = [
     nameMr: 'भंडीशेगाव',
     cumulativeMiles: 143.7,
   ),
-  VaariRouteStop(nameEn: 'Wakhari', nameMr: 'वाखारी', cumulativeMiles: 150.9),
+  VaariRouteStop(nameEn: 'Wakhari', nameMr: 'वाखरी', cumulativeMiles: 150.9),
   VaariRouteStop(
     nameEn: 'Pandharpur',
     nameMr: 'पंढरपूर',
