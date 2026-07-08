@@ -2089,10 +2089,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vaariExportProgress => 'Vaari Progress';
 
   @override
-  String get adminVaariTargetDistance => 'Target Distance';
+  String get adminVaariTargetDistance => 'Group Target Distance';
 
   @override
-  String get adminVaariTargetDistancePrefix => 'Target: ';
+  String get adminVaariTargetDistancePrefix => 'Group Target: ';
 
   @override
   String get adminVaariNameEnLabel => 'Event Name (English)';

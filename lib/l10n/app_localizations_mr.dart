@@ -2094,10 +2094,10 @@ class AppLocalizationsMr extends AppLocalizations {
   String get vaariExportProgress => 'वारीची प्रगती';
 
   @override
-  String get adminVaariTargetDistance => 'लक्ष्य अंतर';
+  String get adminVaariTargetDistance => 'सामूहिक लक्ष्य अंतर';
 
   @override
-  String get adminVaariTargetDistancePrefix => 'लक्ष्य: ';
+  String get adminVaariTargetDistancePrefix => 'सामूहिक लक्ष्य: ';
 
   @override
   String get adminVaariNameEnLabel => 'इव्हेंटचे नाव (इंग्रजी)';

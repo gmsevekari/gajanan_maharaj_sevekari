@@ -4026,13 +4026,13 @@ abstract class AppLocalizations {
   /// No description provided for @adminVaariTargetDistance.
   ///
   /// In en, this message translates to:
-  /// **'Target Distance'**
+  /// **'Group Target Distance'**
   String get adminVaariTargetDistance;
 
   /// No description provided for @adminVaariTargetDistancePrefix.
   ///
   /// In en, this message translates to:
-  /// **'Target: '**
+  /// **'Group Target: '**
   String get adminVaariTargetDistancePrefix;
 
   /// No description provided for @adminVaariNameEnLabel.
