@@ -11,6 +11,7 @@ admin.initializeApp();
 const parayan = require("./parayan");
 const notifications = require("./notifications");
 const namjap = require("./namjap");
+const vaari = require("./vaari");
 
 // Parayan Management
 exports.updateParayanStatuses = parayan.updateParayanStatuses;
@@ -20,6 +21,9 @@ exports.claimParayanAllocation = parayan.claimParayanAllocation;
 
 // Group Namjap Management
 exports.updateNamjapStatuses = namjap.updateNamjapStatuses;
+
+// Vaari Event Management
+exports.updateVaariStatuses = vaari.updateVaariStatuses;
 
 // Notifications & Reminders
 exports.sendTempleNotification = notifications.sendTempleNotification;
