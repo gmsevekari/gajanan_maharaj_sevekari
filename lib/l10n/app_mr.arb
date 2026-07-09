@@ -186,7 +186,7 @@
   "namavaliListenTitle": "अष्टोत्तरशतनामावली - रवींद्र साठे",
   "namavaliShareMessage": "गजानन महाराज अष्टोत्तरशतनामावली नक्की ऐका",
   "contentShareMessage": "हे पहा: {url}",
-  "copyrightMessage": "© {year} गजानन महाराज सिएटल",
+  "copyrightMessage": "© {year} गजानन महाराज सिॲटल",
   "@copyrightMessage": {
     "placeholders": {
       "year": {
@@ -487,7 +487,7 @@
   "filterPending": "अपूर्ण",
   "exportAllocations": "स्टेटस एक्स्पोर्ट करा",
   "exportingGroups": "गट स्नॅपशॉट तयार करत आहे...",
-  "seattleGajananMaharajParivar": "सिएटल गजानन महाराज परिवार",
+  "seattleGajananMaharajParivar": "सिॲटल गजानन महाराज परिवार",
   "jaiGajanan": "जय गजानन",
   "parayanParticipant": "सदस्य",
   "adhyaysLabel": "अध्याय",
@@ -721,7 +721,7 @@
   },
   "endDateBeforeStartDateError": "अंतिम तारीख आणि वेळ सुरुवातीच्या तारीख आणि वेळेनंतर असणे आवश्यक आहे.",
   "timezoneLabel": "टाइमझोन",
-  "timezoneSeattle": "सिएटल (पॅसिफिक वेळ)",
+  "timezoneSeattle": "सिॲटल (पॅसिफिक वेळ)",
   "timezoneIndia": "भारत (आयएसटी)",
   "groupIdRequiredError": "पारायण इव्हेंट तयार करण्यासाठी ग्रुप आयडी आवश्यक आहे.",
   "missingParayanGroupError": "मिसिंग पारायण ग्रुप",
@@ -799,7 +799,7 @@
   "adminVaariSharePrefix": "आमच्या वारीमध्ये सामील व्हा",
   "adminVaariJoinCode": "सामील होण्याचा कोड",
   "adminVaariShareLinkPrefix": "या लिंकद्वारे सामील व्हा",
-  "adminVaariTotalSteps": "एकूण पायऱ्या",
+  "adminVaariTotalSteps": "एकूण स्टेप्स",
   "adminVaariTotalDistance": "एकूण अंतर",
   "adminVaariParticipantsList": "सहभागींची यादी",
   "vaariExportProgress": "वारीची प्रगती",

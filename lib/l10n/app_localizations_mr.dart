@@ -547,7 +547,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String copyrightMessage(String year) {
-    return '© $year गजानन महाराज सिएटल';
+    return '© $year गजानन महाराज सिॲटल';
   }
 
   @override
@@ -1271,7 +1271,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get exportingGroups => 'गट स्नॅपशॉट तयार करत आहे...';
 
   @override
-  String get seattleGajananMaharajParivar => 'सिएटल गजानन महाराज परिवार';
+  String get seattleGajananMaharajParivar => 'सिॲटल गजानन महाराज परिवार';
 
   @override
   String get jaiGajanan => 'जय गजानन';
@@ -1923,7 +1923,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get timezoneLabel => 'टाइमझोन';
 
   @override
-  String get timezoneSeattle => 'सिएटल (पॅसिफिक वेळ)';
+  String get timezoneSeattle => 'सिॲटल (पॅसिफिक वेळ)';
 
   @override
   String get timezoneIndia => 'भारत (आयएसटी)';
@@ -2082,7 +2082,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get adminVaariShareLinkPrefix => 'या लिंकद्वारे सामील व्हा';
 
   @override
-  String get adminVaariTotalSteps => 'एकूण पायऱ्या';
+  String get adminVaariTotalSteps => 'एकूण स्टेप्स';
 
   @override
   String get adminVaariTotalDistance => 'एकूण अंतर';
