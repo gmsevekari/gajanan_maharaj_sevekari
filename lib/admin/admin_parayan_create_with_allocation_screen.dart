@@ -218,7 +218,7 @@ class _AdminParayanCreateWithAllocationScreenState
       type: eventType,
       startDate: startUtc,
       endDate: endUtc,
-      status: 'upcoming',
+      status: 'allocated',
       reminderTimes: formattedTimes,
       createdAt: DateTime.now(),
       sentReminders: const {},

@@ -277,13 +277,18 @@ void main() {
       await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
-      // Verify createEventWithParticipants is called
-      verify(
-        () => mockService.createEventWithParticipants(
-          event: any(named: 'event'),
-          participants: any(named: 'participants'),
-        ),
-      ).called(1);
+      // Verify createEventWithParticipants is called with status 'allocated'
+      // — this flow already copies over participant allocations from the
+      // last parayan, so the new event shouldn't start at 'upcoming'.
+      final captured =
+          verify(
+                () => mockService.createEventWithParticipants(
+                  event: captureAny(named: 'event'),
+                  participants: any(named: 'participants'),
+                ),
+              ).captured.single
+              as ParayanEvent;
+      expect(captured.status, 'allocated');
     });
 
     testWidgets('shows duplicate date error if event already exists', (
