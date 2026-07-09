@@ -2145,10 +2145,10 @@ class AppLocalizationsMr extends AppLocalizations {
   String get vaariRouteComplete => 'प्रवास पूर्ण झाला!';
 
   @override
-  String get vaariGroupProgressLegend => 'तुमचा गट';
+  String get vaariGroupProgressLegend => 'सिॲटल वारी';
 
   @override
-  String get vaariActualPalkhiLegend => 'आजची प्रत्यक्ष वारी';
+  String get vaariActualPalkhiLegend => 'आळंदी वारी';
 
   @override
   String get adminVaariNameEnRequired => 'कृपया इंग्रजी नाव एंटर करा';
