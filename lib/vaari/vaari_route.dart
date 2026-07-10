@@ -65,3 +65,34 @@ double distanceUnitToMiles(double distance, String unit) =>
 /// Converts a distance in miles to [unit] ('mi' or otherwise treated as km).
 double milesToDistanceUnit(double miles, String unit) =>
     unit == 'mi' ? miles : miles * _kmPerMile;
+
+/// Which pass (1-indexed) of the fixed-length route a cumulative distance
+/// falls on, and the progress within that pass.
+class VaariLapProgress {
+  final int lapNumber;
+  final double milesInLap;
+
+  const VaariLapProgress({required this.lapNumber, required this.milesInLap});
+}
+
+/// A cumulative distance that exceeds [totalMiles] means the group has
+/// finished the route and started again from Alandi — this computes which
+/// lap (1-indexed) [coveredMiles] falls on and the progress within that lap
+/// (0..[totalMiles]). Landing exactly on a lap boundary is treated as having
+/// just finished that lap (`milesInLap == totalMiles`) rather than starting
+/// the next one at 0.
+VaariLapProgress computeLapProgress(double coveredMiles, double totalMiles) {
+  final safeCovered = coveredMiles < 0 ? 0.0 : coveredMiles;
+  if (totalMiles <= 0 || safeCovered == 0) {
+    return const VaariLapProgress(lapNumber: 1, milesInLap: 0.0);
+  }
+
+  final completedLaps = (safeCovered / totalMiles).floor();
+  final remainder = safeCovered - completedLaps * totalMiles;
+
+  // Tolerate floating-point slop when checking for an exact lap boundary.
+  if (remainder < 1e-9) {
+    return VaariLapProgress(lapNumber: completedLaps, milesInLap: totalMiles);
+  }
+  return VaariLapProgress(lapNumber: completedLaps + 1, milesInLap: remainder);
+}

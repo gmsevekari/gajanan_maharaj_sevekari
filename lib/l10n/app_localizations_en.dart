@@ -2143,7 +2143,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vaariRouteProgressLabel => 'ROUTE PROGRESS';
 
   @override
-  String get vaariRouteComplete => 'Journey Complete!';
+  String vaariLapLabel(String lapNumber) {
+    return 'Vaari $lapNumber';
+  }
+
+  @override
+  String vaariLapCompleteLabel(String lapNumber) {
+    return 'Vaari $lapNumber Complete!';
+  }
 
   @override
   String get vaariGroupProgressLegend => 'Your Group';

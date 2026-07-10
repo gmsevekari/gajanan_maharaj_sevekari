@@ -4125,11 +4125,17 @@ abstract class AppLocalizations {
   /// **'ROUTE PROGRESS'**
   String get vaariRouteProgressLabel;
 
-  /// No description provided for @vaariRouteComplete.
+  /// No description provided for @vaariLapLabel.
   ///
   /// In en, this message translates to:
-  /// **'Journey Complete!'**
-  String get vaariRouteComplete;
+  /// **'Vaari {lapNumber}'**
+  String vaariLapLabel(String lapNumber);
+
+  /// No description provided for @vaariLapCompleteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaari {lapNumber} Complete!'**
+  String vaariLapCompleteLabel(String lapNumber);
 
   /// No description provided for @vaariGroupProgressLegend.
   ///

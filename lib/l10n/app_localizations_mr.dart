@@ -2149,7 +2149,14 @@ class AppLocalizationsMr extends AppLocalizations {
   String get vaariRouteProgressLabel => 'मार्गातील प्रगती';
 
   @override
-  String get vaariRouteComplete => 'प्रवास पूर्ण झाला!';
+  String vaariLapLabel(String lapNumber) {
+    return 'वारी $lapNumber';
+  }
+
+  @override
+  String vaariLapCompleteLabel(String lapNumber) {
+    return 'वारी $lapNumber पूर्ण झाली!';
+  }
 
   @override
   String get vaariGroupProgressLegend => 'सिॲटल वारी';

@@ -820,7 +820,22 @@
   "adminVaariShareError": "शेअर करता आले नाही. कृपया पुन्हा प्रयत्न करा.",
   "adminVaariLoadError": "डेटा लोड करण्यात त्रुटी",
   "vaariRouteProgressLabel": "मार्गातील प्रगती",
-  "vaariRouteComplete": "प्रवास पूर्ण झाला!",
+  "vaariLapLabel": "वारी {lapNumber}",
+  "@vaariLapLabel": {
+    "placeholders": {
+      "lapNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "vaariLapCompleteLabel": "वारी {lapNumber} पूर्ण झाली!",
+  "@vaariLapCompleteLabel": {
+    "placeholders": {
+      "lapNumber": {
+        "type": "String"
+      }
+    }
+  },
   "vaariGroupProgressLegend": "सिॲटल वारी",
   "vaariActualPalkhiLegend": "आळंदी वारी",
   "adminVaariNameEnRequired": "कृपया इंग्रजी नाव एंटर करा",

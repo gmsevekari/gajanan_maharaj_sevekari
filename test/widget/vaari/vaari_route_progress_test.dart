@@ -69,25 +69,26 @@ void main() {
       },
     );
 
-    testWidgets('shows the completion message once the full route is covered', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        createWidget(totalDistance: 200.0, distanceUnit: 'mi'),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'shows the completion message exactly at the end of the route',
+      (tester) async {
+        await tester.pumpWidget(
+          createWidget(totalDistance: 155.0, distanceUnit: 'mi'),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('Journey Complete!'), findsOneWidget);
-      expect(find.byIcon(Icons.celebration), findsOneWidget);
-      expect(find.textContaining(' / '), findsNothing);
-    });
+        expect(find.text('Vaari 1 Complete!'), findsOneWidget);
+        expect(find.byIcon(Icons.celebration), findsOneWidget);
+        expect(find.textContaining(' / '), findsNothing);
+      },
+    );
 
     testWidgets('places the walker exactly on the flag once the route is fully '
         'covered (regression: the flag marker used to render shifted away '
         'from its true grid position, so the walker and flag did not '
         'visually coincide at the destination)', (tester) async {
       await tester.pumpWidget(
-        createWidget(totalDistance: 200.0, distanceUnit: 'mi'),
+        createWidget(totalDistance: 155.0, distanceUnit: 'mi'),
       );
       await tester.pumpAndSettle();
 
@@ -99,6 +100,43 @@ void main() {
       expect(walkerCenter.dx, closeTo(flagCenter.dx, 1.0));
       expect(walkerCenter.dy, closeTo(flagCenter.dy, 1.0));
     });
+
+    testWidgets(
+      'starts a second lap from Alandi once the group exceeds the total '
+      'route distance, instead of stopping at the destination',
+      (tester) async {
+        await tester.pumpWidget(
+          createWidget(totalDistance: 200.0, distanceUnit: 'mi'),
+        );
+        await tester.pumpAndSettle();
+
+        // 200 - 155 = 45 miles into the second lap.
+        expect(find.text('ROUTE PROGRESS • Vaari 2'), findsOneWidget);
+        expect(find.text('45.0 / 155.0 miles'), findsOneWidget);
+        expect(find.text('Vaari 1 Complete!'), findsNothing);
+
+        // The walker should be partway through the route again, not
+        // sitting on the flag at Pandharpur.
+        final walkerCenter = tester.getCenter(
+          find.byKey(const Key('vaari-group-walker')),
+        );
+        final flagCenter = tester.getCenter(find.byIcon(Icons.flag));
+        expect(walkerCenter.dx, isNot(closeTo(flagCenter.dx, 1.0)));
+      },
+    );
+
+    testWidgets(
+      'shows the lap-complete message with the correct lap number for a '
+      'later lap',
+      (tester) async {
+        await tester.pumpWidget(
+          createWidget(totalDistance: 310.0, distanceUnit: 'mi'),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Vaari 2 Complete!'), findsOneWidget);
+      },
+    );
 
     testWidgets('clamps negative-looking progress to the start of the route', (
       tester,

@@ -820,7 +820,22 @@
   "adminVaariShareError": "Unable to share. Please try again.",
   "adminVaariLoadError": "Error loading data",
   "vaariRouteProgressLabel": "ROUTE PROGRESS",
-  "vaariRouteComplete": "Journey Complete!",
+  "vaariLapLabel": "Vaari {lapNumber}",
+  "@vaariLapLabel": {
+    "placeholders": {
+      "lapNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "vaariLapCompleteLabel": "Vaari {lapNumber} Complete!",
+  "@vaariLapCompleteLabel": {
+    "placeholders": {
+      "lapNumber": {
+        "type": "String"
+      }
+    }
+  },
   "vaariGroupProgressLegend": "Your Group",
   "vaariActualPalkhiLegend": "Actual Palkhi Today",
   "adminVaariNameEnRequired": "Please enter English name",

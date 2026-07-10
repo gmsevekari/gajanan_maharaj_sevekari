@@ -84,4 +84,48 @@ void main() {
       expect(milesToDistanceUnit(miles, 'km'), closeTo(42.0, 0.0001));
     });
   });
+
+  group('computeLapProgress', () {
+    test('starts at lap 1 with zero progress when nothing is covered', () {
+      final progress = computeLapProgress(0.0, 155.0);
+      expect(progress.lapNumber, 1);
+      expect(progress.milesInLap, 0.0);
+    });
+
+    test('stays on lap 1 partway through the route', () {
+      final progress = computeLapProgress(80.0, 155.0);
+      expect(progress.lapNumber, 1);
+      expect(progress.milesInLap, 80.0);
+    });
+
+    test('shows lap 1 fully complete exactly at the total distance', () {
+      final progress = computeLapProgress(155.0, 155.0);
+      expect(progress.lapNumber, 1);
+      expect(progress.milesInLap, 155.0);
+    });
+
+    test('starts lap 2 just past the total distance', () {
+      final progress = computeLapProgress(160.0, 155.0);
+      expect(progress.lapNumber, 2);
+      expect(progress.milesInLap, closeTo(5.0, 0.0001));
+    });
+
+    test('shows lap 2 fully complete exactly at double the total distance', () {
+      final progress = computeLapProgress(310.0, 155.0);
+      expect(progress.lapNumber, 2);
+      expect(progress.milesInLap, 155.0);
+    });
+
+    test('starts lap 3 just past double the total distance', () {
+      final progress = computeLapProgress(320.0, 155.0);
+      expect(progress.lapNumber, 3);
+      expect(progress.milesInLap, closeTo(10.0, 0.0001));
+    });
+
+    test('clamps negative covered distance to lap 1 at zero', () {
+      final progress = computeLapProgress(-10.0, 155.0);
+      expect(progress.lapNumber, 1);
+      expect(progress.milesInLap, 0.0);
+    });
+  });
 }

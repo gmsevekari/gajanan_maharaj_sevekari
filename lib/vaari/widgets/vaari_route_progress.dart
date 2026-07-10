@@ -34,10 +34,12 @@ class VaariRouteProgress extends StatelessWidget {
 
   double get _totalRouteMiles => dnyaneshwarPalkhiRoute.last.cumulativeMiles;
 
-  double get _coveredMiles {
-    final miles = distanceUnitToMiles(totalDistance, distanceUnit);
-    return miles.clamp(0.0, _totalRouteMiles);
-  }
+  /// Raw cumulative miles the group has walked, unclamped — once this
+  /// exceeds the route's total length, the group has completed a lap and
+  /// started again from Alandi, so this feeds into [computeLapProgress]
+  /// rather than being clamped to a single pass.
+  double get _cumulativeMiles =>
+      distanceUnitToMiles(totalDistance, distanceUnit);
 
   @override
   Widget build(BuildContext context) {
@@ -45,8 +47,9 @@ class VaariRouteProgress extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
 
-    final covered = _coveredMiles;
-    final isComplete = covered >= _totalRouteMiles;
+    final lapProgress = computeLapProgress(_cumulativeMiles, _totalRouteMiles);
+    final covered = lapProgress.milesInLap;
+    final isLapComplete = covered >= _totalRouteMiles;
     final unit = localizedDistanceUnitLabel(distanceUnit, locale);
     final coveredDisplay = formatDistanceLocalized(
       milesToDistanceUnit(covered, distanceUnit),
@@ -55,6 +58,11 @@ class VaariRouteProgress extends StatelessWidget {
     final totalDisplay = formatDistanceLocalized(
       milesToDistanceUnit(_totalRouteMiles, distanceUnit),
       locale,
+    );
+    final lapNumberDisplay = formatNumberLocalized(
+      lapProgress.lapNumber,
+      locale,
+      pad: false,
     );
     final scheduledStopIndex = scheduledStopIndexForDate(
       todayIst ?? currentIstDate(),
@@ -68,7 +76,9 @@ class VaariRouteProgress extends StatelessWidget {
           children: [
             Flexible(
               child: Text(
-                localizations.vaariRouteProgressLabel,
+                lapProgress.lapNumber > 1
+                    ? '${localizations.vaariRouteProgressLabel} • ${localizations.vaariLapLabel(lapNumberDisplay)}'
+                    : localizations.vaariRouteProgressLabel,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.hintColor,
@@ -79,7 +89,7 @@ class VaariRouteProgress extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Flexible(
-              child: isComplete
+              child: isLapComplete
                   ? Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -91,7 +101,9 @@ class VaariRouteProgress extends StatelessWidget {
                         const SizedBox(width: 4),
                         Flexible(
                           child: Text(
-                            localizations.vaariRouteComplete,
+                            localizations.vaariLapCompleteLabel(
+                              lapNumberDisplay,
+                            ),
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.primary,
