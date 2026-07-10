@@ -279,6 +279,12 @@ void main() {
     await tester.tap(find.widgetWithText(ElevatedButton, 'Submit'));
     await tester.pumpAndSettle();
 
+    // Confirmation dialog shows the entered steps/distance before submitting.
+    expect(find.text('Confirm Submission'), findsOneWidget);
+    expect(find.text('Steps: 2,000'), findsOneWidget);
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Yes'));
+    await tester.pumpAndSettle();
+
     verify(
       () => mockService.submitSteps(
         eventId: 'test_event',
@@ -319,6 +325,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '1.6');
     await tester.tap(find.widgetWithText(ElevatedButton, 'Submit'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Confirm Submission'), findsOneWidget);
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Yes'));
     await tester.pumpAndSettle();
 
     verify(
@@ -388,6 +398,10 @@ void main() {
 
     await tester.enterText(find.widgetWithText(TextField, 'Steps'), '2000');
     await tester.tap(find.widgetWithText(ElevatedButton, 'Submit'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Confirm Submission'), findsOneWidget);
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Yes'));
     await tester.pumpAndSettle();
 
     expect(find.byType(AddStepsDialog), findsOneWidget);

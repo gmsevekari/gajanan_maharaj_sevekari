@@ -1426,6 +1426,13 @@ class AppLocalizationsMr extends AppLocalizations {
       'तुम्हाला नियुक्त केलेला अध्याय वाचून पूर्ण झाला आहे का?';
 
   @override
+  String get confirmStepsSubmissionTitle => 'सबमिशनची खात्री करा';
+
+  @override
+  String get confirmStepsSubmissionQuestion =>
+      'तुम्हाला ही माहिती सबमिट करायची खात्री आहे का?';
+
+  @override
   String get no => 'नाही';
 
   @override

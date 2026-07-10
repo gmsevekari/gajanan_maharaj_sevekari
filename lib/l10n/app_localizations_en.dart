@@ -1423,6 +1423,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Have you completed reading the assigned adhyay?';
 
   @override
+  String get confirmStepsSubmissionTitle => 'Confirm Submission';
+
+  @override
+  String get confirmStepsSubmissionQuestion =>
+      'Are you sure you want to submit these details?';
+
+  @override
   String get no => 'No';
 
   @override

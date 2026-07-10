@@ -536,6 +536,8 @@
   "guruPushyaEndDateRequired": "Please set the end date and time for Guru Pushya parayan",
   "confirmCompletionTitle": "Confirm Completion",
   "confirmCompletionMessage": "Have you completed reading the assigned adhyay?",
+  "confirmStepsSubmissionTitle": "Confirm Submission",
+  "confirmStepsSubmissionQuestion": "Are you sure you want to submit these details?",
   "no": "No",
   "yes": "Yes",
   "readingProgressUpdated": "Reading progress updated",

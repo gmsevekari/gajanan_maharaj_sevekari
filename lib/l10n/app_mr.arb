@@ -536,6 +536,8 @@
   "guruPushyaEndDateRequired": "कृपया गुरुपुष्यामृत योग पारायणाची समाप्ती तारीख आणि वेळ सेट करा",
   "confirmCompletionTitle": "खात्री करा",
   "confirmCompletionMessage": "तुम्हाला नियुक्त केलेला अध्याय वाचून पूर्ण झाला आहे का?",
+  "confirmStepsSubmissionTitle": "सबमिशनची खात्री करा",
+  "confirmStepsSubmissionQuestion": "तुम्हाला ही माहिती सबमिट करायची खात्री आहे का?",
   "no": "नाही",
   "yes": "हो",
   "readingProgressUpdated": "अध्याय स्टेटस उपडेट केले आहे",

@@ -2775,6 +2775,18 @@ abstract class AppLocalizations {
   /// **'Have you completed reading the assigned adhyay?'**
   String get confirmCompletionMessage;
 
+  /// No description provided for @confirmStepsSubmissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Submission'**
+  String get confirmStepsSubmissionTitle;
+
+  /// No description provided for @confirmStepsSubmissionQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to submit these details?'**
+  String get confirmStepsSubmissionQuestion;
+
   /// No description provided for @no.
   ///
   /// In en, this message translates to:

@@ -76,6 +76,53 @@ class _AddStepsDialogState extends State<AddStepsDialog> {
     });
   }
 
+  Future<bool?> _showConfirmationDialog({
+    required int steps,
+    required double distance,
+  }) {
+    final localizations = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
+    final stepsStr = formatNumberLocalized(steps, locale, pad: false);
+    final distanceStr = distance.toStringAsFixed(2);
+    final localizedDistanceStr = locale == 'mr'
+        ? toMarathiNumerals(distanceStr)
+        : distanceStr;
+
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(localizations.confirmStepsSubmissionTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${localizations.stepsLabel}: $stepsStr',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${localizations.distanceLabel}: $localizedDistanceStr ${widget.distanceUnit}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Text(localizations.confirmStepsSubmissionQuestion),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(localizations.no),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(localizations.yes),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _handleSubmit() async {
     final localizations = AppLocalizations.of(context)!;
     final text = _inputController.text.trim();
@@ -100,6 +147,13 @@ class _AddStepsDialogState extends State<AddStepsDialog> {
       stepsToSubmit = (distance / _factor).round();
       distanceToSubmit = distance;
     }
+
+    final displayDistance = distanceToSubmit ?? (stepsToSubmit * _factor);
+    final confirmed = await _showConfirmationDialog(
+      steps: stepsToSubmit,
+      distance: displayDistance,
+    );
+    if (confirmed != true || !mounted) return;
 
     setState(() {
       _isLoading = true;
@@ -198,7 +252,9 @@ class _AddStepsDialogState extends State<AddStepsDialog> {
                       : Icons.straighten,
                 ),
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               inputFormatters: _inputType == 'steps'
                   ? [FilteringTextInputFormatter.digitsOnly]
                   : [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
