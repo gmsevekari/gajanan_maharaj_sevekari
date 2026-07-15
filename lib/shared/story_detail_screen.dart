@@ -466,6 +466,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                 ? CrossPlatformYoutubePlayer(
                     videoId: videoId,
                     autoPlay: true,
+                    aspectRatio: isShort ? 9 / 16 : 16 / 9,
                     onLaunchYoutube: () => _launchYoutube(videoId!),
                     onEnded: () {
                       if (widget.currentIndex < widget.contentList.length - 1) {
@@ -479,7 +480,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
         if (videoId != null && videoId.isNotEmpty) ...[
           const SizedBox(height: 8),
           Align(
-            alignment: Alignment.centerRight,
+            alignment: Alignment.center,
             child: TextButton.icon(
               icon: const Icon(Icons.open_in_new, size: 16),
               label: const Text('Open in YouTube'),

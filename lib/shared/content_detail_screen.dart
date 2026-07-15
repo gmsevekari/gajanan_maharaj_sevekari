@@ -793,7 +793,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                     ),
                     const SizedBox(height: 8),
                     Align(
-                      alignment: Alignment.centerRight,
+                      alignment: Alignment.center,
                       child: TextButton.icon(
                         icon: const Icon(Icons.open_in_new, size: 16),
                         label: const Text('Open in YouTube'),
