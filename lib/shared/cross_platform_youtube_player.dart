@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart'
     as mobile_player;
 import 'package:youtube_player_iframe/youtube_player_iframe.dart' as web_player;
+import 'package:url_launcher/url_launcher.dart';
 
 class CrossPlatformYoutubePlayer extends StatefulWidget {
   final String videoId;
@@ -53,37 +54,44 @@ class _CrossPlatformYoutubePlayerState
 
   @override
   Widget build(BuildContext context) {
-    Widget playerWidget = kIsWeb
+    final playerWidget = kIsWeb
         ? web_player.YoutubePlayer(controller: _controller!)
         : mobile_player.YoutubePlayer(controller: _controller!);
 
-    if (widget.onLaunchYoutube != null) {
-      playerWidget = Stack(
-        children: [
-          playerWidget,
-          Positioned(
-            top: 8,
-            right: 8,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.6),
-                shape: BoxShape.circle,
+    return Stack(
+      children: [
+        playerWidget,
+        Positioned(
+          top: 8,
+          right: 8,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.6),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(
+                Icons.open_in_new,
+                color: Colors.white,
+                size: 20,
               ),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.open_in_new,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                tooltip: 'Open in YouTube',
-                onPressed: widget.onLaunchYoutube,
-              ),
+              tooltip: 'Open in YouTube',
+              onPressed: () async {
+                if (widget.onLaunchYoutube != null) {
+                  widget.onLaunchYoutube!();
+                } else {
+                  final Uri url = Uri.parse(
+                    'https://www.youtube.com/watch?v=${widget.videoId}',
+                  );
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                }
+              },
             ),
           ),
-        ],
-      );
-    }
-
-    return playerWidget;
+        ),
+      ],
+    );
   }
 }
