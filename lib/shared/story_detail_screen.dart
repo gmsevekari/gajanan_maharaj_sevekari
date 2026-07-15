@@ -150,7 +150,8 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final item = snapshot.data!;
-                    final title = item['title_${locale.languageCode}'] ??
+                    final title =
+                        item['title_${locale.languageCode}'] ??
                         item['title_en']!;
                     return Text(
                       title,
@@ -281,8 +282,8 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                   builder: (context, snapshot) {
                     final title = snapshot.hasData
                         ? (snapshot.data!['title_${locale.languageCode}'] ??
-                            snapshot.data!['title_en'] ??
-                            '')
+                              snapshot.data!['title_en'] ??
+                              '')
                         : '';
                     return FloatingActionButton(
                       heroTag: 'report',
@@ -296,8 +297,9 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                         if (_selectedText.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content:
-                                  Text(localizations.selectTextToReportHint),
+                              content: Text(
+                                localizations.selectTextToReportHint,
+                              ),
                             ),
                           );
                         } else {
@@ -474,6 +476,17 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                 : Image.asset(widget.imagePath, fit: BoxFit.cover),
           ),
         ),
+        if (videoId != null && videoId.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              icon: const Icon(Icons.open_in_new, size: 16),
+              label: const Text('Open in YouTube'),
+              onPressed: () => _launchYoutube(videoId!),
+            ),
+          ),
+        ],
         const SizedBox(height: 24),
         if (widget.storyType == 'audios')
           Icon(Icons.audiotrack, size: 48, color: theme.colorScheme.primary),

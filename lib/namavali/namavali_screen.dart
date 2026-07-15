@@ -183,21 +183,27 @@ class _NamavaliScreenState extends State<NamavaliScreen>
               if (index == 0) // Read tab
                 Icon(
                   Icons.format_list_numbered,
-                  color: isSelected ? theme.colorScheme.onPrimary : theme.appColors.secondaryText,
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.appColors.secondaryText,
                   size: 20,
                 ),
               if (index == 0) const SizedBox(width: 8),
               if (index == 1) // Listen tab
                 Icon(
                   Icons.play_arrow,
-                  color: isSelected ? theme.colorScheme.onPrimary : theme.appColors.secondaryText,
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.appColors.secondaryText,
                   size: 20,
                 ),
               if (index == 1) const SizedBox(width: 8),
               Text(
                 text,
                 style: TextStyle(
-                  color: isSelected ? theme.colorScheme.onPrimary : theme.appColors.disabledText,
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.appColors.disabledText,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
@@ -309,8 +315,8 @@ class _NamavaliScreenState extends State<NamavaliScreen>
               'resources/images/${widget.deity.id}/namavali/${widget.deity.nityopasana.namavali!.image}';
           final bool isImageMissing =
               widget.deity.nityopasana.namavali!.image.isEmpty ||
-                  imagePath.endsWith('/') ||
-                  imagePath.endsWith('.json');
+              imagePath.endsWith('/') ||
+              imagePath.endsWith('.json');
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -375,7 +381,7 @@ class _NamavaliScreenState extends State<NamavaliScreen>
                     ),
                   ),
                 const SizedBox(height: 16),
-                if (videoId != null && videoId.isNotEmpty)
+                if (videoId != null && videoId.isNotEmpty) ...[
                   Card(
                     elevation: 4.0,
                     shape: RoundedRectangleBorder(
@@ -386,8 +392,17 @@ class _NamavaliScreenState extends State<NamavaliScreen>
                       videoId: videoId,
                       onLaunchYoutube: () => _launchYoutube(videoId),
                     ),
-                  )
-                else
+                  ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      icon: const Icon(Icons.open_in_new, size: 16),
+                      label: const Text('Open in YouTube'),
+                      onPressed: () => _launchYoutube(videoId),
+                    ),
+                  ),
+                ] else
                   Card(
                     elevation: 4.0,
                     shape: RoundedRectangleBorder(
@@ -431,7 +446,9 @@ class _NamavaliScreenState extends State<NamavaliScreen>
                             borderRadius: BorderRadius.circular(12.0),
                             boxShadow: [
                               BoxShadow(
-                                color: theme.appColors.divider.withValues(alpha: 0.3),
+                                color: theme.appColors.divider.withValues(
+                                  alpha: 0.3,
+                                ),
                                 spreadRadius: 1,
                                 blurRadius: 5,
                                 offset: const Offset(0, 3),
@@ -495,5 +512,4 @@ class _NamavaliScreenState extends State<NamavaliScreen>
       },
     );
   }
-
 }

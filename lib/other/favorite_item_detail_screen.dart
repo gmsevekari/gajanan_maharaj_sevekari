@@ -10,6 +10,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum PlaybackMode { reading, video }
 
@@ -30,7 +31,8 @@ class FavoriteItemDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<FavoriteItemDetailScreen> createState() => _FavoriteItemDetailScreenState();
+  State<FavoriteItemDetailScreen> createState() =>
+      _FavoriteItemDetailScreenState();
 }
 
 class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
@@ -93,8 +95,12 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
 
     final currentItem = widget.contentList[_currentIndex];
     final currentTitle = locale.useMarathiContent
-        ? ((currentItem['title_mr']?.toString().isNotEmpty == true) ? currentItem['title_mr']! : '')
-        : ((currentItem['title_en']?.toString().isNotEmpty == true) ? currentItem['title_en']! : '');
+        ? ((currentItem['title_mr']?.toString().isNotEmpty == true)
+              ? currentItem['title_mr']!
+              : '')
+        : ((currentItem['title_en']?.toString().isNotEmpty == true)
+              ? currentItem['title_en']!
+              : '');
 
     return Scaffold(
       appBar: AppBar(
@@ -255,7 +261,9 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
             ),
             leading: Icon(
               isPlaying ? Icons.play_circle_fill : Icons.queue_music,
-              color: isPlaying ? theme.appColors.primarySwatch : theme.appColors.secondaryText,
+              color: isPlaying
+                  ? theme.appColors.primarySwatch
+                  : theme.appColors.secondaryText,
             ),
             title: Text(
               title!,
@@ -281,13 +289,12 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
 
     final theme = Theme.of(context);
     final langCode = locale.languageCode;
-    final text =
-        (val) {
-          if (val != null && val.toString().isNotEmpty) return val.toString();
-          final enVal = _currentContentData!['content_en'];
-          if (enVal != null && enVal.toString().isNotEmpty) return enVal.toString();
-          return '';
-        }(_currentContentData!['content_$langCode']);
+    final text = (val) {
+      if (val != null && val.toString().isNotEmpty) return val.toString();
+      final enVal = _currentContentData!['content_en'];
+      if (enVal != null && enVal.toString().isNotEmpty) return enVal.toString();
+      return '';
+    }(_currentContentData!['content_$langCode']);
 
     return GestureDetector(
       onHorizontalDragEnd: (details) {
@@ -345,7 +352,9 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
                   FloatingActionButton(
                     heroTag: 'reduceSizePlayback',
                     mini: true,
-                    backgroundColor: theme.appColors.primarySwatch.withValues(alpha: 0.8),
+                    backgroundColor: theme.appColors.primarySwatch.withValues(
+                      alpha: 0.8,
+                    ),
                     foregroundColor: theme.colorScheme.onPrimary,
                     onPressed: () => _changeFontSize(-2.0),
                     child: const Icon(Icons.remove),
@@ -375,7 +384,7 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (widget.mode == PlaybackMode.video) ...[
-          if (videoId != null && videoId.isNotEmpty)
+          if (videoId != null && videoId.isNotEmpty) ...[
             Card(
               elevation: 4.0,
               shape: RoundedRectangleBorder(
@@ -390,8 +399,24 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
                 autoPlay: true,
                 onEnded: _playNext,
               ),
-            )
-          else
+            ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                icon: const Icon(Icons.open_in_new, size: 16),
+                label: const Text('Open in YouTube'),
+                onPressed: () async {
+                  final Uri url = Uri.parse(
+                    'https://www.youtube.com/watch?v=$videoId',
+                  );
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                },
+              ),
+            ),
+          ] else
             Card(
               elevation: 4.0,
               shape: RoundedRectangleBorder(

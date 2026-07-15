@@ -147,8 +147,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
-        pageBuilder:
-            (context, animation, secondaryAnimation) => ContentDetailScreen(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            ContentDetailScreen(
               deity: widget.deity,
               contentType: widget.contentType,
               contentList: widget.contentList,
@@ -168,7 +168,10 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
             end: end,
           ).chain(CurveTween(curve: curve));
 
-          return SlideTransition(position: animation.drive(tween), child: child);
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
         },
         transitionDuration: const Duration(milliseconds: 300),
       ),
@@ -214,8 +217,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                   if (snapshot.hasData) {
                     final item = snapshot.data!;
                     final title = locale.localizedContent(
-                        item['title_en'] ?? '',
-                        item['title_mr'] ?? '');
+                      item['title_en'] ?? '',
+                      item['title_mr'] ?? '',
+                    );
                     return Text(
                       title,
                       textAlign: TextAlign.center,
@@ -267,8 +271,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content:
-                                    Text(localizations.removedFromPlaylist),
+                                content: Text(
+                                  localizations.removedFromPlaylist,
+                                ),
                               ),
                             );
                           }
@@ -409,7 +414,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                     final title = snapshot.hasData
                         ? locale.localizedContent(
                             snapshot.data!['title_en'] ?? '',
-                            snapshot.data!['title_mr'] ?? '')
+                            snapshot.data!['title_mr'] ?? '',
+                          )
                         : '';
                     return FloatingActionButton(
                       heroTag: 'report',
@@ -423,8 +429,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                         if (_selectedText.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content:
-                                  Text(localizations.selectTextToReportHint),
+                              content: Text(
+                                localizations.selectTextToReportHint,
+                              ),
                             ),
                           );
                         } else {
@@ -582,8 +589,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
         } else if (snapshot.hasData) {
           final data = snapshot.data!;
           final text = locale.localizedContent(
-              data['content_en'] ?? '',
-              data['content_mr'] ?? '');
+            data['content_en'] ?? '',
+            data['content_mr'] ?? '',
+          );
 
           return NotificationListener<ScrollNotification>(
             onNotification: (notification) {
@@ -604,7 +612,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                   final title = titleSnapshot.hasData
                       ? locale.localizedContent(
                           titleSnapshot.data!['title_en'] ?? '',
-                          titleSnapshot.data!['title_mr'] ?? '')
+                          titleSnapshot.data!['title_mr'] ?? '',
+                        )
                       : '';
                   return SelectableText(
                     text,
@@ -678,8 +687,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
           final data = snapshot.data!;
           final videoId = data['youtube_video_id'];
           final title = locale.localizedContent(
-              data['title_en'] ?? '',
-              data['title_mr'] ?? '');
+            data['title_en'] ?? '',
+            data['title_mr'] ?? '',
+          );
 
           return NotificationListener<ScrollNotification>(
             onNotification: (notification) {
@@ -725,10 +735,11 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                               Expanded(
                                 child: Text(
                                   title,
-                                  style: theme.textTheme.headlineSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.primary,
-                                  ),
+                                  style: theme.textTheme.headlineSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.colorScheme.primary,
+                                      ),
                                   maxLines: 4,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -751,15 +762,14 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                         errorBuilder: (context, error, stackTrace) {
                           return Image.asset(
                             widget.deity.imagePath,
-                            fit:
-                                BoxFit.cover,
+                            fit: BoxFit.cover,
                             width: double.infinity,
                           );
                         },
                       ),
                     ),
                   const SizedBox(height: 16),
-                  if (videoId != null && videoId.isNotEmpty)
+                  if (videoId != null && videoId.isNotEmpty) ...[
                     Card(
                       elevation: 4.0,
                       shape: RoundedRectangleBorder(
@@ -780,8 +790,17 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                           }
                         },
                       ),
-                    )
-                  else
+                    ),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton.icon(
+                        icon: const Icon(Icons.open_in_new, size: 16),
+                        label: const Text('Open in YouTube'),
+                        onPressed: () => _launchYoutube(videoId),
+                      ),
+                    ),
+                  ] else
                     Card(
                       elevation: 4.0,
                       shape: RoundedRectangleBorder(
@@ -789,7 +808,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                       ),
                       child: SizedBox(
                         height: 200,
-                        child: Center(child: Text(localizations.videoUnavailable)),
+                        child: Center(
+                          child: Text(localizations.videoUnavailable),
+                        ),
                       ),
                     ),
                   const SizedBox(height: 16),
@@ -833,7 +854,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                                 SharePlus.instance.share(
                                   ShareParams(
                                     text: localizations.contentShareMessage(
-                                        'https://www.youtube.com/watch?v=$videoId'),
+                                      'https://www.youtube.com/watch?v=$videoId',
+                                    ),
                                   ),
                                 );
                               },
