@@ -68,6 +68,21 @@ class VaariRouteProgress extends StatelessWidget {
       todayIst ?? currentIstDate(),
     );
 
+    // Calculate individual lap miles
+    final lap1Miles = _cumulativeMiles.clamp(0.0, _totalRouteMiles);
+    final lap2Miles = (_cumulativeMiles - _totalRouteMiles).clamp(
+      0.0,
+      _totalRouteMiles,
+    );
+    final lap3Miles = (_cumulativeMiles - 2 * _totalRouteMiles).clamp(
+      0.0,
+      _totalRouteMiles,
+    );
+
+    const lap1Color = Color(0xFFFFB300); // Gold / Amber
+    const lap2Color = Color(0xFF8E24AA); // Deep Purple
+    final lap3Color = theme.colorScheme.primary; // Saffron / Primary
+
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -130,11 +145,36 @@ class VaariRouteProgress extends StatelessWidget {
           spacing: 12,
           runSpacing: 4,
           children: [
-            _buildLegendItem(
-              theme,
-              theme.colorScheme.primary,
-              localizations.vaariGroupProgressLegend,
-            ),
+            if (lapProgress.lapNumber == 1)
+              _buildLegendItem(
+                theme,
+                theme.colorScheme.primary,
+                localizations.vaariGroupProgressLegend,
+              )
+            else ...[
+              _buildLegendItem(
+                theme,
+                lap1Color,
+                localizations.vaariLapLabel(
+                  formatNumberLocalized(1, locale, pad: false),
+                ),
+              ),
+              _buildLegendItem(
+                theme,
+                lap2Color,
+                localizations.vaariLapLabel(
+                  formatNumberLocalized(2, locale, pad: false),
+                ),
+              ),
+              if (lapProgress.lapNumber >= 3)
+                _buildLegendItem(
+                  theme,
+                  lap3Color,
+                  localizations.vaariLapLabel(
+                    formatNumberLocalized(3, locale, pad: false),
+                  ),
+                ),
+            ],
             _buildLegendItem(
               theme,
               theme.appColors.success,
@@ -154,7 +194,13 @@ class VaariRouteProgress extends StatelessWidget {
               child: _VaariRouteTimeline(
                 layout: layout,
                 covered: covered,
+                lap1Miles: lap1Miles,
+                lap2Miles: lap2Miles,
+                lap3Miles: lap3Miles,
                 scheduledStopIndex: scheduledStopIndex,
+                lap1Color: lap1Color,
+                lap2Color: lap2Color,
+                lap3Color: lap3Color,
               ),
             );
           },
@@ -191,6 +237,18 @@ class VaariRouteProgress extends StatelessWidget {
   }
 }
 
+class LapTrackLayer {
+  final double arcLength;
+  final Color color;
+  final double strokeWidth;
+
+  const LapTrackLayer({
+    required this.arcLength,
+    required this.color,
+    required this.strokeWidth,
+  });
+}
+
 class _VaariRouteTimeline extends StatelessWidget {
   static const double _markerRadius = 11.0;
   static const double _flagRadius = 14.0;
@@ -201,12 +259,24 @@ class _VaariRouteTimeline extends StatelessWidget {
 
   final VaariRouteLayout layout;
   final double covered;
+  final double lap1Miles;
+  final double lap2Miles;
+  final double lap3Miles;
   final int scheduledStopIndex;
+  final Color lap1Color;
+  final Color lap2Color;
+  final Color lap3Color;
 
   const _VaariRouteTimeline({
     required this.layout,
     required this.covered,
+    required this.lap1Miles,
+    required this.lap2Miles,
+    required this.lap3Miles,
     required this.scheduledStopIndex,
+    required this.lap1Color,
+    required this.lap2Color,
+    required this.lap3Color,
   });
 
   /// Capped to the actual gap between stops so adjacent labels never
@@ -214,6 +284,38 @@ class _VaariRouteTimeline extends StatelessWidget {
   /// can shrink below the label's natural width.
   double get _labelWidth =>
       layout.stopSpacing < _maxLabelWidth ? layout.stopSpacing : _maxLabelWidth;
+
+  List<LapTrackLayer> _buildLapLayers(ThemeData theme) {
+    final layers = <LapTrackLayer>[];
+    if (lap1Miles > 0) {
+      layers.add(
+        LapTrackLayer(
+          arcLength: layout.arcLengthForMiles(lap1Miles),
+          color: lap2Miles > 0 ? lap1Color : theme.colorScheme.primary,
+          strokeWidth: 7.0,
+        ),
+      );
+    }
+    if (lap2Miles > 0) {
+      layers.add(
+        LapTrackLayer(
+          arcLength: layout.arcLengthForMiles(lap2Miles),
+          color: lap2Color,
+          strokeWidth: 4.5,
+        ),
+      );
+    }
+    if (lap3Miles > 0) {
+      layers.add(
+        LapTrackLayer(
+          arcLength: layout.arcLengthForMiles(lap3Miles),
+          color: lap3Color,
+          strokeWidth: 2.2,
+        ),
+      );
+    }
+    return layers;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -227,6 +329,8 @@ class _VaariRouteTimeline extends StatelessWidget {
         ? 0.0
         : layout.cumulativeArcLength[scheduledStopIndexClamped];
 
+    final lapLayers = _buildLapLayers(theme);
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -234,7 +338,8 @@ class _VaariRouteTimeline extends StatelessWidget {
           size: Size(layout.contentWidth, layout.contentHeight),
           painter: _RoutePathPainter(
             layout: layout,
-            trackColor: theme.appColors.divider,
+            baseTrackColor: theme.appColors.divider,
+            lapLayers: lapLayers,
           ),
         ),
         for (var i = 0; i < layout.stopPositions.length; i++)
@@ -245,29 +350,18 @@ class _VaariRouteTimeline extends StatelessWidget {
           curve: Curves.easeInOut,
           builder: (context, animatedArcLength, child) {
             final position = layout.positionAtArcLength(animatedArcLength);
-            return Stack(
-              clipBehavior: Clip.none,
-              children: [
-                CustomPaint(
-                  size: Size(layout.contentWidth, layout.contentHeight),
-                  painter: _RoutePathPainter(
-                    layout: layout,
-                    trackColor: theme.colorScheme.primary,
-                    coveredArcLength: animatedArcLength,
-                  ),
-                ),
-                Positioned(
-                  left: position.dx - _walkerRadius,
-                  top: position.dy - _walkerRadius,
-                  child: child!,
-                ),
-              ],
+            return Positioned(
+              left: position.dx - _walkerRadius,
+              top: position.dy - _walkerRadius,
+              child: child!,
             );
           },
           child: CircleAvatar(
             key: const Key('vaari-group-walker'),
             radius: _walkerRadius,
-            backgroundColor: theme.colorScheme.primary,
+            backgroundColor: lap3Miles > 0
+                ? lap3Color
+                : (lap2Miles > 0 ? lap2Color : theme.colorScheme.primary),
             child: Icon(
               Icons.directions_walk,
               color: theme.colorScheme.onPrimary,
@@ -313,11 +407,6 @@ class _VaariRouteTimeline extends StatelessWidget {
     final radius = isDestination ? _flagRadius : _markerRadius;
     final locale = Localizations.localeOf(context).languageCode;
 
-    // The label is wider than the marker circle, so the whole column must be
-    // fixed to _labelWidth and centered on `center.dx` — otherwise Column's
-    // default cross-axis centering widens the box to fit the label and
-    // re-centers the (narrower) circle within it, silently shifting every
-    // marker off its true grid position by a few pixels.
     return Positioned(
       left: center.dx - _labelWidth / 2,
       top: center.dy - radius,
@@ -370,39 +459,46 @@ class _VaariRouteTimeline extends StatelessWidget {
   }
 }
 
-/// Paints the snake-shaped route path, either in full (the background
-/// track) or truncated to [coveredArcLength] (the "covered so far"
-/// highlight).
+/// Paints the snake-shaped route path with base track and concentric
+/// multi-colored lap layers.
 class _RoutePathPainter extends CustomPainter {
   final VaariRouteLayout layout;
-  final Color trackColor;
-  final double? coveredArcLength;
+  final Color baseTrackColor;
+  final List<LapTrackLayer> lapLayers;
 
   const _RoutePathPainter({
     required this.layout,
-    required this.trackColor,
-    this.coveredArcLength,
+    required this.baseTrackColor,
+    required this.lapLayers,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final path = coveredArcLength == null
-        ? layout.path
-        : layout.extractCoveredPath(coveredArcLength!);
-
-    final paint = Paint()
-      ..color = trackColor
+    // 1. Base route track
+    final basePaint = Paint()
+      ..color = baseTrackColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
+      ..strokeWidth = 9.0
       ..strokeCap = StrokeCap.round;
+    canvas.drawPath(layout.path, basePaint);
 
-    canvas.drawPath(path, paint);
+    // 2. Multi-colored concentric lap tracks
+    for (final layer in lapLayers) {
+      if (layer.arcLength <= 0) continue;
+      final lapPath = layout.extractCoveredPath(layer.arcLength);
+      final lapPaint = Paint()
+        ..color = layer.color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = layer.strokeWidth
+        ..strokeCap = StrokeCap.round;
+      canvas.drawPath(lapPath, lapPaint);
+    }
   }
 
   @override
   bool shouldRepaint(covariant _RoutePathPainter oldDelegate) {
     return oldDelegate.layout != layout ||
-        oldDelegate.trackColor != trackColor ||
-        oldDelegate.coveredArcLength != coveredArcLength;
+        oldDelegate.baseTrackColor != baseTrackColor ||
+        oldDelegate.lapLayers != lapLayers;
   }
 }

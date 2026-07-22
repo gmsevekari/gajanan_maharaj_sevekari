@@ -336,5 +336,34 @@ void main() {
         expect(scheduleCenter.dx, closeTo(flagCenter.dx, 1.0));
       },
     );
+
+    testWidgets(
+      'renders multi-lap legends for Vaari 1 and Vaari 2 when distance exceeds 155 miles',
+      (tester) async {
+        await tester.pumpWidget(
+          createWidget(totalDistance: 200.0, distanceUnit: 'mi'),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Vaari 1'), findsOneWidget);
+        expect(find.text('Vaari 2'), findsOneWidget);
+        expect(find.text('Actual Palkhi Today'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'renders multi-lap legends for Vaari 1, Vaari 2, and Vaari 3 when distance exceeds 310 miles',
+      (tester) async {
+        await tester.pumpWidget(
+          createWidget(totalDistance: 350.0, distanceUnit: 'mi'),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Vaari 1'), findsOneWidget);
+        expect(find.text('Vaari 2'), findsOneWidget);
+        expect(find.text('Vaari 3'), findsOneWidget);
+        expect(find.text('Actual Palkhi Today'), findsOneWidget);
+      },
+    );
   });
 }
