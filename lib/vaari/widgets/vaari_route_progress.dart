@@ -80,10 +80,10 @@ class VaariRouteProgress extends StatelessWidget {
     );
 
     // Color assignments:
-    // - Completed Vaari 1: Gold / Amber
+    // - Completed Vaari 1: Royal Blue (high contrast against Saffron)
     // - Completed Vaari 2: Deep Purple
     // - Current Active Vaari: Always Primary Saffron
-    const goldColor = Color(0xFFFFB300); // Gold / Amber for Completed Vaari 1
+    const blueColor = Color(0xFF1E88E5); // Royal Blue for Completed Vaari 1
     const purpleColor = Color(0xFF8E24AA); // Deep Purple for Completed Vaari 2
     final primarySaffron = theme.colorScheme.primary; // Current Vaari
 
@@ -96,11 +96,11 @@ class VaariRouteProgress extends StatelessWidget {
       lap2Color = primarySaffron;
       lap3Color = primarySaffron;
     } else if (lapProgress.lapNumber == 2) {
-      lap1Color = goldColor;
+      lap1Color = blueColor;
       lap2Color = primarySaffron;
       lap3Color = primarySaffron;
     } else {
-      lap1Color = goldColor;
+      lap1Color = blueColor;
       lap2Color = purpleColor;
       lap3Color = primarySaffron;
     }
@@ -314,7 +314,7 @@ class _VaariRouteTimeline extends StatelessWidget {
         LapTrackLayer(
           arcLength: layout.arcLengthForMiles(lap1Miles),
           color: lap1Color,
-          strokeWidth: 11.0,
+          strokeWidth: 18.0,
         ),
       );
     }
@@ -323,7 +323,7 @@ class _VaariRouteTimeline extends StatelessWidget {
         LapTrackLayer(
           arcLength: layout.arcLengthForMiles(lap2Miles),
           color: lap2Color,
-          strokeWidth: 7.0,
+          strokeWidth: 12.0,
         ),
       );
     }
@@ -332,7 +332,7 @@ class _VaariRouteTimeline extends StatelessWidget {
         LapTrackLayer(
           arcLength: layout.arcLengthForMiles(lap3Miles),
           color: lap3Color,
-          strokeWidth: 3.5,
+          strokeWidth: 6.0,
         ),
       );
     }
@@ -498,7 +498,7 @@ class _RoutePathPainter extends CustomPainter {
     final basePaint = Paint()
       ..color = baseTrackColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 14.0
+      ..strokeWidth = 24.0
       ..strokeCap = StrokeCap.round;
     canvas.drawPath(layout.path, basePaint);
 
