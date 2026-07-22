@@ -79,9 +79,31 @@ class VaariRouteProgress extends StatelessWidget {
       _totalRouteMiles,
     );
 
-    const lap1Color = Color(0xFFFFB300); // Gold / Amber
-    const lap2Color = Color(0xFF8E24AA); // Deep Purple
-    final lap3Color = theme.colorScheme.primary; // Saffron / Primary
+    // Color assignments:
+    // - Completed Vaari 1: Gold / Amber
+    // - Completed Vaari 2: Deep Purple
+    // - Current Active Vaari: Always Primary Saffron
+    const goldColor = Color(0xFFFFB300); // Gold / Amber for Completed Vaari 1
+    const purpleColor = Color(0xFF8E24AA); // Deep Purple for Completed Vaari 2
+    final primarySaffron = theme.colorScheme.primary; // Current Vaari
+
+    final Color lap1Color;
+    final Color lap2Color;
+    final Color lap3Color;
+
+    if (lapProgress.lapNumber == 1) {
+      lap1Color = primarySaffron;
+      lap2Color = primarySaffron;
+      lap3Color = primarySaffron;
+    } else if (lapProgress.lapNumber == 2) {
+      lap1Color = goldColor;
+      lap2Color = primarySaffron;
+      lap3Color = primarySaffron;
+    } else {
+      lap1Color = goldColor;
+      lap2Color = purpleColor;
+      lap3Color = primarySaffron;
+    }
 
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,7 +170,7 @@ class VaariRouteProgress extends StatelessWidget {
             if (lapProgress.lapNumber == 1)
               _buildLegendItem(
                 theme,
-                theme.colorScheme.primary,
+                primarySaffron,
                 localizations.vaariGroupProgressLegend,
               )
             else ...[
@@ -291,8 +313,8 @@ class _VaariRouteTimeline extends StatelessWidget {
       layers.add(
         LapTrackLayer(
           arcLength: layout.arcLengthForMiles(lap1Miles),
-          color: lap2Miles > 0 ? lap1Color : theme.colorScheme.primary,
-          strokeWidth: 7.0,
+          color: lap1Color,
+          strokeWidth: 11.0,
         ),
       );
     }
@@ -301,7 +323,7 @@ class _VaariRouteTimeline extends StatelessWidget {
         LapTrackLayer(
           arcLength: layout.arcLengthForMiles(lap2Miles),
           color: lap2Color,
-          strokeWidth: 4.5,
+          strokeWidth: 7.0,
         ),
       );
     }
@@ -310,7 +332,7 @@ class _VaariRouteTimeline extends StatelessWidget {
         LapTrackLayer(
           arcLength: layout.arcLengthForMiles(lap3Miles),
           color: lap3Color,
-          strokeWidth: 2.2,
+          strokeWidth: 3.5,
         ),
       );
     }
@@ -359,9 +381,7 @@ class _VaariRouteTimeline extends StatelessWidget {
           child: CircleAvatar(
             key: const Key('vaari-group-walker'),
             radius: _walkerRadius,
-            backgroundColor: lap3Miles > 0
-                ? lap3Color
-                : (lap2Miles > 0 ? lap2Color : theme.colorScheme.primary),
+            backgroundColor: theme.colorScheme.primary,
             child: Icon(
               Icons.directions_walk,
               color: theme.colorScheme.onPrimary,
@@ -478,7 +498,7 @@ class _RoutePathPainter extends CustomPainter {
     final basePaint = Paint()
       ..color = baseTrackColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 9.0
+      ..strokeWidth = 14.0
       ..strokeCap = StrokeCap.round;
     canvas.drawPath(layout.path, basePaint);
 
