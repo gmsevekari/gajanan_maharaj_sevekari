@@ -80,12 +80,12 @@ class VaariRouteProgress extends StatelessWidget {
     );
 
     // Color assignments:
-    // - Completed Vaari 1: Royal Blue (high contrast against Saffron)
+    // - Current Active Vaari: ALWAYS Primary Saffron
+    // - Completed Vaari 1: Gold / Amber
     // - Completed Vaari 2: Deep Purple
-    // - Current Active Vaari: Always Primary Saffron
-    const blueColor = Color(0xFF1E88E5); // Royal Blue for Completed Vaari 1
+    const goldColor = Color(0xFFFFB300); // Gold / Amber for Completed Vaari 1
     const purpleColor = Color(0xFF8E24AA); // Deep Purple for Completed Vaari 2
-    final primarySaffron = theme.colorScheme.primary; // Current Vaari
+    final primarySaffron = theme.colorScheme.primary; // Current Active Vaari
 
     final Color lap1Color;
     final Color lap2Color;
@@ -96,11 +96,11 @@ class VaariRouteProgress extends StatelessWidget {
       lap2Color = primarySaffron;
       lap3Color = primarySaffron;
     } else if (lapProgress.lapNumber == 2) {
-      lap1Color = blueColor;
+      lap1Color = goldColor;
       lap2Color = primarySaffron;
       lap3Color = primarySaffron;
     } else {
-      lap1Color = blueColor;
+      lap1Color = goldColor;
       lap2Color = purpleColor;
       lap3Color = primarySaffron;
     }
@@ -263,11 +263,13 @@ class LapTrackLayer {
   final double arcLength;
   final Color color;
   final double strokeWidth;
+  final double dyOffset;
 
   const LapTrackLayer({
     required this.arcLength,
     required this.color,
     required this.strokeWidth,
+    required this.dyOffset,
   });
 }
 
@@ -309,33 +311,64 @@ class _VaariRouteTimeline extends StatelessWidget {
 
   List<LapTrackLayer> _buildLapLayers(ThemeData theme) {
     final layers = <LapTrackLayer>[];
-    if (lap1Miles > 0) {
+    const trackWidth = 3.5;
+
+    if (lap3Miles > 0) {
+      // 3 Laps active: Gold top (-5.0), Purple middle (0.0), Saffron bottom (+5.0)
       layers.add(
         LapTrackLayer(
           arcLength: layout.arcLengthForMiles(lap1Miles),
           color: lap1Color,
-          strokeWidth: 18.0,
+          strokeWidth: trackWidth,
+          dyOffset: -5.0,
         ),
       );
-    }
-    if (lap2Miles > 0) {
       layers.add(
         LapTrackLayer(
           arcLength: layout.arcLengthForMiles(lap2Miles),
           color: lap2Color,
-          strokeWidth: 12.0,
+          strokeWidth: trackWidth,
+          dyOffset: 0.0,
         ),
       );
-    }
-    if (lap3Miles > 0) {
       layers.add(
         LapTrackLayer(
           arcLength: layout.arcLengthForMiles(lap3Miles),
           color: lap3Color,
-          strokeWidth: 6.0,
+          strokeWidth: trackWidth,
+          dyOffset: 5.0,
+        ),
+      );
+    } else if (lap2Miles > 0) {
+      // 2 Laps active: Gold top (-3.5), Saffron bottom (+3.5)
+      layers.add(
+        LapTrackLayer(
+          arcLength: layout.arcLengthForMiles(lap1Miles),
+          color: lap1Color,
+          strokeWidth: trackWidth,
+          dyOffset: -3.5,
+        ),
+      );
+      layers.add(
+        LapTrackLayer(
+          arcLength: layout.arcLengthForMiles(lap2Miles),
+          color: lap2Color,
+          strokeWidth: trackWidth,
+          dyOffset: 3.5,
+        ),
+      );
+    } else {
+      // 1 Lap active: Saffron center (0.0)
+      layers.add(
+        LapTrackLayer(
+          arcLength: layout.arcLengthForMiles(lap1Miles),
+          color: lap1Color,
+          strokeWidth: trackWidth,
+          dyOffset: 0.0,
         ),
       );
     }
+
     return layers;
   }
 
@@ -479,8 +512,7 @@ class _VaariRouteTimeline extends StatelessWidget {
   }
 }
 
-/// Paints the snake-shaped route path with base track and concentric
-/// multi-colored lap layers.
+/// Paints separate parallel thin route progress bars for each active lap.
 class _RoutePathPainter extends CustomPainter {
   final VaariRouteLayout layout;
   final Color baseTrackColor;
@@ -494,24 +526,30 @@ class _RoutePathPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // 1. Base route track
-    final basePaint = Paint()
-      ..color = baseTrackColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 24.0
-      ..strokeCap = StrokeCap.round;
-    canvas.drawPath(layout.path, basePaint);
-
-    // 2. Multi-colored concentric lap tracks
     for (final layer in lapLayers) {
-      if (layer.arcLength <= 0) continue;
-      final lapPath = layout.extractCoveredPath(layer.arcLength);
-      final lapPaint = Paint()
-        ..color = layer.color
+      canvas.save();
+      canvas.translate(0, layer.dyOffset);
+
+      // Base gray track for this parallel lane
+      final basePaint = Paint()
+        ..color = baseTrackColor
         ..style = PaintingStyle.stroke
         ..strokeWidth = layer.strokeWidth
         ..strokeCap = StrokeCap.round;
-      canvas.drawPath(lapPath, lapPaint);
+      canvas.drawPath(layout.path, basePaint);
+
+      // Covered path for this parallel lane
+      if (layer.arcLength > 0) {
+        final lapPath = layout.extractCoveredPath(layer.arcLength);
+        final lapPaint = Paint()
+          ..color = layer.color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = layer.strokeWidth
+          ..strokeCap = StrokeCap.round;
+        canvas.drawPath(lapPath, lapPaint);
+      }
+
+      canvas.restore();
     }
   }
 
