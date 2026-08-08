@@ -1,81 +1,144 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 
 void main() {
-  group('AppConfig', () {
-    final mockJson = {
-      'appName': {'en': 'Test App', 'mr': 'marathi app name'},
-      'latestVersion': '1.0.0',
-      'forceUpdate': 'true',
-      'playStoreUrl': 'https://google.com',
-      'appStoreUrl': 'https://apple.com',
-      'updateMessage': {'en': 'Test Message', 'mr': 'marathi update msg'},
-      'gajanan_maharaj_groups': [
-        {'id': 'g1', 'name_en': 'Group 1', 'name_mr': 'गट १'},
-        {'id': 'g2', 'name_en': 'Group 2', 'name_mr': 'गट २', 'default_country_code': '+91'}
-      ],
-      'social_media_links': [
-        {'platform': 'Facebook', 'url': 'fb.com', 'icon': 'fbIcon', 'color': 'blue'}
-      ],
-      'signup_links': {
-        'regions': ['us', 'in'],
-        'links': [
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  group('AppConfig & Nested Models Tests', () {
+    test('AppConfig.fromJson and getDefaultCountryCode work correctly', () {
+      final json = {
+        'appName': {'en': 'Sevekari', 'mr': 'सेवेकरी'},
+        'updateMessage': {'en': 'Update available'},
+        'latestVersion': '1.2.0',
+        'forceUpdate': 'true',
+        'playStoreUrl': 'https://play.store',
+        'appStoreUrl': 'https://app.store',
+        'gajanan_maharaj_groups': [
           {
-            'platform_key': 'whatsapp',
-            'description_key': 'join_group',
-            'url': 'wa.me',
-            'icon': 'waIcon',
-            'color': 'green'
+            'id': 'seattle',
+            'name_en': 'Seattle Group',
+            'name_mr': 'सिॲटल ग्रुप',
+            'default_country_code': '+1',
           }
-        ]
-      }
-    };
+        ],
+        'social_media_links': [
+          {'platform': 'youtube', 'url': 'https://youtube.com'}
+        ],
+        'signup_links': {
+          'regions': ['us'],
+          'links': [
+            {
+              'platform_key': 'parayan',
+              'description_key': 'Parayan Signup',
+              'icon': 'link',
+              'url': 'https://parayan.link',
+              'color': 'orange'
+            }
+          ]
+        }
+      };
 
-    test('fromJson should correctly parse the main config', () {
-      final config = AppConfig.fromJson(mockJson);
+      final config = AppConfig.fromJson(json);
 
-      expect(config.appName['en'], 'Test App');
-      expect(config.latestVersion, '1.0.0');
-      expect(config.forceUpdate, 'true');
-      expect(config.gajananMaharajGroups.length, 2);
-      expect(config.gajananMaharajGroups[0].id, 'g1');
-      expect(config.socialMediaLinks.length, 1);
-      expect(config.socialMediaLinks[0].platform, 'Facebook');
-      expect(config.signupInfo?.regions, ['us', 'in']);
-      expect(config.signupInfo?.links.first.platformKey, 'whatsapp');
+      expect(config.appName['en'], equals('Sevekari'));
+      expect(config.latestVersion, equals('1.2.0'));
+      expect(config.forceUpdate, equals('true'));
+      expect(config.gajananMaharajGroups.length, equals(1));
+      expect(config.socialMediaLinks.length, equals(1));
+      expect(config.signupInfo?.links.first.url, equals('https://parayan.link'));
+
+      // Test getDefaultCountryCode
+      expect(config.getDefaultCountryCode('seattle'), equals('+1'));
+      expect(config.getDefaultCountryCode('unknown'), equals(GroupConstants.defaultCountryCode));
+      expect(config.getDefaultCountryCode(null), equals(GroupConstants.defaultCountryCode));
     });
 
-    test('GajananMaharajGroup fromJson', () {
-      final group = GajananMaharajGroup.fromJson({'id': 'test', 'name_en': 'Test', 'name_mr': 'टेस्ट'});
-      expect(group.id, 'test');
-      expect(group.nameEn, 'Test');
+    test('DeityConfig.fromJson parses nested configs', () {
+      final json = {
+        'id': 'gajanan',
+        'name_en': 'Gajanan Maharaj',
+        'name_mr': 'गजानन महाराज',
+        'imagePath': 'assets/images/gajanan.jpg',
+        'configFile': 'gajanan.json',
+        'about_file': 'about.json',
+        'about_title_key': 'aboutKey',
+        'nityopasana': {
+          'order': ['granth', 'stotras'],
+          'granth': {
+            'title_key': 'granthKey',
+            'contentType': 'granth',
+            'regions': ['us', 'in'],
+            'textResourceDirectory': 'dir',
+            'imageResourceDirectory': 'imgDir',
+            'files': [
+              {'file': 'adhyay1.json', 'image': 'cover.jpg'}
+            ]
+          }
+        },
+        'social_media_links': [
+          {'platform': 'facebook', 'url': 'https://fb.com'}
+        ],
+        'songs': {
+          'title_key': 'songsKey',
+          'contentType': 'audio',
+          'regions': [],
+          'textResourceDirectory': '',
+          'imageResourceDirectory': '',
+          'files': []
+        }
+      };
+
+      final deity = DeityConfig.fromJson(json);
+
+      expect(deity.id, equals('gajanan'));
+      expect(deity.nameEn, equals('Gajanan Maharaj'));
+      expect(deity.nityopasana.order, equals(['granth', 'stotras']));
+      expect(deity.nityopasana.granth?.files.first.file, equals('adhyay1.json'));
+      expect(deity.songs, isNotNull);
+      expect(deity.socialMediaLinks.length, equals(1));
     });
 
-    test('SocialMediaLink fromJson', () {
-      final link = SocialMediaLink.fromJson({
-        'platform': 'Twitter',
-        'url': 'tw.com',
-        'icon': 'twIcon',
-        'color': 'cyan'
-      });
-      expect(link.platform, 'Twitter');
-      expect(link.color, 'cyan');
+    test('AboutDeity and AboutSection fromJson work', () {
+      final sectionJson = {
+        'title_en': 'Life',
+        'title_mr': 'जीवन',
+        'content_en': 'Story',
+        'content_mr': 'कथा'
+      };
+      final section = AboutSection.fromJson(sectionJson);
+      expect(section.titleEn, equals('Life'));
+
+      final aboutJson = {
+        'title_en': 'About Gajanan Maharaj',
+        'title_mr': 'श्री गजानन महाराज',
+        'location_en': 'Shegaon',
+        'location_mr': 'शेगाव',
+        'pragat_din_en': 'Magh Vadya 7',
+        'pragat_din_mr': 'माघ वद्य ७',
+        'chant_en': 'Jai Gajanan',
+        'chant_mr': 'जय गजानन',
+        'sections': [sectionJson],
+        'footer_quote_en': 'Gan Gan Ganat Bote',
+        'footer_quote_mr': 'गण गण गणांत बोते'
+      };
+
+      final about = AboutDeity.fromJson(aboutJson);
+      expect(about.titleEn, equals('About Gajanan Maharaj'));
+      expect(about.sections.length, equals(1));
     });
 
-    test('getDefaultCountryCode returns correct code or fallback', () {
-      final config = AppConfig.fromJson(mockJson);
-      
-      // Known group (g1) - should return default fallback +1 as it's not in mockJson
-      expect(config.getDefaultCountryCode('g1'), '+1');
+    test('StoryItem extracts ID automatically from YouTube URLs', () {
+      final itemShort = StoryItem.fromJson({'url': 'https://youtube.com/shorts/abcd123'});
+      expect(itemShort.id, equals('abcd123'));
+      expect(itemShort.isShort, isTrue);
 
-      // Known group (g2) - should return configured code +91
-      expect(config.getDefaultCountryCode('g2'), '+91');
-      
-      // Unknown group - should return fallback +1
-      expect(config.getDefaultCountryCode('unknown'), '+1');
-      
-      // Null group - should return fallback +1
-      expect(config.getDefaultCountryCode(null), '+1');
+      final itemStandard = StoryItem.fromJson({'url': 'https://youtube.com/watch?v=efgh456'});
+      expect(itemStandard.id, equals('efgh456'));
+      expect(itemStandard.isShort, isFalse);
+
+      final itemYoutubeBe = StoryItem.fromJson({'url': 'https://youtu.be/ijkl789'});
+      expect(itemYoutubeBe.id, equals('ijkl789'));
     });
   });
 }

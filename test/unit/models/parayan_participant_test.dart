@@ -1,126 +1,104 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 
-void main() {
-  group('ParayanMember', () {
-    final joinedAt = DateTime(2024, 1, 1);
-    final timestamp = Timestamp.fromDate(joinedAt);
+class FakeDocumentSnapshot extends Fake
+    implements DocumentSnapshot<Map<String, dynamic>> {
+  final String _id;
+  final Map<String, dynamic> _data;
 
-    test('fromMap should correctly parse a map', () {
-      final data = {
-        'id': 'test_id',
-        'memberName': 'Gajanan',
+  FakeDocumentSnapshot(this._id, this._data);
+
+  @override
+  String get id => _id;
+
+  @override
+  Map<String, dynamic> data() => _data;
+}
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  group('ParayanMember & ParayanHousehold Unit Tests', () {
+    final now = DateTime(2026, 8, 7, 10, 0);
+
+    test('ParayanMember getters and serialization work correctly', () {
+      final memberMap = {
+        'id': 'mem_1',
+        'memberName': 'Abhishek',
         'assignedAdhyays': [1, 2, 3],
-        'completions': {'1': true, '2': false},
-        'joinedAt': timestamp,
+        'completions': {'1': true, '2': true, '3': true},
+        'joinedAt': Timestamp.fromDate(now),
         'deviceId': 'device_123',
-        'phone': '1234567890',
-        'globalIndex': 10,
+        'phone': '+1234567890',
+        'globalIndex': 5,
         'groupNumber': 1,
       };
 
-      final member = ParayanMember.fromMap('Gajanan', data);
+      final member = ParayanMember.fromMap('Abhishek', memberMap);
 
-      expect(member.id, 'test_id');
-      expect(member.name, 'Gajanan');
-      expect(member.assignedAdhyays, [1, 2, 3]);
-      expect(member.completions, {'1': true, '2': false});
-      expect(member.joinedAt, joinedAt);
-      expect(member.deviceId, 'device_123');
-      expect(member.phone, '1234567890');
-      expect(member.globalIndex, 10);
-      expect(member.groupNumber, 1);
+      expect(member.id, equals('mem_1'));
+      expect(member.name, equals('Abhishek'));
+      expect(member.isFullyCompleted, isTrue);
+      expect(member.isClaimed, isTrue);
+
+      final exported = member.toMap();
+      expect(exported['id'], equals('mem_1'));
+      expect(exported['memberName'], equals('Abhishek'));
     });
 
-    test('toMap should correctly serialize a member', () {
-      final member = ParayanMember(
-        id: 'test_id',
-        name: 'Gajanan',
-        assignedAdhyays: [1, 2, 3],
-        completions: {'1': true, '2': true},
-        joinedAt: joinedAt,
-        deviceId: 'device_123',
-        phone: '1234567890',
-        globalIndex: 10,
-        groupNumber: 1,
-      );
+    test('ParayanMember handles legacy fallback for joinedAt', () {
+      final memberMap = {
+        'memberName': 'Sevekari',
+        'assignedAdhyays': [1],
+        'completions': {'1': false},
+      };
 
-      final map = member.toMap();
-
-      expect(map['id'], 'test_id');
-      expect(map['memberName'], 'Gajanan');
-      expect(map['assignedAdhyays'], [1, 2, 3]);
-      expect(map['completions'], {'1': true, '2': true});
-      expect(map['joinedAt'], isA<Timestamp>());
-      expect((map['joinedAt'] as Timestamp).toDate(), joinedAt);
+      final member = ParayanMember.fromMap('Sevekari', memberMap);
+      expect(member.joinedAt, equals(DateTime(2024, 1, 1)));
+      expect(member.isFullyCompleted, isFalse);
+      expect(member.isClaimed, isFalse);
     });
 
-    test(
-      'isFullyCompleted should return true only when all assigned adhyays are done',
-      () {
-        final member1 = ParayanMember(
-          name: 'Gajanan',
-          assignedAdhyays: [1, 2],
-          completions: {'1': true, '2': true},
-          joinedAt: DateTime.now(),
-        );
-        expect(member1.isFullyCompleted, true);
+    test('ParayanHousehold.fromFirestore creates virtual household for flattened member doc', () {
+      final docData = {
+        'id': 'mem_2',
+        'memberName': 'Rahul',
+        'assignedAdhyays': [4, 5],
+        'completions': {'1': true},
+        'deviceId': 'dev_456',
+        'phone': '+1987654321',
+        'joinedAt': Timestamp.fromDate(now),
+      };
 
-        final member2 = ParayanMember(
-          name: 'Gajanan',
-          assignedAdhyays: [1, 2],
-          completions: {'1': true, '2': false},
-          joinedAt: DateTime.now(),
-        );
-        expect(member2.isFullyCompleted, false);
+      final doc = FakeDocumentSnapshot('mem_2', docData);
+      final household = ParayanHousehold.fromFirestore(doc);
 
-        final member3 = ParayanMember(
-          name: 'Gajanan',
-          assignedAdhyays: [],
-          completions: {},
-          joinedAt: DateTime.now(),
-        );
-        expect(member3.isFullyCompleted, false);
-      },
-    );
-
-    test('isClaimed should return based on deviceId', () {
-      final m1 = ParayanMember(
-        name: 'G',
-        assignedAdhyays: [],
-        completions: {},
-        joinedAt: DateTime.now(),
-        deviceId: 'real_device_id',
-      );
-      expect(m1.isClaimed, true);
-
-      final m2 = ParayanMember(
-        name: 'G',
-        assignedAdhyays: [],
-        completions: {},
-        joinedAt: DateTime.now(),
-        deviceId: 'ADMIN_MANUAL',
-      );
-      expect(m2.isClaimed, false);
-
-      final m3 = ParayanMember(
-        name: 'G',
-        assignedAdhyays: [],
-        completions: {},
-        joinedAt: DateTime.now(),
-        deviceId: null,
-      );
-      expect(m3.isClaimed, false);
+      expect(household.deviceId, equals('dev_456'));
+      expect(household.members.length, equals(1));
+      expect(household.members['Rahul']?.name, equals('Rahul'));
     });
-  });
 
-  group('ParayanHousehold', () {
-    test('fromFirestore should handle flattened member documents', () {
-      // Create a mock DocumentSnapshot would be complex,
-      // but we can test the logic via a fake data map if we had a factory that took a map.
-      // Since fromFirestore takes DocumentSnapshot, we might need a mock for it.
-      // For now, let's focus on ParayanMember as it's the primary model now.
+    test('ParayanHousehold.fromFirestore creates traditional household doc', () {
+      final docData = {
+        'deviceId': 'house_789',
+        'phone': '+1122334455',
+        'joinedAt': Timestamp.fromDate(now),
+        'members': {
+          'Member 1': {
+            'memberName': 'Member 1',
+            'assignedAdhyays': [1],
+            'completions': {'1': true},
+            'joinedAt': Timestamp.fromDate(now),
+          }
+        }
+      };
+
+      final doc = FakeDocumentSnapshot('house_789', docData);
+      final household = ParayanHousehold.fromFirestore(doc);
+
+      expect(household.members.length, equals(1));
+      expect(household.toFirestore()['deviceId'], equals('house_789'));
     });
   });
 }

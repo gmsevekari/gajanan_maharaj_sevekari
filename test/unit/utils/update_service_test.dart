@@ -1,40 +1,56 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:gajanan_maharaj_sevekari/utils/update_service.dart';
-import '../../mocks.dart';
 
 void main() {
-  late MockFirestore mockFirestore;
-  late MockCollectionReference mockCollection;
-  late MockDocumentReference mockDocument;
-  late MockDocumentSnapshot mockSnapshot;
+  TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() {
-    mockFirestore = MockFirestore();
-    mockCollection = MockCollectionReference();
-    mockDocument = MockDocumentReference();
-    mockSnapshot = MockDocumentSnapshot();
-
-    when(() => mockFirestore.collection('app_config')).thenReturn(mockCollection);
-    when(() => mockCollection.doc('version')).thenReturn(mockDocument);
-    when(() => mockDocument.get()).thenAnswer((_) async => mockSnapshot);
+    PackageInfo.setMockInitialValues(
+      appName: 'Gajanan Maharaj Sevekari',
+      packageName: 'com.sevekari.app',
+      version: '1.0.0',
+      buildNumber: '1',
+      buildSignature: '',
+    );
   });
 
-  group('UpdateService', () {
-    // Note: UpdateService uses Singleton and PackageInfo.fromPlatform() which is hard to mock in plain test.
-    // For unit testing the logic, we should ideally refactor it or test the mapping logic specifically.
-    // Since it's a singleton with internal Firestore instance, we'll focus on what's testable.
-    
-    test('UpdateResult properties', () {
-      final result = UpdateResult(
+  group('UpdateService & UpdateResult Unit Tests', () {
+    test('UpdateResult holds properties correctly', () {
+      final forcedResult = UpdateResult(
         type: UpdateType.forced,
         latestVersion: '2.0.0',
         currentVersion: '1.0.0',
-        storeUrl: 'http://store',
+        storeUrl: 'https://store.url',
       );
-      expect(result.type, UpdateType.forced);
-      expect(result.latestVersion, '2.0.0');
+      expect(forcedResult.type, equals(UpdateType.forced));
+      expect(forcedResult.latestVersion, equals('2.0.0'));
+      expect(forcedResult.currentVersion, equals('1.0.0'));
+      expect(forcedResult.storeUrl, equals('https://store.url'));
+
+      final recommendedResult = UpdateResult(
+        type: UpdateType.recommended,
+        latestVersion: '1.1.0',
+        currentVersion: '1.0.0',
+        storeUrl: 'https://store.url',
+      );
+      expect(recommendedResult.type, equals(UpdateType.recommended));
+
+      final noneResult = UpdateResult(
+        type: UpdateType.none,
+        latestVersion: '1.0.0',
+        currentVersion: '1.0.0',
+        storeUrl: '',
+      );
+      expect(noneResult.type, equals(UpdateType.none));
+    });
+
+    test('checkForUpdate fails gracefully on uninitialized Firebase and returns UpdateType.none', () async {
+      final service = UpdateService();
+      final result = await service.checkForUpdate();
+
+      expect(result.type, equals(UpdateType.none));
+      expect(result.currentVersion, equals('1.0.0'));
     });
   });
 }

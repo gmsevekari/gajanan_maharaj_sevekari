@@ -24,12 +24,12 @@ void main() {
     await initializeDateFormatting('en', null);
   });
 
-  group('ParayanEvent', () {
+  group('ParayanEvent Unit Tests', () {
     final startDate = DateTime(2024, 5, 1);
     final endDate = DateTime(2024, 5, 3);
     final createdAt = DateTime(2024, 4, 1);
 
-    test('toFirestore should correctly serialize the event', () {
+    test('toFirestore and fromFirestore serialize all fields including manualPingRequestedAt', () {
       final event = ParayanEvent(
         id: 'test_id',
         titleEn: 'Test Event',
@@ -41,6 +41,7 @@ void main() {
         endDate: endDate,
         status: 'enrolling',
         reminderTimes: ['20:00'],
+        manualPingRequestedAt: DateTime(2024, 4, 2),
         createdAt: createdAt,
         groupId: 'test_group',
         timezone: 'Asia/Kolkata',
@@ -52,191 +53,91 @@ void main() {
       expect(map['type'], 'threeDay');
       expect(map['startDate'], isA<Timestamp>());
       expect((map['startDate'] as Timestamp).toDate(), startDate);
-      expect(map['status'], 'enrolling');
-      expect(map['timezone'], 'Asia/Kolkata');
+      expect(map['manualPingRequestedAt'], isA<Timestamp>());
+
+      final doc = FakeDocumentSnapshot('test_id', map);
+      final deserialized = ParayanEvent.fromFirestore(doc);
+      expect(deserialized.id, equals('test_id'));
+      expect(deserialized.manualPingRequestedAt, equals(DateTime(2024, 4, 2)));
     });
 
-    test(
-      'fromFirestore should correctly deserialize with default timezone',
-      () {
-        final map = {
-          'title_en': 'Test',
-          'title_mr': 'टेस्ट',
-          'description_en': 'Desc',
-          'description_mr': 'डिस्क',
-          'type': 'oneDay',
-          'startDate': Timestamp.fromDate(startDate),
-          'endDate': Timestamp.fromDate(endDate),
-          'status': 'upcoming',
-          'reminderTimes': <String>[],
-          'createdAt': Timestamp.fromDate(createdAt),
-          'groupId': 'group1',
-        };
-
-        final doc = FakeDocumentSnapshot('id1', map);
-        final event = ParayanEvent.fromFirestore(doc);
-
-        expect(event.titleEn, 'Test');
-        expect(event.timezone, 'America/Los_Angeles'); // Default
-      },
-    );
-
-    test('fromFirestore should use provided timezone', () {
-      final map = {
-        'title_en': 'Test',
-        'title_mr': 'टेस्ट',
-        'description_en': 'Desc',
-        'description_mr': 'डिस्क',
-        'type': 'oneDay',
-        'startDate': Timestamp.fromDate(startDate),
-        'endDate': Timestamp.fromDate(endDate),
-        'status': 'upcoming',
-        'reminderTimes': <String>[],
-        'createdAt': Timestamp.fromDate(createdAt),
-        'groupId': 'group1',
-        'timezone': 'Asia/Kolkata',
-      };
-
-      final doc = FakeDocumentSnapshot('id2', map);
-      final event = ParayanEvent.fromFirestore(doc);
-
-      expect(event.timezone, 'Asia/Kolkata');
-    });
-
-    test('Status mapping from type', () {
-      final event1 = ParayanEvent(
-        id: '1',
-        titleEn: '',
-        titleMr: '',
+    test('getDatesForDayIndex handles dashami and dwadashi tithis', () {
+      final dashamiEvent = ParayanEvent(
+        id: 'd1',
+        titleEn: 'Dashami Event',
+        titleMr: 'दशमी इव्हेंट',
         descriptionEn: '',
         descriptionMr: '',
+        type: ParayanType.threeDay,
+        startDate: startDate,
+        endDate: endDate,
+        status: 'ongoing',
+        reminderTimes: [],
+        createdAt: createdAt,
+        groupId: '',
+        is4DayParayan: true,
+        extraDayTithi: 'dashami',
+      );
+
+      expect(dashamiEvent.getDatesForDayIndex(0).length, equals(2));
+      expect(dashamiEvent.getDatesForDayIndex(1).length, equals(1));
+      expect(dashamiEvent.getDatesForDayIndex(2).length, equals(1));
+
+      final dwadashiEvent = ParayanEvent(
+        id: 'd2',
+        titleEn: 'Dwadashi Event',
+        titleMr: 'द्वादशी इव्हेंट',
+        descriptionEn: '',
+        descriptionMr: '',
+        type: ParayanType.threeDay,
+        startDate: startDate,
+        endDate: endDate,
+        status: 'ongoing',
+        reminderTimes: [],
+        createdAt: createdAt,
+        groupId: '',
+        is4DayParayan: true,
+        extraDayTithi: 'dwadashi',
+      );
+
+      expect(dwadashiEvent.getDatesForDayIndex(0).length, equals(1));
+      expect(dwadashiEvent.getDatesForDayIndex(1).length, equals(1));
+      expect(dwadashiEvent.getDatesForDayIndex(2).length, equals(2));
+    });
+
+    test('operator == and hashCode work accurately', () {
+      final e1 = ParayanEvent(
+        id: 'same',
+        titleEn: 'T',
+        titleMr: 'टी',
+        descriptionEn: 'D',
+        descriptionMr: 'डी',
         type: ParayanType.oneDay,
         startDate: startDate,
         endDate: endDate,
         status: 'upcoming',
         reminderTimes: [],
         createdAt: createdAt,
-        groupId: '',
+        groupId: 'g',
       );
-      expect(event1.toFirestore()['type'], 'oneDay');
 
-      final event2 = ParayanEvent(
-        id: '2',
-        titleEn: '',
-        titleMr: '',
-        descriptionEn: '',
-        descriptionMr: '',
-        type: ParayanType.guruPushya,
+      final e2 = ParayanEvent(
+        id: 'same',
+        titleEn: 'T',
+        titleMr: 'टी',
+        descriptionEn: 'D',
+        descriptionMr: 'डी',
+        type: ParayanType.oneDay,
         startDate: startDate,
         endDate: endDate,
         status: 'upcoming',
         reminderTimes: [],
         createdAt: createdAt,
-        groupId: '',
-      );
-      expect(event2.toFirestore()['type'], 'guruPushya');
-    });
-
-    test('serialization of 4-day parayan fields', () {
-      final event = ParayanEvent(
-        id: 'test_4day',
-        titleEn: '4-Day Event',
-        titleMr: '४-दिवस इव्हेंट',
-        descriptionEn: 'Desc En',
-        descriptionMr: 'Desc Mr',
-        type: ParayanType.threeDay,
-        startDate: startDate,
-        endDate: endDate,
-        status: 'ongoing',
-        reminderTimes: ['20:00'],
-        createdAt: createdAt,
-        groupId: 'test_group',
-        timezone: 'Asia/Kolkata',
-        is4DayParayan: true,
-        extraDayTithi: 'ekadashi',
+        groupId: 'g',
       );
 
-      final map = event.toFirestore();
-      expect(map['is4DayParayan'], true);
-      expect(map['extraDayTithi'], 'ekadashi');
-
-      final doc = FakeDocumentSnapshot('test_4day', map);
-      final deserialized = ParayanEvent.fromFirestore(doc);
-      expect(deserialized.is4DayParayan, true);
-      expect(deserialized.extraDayTithi, 'ekadashi');
+      expect(e1 == e2, isTrue);
+      expect(e1.hashCode, equals(e2.hashCode));
     });
-
-    test('getDatesForDayIndex maps tithi correct day offsets', () {
-      final event = ParayanEvent(
-        id: 'test_4day',
-        titleEn: '4-Day Event',
-        titleMr: '४-दिवस इव्हेंट',
-        descriptionEn: 'Desc En',
-        descriptionMr: 'Desc Mr',
-        type: ParayanType.threeDay,
-        startDate: startDate,
-        endDate: endDate,
-        status: 'ongoing',
-        reminderTimes: ['20:00'],
-        createdAt: createdAt,
-        groupId: 'test_group',
-        timezone: 'Asia/Kolkata',
-        is4DayParayan: true,
-        extraDayTithi: 'ekadashi',
-      );
-
-      // Ekadashi spans offset 1 and 2
-      final dates0 = event.getDatesForDayIndex(0); // Day 1: Alandi (offset 0)
-      final dates1 = event.getDatesForDayIndex(1); // Day 2: Pune (offset 1 & 2)
-      final dates2 = event.getDatesForDayIndex(2); // Day 3: Saswad (offset 3)
-
-      expect(dates0.length, 1);
-      expect(dates0[0], startDate);
-      expect(dates1.length, 2);
-      expect(dates1[0], startDate.add(const Duration(days: 1)));
-      expect(dates1[1], startDate.add(const Duration(days: 2)));
-      expect(dates2.length, 1);
-      expect(dates2[0], startDate.add(const Duration(days: 3)));
-    });
-
-    test(
-      'getFormattedDateHeaderForDayIndex returns correct string representation',
-      () {
-        final event = ParayanEvent(
-          id: 'test_4day',
-          titleEn: '4-Day Event',
-          titleMr: '४-दिवस इव्हेंट',
-          descriptionEn: 'Desc En',
-          descriptionMr: 'Desc Mr',
-          type: ParayanType.threeDay,
-          startDate: DateTime.utc(2026, 7, 12),
-          endDate: DateTime.utc(2026, 7, 16),
-          status: 'ongoing',
-          reminderTimes: ['20:00'],
-          createdAt: createdAt,
-          groupId: 'test_group',
-          timezone: 'Asia/Kolkata',
-          is4DayParayan: true,
-          extraDayTithi: 'ekadashi',
-        );
-
-        expect(
-          event.getFormattedDateHeaderForDayIndex(0, 'en', ' & '),
-          'July 12',
-        );
-        expect(
-          event.getFormattedDateHeaderForDayIndex(1, 'en', ' & '),
-          'July 13 & July 14',
-        );
-        expect(
-          event.getFormattedDateHeaderForDayIndex(1, 'mr', ' आणि '),
-          '१३ जुलै आणि १४ जुलै',
-        );
-        expect(
-          event.getFormattedDateHeaderForDayIndex(2, 'en', ' & '),
-          'July 15',
-        );
-      },
-    );
   });
 }

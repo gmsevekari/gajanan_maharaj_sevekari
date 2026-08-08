@@ -9,47 +9,51 @@ class MockGoogleSignIn extends Mock implements GoogleSignIn {}
 class MockUser extends Mock implements User {}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late MockFirebaseAuth mockAuth;
-  late MockGoogleSignIn mockGoogleSignIn;
+  late MockGoogleSignIn mockGoogle;
   late MockUser mockUser;
 
   setUp(() {
     mockAuth = MockFirebaseAuth();
-    mockGoogleSignIn = MockGoogleSignIn();
+    mockGoogle = MockGoogleSignIn();
     mockUser = MockUser();
-    
-    // Default stub: no user logged in
+
     when(() => mockAuth.currentUser).thenReturn(null);
+    when(() => mockAuth.signOut()).thenAnswer((_) async => {});
+    when(() => mockGoogle.signOut()).thenAnswer((_) async => null);
   });
 
-  group('AdminSessionService Logic', () {
-    test('startSession should initialize without error', () {
-      AdminSessionService.startSession();
-      // Verifying no crash
-      expect(true, true);
-    });
-
-    test('registerInteraction should not crash with mock auth (logged out)', () {
-      AdminSessionService.startSession();
-      AdminSessionService.registerInteraction(auth: mockAuth);
-      // Verifying no crash
-      expect(true, true);
-    });
-
-    test('registerInteraction should work with logged in user', () {
-      when(() => mockAuth.currentUser).thenReturn(mockUser);
-      
-      AdminSessionService.startSession();
-      // This should reset the timer without crashing
-      AdminSessionService.registerInteraction(auth: mockAuth);
-      expect(true, true);
-    });
-
-    test('clearSession should cancel timer without error', () {
+  group('AdminSessionService Logic Unit Tests', () {
+    test('startSession initializes session timer', () {
       AdminSessionService.startSession();
       AdminSessionService.clearSession();
-      // Verifying no crash
-      expect(true, true);
+    });
+
+    test('registerInteraction returns early when user is logged out', () {
+      when(() => mockAuth.currentUser).thenReturn(null);
+
+      AdminSessionService.startSession();
+      AdminSessionService.registerInteraction(auth: mockAuth);
+
+      verifyNever(() => mockAuth.signOut());
+    });
+
+    test('registerInteraction resets session when user is logged in and active', () {
+      when(() => mockAuth.currentUser).thenReturn(mockUser);
+
+      AdminSessionService.startSession();
+      AdminSessionService.registerInteraction(auth: mockAuth);
+
+      verifyNever(() => mockAuth.signOut());
+      AdminSessionService.clearSession();
+    });
+
+    test('clearSession cleanly cancels active session timer', () {
+      AdminSessionService.startSession();
+      AdminSessionService.clearSession();
+      AdminSessionService.clearSession();
     });
   });
 }
