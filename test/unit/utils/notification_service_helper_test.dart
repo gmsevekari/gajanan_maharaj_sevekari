@@ -13,6 +13,8 @@ void main() {
 
   setUp(() {
     mockMessaging = MockFirebaseMessaging();
+    NotificationServiceHelper.overrideMessaging = mockMessaging;
+
     when(() => mockMessaging.subscribeToTopic(any()))
         .thenAnswer((_) async => {});
     when(() => mockMessaging.unsubscribeFromTopic(any()))
@@ -31,7 +33,6 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       final storedJson = prefs.getString(pendingKey);
 
-      // If subscriptions processed synchronously in test context, queue may clear or hold remaining
       if (storedJson != null) {
         final List<String> pending = List<String>.from(json.decode(storedJson));
         expect(pending, isNotNull);
@@ -54,6 +55,10 @@ void main() {
         final List<String> pending = List<String>.from(json.decode(storedJson));
         expect(pending.where((t) => t == 'topic1').length, equals(1));
       }
+    });
+
+    test('processOnStartup triggers delayed processing without throwing', () async {
+      await NotificationServiceHelper.processOnStartup();
     });
 
     test('unsubscribeFromEventTopics handles unsubscription loop without throwing', () async {

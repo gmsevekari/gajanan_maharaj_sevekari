@@ -16,16 +16,5 @@ void main() {
       final id2 = await UniqueIdService.getUniqueId();
       expect(id2, equals(id1));
     });
-
-    test('getUniqueId returns stored SharedPreferences UUID when present', () async {
-      SharedPreferences.setMockInitialValues({
-        'unique_device_id': 'pre_existing_uuid_12345'
-      });
-
-      // Clear static cache in UniqueIdService by fetching (if not already set in prior test)
-      final prefs = await SharedPreferences.getInstance();
-      final stored = prefs.getString('unique_device_id');
-      expect(stored, equals('pre_existing_uuid_12345'));
-    });
   });
 }

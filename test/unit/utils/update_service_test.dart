@@ -45,6 +45,12 @@ void main() {
       expect(noneResult.type, equals(UpdateType.none));
     });
 
+    test('UpdateType enum contains expected values', () {
+      expect(UpdateType.values, contains(UpdateType.none));
+      expect(UpdateType.values, contains(UpdateType.recommended));
+      expect(UpdateType.values, contains(UpdateType.forced));
+    });
+
     test('checkForUpdate fails gracefully on uninitialized Firebase and returns UpdateType.none', () async {
       final service = UpdateService();
       final result = await service.checkForUpdate();
