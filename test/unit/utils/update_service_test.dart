@@ -49,6 +49,7 @@ void main() {
       expect(UpdateType.values, contains(UpdateType.none));
       expect(UpdateType.values, contains(UpdateType.recommended));
       expect(UpdateType.values, contains(UpdateType.forced));
+      expect(UpdateType.values.length, equals(3));
     });
 
     test('checkForUpdate fails gracefully on uninitialized Firebase and returns UpdateType.none', () async {
@@ -57,6 +58,46 @@ void main() {
 
       expect(result.type, equals(UpdateType.none));
       expect(result.currentVersion, equals('1.0.0'));
+    });
+
+    test('UpdateResult storeUrl is accessible', () {
+      final result = UpdateResult(
+        type: UpdateType.recommended,
+        latestVersion: '2.0.0',
+        currentVersion: '1.5.0',
+        storeUrl: 'https://apps.apple.com/app/id123456',
+      );
+      expect(result.storeUrl, equals('https://apps.apple.com/app/id123456'));
+      expect(result.latestVersion, equals('2.0.0'));
+      expect(result.currentVersion, equals('1.5.0'));
+    });
+
+    test('UpdateService factory returns singleton instance', () {
+      final s1 = UpdateService();
+      final s2 = UpdateService();
+      expect(identical(s1, s2), isTrue);
+    });
+
+    test('UpdateResult with empty strings is valid', () {
+      final result = UpdateResult(
+        type: UpdateType.none,
+        latestVersion: '',
+        currentVersion: '',
+        storeUrl: '',
+      );
+      expect(result.latestVersion, equals(''));
+      expect(result.currentVersion, equals(''));
+      expect(result.storeUrl, equals(''));
+      expect(result.type, equals(UpdateType.none));
+    });
+
+    test('checkForUpdate called multiple times returns consistent type', () async {
+      final service = UpdateService();
+      final result1 = await service.checkForUpdate();
+      final result2 = await service.checkForUpdate();
+      // Both should be none since Firebase is not initialized
+      expect(result1.type, equals(UpdateType.none));
+      expect(result2.type, equals(UpdateType.none));
     });
   });
 }

@@ -4,8 +4,12 @@ import 'package:gajanan_maharaj_sevekari/utils/deeplink_manager.dart';
 void main() {
   group('DeepLinkManager', () {
     setUp(() {
-      // Clear pending state before each test if possible
-      // Since fields are private and static, we'll try to consume them
+      // Clear pending state before each test
+      DeepLinkManager.consumePendingRoute();
+    });
+
+    tearDown(() {
+      // Clean up after each test
       DeepLinkManager.consumePendingRoute();
     });
 
@@ -29,6 +33,14 @@ void main() {
 
     test('consumePendingRoute returns null when no route set', () {
       expect(DeepLinkManager.consumePendingRoute(), isNull);
+    });
+
+    test('hasPendingRoute is true when route is set, false after consumption', () {
+      expect(DeepLinkManager.hasPendingRoute, isFalse);
+      DeepLinkManager.setPendingRoute('/my-route', null);
+      expect(DeepLinkManager.hasPendingRoute, isTrue);
+      DeepLinkManager.consumePendingRoute();
+      expect(DeepLinkManager.hasPendingRoute, isFalse);
     });
 
     test('setPendingRoute and consumePendingRoute work correctly', () {
