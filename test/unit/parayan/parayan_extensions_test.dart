@@ -49,7 +49,22 @@ void main() {
       groupId: 'g1',
     );
 
-    test('getSmartDate handles same day and multi day events with time formatting', () {
+    final guruPushyaEvent = ParayanEvent(
+      id: 'e3',
+      titleEn: 'Guru Pushya Parayan',
+      titleMr: 'गुरुपुष्य पारायण',
+      descriptionEn: 'Description En',
+      descriptionMr: 'माहिती म्',
+      startDate: start,
+      endDate: endSameDay,
+      type: ParayanType.guruPushya,
+      status: 'allocated',
+      reminderTimes: const ['08:00'],
+      createdAt: start,
+      groupId: 'g1',
+    );
+
+    test('getSmartDate handles all parayan types and includeTime options', () {
       final oneDayStr = oneDayEvent.getSmartDate('en');
       expect(oneDayStr, contains('Tuesday, July 21, 2026'));
 
@@ -57,9 +72,15 @@ void main() {
       expect(threeDayStr, contains('Tuesday, July 21'));
       expect(threeDayStr, contains('Thursday, July 23, 2026'));
       expect(threeDayStr, contains('6:00 am - 6:00 pm'));
+
+      final threeDayNoTime = threeDayEvent.getSmartDate('en', includeTime: false);
+      expect(threeDayNoTime, isNot(contains('6:00 am')));
+
+      final guruPushyaStr = guruPushyaEvent.getSmartDate('en');
+      expect(guruPushyaStr, contains('6:00 am - 6:00 pm'));
     });
 
-    testWidgets('getDescriptiveStatus returns correct localization string per status', (WidgetTester tester) async {
+    testWidgets('getDescriptiveStatus covers all status branches for standard and preallocated wording', (WidgetTester tester) async {
       late AppLocalizations l10n;
       await tester.pumpWidget(
         MaterialApp(
@@ -72,46 +93,79 @@ void main() {
         ),
       );
 
-      // Testing statuses for standard wording
+      // Standard wording branches
       expect(oneDayEvent.getDescriptiveStatus(l10n, 'en'), contains('July 21, 2026'));
+      expect(threeDayEvent.getDescriptiveStatus(l10n, 'en'), contains('July 21, 2026'));
+
+      final enrollingEvent = ParayanEvent(
+        id: 'e1',
+        titleEn: 'Event',
+        titleMr: 'इव्हेंट',
+        descriptionEn: '',
+        descriptionMr: '',
+        startDate: start,
+        endDate: endSameDay,
+        type: ParayanType.oneDay,
+        status: 'enrolling',
+        reminderTimes: const [],
+        createdAt: start,
+        groupId: 'g1',
+      );
+      expect(enrollingEvent.getDescriptiveStatus(l10n, 'en'), equals(l10n.statusEnrollingDesc('July 21, 2026')));
+
+      expect(guruPushyaEvent.getDescriptiveStatus(l10n, 'en'), equals(l10n.statusAllocatedDesc('July 21, 2026')));
+
+      final unknownStatusEvent = ParayanEvent(
+        id: 'e1',
+        titleEn: 'Event',
+        titleMr: 'इव्हेंट',
+        descriptionEn: '',
+        descriptionMr: '',
+        startDate: start,
+        endDate: endSameDay,
+        type: ParayanType.oneDay,
+        status: 'unknown_status',
+        reminderTimes: const [],
+        createdAt: start,
+        groupId: 'g1',
+      );
+      expect(unknownStatusEvent.getDescriptiveStatus(l10n, 'en'), isEmpty);
+      expect(unknownStatusEvent.getDescriptiveStatus(l10n, 'en', usePreallocatedWording: true), isEmpty);
+
+      // Preallocated wording branches
+      expect(guruPushyaEvent.getDescriptiveStatus(l10n, 'en', usePreallocatedWording: true), contains('July 21, 2026'));
 
       final ongoingEvent = ParayanEvent(
         id: 'e1',
-        titleEn: 'One Day Parayan',
-        titleMr: 'एक दिवशीय पारायण',
-        descriptionEn: 'Description En',
-        descriptionMr: 'माहिती म्',
+        titleEn: 'Event',
+        titleMr: 'इव्हेंट',
+        descriptionEn: '',
+        descriptionMr: '',
         startDate: start,
         endDate: endSameDay,
         type: ParayanType.oneDay,
         status: 'ongoing',
-        reminderTimes: const ['08:00'],
+        reminderTimes: const [],
         createdAt: start,
         groupId: 'g1',
       );
-      expect(ongoingEvent.getDescriptiveStatus(l10n, 'en'), equals(l10n.statusOngoingDesc));
+      expect(ongoingEvent.getDescriptiveStatus(l10n, 'en', usePreallocatedWording: true), equals(l10n.statusOngoingDesc));
 
       final completedEvent = ParayanEvent(
         id: 'e1',
-        titleEn: 'One Day Parayan',
-        titleMr: 'एक दिवशीय पारायण',
-        descriptionEn: 'Description En',
-        descriptionMr: 'माहिती म्',
+        titleEn: 'Event',
+        titleMr: 'इव्हेंट',
+        descriptionEn: '',
+        descriptionMr: '',
         startDate: start,
         endDate: endSameDay,
         type: ParayanType.oneDay,
         status: 'completed',
-        reminderTimes: const ['08:00'],
+        reminderTimes: const [],
         createdAt: start,
         groupId: 'g1',
       );
-      expect(completedEvent.getDescriptiveStatus(l10n, 'en'), equals(l10n.statusCompletedDesc));
-
-      // Preallocated wording
-      expect(
-        threeDayEvent.getDescriptiveStatus(l10n, 'en', usePreallocatedWording: true),
-        contains('July 21, 2026'),
-      );
+      expect(completedEvent.getDescriptiveStatus(l10n, 'en', usePreallocatedWording: true), equals(l10n.statusCompletedDesc));
     });
   });
 }
