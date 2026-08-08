@@ -93,10 +93,28 @@ void main() {
         ),
       );
 
-      // Standard wording branches
-      expect(oneDayEvent.getDescriptiveStatus(l10n, 'en'), contains('July 21, 2026'));
-      expect(threeDayEvent.getDescriptiveStatus(l10n, 'en'), contains('July 21, 2026'));
+      // Standard wording branches:
+      // 1. upcoming oneDay (hits line 61)
+      final upcomingOneDay = ParayanEvent(
+        id: 'u1',
+        titleEn: 'Event',
+        titleMr: 'इव्हेंट',
+        descriptionEn: '',
+        descriptionMr: '',
+        startDate: start,
+        endDate: endSameDay,
+        type: ParayanType.oneDay,
+        status: 'upcoming',
+        reminderTimes: const [],
+        createdAt: start,
+        groupId: 'g1',
+      );
+      expect(upcomingOneDay.getDescriptiveStatus(l10n, 'en'), equals(l10n.statusUpcomingOneDay('July 21, 2026')));
 
+      // 2. upcoming multiDay (hits line 62)
+      expect(threeDayEvent.getDescriptiveStatus(l10n, 'en'), equals(l10n.statusUpcomingMultiDay('July 21, 2026')));
+
+      // 3. enrolling (hits line 64)
       final enrollingEvent = ParayanEvent(
         id: 'e1',
         titleEn: 'Event',
@@ -113,8 +131,44 @@ void main() {
       );
       expect(enrollingEvent.getDescriptiveStatus(l10n, 'en'), equals(l10n.statusEnrollingDesc('July 21, 2026')));
 
+      // 4. allocated (hits line 66)
       expect(guruPushyaEvent.getDescriptiveStatus(l10n, 'en'), equals(l10n.statusAllocatedDesc('July 21, 2026')));
 
+      // 5. ongoing standard (hits line 68)
+      final ongoingEvent = ParayanEvent(
+        id: 'e1',
+        titleEn: 'Event',
+        titleMr: 'इव्हेंट',
+        descriptionEn: '',
+        descriptionMr: '',
+        startDate: start,
+        endDate: endSameDay,
+        type: ParayanType.oneDay,
+        status: 'ongoing',
+        reminderTimes: const [],
+        createdAt: start,
+        groupId: 'g1',
+      );
+      expect(ongoingEvent.getDescriptiveStatus(l10n, 'en'), equals(l10n.statusOngoingDesc));
+
+      // 6. completed standard (hits line 70)
+      final completedEvent = ParayanEvent(
+        id: 'e1',
+        titleEn: 'Event',
+        titleMr: 'इव्हेंट',
+        descriptionEn: '',
+        descriptionMr: '',
+        startDate: start,
+        endDate: endSameDay,
+        type: ParayanType.oneDay,
+        status: 'completed',
+        reminderTimes: const [],
+        createdAt: start,
+        groupId: 'g1',
+      );
+      expect(completedEvent.getDescriptiveStatus(l10n, 'en'), equals(l10n.statusCompletedDesc));
+
+      // 7. default unknown status
       final unknownStatusEvent = ParayanEvent(
         id: 'e1',
         titleEn: 'Event',
@@ -134,37 +188,7 @@ void main() {
 
       // Preallocated wording branches
       expect(guruPushyaEvent.getDescriptiveStatus(l10n, 'en', usePreallocatedWording: true), contains('July 21, 2026'));
-
-      final ongoingEvent = ParayanEvent(
-        id: 'e1',
-        titleEn: 'Event',
-        titleMr: 'इव्हेंट',
-        descriptionEn: '',
-        descriptionMr: '',
-        startDate: start,
-        endDate: endSameDay,
-        type: ParayanType.oneDay,
-        status: 'ongoing',
-        reminderTimes: const [],
-        createdAt: start,
-        groupId: 'g1',
-      );
       expect(ongoingEvent.getDescriptiveStatus(l10n, 'en', usePreallocatedWording: true), equals(l10n.statusOngoingDesc));
-
-      final completedEvent = ParayanEvent(
-        id: 'e1',
-        titleEn: 'Event',
-        titleMr: 'इव्हेंट',
-        descriptionEn: '',
-        descriptionMr: '',
-        startDate: start,
-        endDate: endSameDay,
-        type: ParayanType.oneDay,
-        status: 'completed',
-        reminderTimes: const [],
-        createdAt: start,
-        groupId: 'g1',
-      );
       expect(completedEvent.getDescriptiveStatus(l10n, 'en', usePreallocatedWording: true), equals(l10n.statusCompletedDesc));
     });
   });
