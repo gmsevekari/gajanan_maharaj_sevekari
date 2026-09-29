@@ -100,5 +100,34 @@ void main() {
         'https://wa.me/1234567890',
       ]);
     });
+
+    testWidgets(
+      'keeps only a single leading + when the phone has a stray internal + '
+      '(regression: a malformed number used to produce an sms: URI with '
+      'multiple embedded +)',
+      (tester) async {
+        await tester.pumpWidget(createWidget('+1-555+123-4567'));
+
+        await tester.tap(find.byTooltip('Text'));
+        await tester.pumpAndSettle();
+
+        expect(fakeLauncher.launchedUrls, ['sms:+15551234567']);
+      },
+    );
+
+    testWidgets(
+      'does not crash and launches an empty-target link when the phone has '
+      'no digits',
+      (tester) async {
+        await tester.pumpWidget(createWidget('N/A'));
+
+        await tester.tap(find.byTooltip('Text'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byTooltip('WhatsApp'));
+        await tester.pumpAndSettle();
+
+        expect(fakeLauncher.launchedUrls, ['sms:', 'https://wa.me/']);
+      },
+    );
   });
 }
