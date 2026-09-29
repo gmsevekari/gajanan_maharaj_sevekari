@@ -49,7 +49,7 @@ dependencies:
   youtube_player_iframe: ^6.0.2
   share_plus: ^13.1.0
   firebase_messaging: ^16.1.1
-  app_settings: ^8.0.3
+  app_settings: ^9.0.0
   package_info_plus: ^10.1.0
   audioplayers: ^6.6.0
   wakelock_plus: ^1.4.0
