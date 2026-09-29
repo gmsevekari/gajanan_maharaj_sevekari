@@ -13,7 +13,7 @@ import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:gajanan_maharaj_sevekari/admin/widgets/participant_contact_actions.dart';
 import 'dart:io';
 import 'package:gajanan_maharaj_sevekari/admin/admin_parayan_add_participants_screen.dart';
 import 'package:screenshot/screenshot.dart';
@@ -1201,7 +1201,6 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
     ParayanEvent event,
     int groupNumber,
   ) {
-    final theme = Theme.of(context);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final start = DateTime(
@@ -1229,24 +1228,10 @@ class _AdminParayanDetailScreenState extends State<AdminParayanDetailScreen>
                       ListTile(
                         leading: const Icon(Icons.phone),
                         title: Text(member.phone!),
-                        trailing: IconButton(
-                          icon: Icon(
-                            Icons.message,
-                            color: theme.appColors.success,
-                          ),
-                          onPressed: () async {
-                            final number = member.phone!.replaceAll(
-                              RegExp(r"\D"),
-                              "",
-                            );
-                            final url = 'https://wa.me/$number';
-                            if (await canLaunchUrl(Uri.parse(url))) {
-                              await launchUrl(
-                                Uri.parse(url),
-                                mode: LaunchMode.externalApplication,
-                              );
-                            }
-                          },
+                        trailing: ParticipantContactActions(
+                          phone: member.phone!,
+                          textTooltip: l10n.sendTextTooltip,
+                          whatsAppTooltip: l10n.whatsapp,
                         ),
                         visualDensity: VisualDensity.compact,
                         contentPadding: EdgeInsets.zero,

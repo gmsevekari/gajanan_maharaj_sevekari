@@ -438,6 +438,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get whatsapp => 'व्हॉट्सॲप';
 
   @override
+  String get sendTextTooltip => 'मजकूर पाठवा';
+
+  @override
   String get officialPage => 'अधिकृत पेज';
 
   @override

@@ -439,6 +439,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whatsapp => 'WhatsApp';
 
   @override
+  String get sendTextTooltip => 'Text';
+
+  @override
   String get officialPage => 'Official Page';
 
   @override

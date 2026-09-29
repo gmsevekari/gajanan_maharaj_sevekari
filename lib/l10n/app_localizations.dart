@@ -933,6 +933,12 @@ abstract class AppLocalizations {
   /// **'WhatsApp'**
   String get whatsapp;
 
+  /// No description provided for @sendTextTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get sendTextTooltip;
+
   /// No description provided for @officialPage.
   ///
   /// In en, this message translates to:
