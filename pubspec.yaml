@@ -49,6 +49,11 @@ dependencies:
   youtube_player_iframe: ^6.0.2
   share_plus: ^13.1.0
   firebase_messaging: ^16.1.1
+  # v9.0.0 major bump: only breaking change is iOS SwiftPM min raised to
+  # iOS 13.0, already well under this project's 15.0 deployment target.
+  # Sole call site (lib/settings/notification_settings_screen.dart,
+  # AppSettings.openAppSettings(type: AppSettingsType.notification)) is
+  # unaffected — that API has been stable since v5.0.0.
   app_settings: ^9.0.0
   package_info_plus: ^10.1.0
   audioplayers: ^6.6.0
