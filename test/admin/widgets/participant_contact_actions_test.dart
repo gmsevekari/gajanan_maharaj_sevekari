@@ -29,7 +29,9 @@ void main() {
   });
 
   Widget createWidget(String phone) {
-    return MaterialApp(home: Scaffold(body: ParticipantContactActions(phone: phone)));
+    return MaterialApp(
+      home: Scaffold(body: ParticipantContactActions(phone: phone)),
+    );
   }
 
   group('ParticipantContactActions', () {
@@ -74,9 +76,7 @@ void main() {
       expect(fakeLauncher.launchedUrls, isEmpty);
     });
 
-    testWidgets('does nothing when no SMS app can be launched', (
-      tester,
-    ) async {
+    testWidgets('does nothing when no SMS app can be launched', (tester) async {
       fakeLauncher.canLaunchResult = false;
       await tester.pumpWidget(createWidget('+911234567890'));
 
