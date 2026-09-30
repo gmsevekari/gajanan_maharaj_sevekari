@@ -2,10 +2,15 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signup_sheet_detail_screen.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class MockSignupService extends Mock implements SignupService {}
 
 void main() {
   late FakeFirebaseFirestore firestore;
@@ -330,6 +335,150 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Join Code'), findsOneWidget);
+    });
+
+    testWidgets('fetches the device id automatically when not injected', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({
+        'unique_device_id': 'mock-device-id',
+      });
+      final sheetId = await createOpenSheet();
+
+      await tester.pumpWidget(
+        wrap(
+          SignupSheetDetailScreen(
+            sheetId: sheetId,
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(
+        find.text("You haven't signed up for anything yet"),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('resolves the sheet id from ModalRoute arguments', (
+      tester,
+    ) async {
+      final sheetId = await createOpenSheet();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          onGenerateRoute: (settings) => MaterialPageRoute(
+            settings: settings,
+            builder: (_) => SignupSheetDetailScreen(
+              deviceId: 'device_1',
+              firestore: firestore,
+              signupService: service,
+            ),
+          ),
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  settings: RouteSettings(arguments: {'sheetId': sheetId}),
+                  builder: (_) => SignupSheetDetailScreen(
+                    deviceId: 'device_1',
+                    firestore: firestore,
+                    signupService: service,
+                  ),
+                ),
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sunday Prasad Seva'), findsOneWidget);
+    });
+
+    testWidgets('shows an error snackbar when cancelling an entry fails', (
+      tester,
+    ) async {
+      final entry = SignupEntry(
+        id: 'entry_1',
+        slotId: 'slot_1',
+        name: 'Jane',
+        joinedAt: DateTime.now(),
+      );
+      final sheet = SignupSheet(
+        id: 'sheet_err',
+        titleEn: 'Sheet',
+        titleMr: 'शीट',
+        groupId: 'group_1',
+        status: SignupSheetStatus.published,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        createdBy: 'admin@test.com',
+      );
+      final mockService = MockSignupService();
+      when(
+        () => mockService.getSheetById('sheet_err'),
+      ).thenAnswer((_) => Stream.value(sheet));
+      when(
+        () => mockService.getSlots('sheet_err'),
+      ).thenAnswer((_) => Stream.value(const []));
+      when(
+        () => mockService.getEntriesByDevice('sheet_err', 'device_1'),
+      ).thenAnswer((_) => Stream.value([entry]));
+      when(
+        () => mockService.cancelEntry('sheet_err', 'entry_1'),
+      ).thenThrow(Exception('network error'));
+
+      await tester.pumpWidget(
+        wrap(
+          SignupSheetDetailScreen(
+            sheetId: 'sheet_err',
+            deviceId: 'device_1',
+            signupService: mockService,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Yes'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Failed to cancel signup. Please try again.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('renders the Marathi title when locale is mr', (tester) async {
+      final sheetId = await createOpenSheet();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('mr'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: SignupSheetDetailScreen(
+            sheetId: sheetId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('रविवार प्रसाद सेवा'), findsOneWidget);
     });
   });
 }
