@@ -15,7 +15,7 @@ void main() {
         descriptionEn: 'Cook and serve prasad',
         descriptionMr: 'प्रसाद शिजवा आणि वाढा',
         groupId: 'gajanan_maharaj_seattle',
-        status: 'published',
+        status: SignupSheetStatus.published,
         requiresJoinCode: true,
         joinCode: 'ABC123',
         startDate: startDate,
@@ -34,7 +34,7 @@ void main() {
       expect(roundTripped.descriptionEn, 'Cook and serve prasad');
       expect(roundTripped.descriptionMr, 'प्रसाद शिजवा आणि वाढा');
       expect(roundTripped.groupId, 'gajanan_maharaj_seattle');
-      expect(roundTripped.status, 'published');
+      expect(roundTripped.status, SignupSheetStatus.published);
       expect(roundTripped.requiresJoinCode, true);
       expect(roundTripped.joinCode, 'ABC123');
       expect(roundTripped.startDate, startDate);
@@ -44,7 +44,7 @@ void main() {
       expect(roundTripped.createdBy, 'admin@example.com');
     });
 
-    test('defaults to status "draft" when not specified', () {
+    test('defaults to status draft when not specified', () {
       final sheet = SignupSheet(
         titleEn: 'Draft Sheet',
         titleMr: 'मसुदा',
@@ -54,7 +54,7 @@ void main() {
         createdBy: 'admin@example.com',
       );
 
-      expect(sheet.status, 'draft');
+      expect(sheet.status, SignupSheetStatus.draft);
     });
 
     test('joinCode is null when requiresJoinCode is false', () {
@@ -103,9 +103,220 @@ void main() {
         expect(sheet.titleEn, '');
         expect(sheet.titleMr, '');
         expect(sheet.groupId, '');
-        expect(sheet.status, 'draft');
+        expect(sheet.status, SignupSheetStatus.draft);
         expect(sheet.requiresJoinCode, false);
       },
     );
+
+    test('fromMap defaults createdAt/updatedAt to now when absent', () {
+      final before = DateTime.now();
+      final sheet = SignupSheet.fromMap('sheet5', {});
+      final after = DateTime.now();
+
+      expect(
+        sheet.createdAt.isAfter(before.subtract(const Duration(seconds: 1))),
+        isTrue,
+      );
+      expect(
+        sheet.createdAt.isBefore(after.add(const Duration(seconds: 1))),
+        isTrue,
+      );
+      expect(
+        sheet.updatedAt.isAfter(before.subtract(const Duration(seconds: 1))),
+        isTrue,
+      );
+      expect(
+        sheet.updatedAt.isBefore(after.add(const Duration(seconds: 1))),
+        isTrue,
+      );
+    });
+
+    group('SignupSheetStatus', () {
+      test('fromMap parses published and closed statuses', () {
+        final published = SignupSheet.fromMap('s1', {'status': 'published'});
+        final closed = SignupSheet.fromMap('s2', {'status': 'closed'});
+
+        expect(published.status, SignupSheetStatus.published);
+        expect(closed.status, SignupSheetStatus.closed);
+      });
+
+      test('fromMap defaults an unrecognized status string to draft', () {
+        final sheet = SignupSheet.fromMap('s3', {'status': 'not-a-status'});
+
+        expect(sheet.status, SignupSheetStatus.draft);
+      });
+
+      test('fromMap defaults a wrong-typed status field to draft', () {
+        final sheet = SignupSheet.fromMap('s4', {'status': 42});
+
+        expect(sheet.status, SignupSheetStatus.draft);
+      });
+
+      test('toMap writes the enum name as a plain string', () {
+        final sheet = SignupSheet(
+          titleEn: 'T',
+          titleMr: 'T',
+          groupId: 'g',
+          status: SignupSheetStatus.closed,
+          createdAt: DateTime(2026, 1, 1),
+          updatedAt: DateTime(2026, 1, 1),
+          createdBy: 'admin@example.com',
+        );
+
+        expect(sheet.toMap()['status'], 'closed');
+      });
+    });
+
+    group('requiresJoinCode/joinCode invariant', () {
+      test(
+        'constructor throws an assertion error when joinCode is set but requiresJoinCode is false',
+        () {
+          expect(
+            () => SignupSheet(
+              titleEn: 'T',
+              titleMr: 'T',
+              groupId: 'g',
+              requiresJoinCode: false,
+              joinCode: 'ABC123',
+              createdAt: DateTime(2026, 1, 1),
+              updatedAt: DateTime(2026, 1, 1),
+              createdBy: 'admin@example.com',
+            ),
+            throwsA(isA<AssertionError>()),
+          );
+        },
+      );
+
+      test('constructor allows joinCode when requiresJoinCode is true', () {
+        final sheet = SignupSheet(
+          titleEn: 'T',
+          titleMr: 'T',
+          groupId: 'g',
+          requiresJoinCode: true,
+          joinCode: 'ABC123',
+          createdAt: DateTime(2026, 1, 1),
+          updatedAt: DateTime(2026, 1, 1),
+          createdBy: 'admin@example.com',
+        );
+
+        expect(sheet.joinCode, 'ABC123');
+      });
+    });
+
+    group('copyWith', () {
+      final base = SignupSheet(
+        id: 'sheet1',
+        titleEn: 'Original',
+        titleMr: 'मूळ',
+        groupId: 'group1',
+        status: SignupSheetStatus.draft,
+        requiresJoinCode: true,
+        joinCode: 'ABC123',
+        createdAt: DateTime(2026, 1, 1),
+        updatedAt: DateTime(2026, 1, 1),
+        createdBy: 'admin@example.com',
+      );
+
+      test('preserves unspecified fields', () {
+        final updated = base.copyWith(titleEn: 'Updated');
+
+        expect(updated.titleEn, 'Updated');
+        expect(updated.titleMr, base.titleMr);
+        expect(updated.groupId, base.groupId);
+        expect(updated.status, base.status);
+        expect(updated.joinCode, base.joinCode);
+      });
+
+      test('updates the status field', () {
+        final updated = base.copyWith(status: SignupSheetStatus.published);
+
+        expect(updated.status, SignupSheetStatus.published);
+      });
+
+      test(
+        'clears joinCode automatically when requiresJoinCode set to false',
+        () {
+          final updated = base.copyWith(requiresJoinCode: false);
+
+          expect(updated.requiresJoinCode, false);
+          expect(updated.joinCode, isNull);
+        },
+      );
+    });
+
+    group('equality', () {
+      test(
+        'two sheets with identical fields are equal and share a hashCode',
+        () {
+          final createdAt = DateTime(2026, 1, 1);
+          final updatedAt = DateTime(2026, 1, 2);
+          final a = SignupSheet(
+            id: 'sheet1',
+            titleEn: 'T',
+            titleMr: 'T',
+            groupId: 'g',
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            createdBy: 'admin@example.com',
+          );
+          final b = SignupSheet(
+            id: 'sheet1',
+            titleEn: 'T',
+            titleMr: 'T',
+            groupId: 'g',
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            createdBy: 'admin@example.com',
+          );
+
+          expect(a, equals(b));
+          expect(a.hashCode, equals(b.hashCode));
+        },
+      );
+
+      test('sheets differing by one field are not equal', () {
+        final createdAt = DateTime(2026, 1, 1);
+        final a = SignupSheet(
+          id: 'sheet1',
+          titleEn: 'T',
+          titleMr: 'T',
+          groupId: 'g',
+          createdAt: createdAt,
+          updatedAt: createdAt,
+          createdBy: 'admin@example.com',
+        );
+        final b = a.copyWith(titleEn: 'Different');
+
+        expect(a == b, isFalse);
+      });
+    });
+
+    group('fromMap type guards', () {
+      test('falls back to defaults when fields have the wrong type', () {
+        final sheet = SignupSheet.fromMap('sheet6', {
+          'titleEn': 123,
+          'titleMr': true,
+          'descriptionEn': 1.5,
+          'descriptionMr': [],
+          'groupId': {},
+          'requiresJoinCode': 'yes',
+          'joinCode': 42,
+          'startDate': '2026-01-01',
+          'endDate': 12345,
+          'createdBy': 99,
+        });
+
+        expect(sheet.titleEn, '');
+        expect(sheet.titleMr, '');
+        expect(sheet.descriptionEn, '');
+        expect(sheet.descriptionMr, '');
+        expect(sheet.groupId, '');
+        expect(sheet.requiresJoinCode, false);
+        expect(sheet.joinCode, isNull);
+        expect(sheet.startDate, isNull);
+        expect(sheet.endDate, isNull);
+        expect(sheet.createdBy, '');
+      });
+    });
   });
 }

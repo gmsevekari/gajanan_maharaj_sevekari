@@ -86,5 +86,106 @@ void main() {
         expect(slot.sortOrder, 0);
       },
     );
+
+    test('fromMap defaults createdAt to now when absent', () {
+      final before = DateTime.now();
+      final slot = SignupSlot.fromMap('slot5', {});
+      final after = DateTime.now();
+
+      expect(
+        slot.createdAt.isAfter(before.subtract(const Duration(seconds: 1))),
+        isTrue,
+      );
+      expect(
+        slot.createdAt.isBefore(after.add(const Duration(seconds: 1))),
+        isTrue,
+      );
+    });
+
+    group('fromMap type guards', () {
+      test('falls back to defaults when fields have the wrong type', () {
+        final slot = SignupSlot.fromMap('slot6', {
+          'labelEn': 123,
+          'labelMr': true,
+          'date': '2026-01-01',
+          'capacity': 'three',
+          'claimedCount': 'one',
+          'suggestedAmount': 'fifty',
+          'sortOrder': 'zero',
+        });
+
+        expect(slot.labelEn, '');
+        expect(slot.labelMr, '');
+        expect(slot.date, isNull);
+        expect(slot.capacity, 0);
+        expect(slot.claimedCount, 0);
+        expect(slot.suggestedAmount, isNull);
+        expect(slot.sortOrder, 0);
+      });
+    });
+
+    group('copyWith', () {
+      final base = SignupSlot(
+        id: 'slot1',
+        labelEn: 'Week 1',
+        labelMr: 'आठवडा १',
+        capacity: 3,
+        claimedCount: 1,
+        sortOrder: 0,
+        createdAt: DateTime(2026, 1, 1),
+      );
+
+      test('preserves unspecified fields', () {
+        final updated = base.copyWith(claimedCount: 2);
+
+        expect(updated.claimedCount, 2);
+        expect(updated.labelEn, base.labelEn);
+        expect(updated.capacity, base.capacity);
+        expect(updated.sortOrder, base.sortOrder);
+      });
+    });
+
+    group('equality', () {
+      test(
+        'two slots with identical fields are equal and share a hashCode',
+        () {
+          final createdAt = DateTime(2026, 1, 1);
+          final a = SignupSlot(
+            id: 'slot1',
+            labelEn: 'L',
+            labelMr: 'L',
+            capacity: 3,
+            sortOrder: 0,
+            createdAt: createdAt,
+          );
+          final b = SignupSlot(
+            id: 'slot1',
+            labelEn: 'L',
+            labelMr: 'L',
+            capacity: 3,
+            sortOrder: 0,
+            createdAt: createdAt,
+          );
+
+          expect(a, equals(b));
+          expect(a.hashCode, equals(b.hashCode));
+        },
+      );
+
+      test('slots differing by claimedCount are not equal', () {
+        final createdAt = DateTime(2026, 1, 1);
+        final a = SignupSlot(
+          id: 'slot1',
+          labelEn: 'L',
+          labelMr: 'L',
+          capacity: 3,
+          sortOrder: 0,
+          createdAt: createdAt,
+        );
+        final b = a.copyWith(claimedCount: 1);
+
+        expect(a == b, isFalse);
+      });
+    });
   });
 }
