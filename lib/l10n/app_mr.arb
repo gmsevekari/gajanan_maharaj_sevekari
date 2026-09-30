@@ -876,6 +876,7 @@
   "signupSheetSlotCapacityRequired": "कृपया क्षमता एंटर करा",
   "signupSheetSlotCapacityInvalid": "क्षमता ही सकारात्मक संख्या असावी",
   "signupSheetSlotSuggestedAmountLabel": "सुचवलेली रक्कम (ऐच्छिक)",
+  "signupSheetSlotSuggestedAmountInvalid": "कृपया वैध रक्कम एंटर करा",
   "signupSheetSlotSetDateLabel": "तारीख सेट करा",
   "signupSheetSlotNoDateLabel": "तारीख सेट केलेली नाही",
   "signupSheetRemoveSlotTooltip": "स्लॉट काढा",

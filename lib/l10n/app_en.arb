@@ -876,6 +876,7 @@
   "signupSheetSlotCapacityRequired": "Please enter a capacity",
   "signupSheetSlotCapacityInvalid": "Capacity must be a positive number",
   "signupSheetSlotSuggestedAmountLabel": "Suggested Amount (optional)",
+  "signupSheetSlotSuggestedAmountInvalid": "Please enter a valid amount",
   "signupSheetSlotSetDateLabel": "Set Date",
   "signupSheetSlotNoDateLabel": "No date set",
   "signupSheetRemoveSlotTooltip": "Remove slot",

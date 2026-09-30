@@ -2278,6 +2278,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Suggested Amount (optional)';
 
   @override
+  String get signupSheetSlotSuggestedAmountInvalid =>
+      'Please enter a valid amount';
+
+  @override
   String get signupSheetSlotSetDateLabel => 'Set Date';
 
   @override

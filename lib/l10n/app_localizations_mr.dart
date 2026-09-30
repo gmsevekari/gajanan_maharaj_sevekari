@@ -2285,6 +2285,10 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSheetSlotSuggestedAmountLabel => 'सुचवलेली रक्कम (ऐच्छिक)';
 
   @override
+  String get signupSheetSlotSuggestedAmountInvalid =>
+      'कृपया वैध रक्कम एंटर करा';
+
+  @override
   String get signupSheetSlotSetDateLabel => 'तारीख सेट करा';
 
   @override

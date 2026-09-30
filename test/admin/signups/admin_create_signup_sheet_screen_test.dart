@@ -225,6 +225,52 @@ void main() {
       expect(find.text('Capacity must be a positive number'), findsOneWidget);
     });
 
+    testWidgets('rejects a non-numeric suggested amount', (tester) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Add Slot'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('slotSuggestedAmount_0')),
+        'twenty dollars',
+      );
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter a valid amount'), findsOneWidget);
+    });
+
+    testWidgets('accepts a valid numeric suggested amount and persists it', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+
+      await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+      await tester.enterText(find.byKey(const Key('titleMrField')), 'T');
+      await tester.tap(find.text('Add Slot'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
+      await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
+      await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+      await tester.enterText(
+        find.byKey(const Key('slotSuggestedAmount_0')),
+        '50.5',
+      );
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter a valid amount'), findsNothing);
+      final sheets = await firestore.collection('signup_sheets').get();
+      final slots = await firestore
+          .collection('signup_sheets')
+          .doc(sheets.docs.first.id)
+          .collection('slots')
+          .get();
+      expect(slots.docs.first.data()['suggestedAmount'], 50.5);
+    });
+
     testWidgets('picking a date shows it on the row, and it can be cleared', (
       tester,
     ) async {

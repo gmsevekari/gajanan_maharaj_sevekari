@@ -4377,6 +4377,12 @@ abstract class AppLocalizations {
   /// **'Suggested Amount (optional)'**
   String get signupSheetSlotSuggestedAmountLabel;
 
+  /// No description provided for @signupSheetSlotSuggestedAmountInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid amount'**
+  String get signupSheetSlotSuggestedAmountInvalid;
+
   /// No description provided for @signupSheetSlotSetDateLabel.
   ///
   /// In en, this message translates to:
