@@ -105,4 +105,28 @@ class SignupService {
     }
     await batch.commit();
   }
+
+  /// Creates a sheet and all of its slots in a single batch, so a sheet
+  /// with many slots never ends up partially written. Returns the new
+  /// sheet's auto-generated ID.
+  Future<String> createSheetWithSlots(
+    SignupSheet sheet,
+    List<SignupSlot> slots,
+  ) async {
+    if (slots.isEmpty) {
+      throw ArgumentError.value(slots, 'slots', 'must not be empty');
+    }
+
+    final sheetRef = _sheetsRef.doc();
+    final batch = _db.batch();
+    batch.set(sheetRef, sheet.toMap());
+
+    final slotsRef = _slotsRef(sheetRef.id);
+    for (final slot in slots) {
+      batch.set(slotsRef.doc(), slot.toMap());
+    }
+
+    await batch.commit();
+    return sheetRef.id;
+  }
 }
