@@ -43,7 +43,9 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
     _phoneController = TextEditingController(text: entry?.phone ?? '');
     _emailController = TextEditingController(text: entry?.email ?? '');
     _pledgeController = TextEditingController(
-      text: entry?.pledgeAmount != null ? entry!.pledgeAmount.toString() : '',
+      text: entry?.pledgeAmount != null
+          ? _formatPledgeAmount(entry!.pledgeAmount!)
+          : '',
     );
     _noteController = TextEditingController(text: entry?.note ?? '');
   }
@@ -235,4 +237,11 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
       ],
     );
   }
+}
+
+/// Formats a pledge amount for pre-filling the edit field: whole numbers
+/// show without a trailing ".0" (e.g. 51.0 -> "51"), fractional amounts
+/// are preserved as-is (e.g. 50.5 -> "50.5").
+String _formatPledgeAmount(double amount) {
+  return amount % 1 == 0 ? amount.toInt().toString() : amount.toString();
 }
