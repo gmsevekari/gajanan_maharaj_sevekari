@@ -2478,6 +2478,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signupSheetNotFound => 'Sign-up sheet not found';
+
+  @override
+  String get signupSheetsListTitle => 'Sign-Up Sheets';
+
+  @override
+  String get signupSheetInvalidGroupError => 'Invalid group';
+
+  @override
+  String get signupSheetNoActiveSheets => 'No active sign-up sheets';
+
+  @override
+  String get signupSheetMySignupsHeading => 'My Signups';
+
+  @override
+  String get signupSheetNoMySignups =>
+      'You haven\'t signed up for anything yet';
+
+  @override
+  String get signupSheetCancelSignupButton => 'Cancel';
+
+  @override
+  String get signupSheetCancelSignupConfirmTitle => 'Cancel Signup?';
+
+  @override
+  String get signupSheetCancelSignupConfirmMessage =>
+      'Are you sure you want to cancel this signup?';
+
+  @override
+  String get signupSheetCancelSignupSuccess => 'Signup cancelled';
+
+  @override
+  String get signupSheetCancelSignupError =>
+      'Failed to cancel signup. Please try again.';
+
+  @override
+  String get signupSheetClaimSlotTitle => 'Claim Slot';
+
+  @override
+  String get signupSheetClaimConfirmTitle => 'Confirm Signup';
+
+  @override
+  String get signupSheetClaimConfirmQuestion => 'Submit this signup?';
+
+  @override
+  String get signupSheetClaimSuccess => 'You\'re signed up!';
+
+  @override
+  String get signupSheetClaimError => 'Failed to claim slot. Please try again.';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

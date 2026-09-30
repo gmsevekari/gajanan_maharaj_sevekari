@@ -2486,4 +2486,53 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get signupSheetNotFound => 'साइन-अप शीट सापडली नाही';
+
+  @override
+  String get signupSheetsListTitle => 'साइन-अप शीट्स';
+
+  @override
+  String get signupSheetInvalidGroupError => 'अवैध गट';
+
+  @override
+  String get signupSheetNoActiveSheets => 'कोणतीही सक्रिय साइन-अप शीट नाही';
+
+  @override
+  String get signupSheetMySignupsHeading => 'माझे साइन-अप';
+
+  @override
+  String get signupSheetNoMySignups =>
+      'आपण अद्याप कशासाठीही साइन अप केलेले नाही';
+
+  @override
+  String get signupSheetCancelSignupButton => 'रद्द करा';
+
+  @override
+  String get signupSheetCancelSignupConfirmTitle => 'साइन-अप रद्द करायचे?';
+
+  @override
+  String get signupSheetCancelSignupConfirmMessage =>
+      'आपल्याला हे साइन-अप रद्द करायचे आहे याची खात्री आहे का?';
+
+  @override
+  String get signupSheetCancelSignupSuccess => 'साइन-अप रद्द केले';
+
+  @override
+  String get signupSheetCancelSignupError =>
+      'साइन-अप रद्द करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get signupSheetClaimSlotTitle => 'स्लॉट क्लेम करा';
+
+  @override
+  String get signupSheetClaimConfirmTitle => 'साइन-अपची पुष्टी करा';
+
+  @override
+  String get signupSheetClaimConfirmQuestion => 'हे साइन-अप सबमिट करायचे?';
+
+  @override
+  String get signupSheetClaimSuccess => 'तुम्ही साइन अप केले आहे!';
+
+  @override
+  String get signupSheetClaimError =>
+      'स्लॉट क्लेम करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 }

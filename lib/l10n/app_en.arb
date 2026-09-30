@@ -956,5 +956,20 @@
   "signupSheetTotalClaimsLabel": "Total Signups",
   "signupSheetFillPercentageLabel": "Filled",
   "signupSheetExportFailed": "Failed to export image",
-  "signupSheetNotFound": "Sign-up sheet not found"
+  "signupSheetNotFound": "Sign-up sheet not found",
+  "signupSheetsListTitle": "Sign-Up Sheets",
+  "signupSheetInvalidGroupError": "Invalid group",
+  "signupSheetNoActiveSheets": "No active sign-up sheets",
+  "signupSheetMySignupsHeading": "My Signups",
+  "signupSheetNoMySignups": "You haven't signed up for anything yet",
+  "signupSheetCancelSignupButton": "Cancel",
+  "signupSheetCancelSignupConfirmTitle": "Cancel Signup?",
+  "signupSheetCancelSignupConfirmMessage": "Are you sure you want to cancel this signup?",
+  "signupSheetCancelSignupSuccess": "Signup cancelled",
+  "signupSheetCancelSignupError": "Failed to cancel signup. Please try again.",
+  "signupSheetClaimSlotTitle": "Claim Slot",
+  "signupSheetClaimConfirmTitle": "Confirm Signup",
+  "signupSheetClaimConfirmQuestion": "Submit this signup?",
+  "signupSheetClaimSuccess": "You're signed up!",
+  "signupSheetClaimError": "Failed to claim slot. Please try again."
 }

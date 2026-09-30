@@ -939,5 +939,20 @@
   "signupSheetTotalClaimsLabel": "एकूण साइन-अप",
   "signupSheetFillPercentageLabel": "भरले",
   "signupSheetExportFailed": "प्रतिमा निर्यात करण्यात अयशस्वी",
-  "signupSheetNotFound": "साइन-अप शीट सापडली नाही"
+  "signupSheetNotFound": "साइन-अप शीट सापडली नाही",
+  "signupSheetsListTitle": "साइन-अप शीट्स",
+  "signupSheetInvalidGroupError": "अवैध गट",
+  "signupSheetNoActiveSheets": "कोणतीही सक्रिय साइन-अप शीट नाही",
+  "signupSheetMySignupsHeading": "माझे साइन-अप",
+  "signupSheetNoMySignups": "आपण अद्याप कशासाठीही साइन अप केलेले नाही",
+  "signupSheetCancelSignupButton": "रद्द करा",
+  "signupSheetCancelSignupConfirmTitle": "साइन-अप रद्द करायचे?",
+  "signupSheetCancelSignupConfirmMessage": "आपल्याला हे साइन-अप रद्द करायचे आहे याची खात्री आहे का?",
+  "signupSheetCancelSignupSuccess": "साइन-अप रद्द केले",
+  "signupSheetCancelSignupError": "साइन-अप रद्द करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+  "signupSheetClaimSlotTitle": "स्लॉट क्लेम करा",
+  "signupSheetClaimConfirmTitle": "साइन-अपची पुष्टी करा",
+  "signupSheetClaimConfirmQuestion": "हे साइन-अप सबमिट करायचे?",
+  "signupSheetClaimSuccess": "तुम्ही साइन अप केले आहे!",
+  "signupSheetClaimError": "स्लॉट क्लेम करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा."
 }

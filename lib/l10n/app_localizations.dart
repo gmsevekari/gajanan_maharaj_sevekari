@@ -4760,6 +4760,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign-up sheet not found'**
   String get signupSheetNotFound;
+
+  /// No description provided for @signupSheetsListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-Up Sheets'**
+  String get signupSheetsListTitle;
+
+  /// No description provided for @signupSheetInvalidGroupError.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid group'**
+  String get signupSheetInvalidGroupError;
+
+  /// No description provided for @signupSheetNoActiveSheets.
+  ///
+  /// In en, this message translates to:
+  /// **'No active sign-up sheets'**
+  String get signupSheetNoActiveSheets;
+
+  /// No description provided for @signupSheetMySignupsHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'My Signups'**
+  String get signupSheetMySignupsHeading;
+
+  /// No description provided for @signupSheetNoMySignups.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t signed up for anything yet'**
+  String get signupSheetNoMySignups;
+
+  /// No description provided for @signupSheetCancelSignupButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get signupSheetCancelSignupButton;
+
+  /// No description provided for @signupSheetCancelSignupConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Signup?'**
+  String get signupSheetCancelSignupConfirmTitle;
+
+  /// No description provided for @signupSheetCancelSignupConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this signup?'**
+  String get signupSheetCancelSignupConfirmMessage;
+
+  /// No description provided for @signupSheetCancelSignupSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Signup cancelled'**
+  String get signupSheetCancelSignupSuccess;
+
+  /// No description provided for @signupSheetCancelSignupError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to cancel signup. Please try again.'**
+  String get signupSheetCancelSignupError;
+
+  /// No description provided for @signupSheetClaimSlotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim Slot'**
+  String get signupSheetClaimSlotTitle;
+
+  /// No description provided for @signupSheetClaimConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Signup'**
+  String get signupSheetClaimConfirmTitle;
+
+  /// No description provided for @signupSheetClaimConfirmQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit this signup?'**
+  String get signupSheetClaimConfirmQuestion;
+
+  /// No description provided for @signupSheetClaimSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re signed up!'**
+  String get signupSheetClaimSuccess;
+
+  /// No description provided for @signupSheetClaimError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to claim slot. Please try again.'**
+  String get signupSheetClaimError;
 }
 
 class _AppLocalizationsDelegate
