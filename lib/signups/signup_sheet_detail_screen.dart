@@ -43,6 +43,7 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
   String _sheetId = '';
   Stream<SignupSheet?>? _sheetStream;
   Stream<List<SignupSlot>>? _slotsStream;
+  Stream<List<SignupEntry>>? _entriesStream;
 
   @override
   void initState() {
@@ -63,12 +64,28 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
       _sheetId = newId;
       _sheetStream = _service.getSheetById(_sheetId);
       _slotsStream = _service.getSlots(_sheetId);
+      _updateEntriesStream();
+    }
+  }
+
+  /// Caches the "my entries" stream by field, like [_sheetStream]/
+  /// [_slotsStream], instead of creating it inline in build() - otherwise
+  /// every rebuild would tear down and resubscribe it, resetting "My
+  /// Signups" to loading and churning a Firestore listener for no reason.
+  void _updateEntriesStream() {
+    if (_deviceId != null) {
+      _entriesStream = _service.getEntriesByDevice(_sheetId, _deviceId!);
     }
   }
 
   Future<void> _getDeviceId() async {
     final id = await UniqueIdService.getUniqueId();
-    if (mounted) setState(() => _deviceId = id);
+    if (mounted) {
+      setState(() {
+        _deviceId = id;
+        _updateEntriesStream();
+      });
+    }
   }
 
   String _getEffectiveSheetId(BuildContext context) {
@@ -193,7 +210,7 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
               final slots = slotsSnapshot.data ?? const [];
 
               return StreamBuilder<List<SignupEntry>>(
-                stream: _service.getEntriesByDevice(_sheetId, _deviceId!),
+                stream: _entriesStream,
                 builder: (context, myEntriesSnapshot) {
                   final myEntries = myEntriesSnapshot.data ?? const [];
 
