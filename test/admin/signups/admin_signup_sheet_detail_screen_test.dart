@@ -20,11 +20,22 @@ import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:provider/provider.dart';
 
 class MockAppConfigProvider extends Mock implements AppConfigProvider {}
 
 class MockSignupService extends Mock implements SignupService {}
+
+/// Fails fast (instead of the unmocked default hanging indefinitely) so a
+/// test can exercise the real error path of code that calls
+/// getTemporaryDirectory().
+class _ThrowingPathProviderPlatform extends PathProviderPlatform {
+  @override
+  Future<String?> getTemporaryPath() async {
+    throw Exception('no temp directory in tests');
+  }
+}
 
 void main() {
   late FakeFirebaseFirestore firestore;
@@ -1003,10 +1014,16 @@ void main() {
         // environment (no real rendering surface), which is why the
         // "triggers export summary" test above never reaches the file
         // write/share code at all. Injecting a capture override that
-        // returns real bytes gets past that early return so the actual
-        // failure path (path_provider has no platform mock registered in
-        // this test binding, so getTemporaryDirectory() throws) is
-        // genuinely exercised.
+        // returns real bytes gets past that early return; PathProviderPlatform
+        // is then swapped for a fake that throws, so getTemporaryDirectory()
+        // fails fast and predictably instead of hanging on an unmocked
+        // platform channel (which pumpAndSettle would never wait out).
+        final originalPathProvider = PathProviderPlatform.instance;
+        PathProviderPlatform.instance = _ThrowingPathProviderPlatform();
+        addTearDown(() {
+          PathProviderPlatform.instance = originalPathProvider;
+        });
+
         final now = DateTime.now();
         final sheetRef = await firestore.collection('signup_sheets').add({
           'titleEn': 'Exportable Sheet',

@@ -31,12 +31,21 @@ class AdminSignupSheetDetailScreen extends StatefulWidget {
   @visibleForTesting
   final SignupService? signupService;
 
+  /// Overrides the export screenshot capture; injected for testing since
+  /// [ScreenshotController.capture] returns null in the widget-test
+  /// environment (no real rendering surface), making the real
+  /// file-write/share logic otherwise unreachable in tests. Defaults to
+  /// the real [ScreenshotController.capture].
+  @visibleForTesting
+  final Future<Uint8List?> Function()? exportCapture;
+
   const AdminSignupSheetDetailScreen({
     super.key,
     this.sheetId,
     this.adminUser,
     this.firestore,
     this.signupService,
+    this.exportCapture,
   });
 
   @override
@@ -176,7 +185,8 @@ class _AdminSignupSheetDetailScreenState
     AppLocalizations l10n,
   ) async {
     try {
-      final imageBytes = await _exportController.capture();
+      final capture = widget.exportCapture ?? _exportController.capture;
+      final imageBytes = await capture();
       if (imageBytes == null) return;
 
       final tempDir = await getTemporaryDirectory();
