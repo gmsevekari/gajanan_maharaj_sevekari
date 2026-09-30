@@ -410,6 +410,57 @@ void main() {
       expect(entries, isEmpty);
     });
 
+    testWidgets(
+      'accepts a lowercase join code by uppercasing it before submit',
+      (tester) async {
+        await openDialog(
+          tester,
+          sheetId: codeSheetId,
+          slotId: codeSlotId,
+          requiresJoinCode: true,
+        );
+
+        await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+        await tester.enterText(
+          find.byKey(const Key('claimJoinCodeField')),
+          'abc123',
+        );
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Invalid Join Code!'), findsNothing);
+        final entries = await service.getAllEntries(codeSheetId).first;
+        expect(entries, hasLength(1));
+      },
+    );
+
+    testWidgets('bounds the length of free-text fields', (tester) async {
+      await openDialog(
+        tester,
+        sheetId: openSheetId,
+        slotId: plainSlotId,
+        requiresJoinCode: false,
+      );
+
+      int? maxLengthOf(Key key) {
+        return tester
+            .widget<TextField>(
+              find.descendant(
+                of: find.byKey(key),
+                matching: find.byType(TextField),
+              ),
+            )
+            .maxLength;
+      }
+
+      expect(maxLengthOf(const Key('claimNameField')), 100);
+      expect(maxLengthOf(const Key('claimPhoneField')), 30);
+      expect(maxLengthOf(const Key('claimEmailField')), 200);
+      expect(maxLengthOf(const Key('claimNoteField')), 500);
+    });
+
     testWidgets('shows a generic error message for an unexpected failure', (
       tester,
     ) async {
