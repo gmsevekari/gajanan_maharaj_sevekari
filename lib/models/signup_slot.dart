@@ -27,14 +27,24 @@ class SignupSlot {
   factory SignupSlot.fromMap(String id, Map<String, dynamic> data) {
     return SignupSlot(
       id: id,
-      labelEn: data['labelEn'] ?? '',
-      labelMr: data['labelMr'] ?? '',
-      date: (data['date'] as Timestamp?)?.toDate(),
-      capacity: (data['capacity'] as num?)?.toInt() ?? 0,
-      claimedCount: (data['claimedCount'] as num?)?.toInt() ?? 0,
-      suggestedAmount: (data['suggestedAmount'] as num?)?.toDouble(),
-      sortOrder: (data['sortOrder'] as num?)?.toInt() ?? 0,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      labelEn: data['labelEn'] is String ? data['labelEn'] as String : '',
+      labelMr: data['labelMr'] is String ? data['labelMr'] as String : '',
+      date: data['date'] is Timestamp
+          ? (data['date'] as Timestamp).toDate()
+          : null,
+      capacity: data['capacity'] is num ? (data['capacity'] as num).toInt() : 0,
+      claimedCount: data['claimedCount'] is num
+          ? (data['claimedCount'] as num).toInt()
+          : 0,
+      suggestedAmount: data['suggestedAmount'] is num
+          ? (data['suggestedAmount'] as num).toDouble()
+          : null,
+      sortOrder: data['sortOrder'] is num
+          ? (data['sortOrder'] as num).toInt()
+          : 0,
+      createdAt: data['createdAt'] is Timestamp
+          ? (data['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
@@ -50,4 +60,55 @@ class SignupSlot {
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
+
+  SignupSlot copyWith({
+    String? id,
+    String? labelEn,
+    String? labelMr,
+    DateTime? date,
+    int? capacity,
+    int? claimedCount,
+    double? suggestedAmount,
+    int? sortOrder,
+    DateTime? createdAt,
+  }) {
+    return SignupSlot(
+      id: id ?? this.id,
+      labelEn: labelEn ?? this.labelEn,
+      labelMr: labelMr ?? this.labelMr,
+      date: date ?? this.date,
+      capacity: capacity ?? this.capacity,
+      claimedCount: claimedCount ?? this.claimedCount,
+      suggestedAmount: suggestedAmount ?? this.suggestedAmount,
+      sortOrder: sortOrder ?? this.sortOrder,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SignupSlot &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          labelEn == other.labelEn &&
+          labelMr == other.labelMr &&
+          date == other.date &&
+          capacity == other.capacity &&
+          claimedCount == other.claimedCount &&
+          suggestedAmount == other.suggestedAmount &&
+          sortOrder == other.sortOrder &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      labelEn.hashCode ^
+      labelMr.hashCode ^
+      date.hashCode ^
+      capacity.hashCode ^
+      claimedCount.hashCode ^
+      suggestedAmount.hashCode ^
+      sortOrder.hashCode ^
+      createdAt.hashCode;
 }

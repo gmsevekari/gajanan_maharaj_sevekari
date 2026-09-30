@@ -217,6 +217,12 @@ void main() {
         createdBy: 'admin@example.com',
       );
 
+      test('with no arguments returns an identical copy', () {
+        final copy = base.copyWith();
+
+        expect(copy, equals(base));
+      });
+
       test('preserves unspecified fields', () {
         final updated = base.copyWith(titleEn: 'Updated');
 

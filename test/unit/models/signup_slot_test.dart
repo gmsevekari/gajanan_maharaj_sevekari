@@ -135,6 +135,12 @@ void main() {
         createdAt: DateTime(2026, 1, 1),
       );
 
+      test('with no arguments returns an identical copy', () {
+        final copy = base.copyWith();
+
+        expect(copy, equals(base));
+      });
+
       test('preserves unspecified fields', () {
         final updated = base.copyWith(claimedCount: 2);
 
