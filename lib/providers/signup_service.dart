@@ -186,12 +186,19 @@ class SignupService {
         );
   }
 
-  /// Overwrites an entry's fields (admin manual edit). Throws if [entry.id] is null.
+  /// Overwrites an entry's editable fields (admin manual edit: name, phone,
+  /// email, pledgeAmount, note). `slotId` is deliberately excluded from the
+  /// write, mirroring [updateSlot]'s exclusion of `claimedCount` — moving
+  /// an entry to a different slot would need the same capacity check and
+  /// claimedCount transaction as [claimSlot], which this method doesn't
+  /// perform, so the entry's original slot is always preserved regardless
+  /// of what [entry.slotId] holds. Throws if [entry.id] is null.
   Future<void> updateEntry(String sheetId, SignupEntry entry) async {
     if (entry.id == null) {
       throw ArgumentError.value(entry.id, 'entry.id', 'must not be null');
     }
-    await _entriesRef(sheetId).doc(entry.id).set(entry.toMap());
+    final fields = entry.toMap()..remove('slotId');
+    await _entriesRef(sheetId).doc(entry.id).update(fields);
   }
 
   /// Claims a slot for a devotee. Runs in a transaction so a slot can
