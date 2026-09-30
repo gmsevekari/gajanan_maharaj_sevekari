@@ -95,14 +95,17 @@ void main() {
       expect(roundTripped.endDate, isNull);
     });
 
-    test('fromMap defaults missing required string fields to empty rather than throwing', () {
-      final sheet = SignupSheet.fromMap('sheet4', {});
+    test(
+      'fromMap defaults missing required string fields to empty rather than throwing',
+      () {
+        final sheet = SignupSheet.fromMap('sheet4', {});
 
-      expect(sheet.titleEn, '');
-      expect(sheet.titleMr, '');
-      expect(sheet.groupId, '');
-      expect(sheet.status, 'draft');
-      expect(sheet.requiresJoinCode, false);
-    });
+        expect(sheet.titleEn, '');
+        expect(sheet.titleMr, '');
+        expect(sheet.groupId, '');
+        expect(sheet.status, 'draft');
+        expect(sheet.requiresJoinCode, false);
+      },
+    );
   });
 }

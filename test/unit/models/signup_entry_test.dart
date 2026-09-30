@@ -56,11 +56,14 @@ void main() {
       },
     );
 
-    test('fromMap defaults missing required string fields to empty rather than throwing', () {
-      final entry = SignupEntry.fromMap('entry3', {});
+    test(
+      'fromMap defaults missing required string fields to empty rather than throwing',
+      () {
+        final entry = SignupEntry.fromMap('entry3', {});
 
-      expect(entry.slotId, '');
-      expect(entry.name, '');
-    });
+        expect(entry.slotId, '');
+        expect(entry.name, '');
+      },
+    );
   });
 }

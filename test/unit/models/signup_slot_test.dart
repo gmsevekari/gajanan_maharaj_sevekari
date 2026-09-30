@@ -75,13 +75,16 @@ void main() {
       expect(roundTripped.suggestedAmount, isNull);
     });
 
-    test('fromMap defaults missing string fields to empty rather than throwing', () {
-      final slot = SignupSlot.fromMap('slot4', {});
+    test(
+      'fromMap defaults missing string fields to empty rather than throwing',
+      () {
+        final slot = SignupSlot.fromMap('slot4', {});
 
-      expect(slot.labelEn, '');
-      expect(slot.labelMr, '');
-      expect(slot.capacity, 0);
-      expect(slot.sortOrder, 0);
-    });
+        expect(slot.labelEn, '');
+        expect(slot.labelMr, '');
+        expect(slot.capacity, 0);
+        expect(slot.sortOrder, 0);
+      },
+    );
   });
 }
