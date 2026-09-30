@@ -566,19 +566,105 @@ void main() {
         );
         final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
 
-        final entryId = await service.adminAddEntry(
+        final result = await service.adminAddEntry(
           sheetId: sheetId,
           slotId: slotId,
           name: 'Phoned-in Devotee',
           phone: '+911234567890',
         );
 
-        expect(entryId, isNotEmpty);
+        expect(result['success'], true);
+        expect(result['entryId'], isNotEmpty);
         final entries = await service.getAllEntries(sheetId).first;
         expect(entries.single.name, 'Phoned-in Devotee');
         final slot = (await service.getSlots(sheetId).first).single;
         expect(slot.claimedCount, 1);
       },
     );
+
+    test(
+      'rejects with slot_full when capacity is reached, without creating an entry',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 1));
+        await service.adminAddEntry(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'First',
+        );
+
+        final result = await service.adminAddEntry(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'Second',
+        );
+
+        expect(result, {'success': false, 'error': 'slot_full'});
+        final entries = await service.getAllEntries(sheetId).first;
+        expect(entries.length, 1);
+      },
+    );
+
+    test('returns not_found when the slot does not exist', () async {
+      final sheetId = await service.createSheet(buildSheet());
+
+      final result = await service.adminAddEntry(
+        sheetId: sheetId,
+        slotId: 'missing',
+        name: 'Jane',
+      );
+
+      expect(result, {'success': false, 'error': 'not_found'});
+    });
+  });
+
+  group('SignupService updateSlot preserves claimedCount', () {
+    test(
+      'does not revert a claim made after the slot was loaded for editing',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+        final staleSlot = (await service.getSlots(sheetId).first).single;
+
+        // A devotee claims the slot after the admin loaded it for editing.
+        await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'Jane');
+
+        // Admin saves an edit built from the stale (pre-claim) slot object.
+        await service.updateSlot(sheetId, staleSlot.copyWith(capacity: 10));
+
+        final updated = (await service.getSlots(sheetId).first).single;
+        expect(updated.capacity, 10);
+        expect(updated.claimedCount, 1);
+      },
+    );
+  });
+
+  group('SignupService deleteSlot claimed-entry guard', () {
+    test(
+      'throws and does not delete when the slot has claimed entries',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+        await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'Jane');
+
+        await expectLater(
+          service.deleteSlot(sheetId, slotId),
+          throwsStateError,
+        );
+
+        final slots = await service.getSlots(sheetId).first;
+        expect(slots, isNotEmpty);
+      },
+    );
+
+    test('succeeds when the slot has no claims', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+
+      await service.deleteSlot(sheetId, slotId);
+
+      final slots = await service.getSlots(sheetId).first;
+      expect(slots, isEmpty);
+    });
   });
 }
