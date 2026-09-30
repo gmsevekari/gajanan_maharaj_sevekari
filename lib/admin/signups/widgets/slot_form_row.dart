@@ -140,6 +140,16 @@ class SlotFormRow extends StatelessWidget {
                 labelText: localizations.signupSheetSlotSuggestedAmountLabel,
                 border: const OutlineInputBorder(),
               ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return null;
+                }
+                final amount = double.tryParse(value.trim());
+                if (amount == null || amount < 0) {
+                  return localizations.signupSheetSlotSuggestedAmountInvalid;
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 12),
             Row(
