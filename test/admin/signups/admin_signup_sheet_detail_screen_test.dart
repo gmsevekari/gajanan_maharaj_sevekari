@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -994,6 +995,51 @@ void main() {
       await tester.tap(find.widgetWithText(OutlinedButton, 'Export Summary'));
       await tester.pumpAndSettle();
     });
+
+    testWidgets(
+      'shows error snackbar when export fails after capturing the screenshot',
+      (tester) async {
+        // ScreenshotController.capture() returns null in the widget-test
+        // environment (no real rendering surface), which is why the
+        // "triggers export summary" test above never reaches the file
+        // write/share code at all. Injecting a capture override that
+        // returns real bytes gets past that early return so the actual
+        // failure path (path_provider has no platform mock registered in
+        // this test binding, so getTemporaryDirectory() throws) is
+        // genuinely exercised.
+        final now = DateTime.now();
+        final sheetRef = await firestore.collection('signup_sheets').add({
+          'titleEn': 'Exportable Sheet',
+          'titleMr': '',
+          'groupId': 'gajanan_maharaj_seattle',
+          'status': SignupSheetStatus.published.name,
+          'requiresJoinCode': false,
+          'createdAt': Timestamp.fromDate(now),
+          'updatedAt': Timestamp.fromDate(now),
+          'createdBy': 'admin@test.com',
+        });
+
+        setLargeScreen(tester);
+        addTearDown(() => resetScreen(tester));
+
+        await tester.pumpWidget(
+          createWidget(
+            child: AdminSignupSheetDetailScreen(
+              sheetId: sheetRef.id,
+              adminUser: adminUser,
+              firestore: firestore,
+              exportCapture: () async => Uint8List.fromList([1, 2, 3]),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.widgetWithText(OutlinedButton, 'Export Summary'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Failed to export image'), findsOneWidget);
+      },
+    );
 
     testWidgets('shows loading overlay when isProcessing is true', (
       tester,
