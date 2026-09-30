@@ -1,5 +1,6 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
@@ -701,6 +702,42 @@ void main() {
 
       final slots = await service.getSlots(sheetId).first;
       expect(slots, isEmpty);
+    });
+  });
+
+  group('SignupService updateEntry', () {
+    test('updates an existing entry fields', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+      final addResult = await service.adminAddEntry(
+        sheetId: sheetId,
+        slotId: slotId,
+        name: 'Jane Doe',
+        phone: '1234567890',
+      );
+      final entryId = addResult['entryId'] as String;
+      final original = (await service.getAllEntries(sheetId).first).single;
+
+      final updatedEntry = original.copyWith(
+        name: 'Jane Smith',
+        note: 'Updated note',
+      );
+      await service.updateEntry(sheetId, updatedEntry);
+
+      final fetched = (await service.getAllEntries(sheetId).first).single;
+      expect(fetched.id, entryId);
+      expect(fetched.name, 'Jane Smith');
+      expect(fetched.note, 'Updated note');
+      expect(fetched.phone, '1234567890');
+    });
+
+    test('throws ArgumentError when entry.id is null', () async {
+      final entry = SignupEntry(
+        slotId: 'slot_1',
+        name: 'Jane',
+        joinedAt: DateTime.now(),
+      );
+      expect(() => service.updateEntry('sheet_1', entry), throwsArgumentError);
     });
   });
 }

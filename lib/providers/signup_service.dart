@@ -186,6 +186,14 @@ class SignupService {
         );
   }
 
+  /// Overwrites an entry's fields (admin manual edit). Throws if [entry.id] is null.
+  Future<void> updateEntry(String sheetId, SignupEntry entry) async {
+    if (entry.id == null) {
+      throw ArgumentError.value(entry.id, 'entry.id', 'must not be null');
+    }
+    await _entriesRef(sheetId).doc(entry.id).set(entry.toMap());
+  }
+
   /// Claims a slot for a devotee. Runs in a transaction so a slot can
   /// never be over-claimed: reads the sheet (for join-code validation) and
   /// the slot (for capacity), then writes the entry and increments the
