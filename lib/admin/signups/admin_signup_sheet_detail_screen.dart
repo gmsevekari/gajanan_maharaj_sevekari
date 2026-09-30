@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_entry_edit_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_slot_entries_section.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_actions_row.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_export_card.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_join_code_card.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_overview_card.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_status_section.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
@@ -59,7 +63,6 @@ class _AdminSignupSheetDetailScreenState
 
   late final SignupService _service;
   final ScreenshotController _exportController = ScreenshotController();
-  bool _isStatusLocked = true;
   bool _isProcessing = false;
   String _sheetId = '';
   Stream<SignupSheet?>? _sheetStream;
@@ -435,30 +438,34 @@ class _AdminSignupSheetDetailScreenState
                       ListView(
                         padding: const EdgeInsets.all(16),
                         children: [
-                          _buildOverviewCard(
-                            sheet,
-                            title,
-                            desc,
-                            groupName,
-                            l10n,
-                            theme,
+                          SignupSheetOverviewCard(
+                            title: title,
+                            description: desc,
+                            groupName: groupName,
                           ),
                           if (sheet.requiresJoinCode &&
                               sheet.joinCode != null) ...[
                             const SizedBox(height: 12),
-                            _buildJoinCodeCard(sheet, l10n, theme),
+                            SignupSheetJoinCodeCard(joinCode: sheet.joinCode!),
                           ],
                           const SizedBox(height: 12),
-                          _buildStatusSection(sheet, l10n, theme),
+                          SignupSheetStatusSection(
+                            currentStatus: sheet.status,
+                            onStatusChanged: (newStatus) =>
+                                _updateStatus(sheet, newStatus, l10n),
+                          ),
                           const SizedBox(height: 12),
-                          _buildActionsRow(
-                            sheet,
-                            slots,
-                            entries,
-                            adminUser,
-                            l10n,
-                            theme,
-                            isMarathi,
+                          SignupSheetActionsRow(
+                            onDuplicate: () =>
+                                _duplicateSheet(sheet, adminUser, l10n),
+                            onShare: () =>
+                                _shareDeepLink(sheet, l10n, isMarathi),
+                            onExport: () => _exportSummaryImage(
+                              sheet,
+                              slots,
+                              entries,
+                              l10n,
+                            ),
                           ),
                           const SizedBox(height: 24),
                           Text(
@@ -502,209 +509,6 @@ class _AdminSignupSheetDetailScreenState
           );
         },
       ),
-    );
-  }
-
-  Widget _buildOverviewCard(
-    SignupSheet sheet,
-    String title,
-    String desc,
-    String groupName,
-    AppLocalizations l10n,
-    ThemeData theme,
-  ) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                if (groupName.isNotEmpty)
-                  Chip(
-                    label: Text(groupName),
-                    visualDensity: VisualDensity.compact,
-                  ),
-              ],
-            ),
-            if (desc.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text(
-                desc,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.appColors.secondaryText,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildJoinCodeCard(
-    SignupSheet sheet,
-    AppLocalizations l10n,
-    ThemeData theme,
-  ) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Row(
-          children: [
-            Icon(Icons.key, color: theme.colorScheme.primary),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.signupSheetRequiresJoinCodeBadge,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.appColors.secondaryText,
-                    ),
-                  ),
-                  Text(
-                    sheet.joinCode!,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              tooltip: l10n.signupSheetCopyJoinCodeTooltip,
-              icon: const Icon(Icons.copy, size: 20),
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: sheet.joinCode!));
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(l10n.joinCodeCopied)));
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatusSection(
-    SignupSheet sheet,
-    AppLocalizations l10n,
-    ThemeData theme,
-  ) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.signupSheetStatusLabel,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    letterSpacing: 1.2,
-                    fontWeight: FontWeight.bold,
-                    color: theme.appColors.secondaryText,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    _isStatusLocked ? Icons.lock_outline : Icons.lock_open,
-                    size: 20,
-                    color: _isStatusLocked
-                        ? theme.appColors.secondaryText
-                        : theme.colorScheme.primary,
-                  ),
-                  onPressed: () =>
-                      setState(() => _isStatusLocked = !_isStatusLocked),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            IgnorePointer(
-              ignoring: _isStatusLocked,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 200),
-                opacity: _isStatusLocked ? 0.6 : 1.0,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: SegmentedButton<SignupSheetStatus>(
-                    segments: [
-                      ButtonSegment(
-                        value: SignupSheetStatus.draft,
-                        label: Text(l10n.signupSheetStatusDraft),
-                      ),
-                      ButtonSegment(
-                        value: SignupSheetStatus.published,
-                        label: Text(l10n.signupSheetStatusPublished),
-                      ),
-                      ButtonSegment(
-                        value: SignupSheetStatus.closed,
-                        label: Text(l10n.signupSheetStatusClosed),
-                      ),
-                    ],
-                    selected: {sheet.status},
-                    onSelectionChanged: (selected) {
-                      final newStatus = selected.firstOrNull;
-                      if (newStatus != null && newStatus != sheet.status) {
-                        _updateStatus(sheet, newStatus, l10n);
-                      }
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionsRow(
-    SignupSheet sheet,
-    List<SignupSlot> slots,
-    List<SignupEntry> entries,
-    AdminUser adminUser,
-    AppLocalizations l10n,
-    ThemeData theme,
-    bool isMarathi,
-  ) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        ElevatedButton.icon(
-          icon: const Icon(Icons.copy, size: 16),
-          label: Text(l10n.signupSheetDuplicateButton),
-          onPressed: () => _duplicateSheet(sheet, adminUser, l10n),
-        ),
-        OutlinedButton.icon(
-          icon: const Icon(Icons.share, size: 16),
-          label: Text(l10n.signupSheetShareButton),
-          onPressed: () => _shareDeepLink(sheet, l10n, isMarathi),
-        ),
-        OutlinedButton.icon(
-          icon: const Icon(Icons.image_outlined, size: 16),
-          label: Text(l10n.signupSheetExportButton),
-          onPressed: () => _exportSummaryImage(sheet, slots, entries, l10n),
-        ),
-      ],
     );
   }
 }
