@@ -1,6 +1,7 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 
 void main() {
@@ -27,6 +28,21 @@ void main() {
       createdAt: now,
       updatedAt: now,
       createdBy: 'admin@example.com',
+    );
+  }
+
+  SignupSlot buildSlot({
+    String labelEn = 'Week 1',
+    String labelMr = 'आठवडा १',
+    int capacity = 3,
+    int sortOrder = 0,
+  }) {
+    return SignupSlot(
+      labelEn: labelEn,
+      labelMr: labelMr,
+      capacity: capacity,
+      sortOrder: sortOrder,
+      createdAt: DateTime.now(),
     );
   }
 
@@ -113,6 +129,86 @@ void main() {
             after.updatedAt.isAtSameMomentAs(before.updatedAt),
         isTrue,
       );
+    });
+  });
+
+  group('SignupService slot CRUD', () {
+    test(
+      'addSlot writes a new slot document and returns its auto-id',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+
+        final slotId = await service.addSlot(sheetId, buildSlot());
+
+        expect(slotId, isNotEmpty);
+        final doc = await fakeFirestore
+            .collection('signup_sheets')
+            .doc(sheetId)
+            .collection('slots')
+            .doc(slotId)
+            .get();
+        expect(doc.exists, true);
+        expect(doc.data()?['labelEn'], 'Week 1');
+      },
+    );
+
+    test('getSlots streams slots ordered by sortOrder ascending', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      await service.addSlot(sheetId, buildSlot(labelEn: 'Third', sortOrder: 2));
+      await service.addSlot(sheetId, buildSlot(labelEn: 'First', sortOrder: 0));
+      await service.addSlot(
+        sheetId,
+        buildSlot(labelEn: 'Second', sortOrder: 1),
+      );
+
+      final slots = await service.getSlots(sheetId).first;
+
+      expect(slots.map((s) => s.labelEn).toList(), [
+        'First',
+        'Second',
+        'Third',
+      ]);
+    });
+
+    test('updateSlot overwrites the stored fields', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slotId = await service.addSlot(sheetId, buildSlot());
+      final slot = (await service.getSlots(sheetId).first).single;
+
+      await service.updateSlot(sheetId, slot.copyWith(capacity: 10));
+
+      final updated = (await service.getSlots(sheetId).first).single;
+      expect(updated.id, slotId);
+      expect(updated.capacity, 10);
+    });
+
+    test('deleteSlot removes the slot document', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slotId = await service.addSlot(sheetId, buildSlot());
+
+      await service.deleteSlot(sheetId, slotId);
+
+      final slots = await service.getSlots(sheetId).first;
+      expect(slots, isEmpty);
+    });
+
+    test('reorderSlots rewrites sortOrder to match the given order', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final firstId = await service.addSlot(
+        sheetId,
+        buildSlot(labelEn: 'A', sortOrder: 0),
+      );
+      final secondId = await service.addSlot(
+        sheetId,
+        buildSlot(labelEn: 'B', sortOrder: 1),
+      );
+
+      await service.reorderSlots(sheetId, [secondId, firstId]);
+
+      final slots = await service.getSlots(sheetId).first;
+      expect(slots.map((s) => s.id).toList(), [secondId, firstId]);
+      expect(slots[0].sortOrder, 0);
+      expect(slots[1].sortOrder, 1);
     });
   });
 }
