@@ -264,13 +264,18 @@ service cloud.firestore {
         // A devotee claiming/cancelling a slot isn't an admin, but the
         // claimSlot/cancelEntry transaction still needs to increment or
         // decrement claimedCount on their behalf. Non-admins may update
-        // *only* that one field, bounded within [0, capacity]; admins can
+        // *only* that one field, by exactly +1 or -1 (matching the app's
+        // own FieldValue.increment(1)/(-1) calls), bounded within
+        // [0, capacity]. This blocks a non-admin write from jumping
+        // claimedCount straight to 0 or capacity in one step; admins can
         // still update anything (label, date, capacity, etc).
         allow update: if isAdmin()
           || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedCount'])
               && request.resource.data.claimedCount is int
               && request.resource.data.claimedCount >= 0
-              && request.resource.data.claimedCount <= resource.data.capacity);
+              && request.resource.data.claimedCount <= resource.data.capacity
+              && (request.resource.data.claimedCount == resource.data.claimedCount + 1
+                  || request.resource.data.claimedCount == resource.data.claimedCount - 1));
       }
 
       match /entries/{entryId} {
@@ -289,7 +294,7 @@ service cloud.firestore {
           && (request.resource.data.get('phone', null) == null || (request.resource.data.get('phone', '') is string && request.resource.data.get('phone', '').size() < 30))
           && (request.resource.data.get('email', null) == null || (request.resource.data.get('email', '') is string && request.resource.data.get('email', '').size() < 200))
           && (request.resource.data.get('deviceId', null) == null || (request.resource.data.get('deviceId', '') is string && request.resource.data.get('deviceId', '').size() < 200))
-          && (request.resource.data.get('pledgeAmount', null) == null || request.resource.data.get('pledgeAmount', 0) is number)
+          && (request.resource.data.get('pledgeAmount', null) == null || (request.resource.data.get('pledgeAmount', 0) is number && request.resource.data.get('pledgeAmount', 0) >= 0 && request.resource.data.get('pledgeAmount', 0) <= 1000000))
           && (request.resource.data.get('note', null) == null || (request.resource.data.get('note', '') is string && request.resource.data.get('note', '').size() < 500));
         allow update: if isAdmin();
         // Same trust model as Parayan/Group Namjap/Vaari participants:
