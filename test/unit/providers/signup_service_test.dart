@@ -739,5 +739,46 @@ void main() {
       );
       expect(() => service.updateEntry('sheet_1', entry), throwsArgumentError);
     });
+
+    test(
+      'ignores a changed slotId, preserving the original slot and claimedCount',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+        final slotAId = await service.addSlot(
+          sheetId,
+          buildSlot(labelEn: 'Slot A', capacity: 3),
+        );
+        final slotBId = await service.addSlot(
+          sheetId,
+          buildSlot(labelEn: 'Slot B', capacity: 3),
+        );
+        final addResult = await service.adminAddEntry(
+          sheetId: sheetId,
+          slotId: slotAId,
+          name: 'Jane Doe',
+        );
+        final original = (await service.getAllEntries(sheetId).first).single;
+
+        // A caller attempts to move the entry to a different slot via
+        // updateEntry, which is not transactional and has no capacity
+        // check — this must be a no-op on slotId/claimedCount, not a
+        // silent desync.
+        await service.updateEntry(
+          sheetId,
+          original.copyWith(slotId: slotBId, name: 'Jane Smith'),
+        );
+
+        final fetched = (await service.getAllEntries(sheetId).first).single;
+        expect(fetched.id, addResult['entryId']);
+        expect(fetched.name, 'Jane Smith');
+        expect(fetched.slotId, slotAId);
+
+        final slots = await service.getSlots(sheetId).first;
+        final slotA = slots.firstWhere((s) => s.id == slotAId);
+        final slotB = slots.firstWhere((s) => s.id == slotBId);
+        expect(slotA.claimedCount, 1);
+        expect(slotB.claimedCount, 0);
+      },
+    );
   });
 }
