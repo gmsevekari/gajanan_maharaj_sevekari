@@ -355,6 +355,8 @@ void main() {
         final signupCard = find.byKey(const Key('signup_sheets_card'));
         expect(signupCard, findsOneWidget);
 
+        await tester.ensureVisible(signupCard);
+        await tester.pumpAndSettle();
         await tester.tap(signupCard);
         await tester.pumpAndSettle();
 
@@ -379,6 +381,8 @@ void main() {
         final signupCard = find.byKey(const Key('signup_sheets_card'));
         expect(signupCard, findsOneWidget);
 
+        await tester.ensureVisible(signupCard);
+        await tester.pumpAndSettle();
         await tester.tap(signupCard);
         await tester.pumpAndSettle();
 

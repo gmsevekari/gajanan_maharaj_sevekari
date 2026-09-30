@@ -23,7 +23,8 @@ class AdminAddGroupAdminScreen extends StatefulWidget {
   });
 
   @override
-  State<AdminAddGroupAdminScreen> createState() => _AdminAddGroupAdminScreenState();
+  State<AdminAddGroupAdminScreen> createState() =>
+      _AdminAddGroupAdminScreenState();
 }
 
 class _AdminAddGroupAdminScreenState extends State<AdminAddGroupAdminScreen> {
@@ -69,9 +70,7 @@ class _AdminAddGroupAdminScreenState extends State<AdminAddGroupAdminScreen> {
             if (mounted) {
               final localizations = AppLocalizations.of(context)!;
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(localizations.adminAlreadyExists),
-                ),
+                SnackBar(content: Text(localizations.adminAlreadyExists)),
               );
             }
             return;
@@ -102,9 +101,9 @@ class _AdminAddGroupAdminScreenState extends State<AdminAddGroupAdminScreen> {
       } catch (e) {
         if (mounted) {
           final localizations = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('${localizations.errorLabel}: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${localizations.errorLabel}: $e')),
+          );
         }
       } finally {
         if (mounted) {
@@ -149,9 +148,9 @@ class _AdminAddGroupAdminScreenState extends State<AdminAddGroupAdminScreen> {
       } catch (e) {
         if (mounted) {
           final localizations = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('${localizations.errorLabel}: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${localizations.errorLabel}: $e')),
+          );
         }
       } finally {
         if (mounted) {
@@ -355,6 +354,20 @@ class _AdminAddGroupAdminScreenState extends State<AdminAddGroupAdminScreen> {
                                 _selectedRoles.add('vaari_coordinator');
                               } else {
                                 _selectedRoles.remove('vaari_coordinator');
+                              }
+                            });
+                          },
+                        ),
+                        _buildRoleCheckbox(
+                          context,
+                          localizations.roleSignupCoordinator,
+                          _selectedRoles.contains('signup_coordinator'),
+                          (value) {
+                            setState(() {
+                              if (value == true) {
+                                _selectedRoles.add('signup_coordinator');
+                              } else {
+                                _selectedRoles.remove('signup_coordinator');
                               }
                             });
                           },

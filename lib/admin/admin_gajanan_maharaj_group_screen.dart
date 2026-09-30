@@ -31,6 +31,8 @@ class AdminGajananMaharajGroupScreen extends StatelessWidget {
               ? localizations.adminNamjapGroupTitle
               : mode == 'vaari'
               ? localizations.adminVaariGroupTitle
+              : mode == 'signup'
+              ? localizations.adminSignupGroupTitle
               : localizations.adminParayanGroupTitle,
         ),
         backgroundColor: theme.appColors.primarySwatch,
@@ -117,6 +119,8 @@ class AdminGajananMaharajGroupScreen extends StatelessWidget {
                               targetRoute = Routes.adminGroupNamjapDashboard;
                             } else if (mode == 'vaari') {
                               targetRoute = Routes.adminVaariDashboard;
+                            } else if (mode == 'signup') {
+                              targetRoute = Routes.adminSignupSheetsDashboard;
                             } else {
                               targetRoute = Routes.adminParayanCoordination;
                             }

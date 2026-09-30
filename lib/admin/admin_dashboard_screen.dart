@@ -277,6 +277,34 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               }
                             },
                           ),
+                        if (adminUser.hasRole('group_admin') ||
+                            adminUser.hasRole('signup_coordinator'))
+                          _buildModuleCard(
+                            context: context,
+                            title: localizations.signupSheetsListTitle,
+                            subtitle:
+                                localizations.adminSignupSheetsModuleSubtitle,
+                            icon: Icons.assignment_ind_outlined,
+                            color: theme.appColors.primarySwatch[600]!,
+                            onTap: () {
+                              if (adminUser.groupId != null) {
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.adminSignupSheetsDashboard,
+                                  arguments: adminUser,
+                                );
+                              } else {
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.adminGajananMaharajGroups,
+                                  arguments: {
+                                    'adminUser': adminUser,
+                                    'mode': 'signup',
+                                  },
+                                );
+                              }
+                            },
+                          ),
                         if (adminUser.roles.contains('super_admin') ||
                             (adminUser.roles.contains('group_admin') &&
                                 adminUser.groupId != null))

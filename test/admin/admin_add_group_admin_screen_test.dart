@@ -244,6 +244,8 @@ void main() {
       await tester.tap(find.text('Group Admin'));
       await tester.pumpAndSettle();
 
+      await tester.ensureVisible(find.text('ADD ADMIN'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('ADD ADMIN'));
       await tester.pumpAndSettle();
 
@@ -279,45 +281,49 @@ void main() {
       expect(find.text('Select Group'), findsOneWidget);
     });
 
-    testWidgets('toggles Super Admin, Parayan Admin, Namjap Admin and Vaari Coordinator roles', (
-      tester,
-    ) async {
-      final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
-      await tester.pumpWidget(createTestWidget(admin));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Launch'));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'toggles Super Admin, Parayan Admin, Namjap Admin and Vaari Coordinator roles',
+      (tester) async {
+        final admin = AdminUser(
+          email: 'super@test.com',
+          roles: ['super_admin'],
+        );
+        await tester.pumpWidget(createTestWidget(admin));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Launch'));
+        await tester.pumpAndSettle();
 
-      // Toggle Super Admin
-      await tester.tap(find.text('Super Admin'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Super Admin'));
-      await tester.pumpAndSettle();
+        // Toggle Super Admin
+        await tester.tap(find.text('Super Admin'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Super Admin'));
+        await tester.pumpAndSettle();
 
-      // Toggle Parayan Admin
-      await tester.tap(find.text('Parayan Admin'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Parayan Admin'));
-      await tester.pumpAndSettle();
+        // Toggle Parayan Admin
+        await tester.tap(find.text('Parayan Admin'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Parayan Admin'));
+        await tester.pumpAndSettle();
 
-      // Toggle Namjap Admin
-      await tester.tap(find.text('Namjap Admin'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Namjap Admin'));
-      await tester.pumpAndSettle();
+        // Toggle Namjap Admin
+        await tester.tap(find.text('Namjap Admin'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Namjap Admin'));
+        await tester.pumpAndSettle();
 
-      // Toggle Vaari Coordinator
-      await tester.tap(find.text('Vaari Coordinator'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Vaari Coordinator'));
-      await tester.pumpAndSettle();
+        // Toggle Vaari Coordinator
+        await tester.tap(find.text('Vaari Coordinator'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Vaari Coordinator'));
+        await tester.pumpAndSettle();
 
-      // Toggle Sign-Up Sheets Coordinator
-      await tester.tap(find.text('Sign-Up Sheets Coordinator'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Sign-Up Sheets Coordinator'));
-      await tester.pumpAndSettle();
-    });
+        // Toggle Sign-Up Sheets Coordinator
+        await tester.tap(find.text('Sign-Up Sheets Coordinator'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Sign-Up Sheets Coordinator'));
+        await tester.pumpAndSettle();
+      },
+    );
 
     testWidgets('disposes controllers correctly', (tester) async {
       final admin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
@@ -513,7 +519,10 @@ void main() {
 
   group('AdminAddGroupAdminScreen - Edit Mode', () {
     testWidgets('renders pre-filled fields and locks email', (tester) async {
-      final currentAdmin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
+      final currentAdmin = AdminUser(
+        email: 'super@test.com',
+        roles: ['super_admin'],
+      );
       final adminToEdit = AdminUser(
         email: 'edit@test.com',
         roles: ['group_admin'],
@@ -527,13 +536,17 @@ void main() {
 
       expect(find.text('Edit Admin'), findsOneWidget);
       expect(find.text('edit@test.com'), findsOneWidget);
-      
+
       // Check if email field is disabled
-      final emailField = tester.widget<TextFormField>(find.byType(TextFormField).first);
+      final emailField = tester.widget<TextFormField>(
+        find.byType(TextFormField).first,
+      );
       expect(emailField.enabled, isFalse);
 
       // Check roles
-      final groupAdminCheckbox = tester.widget<CheckboxListTile>(find.widgetWithText(CheckboxListTile, 'Group Admin'));
+      final groupAdminCheckbox = tester.widget<CheckboxListTile>(
+        find.widgetWithText(CheckboxListTile, 'Group Admin'),
+      );
       expect(groupAdminCheckbox.value, isTrue);
 
       expect(find.text('UPDATE ADMIN'), findsOneWidget);
@@ -541,20 +554,27 @@ void main() {
     });
 
     testWidgets('successfully updates admin', (tester) async {
-      final currentAdmin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
+      final currentAdmin = AdminUser(
+        email: 'super@test.com',
+        roles: ['super_admin'],
+      );
       final adminToEdit = AdminUser(
         email: 'edit@test.com',
         roles: ['group_admin'],
         groupId: 'seattle',
       );
 
-      when(() => mockAdminManagementService.saveAdmin(any())).thenAnswer((_) async => {});
+      when(
+        () => mockAdminManagementService.saveAdmin(any()),
+      ).thenAnswer((_) async => {});
 
       await tester.pumpWidget(createEditTestWidget(currentAdmin, adminToEdit));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Launch Edit'));
       await tester.pumpAndSettle();
 
+      await tester.ensureVisible(find.text('UPDATE ADMIN'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('UPDATE ADMIN'));
       await tester.pump();
       await tester.pumpAndSettle();
@@ -564,14 +584,19 @@ void main() {
     });
 
     testWidgets('successfully deletes admin', (tester) async {
-      final currentAdmin = AdminUser(email: 'super@test.com', roles: ['super_admin']);
+      final currentAdmin = AdminUser(
+        email: 'super@test.com',
+        roles: ['super_admin'],
+      );
       final adminToEdit = AdminUser(
         email: 'edit@test.com',
         roles: ['group_admin'],
         groupId: 'seattle',
       );
 
-      when(() => mockAdminManagementService.deleteAdmin(any())).thenAnswer((_) async => {});
+      when(
+        () => mockAdminManagementService.deleteAdmin(any()),
+      ).thenAnswer((_) async => {});
 
       await tester.pumpWidget(createEditTestWidget(currentAdmin, adminToEdit));
       await tester.pumpAndSettle();
@@ -587,7 +612,9 @@ void main() {
       await tester.tap(find.text('Delete'));
       await tester.pumpAndSettle();
 
-      verify(() => mockAdminManagementService.deleteAdmin('edit@test.com')).called(1);
+      verify(
+        () => mockAdminManagementService.deleteAdmin('edit@test.com'),
+      ).called(1);
       expect(find.text('Admin removed successfully'), findsOneWidget);
     });
   });

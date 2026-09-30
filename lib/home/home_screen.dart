@@ -249,6 +249,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
     cards.add(
       _buildIconGridItem(
+        key: const Key('signup_sheets_card'),
+        context: context,
+        title: localizations.signupSheetsListTitle,
+        icon: Icons.assignment_ind_outlined,
+        onTap: () => _navigateToGroupScopedList(
+          context: context,
+          targetRoute: Routes.signupSheetsList,
+          title: localizations.signupSheetsListTitle,
+          noGroupSelectedMessage:
+              localizations.noSignupSheetsGroupsSelectedMessage,
+          noActiveItemsMessage: localizations.signupSheetNoActiveSheets,
+        ),
+      ),
+    );
+    cards.add(
+      _buildIconGridItem(
         context: context,
         title: localizations.calendarTitle,
         customWidget: (isGaneshotsav || isDiwali)
