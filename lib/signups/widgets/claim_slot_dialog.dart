@@ -122,7 +122,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
             : _noteController.text.trim(),
         deviceId: widget.deviceId,
         joinCode: widget.requiresJoinCode
-            ? _joinCodeController.text.trim()
+            ? _joinCodeController.text.trim().toUpperCase()
             : null,
       );
     } catch (_) {
@@ -169,6 +169,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
               TextFormField(
                 key: const Key('claimNameField'),
                 controller: _nameController,
+                maxLength: 100,
                 decoration: InputDecoration(
                   labelText: l10n.signupSheetEntryNameLabel,
                   border: const OutlineInputBorder(),
@@ -185,6 +186,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 key: const Key('claimPhoneField'),
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
+                maxLength: 30,
                 decoration: InputDecoration(
                   labelText: l10n.signupSheetEntryPhoneLabel,
                   border: const OutlineInputBorder(),
@@ -195,6 +197,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 key: const Key('claimEmailField'),
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
+                maxLength: 200,
                 decoration: InputDecoration(
                   labelText: l10n.signupSheetEntryEmailLabel,
                   border: const OutlineInputBorder(),
@@ -227,6 +230,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 key: const Key('claimNoteField'),
                 controller: _noteController,
                 maxLines: 2,
+                maxLength: 500,
                 decoration: InputDecoration(
                   labelText: l10n.signupSheetEntryNoteLabel,
                   border: const OutlineInputBorder(),
