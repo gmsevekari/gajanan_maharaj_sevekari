@@ -7,6 +7,8 @@ import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_slot_dialog.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/my_signups_section.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_slot_tile.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 
 class SignupSheetDetailScreen extends StatefulWidget {
@@ -226,37 +228,11 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
                         ),
                         const SizedBox(height: 16),
                       ],
-                      Text(
-                        l10n.signupSheetMySignupsHeading,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      MySignupsSection(
+                        entries: myEntries,
+                        onCancelEntry: (entry) =>
+                            _confirmCancelEntry(entry, l10n),
                       ),
-                      const SizedBox(height: 8),
-                      if (myEntries.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: Text(
-                            l10n.signupSheetNoMySignups,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.appColors.secondaryText,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        )
-                      else
-                        for (final entry in myEntries)
-                          Card(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            child: ListTile(
-                              title: Text(entry.name),
-                              trailing: TextButton(
-                                onPressed: () =>
-                                    _confirmCancelEntry(entry, l10n),
-                                child: Text(l10n.signupSheetCancelSignupButton),
-                              ),
-                            ),
-                          ),
                       const SizedBox(height: 24),
                       Text(
                         l10n.signupSheetSlotsHeading,
@@ -266,7 +242,7 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
                       ),
                       const SizedBox(height: 8),
                       for (final slot in slots)
-                        _SlotTile(
+                        SignupSlotTile(
                           slot: slot,
                           onTap: slot.claimedCount >= slot.capacity
                               ? null
@@ -280,45 +256,6 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
           ),
         );
       },
-    );
-  }
-}
-
-class _SlotTile extends StatelessWidget {
-  final SignupSlot slot;
-  final VoidCallback? onTap;
-
-  const _SlotTile({required this.slot, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final isFull = slot.claimedCount >= slot.capacity;
-    final label = slot.labelEn.isNotEmpty ? slot.labelEn : slot.labelMr;
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        enabled: !isFull,
-        onTap: onTap,
-        title: Text(label),
-        subtitle: Text(
-          l10n.signupSheetSlotClaimedCount(
-            slot.claimedCount.toString(),
-            slot.capacity.toString(),
-          ),
-        ),
-        trailing: isFull
-            ? Text(
-                l10n.signupSheetSlotFullBadge,
-                style: TextStyle(
-                  color: theme.appColors.error,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
-            : const Icon(Icons.chevron_right),
-      ),
     );
   }
 }
