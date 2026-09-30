@@ -53,8 +53,13 @@ class SignupService {
         .toList();
   }
 
-  /// Overwrites a sheet's fields. [sheet.id] must be set.
+  /// Overwrites a sheet's fields. Throws if [sheet.id] is null — passing a
+  /// null id to Firestore's `.doc()` would silently create a new document
+  /// instead of updating the intended one.
   Future<void> updateSheet(SignupSheet sheet) async {
+    if (sheet.id == null) {
+      throw ArgumentError.value(sheet.id, 'sheet.id', 'must not be null');
+    }
     await _sheetsRef.doc(sheet.id).set(sheet.toMap());
   }
 
@@ -89,8 +94,13 @@ class SignupService {
         );
   }
 
-  /// Overwrites a slot's fields. [slot.id] must be set.
+  /// Overwrites a slot's fields. Throws if [slot.id] is null — passing a
+  /// null id to Firestore's `.doc()` would silently create a new document
+  /// instead of updating the intended one.
   Future<void> updateSlot(String sheetId, SignupSlot slot) async {
+    if (slot.id == null) {
+      throw ArgumentError.value(slot.id, 'slot.id', 'must not be null');
+    }
     await _slotsRef(sheetId).doc(slot.id).set(slot.toMap());
   }
 
