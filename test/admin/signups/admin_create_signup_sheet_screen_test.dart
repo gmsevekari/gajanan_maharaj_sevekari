@@ -186,6 +186,98 @@ void main() {
       expect(secondRowField.controller!.text, 'First');
     });
 
+    testWidgets('moving a slot down swaps its position with the next one', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Add Slot'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'First');
+
+      await tester.tap(find.text('Add Slot'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('slotLabelEn_1')), 'Second');
+
+      await tester.tap(find.byTooltip('Move slot down').first);
+      await tester.pumpAndSettle();
+
+      final firstRowField = tester.widget<TextFormField>(
+        find.byKey(const Key('slotLabelEn_0')),
+      );
+      final secondRowField = tester.widget<TextFormField>(
+        find.byKey(const Key('slotLabelEn_1')),
+      );
+      expect(firstRowField.controller!.text, 'Second');
+      expect(secondRowField.controller!.text, 'First');
+    });
+
+    testWidgets('rejects a zero or non-numeric capacity', (tester) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Add Slot'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('slotCapacity_0')), '0');
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Capacity must be a positive number'), findsOneWidget);
+    });
+
+    testWidgets('picking a date shows it on the row, and it can be cleared', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Add Slot'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('No date set'), findsOneWidget);
+
+      await tester.tap(find.text('Set Date'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('No date set'), findsNothing);
+      expect(find.byIcon(Icons.clear), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.clear));
+      await tester.pumpAndSettle();
+
+      expect(find.text('No date set'), findsOneWidget);
+    });
+
+    testWidgets(
+      'shows an error and creates nothing when the admin has no groupId',
+      (tester) async {
+        adminUser = const AdminUser(
+          email: 'admin@test.com',
+          roles: ['group_admin'],
+        );
+        await pumpScreen(tester);
+
+        await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+        await tester.enterText(find.byKey(const Key('titleMrField')), 'T');
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
+        await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
+        await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Failed to create sign-up sheet. Please try again.'),
+          findsOneWidget,
+        );
+        final sheets = await firestore.collection('signup_sheets').get();
+        expect(sheets.docs, isEmpty);
+      },
+    );
+
     testWidgets(
       'submits and creates the sheet and slot together, without a join code',
       (tester) async {
