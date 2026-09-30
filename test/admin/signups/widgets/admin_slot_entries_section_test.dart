@@ -122,4 +122,72 @@ void main() {
     await tester.pumpAndSettle();
     expect(removedEntry, equals(entries.first));
   });
+
+  testWidgets('renders the slot date when set', (tester) async {
+    final slot = SignupSlot(
+      id: 'slot_1',
+      labelEn: 'Week 1 - Cooking',
+      labelMr: 'आठवडा १',
+      date: DateTime(2026, 3, 15),
+      capacity: 5,
+      claimedCount: 0,
+      sortOrder: 0,
+      createdAt: DateTime.now(),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: AdminSlotEntriesSection(
+            slot: slot,
+            entries: const [],
+            onAddEntry: (_) {},
+            onEditEntry: (_, _) {},
+            onRemoveEntry: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('March 15'), findsOneWidget);
+  });
+
+  testWidgets('falls back to labelEn when labelMr is empty in Marathi locale', (
+    tester,
+  ) async {
+    final slot = SignupSlot(
+      id: 'slot_1',
+      labelEn: 'Week 1 - Cooking',
+      labelMr: '',
+      capacity: 5,
+      claimedCount: 0,
+      sortOrder: 0,
+      createdAt: DateTime.now(),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.lightTheme,
+        locale: const Locale('mr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: AdminSlotEntriesSection(
+            slot: slot,
+            entries: const [],
+            onAddEntry: (_) {},
+            onEditEntry: (_, _) {},
+            onRemoveEntry: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Week 1 - Cooking'), findsOneWidget);
+  });
 }
