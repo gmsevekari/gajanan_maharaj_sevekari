@@ -465,4 +465,67 @@ void main() {
       },
     );
   });
+
+  group('SignupService duplicateSheet', () {
+    test(
+      'copies title/description/requiresJoinCode and resets status to draft',
+      () async {
+        final sheetId = await service.createSheet(
+          buildSheet(
+            titleEn: 'Original Title',
+            requiresJoinCode: false,
+            status: SignupSheetStatus.closed,
+          ),
+        );
+
+        final newId = await service.duplicateSheet(sheetId);
+
+        final copy = await service.getSheetById(newId).first;
+        expect(copy!.titleEn, 'Original Title');
+        expect(copy.requiresJoinCode, false);
+        expect(copy.joinCode, isNull);
+        expect(copy.status, SignupSheetStatus.draft);
+      },
+    );
+
+    test('generates a fresh join code when requiresJoinCode is true', () async {
+      final sheetId = await service.createSheet(
+        buildSheet(requiresJoinCode: true, joinCode: 'ORIGINAL'),
+      );
+
+      final newId = await service.duplicateSheet(sheetId);
+
+      final copy = await service.getSheetById(newId).first;
+      expect(copy!.requiresJoinCode, true);
+      expect(copy.joinCode, isNotNull);
+      expect(copy.joinCode, isNot('ORIGINAL'));
+    });
+
+    test('copies every slot with claimedCount reset to 0', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+      await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'Jane');
+
+      final newId = await service.duplicateSheet(sheetId);
+
+      final newSlots = await service.getSlots(newId).first;
+      expect(newSlots.single.labelEn, 'Week 1');
+      expect(newSlots.single.claimedCount, 0);
+    });
+
+    test('does not copy entries', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+      await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'Jane');
+
+      final newId = await service.duplicateSheet(sheetId);
+
+      final newEntries = await service.getAllEntries(newId).first;
+      expect(newEntries, isEmpty);
+    });
+
+    test('throws when the source sheet does not exist', () async {
+      await expectLater(service.duplicateSheet('missing'), throwsArgumentError);
+    });
+  });
 }
