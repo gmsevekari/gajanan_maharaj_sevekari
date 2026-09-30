@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -479,6 +481,56 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('रविवार प्रसाद सेवा'), findsOneWidget);
+    });
+
+    testWidgets('does not resubscribe to getEntriesByDevice on every rebuild', (
+      tester,
+    ) async {
+      final sheet = SignupSheet(
+        id: 'sheet_rebuild',
+        titleEn: 'Sheet',
+        titleMr: 'शीट',
+        groupId: 'group_1',
+        status: SignupSheetStatus.published,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        createdBy: 'admin@test.com',
+      );
+      final slotsController = StreamController<List<SignupSlot>>.broadcast();
+      addTearDown(slotsController.close);
+      final mockService = MockSignupService();
+      when(
+        () => mockService.getSheetById('sheet_rebuild'),
+      ).thenAnswer((_) => Stream.value(sheet));
+      when(
+        () => mockService.getSlots('sheet_rebuild'),
+      ).thenAnswer((_) => slotsController.stream);
+      when(
+        () => mockService.getEntriesByDevice('sheet_rebuild', 'device_1'),
+      ).thenAnswer((_) => Stream.value(const []));
+
+      await tester.pumpWidget(
+        wrap(
+          SignupSheetDetailScreen(
+            sheetId: 'sheet_rebuild',
+            deviceId: 'device_1',
+            signupService: mockService,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Simulate the slots stream emitting again (e.g. another devotee
+      // claims a slot) - this must not tear down and resubscribe the
+      // unrelated "my entries" stream.
+      slotsController.add(const []);
+      await tester.pumpAndSettle();
+      slotsController.add(const []);
+      await tester.pumpAndSettle();
+
+      verify(
+        () => mockService.getEntriesByDevice('sheet_rebuild', 'device_1'),
+      ).called(1);
     });
   });
 }
