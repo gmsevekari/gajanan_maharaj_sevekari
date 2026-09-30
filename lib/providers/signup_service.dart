@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 
@@ -129,4 +130,128 @@ class SignupService {
     await batch.commit();
     return sheetRef.id;
   }
+
+  CollectionReference<Map<String, dynamic>> _entriesRef(String sheetId) =>
+      _sheetsRef.doc(sheetId).collection('entries');
+
+  /// All entries for a sheet (admin entry-management view).
+  Stream<List<SignupEntry>> getAllEntries(String sheetId) {
+    return _entriesRef(sheetId).snapshots().map(
+      (snapshot) => snapshot.docs
+          .map((doc) => SignupEntry.fromMap(doc.id, doc.data()))
+          .toList(),
+    );
+  }
+
+  /// A device's own entries on a sheet ("my signups").
+  Stream<List<SignupEntry>> getEntriesByDevice(
+    String sheetId,
+    String deviceId,
+  ) {
+    return _entriesRef(sheetId)
+        .where('deviceId', isEqualTo: deviceId)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => SignupEntry.fromMap(doc.id, doc.data()))
+              .toList(),
+        );
+  }
+
+  /// Claims a slot for a devotee. Runs in a transaction so a slot can
+  /// never be over-claimed: reads the sheet (for join-code validation) and
+  /// the slot (for capacity), then writes the entry and increments the
+  /// slot's `claimedCount` together, or writes nothing at all.
+  ///
+  /// Returns `{'success': true, 'entryId': ...}` or
+  /// `{'success': false, 'error': 'not_found' | 'invalid_join_code' | 'slot_full'}`.
+  Future<Map<String, dynamic>> claimSlot({
+    required String sheetId,
+    required String slotId,
+    required String name,
+    String? phone,
+    String? email,
+    String? deviceId,
+    double? pledgeAmount,
+    String? note,
+    String? joinCode,
+  }) {
+    final sheetRef = _sheetsRef.doc(sheetId);
+    final slotRef = _slotsRef(sheetId).doc(slotId);
+    final entryRef = _entriesRef(sheetId).doc();
+
+    return _db.runTransaction<Map<String, dynamic>>((transaction) async {
+      final sheetSnapshot = await transaction.get(sheetRef);
+      final slotSnapshot = await transaction.get(slotRef);
+
+      if (!sheetSnapshot.exists || !slotSnapshot.exists) {
+        return {'success': false, 'error': 'not_found'};
+      }
+
+      final sheet = SignupSheet.fromMap(
+        sheetSnapshot.id,
+        sheetSnapshot.data()!,
+      );
+      final slot = SignupSlot.fromMap(slotSnapshot.id, slotSnapshot.data()!);
+
+      if (sheet.requiresJoinCode && joinCode != sheet.joinCode) {
+        return {'success': false, 'error': 'invalid_join_code'};
+      }
+
+      if (slot.claimedCount >= slot.capacity) {
+        return {'success': false, 'error': 'slot_full'};
+      }
+
+      final entry = SignupEntry(
+        slotId: slotId,
+        name: name,
+        phone: phone,
+        email: email,
+        deviceId: deviceId,
+        pledgeAmount: pledgeAmount,
+        note: note,
+        joinedAt: DateTime.now(),
+      );
+
+      transaction.set(entryRef, entry.toMap());
+      transaction.update(slotRef, {'claimedCount': FieldValue.increment(1)});
+
+      return {'success': true, 'entryId': entryRef.id};
+    });
+  }
+
+  Future<void> _removeEntryAndDecrementSlot(
+    String sheetId,
+    String entryId,
+  ) async {
+    final entryRef = _entriesRef(sheetId).doc(entryId);
+
+    await _db.runTransaction((transaction) async {
+      final entrySnapshot = await transaction.get(entryRef);
+      if (!entrySnapshot.exists) return;
+
+      final entry = SignupEntry.fromMap(
+        entrySnapshot.id,
+        entrySnapshot.data()!,
+      );
+      final slotRef = _slotsRef(sheetId).doc(entry.slotId);
+      final slotSnapshot = await transaction.get(slotRef);
+
+      transaction.delete(entryRef);
+      if (slotSnapshot.exists) {
+        transaction.update(slotRef, {'claimedCount': FieldValue.increment(-1)});
+      }
+    });
+  }
+
+  /// A devotee cancelling their own entry. A no-op if the entry is already
+  /// gone, so calling it twice never decrements `claimedCount` twice.
+  Future<void> cancelEntry(String sheetId, String entryId) =>
+      _removeEntryAndDecrementSlot(sheetId, entryId);
+
+  /// An admin removing any entry. Same behavior as [cancelEntry] — the
+  /// devotee-vs-admin distinction is enforced by Firestore rules/UI, not
+  /// by different logic here.
+  Future<void> adminRemoveEntry(String sheetId, String entryId) =>
+      _removeEntryAndDecrementSlot(sheetId, entryId);
 }

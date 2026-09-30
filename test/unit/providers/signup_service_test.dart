@@ -259,8 +259,36 @@ void main() {
       final entries = await service.getAllEntries(sheetId).first;
       expect(entries.single.name, 'Jane Doe');
 
+      final myEntries = await service
+          .getEntriesByDevice(sheetId, 'no_such_device')
+          .first;
+      expect(myEntries, isEmpty);
+
       final slot = (await service.getSlots(sheetId).first).single;
       expect(slot.claimedCount, 1);
+    });
+
+    test('getEntriesByDevice returns only that device\'s entries', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 5));
+      await service.claimSlot(
+        sheetId: sheetId,
+        slotId: slotId,
+        name: 'Jane',
+        deviceId: 'device_1',
+      );
+      await service.claimSlot(
+        sheetId: sheetId,
+        slotId: slotId,
+        name: 'John',
+        deviceId: 'device_2',
+      );
+
+      final myEntries = await service
+          .getEntriesByDevice(sheetId, 'device_1')
+          .first;
+
+      expect(myEntries.map((e) => e.name).toList(), ['Jane']);
     });
 
     test(
