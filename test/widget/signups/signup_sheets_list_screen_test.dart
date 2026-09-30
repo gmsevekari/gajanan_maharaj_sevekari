@@ -177,5 +177,36 @@ void main() {
 
       expect(find.text('Navigated to: /signup_sheet_detail'), findsOneWidget);
     });
+
+    testWidgets('renders the Marathi title when locale is mr', (tester) async {
+      final now = DateTime.now();
+      await service.createSheet(
+        SignupSheet(
+          titleEn: 'Sunday Prasad Seva',
+          titleMr: 'रविवार प्रसाद सेवा',
+          groupId: 'group_1',
+          status: SignupSheetStatus.published,
+          createdAt: now,
+          updatedAt: now,
+          createdBy: 'admin@test.com',
+        ),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('mr'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: SignupSheetsListScreen(
+            groupId: 'group_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('रविवार प्रसाद सेवा'), findsOneWidget);
+    });
   });
 }

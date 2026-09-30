@@ -104,25 +104,35 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
     });
 
     final pledgeText = _pledgeController.text.trim();
-    final result = await widget.signupService.claimSlot(
-      sheetId: widget.sheetId,
-      slotId: widget.slot.id!,
-      name: _nameController.text.trim(),
-      phone: _phoneController.text.trim().isEmpty
-          ? null
-          : _phoneController.text.trim(),
-      email: _emailController.text.trim().isEmpty
-          ? null
-          : _emailController.text.trim(),
-      pledgeAmount: pledgeText.isEmpty ? null : double.tryParse(pledgeText),
-      note: _noteController.text.trim().isEmpty
-          ? null
-          : _noteController.text.trim(),
-      deviceId: widget.deviceId,
-      joinCode: widget.requiresJoinCode
-          ? _joinCodeController.text.trim()
-          : null,
-    );
+    Map<String, dynamic> result;
+    try {
+      result = await widget.signupService.claimSlot(
+        sheetId: widget.sheetId,
+        slotId: widget.slot.id!,
+        name: _nameController.text.trim(),
+        phone: _phoneController.text.trim().isEmpty
+            ? null
+            : _phoneController.text.trim(),
+        email: _emailController.text.trim().isEmpty
+            ? null
+            : _emailController.text.trim(),
+        pledgeAmount: pledgeText.isEmpty ? null : double.tryParse(pledgeText),
+        note: _noteController.text.trim().isEmpty
+            ? null
+            : _noteController.text.trim(),
+        deviceId: widget.deviceId,
+        joinCode: widget.requiresJoinCode
+            ? _joinCodeController.text.trim()
+            : null,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _errorText = l10n.signupSheetClaimError;
+      });
+      return;
+    }
 
     if (!mounted) return;
 
