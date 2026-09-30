@@ -94,6 +94,9 @@ void main() {
         Routes.adminCreateVaari,
         Routes.adminVaariDetail,
         Routes.adminVaariList,
+        Routes.adminCreateSignupSheet,
+        Routes.adminSignupSheetsDashboard,
+        Routes.adminSignupSheetDetail,
       ];
 
       for (final route in routes) {
@@ -130,7 +133,8 @@ void main() {
         Routes.onboarding, Routes.adminManageGroupAdmins, Routes.adminAddGroupAdmin,
         Routes.adminCreateParayanWithAllocation, Routes.vaariList, Routes.vaariDetail,
         Routes.adminVaariDashboard, Routes.adminCreateVaari, Routes.adminVaariDetail,
-        Routes.adminVaariList,
+        Routes.adminVaariList, Routes.adminCreateSignupSheet,
+        Routes.adminSignupSheetsDashboard, Routes.adminSignupSheetDetail,
       ];
       expect(routes.toSet().length, equals(routes.length));
     });

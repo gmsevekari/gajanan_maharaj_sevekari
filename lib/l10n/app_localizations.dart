@@ -4430,6 +4430,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to create sign-up sheet. Please try again.'**
   String get signupSheetCreateError;
+
+  /// No description provided for @adminSignupSheetsDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-Up Sheets'**
+  String get adminSignupSheetsDashboardTitle;
+
+  /// No description provided for @signupSheetStatusAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get signupSheetStatusAll;
+
+  /// No description provided for @signupSheetStatusDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get signupSheetStatusDraft;
+
+  /// No description provided for @signupSheetStatusPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'Published'**
+  String get signupSheetStatusPublished;
+
+  /// No description provided for @signupSheetStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get signupSheetStatusClosed;
+
+  /// No description provided for @signupSheetNoSheetsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No sign-up sheets found'**
+  String get signupSheetNoSheetsFound;
+
+  /// No description provided for @signupSheetNoGroupAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'No group assigned to admin'**
+  String get signupSheetNoGroupAssigned;
+
+  /// No description provided for @adminSignupSheetsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load sign-up sheets. Please try again.'**
+  String get adminSignupSheetsError;
+
+  /// No description provided for @signupSheetCreateTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Sign-Up Sheet'**
+  String get signupSheetCreateTooltip;
+
+  /// No description provided for @signupSheetRequiresJoinCodeBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Code Required'**
+  String get signupSheetRequiresJoinCodeBadge;
+
+  /// No description provided for @signupSheetJoinCodePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Code: '**
+  String get signupSheetJoinCodePrefix;
 }
 
 class _AppLocalizationsDelegate

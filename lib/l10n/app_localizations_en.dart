@@ -2305,6 +2305,40 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get signupSheetCreateError =>
       'Failed to create sign-up sheet. Please try again.';
+
+  @override
+  String get adminSignupSheetsDashboardTitle => 'Sign-Up Sheets';
+
+  @override
+  String get signupSheetStatusAll => 'All';
+
+  @override
+  String get signupSheetStatusDraft => 'Draft';
+
+  @override
+  String get signupSheetStatusPublished => 'Published';
+
+  @override
+  String get signupSheetStatusClosed => 'Closed';
+
+  @override
+  String get signupSheetNoSheetsFound => 'No sign-up sheets found';
+
+  @override
+  String get signupSheetNoGroupAssigned => 'No group assigned to admin';
+
+  @override
+  String get adminSignupSheetsError =>
+      'Failed to load sign-up sheets. Please try again.';
+
+  @override
+  String get signupSheetCreateTooltip => 'Create Sign-Up Sheet';
+
+  @override
+  String get signupSheetRequiresJoinCodeBadge => 'Join Code Required';
+
+  @override
+  String get signupSheetJoinCodePrefix => 'Join Code: ';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

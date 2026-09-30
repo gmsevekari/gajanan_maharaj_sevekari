@@ -2312,4 +2312,39 @@ class AppLocalizationsMr extends AppLocalizations {
   @override
   String get signupSheetCreateError =>
       'साइन-अप शीट तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get adminSignupSheetsDashboardTitle => 'साइन-अप शीट्स';
+
+  @override
+  String get signupSheetStatusAll => 'सर्व';
+
+  @override
+  String get signupSheetStatusDraft => 'मसुदा';
+
+  @override
+  String get signupSheetStatusPublished => 'प्रकाशित';
+
+  @override
+  String get signupSheetStatusClosed => 'बंद';
+
+  @override
+  String get signupSheetNoSheetsFound => 'कोणतीही साइन-अप शीट सापडली नाही';
+
+  @override
+  String get signupSheetNoGroupAssigned =>
+      'प्रशासकासाठी कोणताही गट नियुक्त केलेला नाही';
+
+  @override
+  String get adminSignupSheetsError =>
+      'साइन-अप शीट्स लोड करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get signupSheetCreateTooltip => 'साइन-अप शीट तयार करा';
+
+  @override
+  String get signupSheetRequiresJoinCodeBadge => 'जॉईन कोड आवश्यक';
+
+  @override
+  String get signupSheetJoinCodePrefix => 'जॉईन कोड: ';
 }

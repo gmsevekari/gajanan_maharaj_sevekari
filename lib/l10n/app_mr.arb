@@ -884,5 +884,16 @@
   "signupSheetMoveSlotDownTooltip": "स्लॉट खाली हलवा",
   "signupSheetSaveButton": "जतन करा",
   "signupSheetCreateSuccess": "साइन-अप शीट यशस्वीरित्या तयार झाली",
-  "signupSheetCreateError": "साइन-अप शीट तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा."
+  "signupSheetCreateError": "साइन-अप शीट तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+  "adminSignupSheetsDashboardTitle": "साइन-अप शीट्स",
+  "signupSheetStatusAll": "सर्व",
+  "signupSheetStatusDraft": "मसुदा",
+  "signupSheetStatusPublished": "प्रकाशित",
+  "signupSheetStatusClosed": "बंद",
+  "signupSheetNoSheetsFound": "कोणतीही साइन-अप शीट सापडली नाही",
+  "signupSheetNoGroupAssigned": "प्रशासकासाठी कोणताही गट नियुक्त केलेला नाही",
+  "adminSignupSheetsError": "साइन-अप शीट्स लोड करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+  "signupSheetCreateTooltip": "साइन-अप शीट तयार करा",
+  "signupSheetRequiresJoinCodeBadge": "जॉईन कोड आवश्यक",
+  "signupSheetJoinCodePrefix": "जॉईन कोड: "
 }

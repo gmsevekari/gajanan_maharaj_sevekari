@@ -884,5 +884,16 @@
   "signupSheetMoveSlotDownTooltip": "Move slot down",
   "signupSheetSaveButton": "Save",
   "signupSheetCreateSuccess": "Sign-up sheet created successfully",
-  "signupSheetCreateError": "Failed to create sign-up sheet. Please try again."
+  "signupSheetCreateError": "Failed to create sign-up sheet. Please try again.",
+  "adminSignupSheetsDashboardTitle": "Sign-Up Sheets",
+  "signupSheetStatusAll": "All",
+  "signupSheetStatusDraft": "Draft",
+  "signupSheetStatusPublished": "Published",
+  "signupSheetStatusClosed": "Closed",
+  "signupSheetNoSheetsFound": "No sign-up sheets found",
+  "signupSheetNoGroupAssigned": "No group assigned to admin",
+  "adminSignupSheetsError": "Failed to load sign-up sheets. Please try again.",
+  "signupSheetCreateTooltip": "Create Sign-Up Sheet",
+  "signupSheetRequiresJoinCodeBadge": "Join Code Required",
+  "signupSheetJoinCodePrefix": "Join Code: "
 }
