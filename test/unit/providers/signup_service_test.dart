@@ -18,6 +18,8 @@ void main() {
     String titleMr = 'रविवार प्रसाद सेवा',
     String groupId = 'group_1',
     SignupSheetStatus status = SignupSheetStatus.draft,
+    bool requiresJoinCode = false,
+    String? joinCode,
   }) {
     final now = DateTime.now();
     return SignupSheet(
@@ -25,6 +27,8 @@ void main() {
       titleMr: titleMr,
       groupId: groupId,
       status: status,
+      requiresJoinCode: requiresJoinCode,
+      joinCode: joinCode,
       createdAt: now,
       updatedAt: now,
       createdBy: 'admin@example.com',
@@ -235,5 +239,202 @@ void main() {
       final sheets = await service.getAllSheets('group_1').first;
       expect(sheets, isEmpty);
     });
+  });
+
+  group('SignupService claimSlot', () {
+    test('happy path creates an entry and increments claimedCount', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+
+      final result = await service.claimSlot(
+        sheetId: sheetId,
+        slotId: slotId,
+        name: 'Jane Doe',
+        phone: '+911234567890',
+      );
+
+      expect(result['success'], true);
+      expect(result['entryId'], isNotEmpty);
+
+      final entries = await service.getAllEntries(sheetId).first;
+      expect(entries.single.name, 'Jane Doe');
+
+      final slot = (await service.getSlots(sheetId).first).single;
+      expect(slot.claimedCount, 1);
+    });
+
+    test(
+      'rejects with slot_full when capacity is reached, without creating an entry',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 1));
+        await service.claimSlot(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'First',
+        );
+
+        final result = await service.claimSlot(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'Second',
+        );
+
+        expect(result, {'success': false, 'error': 'slot_full'});
+        final entries = await service.getAllEntries(sheetId).first;
+        expect(entries.length, 1);
+        final slot = (await service.getSlots(sheetId).first).single;
+        expect(slot.claimedCount, 1);
+      },
+    );
+
+    test(
+      'rejects a missing/wrong join code when the sheet requires one',
+      () async {
+        final sheetId = await service.createSheet(
+          buildSheet(requiresJoinCode: true, joinCode: 'ABC123'),
+        );
+        final slotId = await service.addSlot(sheetId, buildSlot());
+
+        final missing = await service.claimSlot(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'Jane',
+        );
+        final wrong = await service.claimSlot(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'Jane',
+          joinCode: 'WRONG',
+        );
+
+        expect(missing, {'success': false, 'error': 'invalid_join_code'});
+        expect(wrong, {'success': false, 'error': 'invalid_join_code'});
+        final slot = (await service.getSlots(sheetId).first).single;
+        expect(slot.claimedCount, 0);
+      },
+    );
+
+    test(
+      'succeeds without a join code when the sheet does not require one',
+      () async {
+        final sheetId = await service.createSheet(
+          buildSheet(requiresJoinCode: false),
+        );
+        final slotId = await service.addSlot(sheetId, buildSlot());
+
+        final result = await service.claimSlot(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'Jane',
+        );
+
+        expect(result['success'], true);
+      },
+    );
+
+    test('returns not_found when the slot does not exist', () async {
+      final sheetId = await service.createSheet(buildSheet());
+
+      final result = await service.claimSlot(
+        sheetId: sheetId,
+        slotId: 'missing',
+        name: 'Jane',
+      );
+
+      expect(result, {'success': false, 'error': 'not_found'});
+    });
+
+    test(
+      // NOTE: fake_cloud_firestore's runTransaction is a passthrough
+      // (`_DummyTransaction`) with no locking or retry — it does not
+      // actually serialize concurrent transactions the way real Firestore
+      // does. This test only proves the capacity check itself is correct
+      // when claimSlot calls happen one after another; it cannot prove two
+      // truly concurrent claims against real Firestore can't both squeeze
+      // through. Manual/emulator verification is still needed before this
+      // ships.
+      'exactly one of two claims against a capacity-1 slot succeeds',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 1));
+
+        final first = await service.claimSlot(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'First',
+        );
+        final second = await service.claimSlot(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'Second',
+        );
+
+        final results = [first, second];
+        expect(results.where((r) => r['success'] == true).length, 1);
+        expect(results.where((r) => r['error'] == 'slot_full').length, 1);
+        final slot = (await service.getSlots(sheetId).first).single;
+        expect(slot.claimedCount, 1);
+      },
+    );
+  });
+
+  group('SignupService cancelEntry / adminRemoveEntry', () {
+    test('cancelEntry deletes the entry and decrements claimedCount', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+      final claim = await service.claimSlot(
+        sheetId: sheetId,
+        slotId: slotId,
+        name: 'Jane',
+      );
+
+      await service.cancelEntry(sheetId, claim['entryId'] as String);
+
+      final entries = await service.getAllEntries(sheetId).first;
+      expect(entries, isEmpty);
+      final slot = (await service.getSlots(sheetId).first).single;
+      expect(slot.claimedCount, 0);
+    });
+
+    test(
+      'cancelEntry is a no-op if called twice (never goes below 0)',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+        final claim = await service.claimSlot(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'Jane',
+        );
+        final entryId = claim['entryId'] as String;
+
+        await service.cancelEntry(sheetId, entryId);
+        await service.cancelEntry(sheetId, entryId);
+
+        final slot = (await service.getSlots(sheetId).first).single;
+        expect(slot.claimedCount, 0);
+      },
+    );
+
+    test(
+      'adminRemoveEntry deletes the entry and decrements claimedCount',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+        final claim = await service.claimSlot(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'Jane',
+        );
+
+        await service.adminRemoveEntry(sheetId, claim['entryId'] as String);
+
+        final entries = await service.getAllEntries(sheetId).first;
+        expect(entries, isEmpty);
+        final slot = (await service.getSlots(sheetId).first).single;
+        expect(slot.claimedCount, 0);
+      },
+    );
   });
 }
