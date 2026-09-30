@@ -70,3 +70,7 @@ ios/fastlane/screenshots/
 /android/fastlane/report.xml
 ios/build/
 android/.kotlin/
+
+# Feature planning docs for Sign-Up Sheets are working notes, not shipped
+# documentation - keep them local-only, never committed.
+docs/signup-sheets-*.md
