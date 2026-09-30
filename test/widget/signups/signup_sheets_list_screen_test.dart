@@ -159,7 +159,7 @@ void main() {
     testWidgets('tapping a sheet navigates to its detail route', (
       tester,
     ) async {
-      final sheetId = await createSheet(titleEn: 'Sunday Prasad Seva');
+      await createSheet(titleEn: 'Sunday Prasad Seva');
 
       await tester.pumpWidget(
         wrap(
