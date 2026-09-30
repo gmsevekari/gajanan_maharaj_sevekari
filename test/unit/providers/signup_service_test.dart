@@ -211,4 +211,29 @@ void main() {
       expect(slots[1].sortOrder, 1);
     });
   });
+
+  group('SignupService createSheetWithSlots', () {
+    test('creates the sheet and every slot in one batch', () async {
+      final sheetId = await service.createSheetWithSlots(buildSheet(), [
+        buildSlot(labelEn: 'Week 1', sortOrder: 0),
+        buildSlot(labelEn: 'Week 2', sortOrder: 1),
+      ]);
+
+      final sheet = await service.getSheetById(sheetId).first;
+      expect(sheet, isNotNull);
+
+      final slots = await service.getSlots(sheetId).first;
+      expect(slots.map((s) => s.labelEn).toList(), ['Week 1', 'Week 2']);
+    });
+
+    test('rejects an empty slot list without writing a sheet', () async {
+      await expectLater(
+        service.createSheetWithSlots(buildSheet(), []),
+        throwsArgumentError,
+      );
+
+      final sheets = await service.getAllSheets('group_1').first;
+      expect(sheets, isEmpty);
+    });
+  });
 }
