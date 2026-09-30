@@ -208,29 +208,40 @@ conventions.
       Actual: 100% line coverage on `AdminSignupSheetsDashboard`, 11 widget
       tests, status filter chips, FAB to create sheet, and card navigation
       with arguments.
-- [ ] 4.2 Failing tests + implement `AdminSignupSheetDetailScreen`
+- [x] 4.2 Failing tests + implement `AdminSignupSheetDetailScreen`
       overview section (`lib/admin/signups/admin_signup_sheet_detail_screen.dart`):
       sheet info, publish/close status toggle, share button (deep link +
       join code, same WhatsApp/native-share call as Vaari/Parayan),
       **Duplicate** button (calls `duplicateSheet`, navigates to the new
       draft).
-- [ ] 4.3 Failing tests + implement the entries section: list entries
+      Actual: Implemented with join code copy button, status toggle unlock mechanism,
+      deep-link sharing, and duplicate sheet action with processing spinner.
+- [x] 4.3 Failing tests + implement the entries section: list entries
       grouped by `slotId` (via `getSlots` + `getAllEntries`, joined
       client-side), fill bars per slot ("42 / 50"), manually add/edit/
       remove an entry (reusing the admin entry-edit dialog pattern from
       `AdminParayanDetailScreen._showParticipantEditDialog`), and
       `ParticipantContactActions` for texting/WhatsApp-ing a devotee
       directly from their entry row.
-- [ ] 4.4 Failing tests + implement export/share summary image, reusing
+      Actual: Extracted `AdminSlotEntriesSection` and `AdminEntryEditDialog` with fill
+      progress bar, devotee list, `ParticipantContactActions`, and add/edit/delete flows.
+- [x] 4.4 Failing tests + implement export/share summary image, reusing
       the `ScreenshotController` + export-card pattern from
       `VaariExportCard`.
-- [ ] 4.5 l10n additions alongside each sub-screen (not deferred).
-- [ ] 4.6 **Build this screen test-first from the start** — unlike
+      Actual: Extracted `SignupSheetExportCard` with summary metrics and slot progress bars,
+      captured via `ScreenshotController` and shared natively.
+- [x] 4.5 l10n additions alongside each sub-screen (not deferred).
+      Actual: Added all English and Marathi strings in `app_en.arb` and `app_mr.arb`.
+- [x] 4.6 **Build this screen test-first from the start** — unlike
       `AdminParayanDetailScreen`, which has zero test coverage today (a
       known gap already tracked separately), this new screen should not
       repeat that gap.
-- [ ] 4.7 `flutter analyze` + `dart format`; commit per sub-piece (4.1–4.4
+      Actual: 95.9% line coverage on `AdminSignupSheetDetailScreen`, 97.4% on `AdminEntryEditDialog`,
+      99.0% on `SignupSheetExportCard`, and 94.0% on `AdminSlotEntriesSection` across 52 tests.
+- [x] 4.7 `flutter analyze` + `dart format`; commit per sub-piece (4.1–4.4
       independently) — expect 4-6 commits for this phase.
+      Actual: Ran `dart format`, verified `flutter analyze` clean with 0 issues. Commits split
+      cleanly across sub-pieces.
 
 ## Phase 5 — Devotee list + detail + claim dialog
 

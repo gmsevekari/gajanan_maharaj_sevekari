@@ -1,0 +1,700 @@
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_entry_edit_dialog.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_slot_entries_section.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_export_card.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
+import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
+import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
+
+class AdminSignupSheetDetailScreen extends StatefulWidget {
+  final String? sheetId;
+  final AdminUser? adminUser;
+
+  /// Injected for testing; defaults to [FirebaseFirestore.instance].
+  @visibleForTesting
+  final FirebaseFirestore? firestore;
+
+  /// Injected for testing.
+  @visibleForTesting
+  final SignupService? signupService;
+
+  const AdminSignupSheetDetailScreen({
+    super.key,
+    this.sheetId,
+    this.adminUser,
+    this.firestore,
+    this.signupService,
+  });
+
+  @override
+  State<AdminSignupSheetDetailScreen> createState() =>
+      _AdminSignupSheetDetailScreenState();
+}
+
+class _AdminSignupSheetDetailScreenState
+    extends State<AdminSignupSheetDetailScreen> {
+  static const double _offscreenExportOffset = 9999;
+
+  late final SignupService _service;
+  final ScreenshotController _exportController = ScreenshotController();
+  bool _isStatusLocked = true;
+  bool _isProcessing = false;
+  String _sheetId = '';
+  Stream<SignupSheet?>? _sheetStream;
+  Stream<List<SignupSlot>>? _slotsStream;
+  Stream<List<SignupEntry>>? _entriesStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _service =
+        widget.signupService ?? SignupService(firestore: widget.firestore);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final newId = _getEffectiveSheetId(context);
+    if (newId != _sheetId) {
+      _sheetId = newId;
+      _sheetStream = _service.getSheetById(_sheetId);
+      _slotsStream = _service.getSlots(_sheetId);
+      _entriesStream = _service.getAllEntries(_sheetId);
+    }
+  }
+
+  String _getEffectiveSheetId(BuildContext context) {
+    if (widget.sheetId != null && widget.sheetId!.isNotEmpty) {
+      return widget.sheetId!;
+    }
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    return args?['sheetId'] as String? ?? '';
+  }
+
+  AdminUser _getEffectiveAdminUser(BuildContext context) {
+    if (widget.adminUser != null) {
+      return widget.adminUser!;
+    }
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    return args?['adminUser'] as AdminUser? ??
+        const AdminUser(email: '', roles: []);
+  }
+
+  Future<void> _shareDeepLink(
+    SignupSheet sheet,
+    AppLocalizations l10n,
+    bool isMarathi,
+  ) async {
+    final title = isMarathi
+        ? (sheet.titleMr.isNotEmpty ? sheet.titleMr : sheet.titleEn)
+        : (sheet.titleEn.isNotEmpty ? sheet.titleEn : sheet.titleMr);
+    final joinCodePart = sheet.requiresJoinCode && sheet.joinCode != null
+        ? '\n${l10n.signupSheetJoinCodePrefix}${sheet.joinCode}'
+        : '';
+    final codeQuery = sheet.requiresJoinCode && sheet.joinCode != null
+        ? '?joinCode=${sheet.joinCode}'
+        : '';
+    final url =
+        'https://gajananmaharajsevekari.org/signup/${sheet.id}$codeQuery';
+
+    final text =
+        '${l10n.signupSheetSharePrefix}: $title$joinCodePart\n\n${l10n.signupSheetShareLinkPrefix}: $url';
+
+    await SharePlus.instance.share(ShareParams(text: text));
+  }
+
+  Future<void> _duplicateSheet(
+    SignupSheet sheet,
+    AdminUser adminUser,
+    AppLocalizations l10n,
+  ) async {
+    if (_isProcessing) return;
+    setState(() => _isProcessing = true);
+    try {
+      final newSheetId = await _service.duplicateSheet(sheet.id!);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(l10n.signupSheetDuplicateSuccess)),
+        );
+      Navigator.pushReplacementNamed(
+        context,
+        Routes.adminSignupSheetDetail,
+        arguments: {'sheetId': newSheetId, 'adminUser': adminUser},
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.signupSheetDuplicateError)));
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
+    }
+  }
+
+  Future<void> _updateStatus(
+    SignupSheet sheet,
+    SignupSheetStatus newStatus,
+    AppLocalizations l10n,
+  ) async {
+    try {
+      await _service.updateSheetStatus(sheet.id!, newStatus);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(l10n.statusUpdateSuccess)));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(l10n.signupSheetStatusUpdateError)),
+        );
+    }
+  }
+
+  Future<void> _exportSummaryImage(
+    SignupSheet sheet,
+    List<SignupSlot> slots,
+    List<SignupEntry> entries,
+    AppLocalizations l10n,
+  ) async {
+    try {
+      final imageBytes = await _exportController.capture();
+      if (imageBytes == null) return;
+
+      final tempDir = await getTemporaryDirectory();
+      final file = await File(
+        '${tempDir.path}/signup_sheet_${sheet.id ?? "summary"}.png',
+      ).writeAsBytes(imageBytes);
+
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          text: l10n.signupSheetExportSummaryTitle,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(l10n.signupSheetExportFailed)));
+    }
+  }
+
+  void _showAddEntryDialog(
+    SignupSheet sheet,
+    SignupSlot slot,
+    AppLocalizations l10n,
+  ) {
+    showDialog(
+      context: context,
+      builder: (_) => AdminEntryEditDialog(
+        onSave: (name, phone, email, pledge, note) async {
+          try {
+            final res = await _service.adminAddEntry(
+              sheetId: sheet.id!,
+              slotId: slot.id!,
+              name: name,
+              phone: phone,
+              email: email,
+              pledgeAmount: pledge,
+              note: note,
+            );
+            if (!mounted) return;
+            if (res['success'] == true) {
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(content: Text(l10n.signupSheetEntryAddSuccess)),
+                );
+            } else if (res['error'] == 'slot_full') {
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(content: Text(l10n.signupSheetSlotFullError)),
+                );
+            } else {
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(content: Text(l10n.signupSheetEntryAddError)),
+                );
+            }
+          } catch (_) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(content: Text(l10n.signupSheetEntryAddError)),
+              );
+          }
+        },
+      ),
+    );
+  }
+
+  void _showEditEntryDialog(
+    SignupSheet sheet,
+    SignupSlot slot,
+    SignupEntry entry,
+    AppLocalizations l10n,
+  ) {
+    showDialog(
+      context: context,
+      builder: (_) => AdminEntryEditDialog(
+        entry: entry,
+        onSave: (name, phone, email, pledge, note) async {
+          try {
+            await _service.updateEntry(
+              sheet.id!,
+              entry.copyWith(
+                name: name,
+                phone: phone,
+                email: email,
+                pledgeAmount: pledge,
+                note: note,
+              ),
+            );
+            if (!mounted) return;
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(content: Text(l10n.signupSheetEntryEditSuccess)),
+              );
+          } catch (_) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(content: Text(l10n.signupSheetEntryEditError)),
+              );
+          }
+        },
+        onDelete: () => _removeEntry(sheet, entry, l10n),
+      ),
+    );
+  }
+
+  Future<void> _removeEntry(
+    SignupSheet sheet,
+    SignupEntry entry,
+    AppLocalizations l10n,
+  ) async {
+    try {
+      await _service.adminRemoveEntry(sheet.id!, entry.id!);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(l10n.signupSheetEntryRemoveSuccess)),
+        );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(l10n.signupSheetEntryRemoveError)),
+        );
+    }
+  }
+
+  void _confirmRemoveEntry(
+    SignupSheet sheet,
+    SignupEntry entry,
+    AppLocalizations l10n,
+  ) {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: Text(l10n.signupSheetRemoveEntryTitle),
+        content: Text(l10n.signupSheetRemoveEntryConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: Text(l10n.no),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogCtx).pop();
+              _removeEntry(sheet, entry, l10n);
+            },
+            child: Text(
+              l10n.yes,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final adminUser = _getEffectiveAdminUser(context);
+    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+
+    final appConfig = context.watch<AppConfigProvider>().appConfig;
+    final group = appConfig?.gajananMaharajGroups
+        .where((g) => g.id == adminUser.groupId)
+        .firstOrNull;
+    final groupName = group != null
+        ? (isMarathi
+              ? (group.nameMr.isNotEmpty ? group.nameMr : group.nameEn)
+              : (group.nameEn.isNotEmpty ? group.nameEn : group.nameMr))
+        : '';
+
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.adminSignupSheetDetailTitle)),
+      body: StreamBuilder<SignupSheet?>(
+        stream: _sheetStream,
+        builder: (context, sheetSnapshot) {
+          if (sheetSnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final sheet = sheetSnapshot.data;
+          if (sheet == null) {
+            return Center(
+              child: Text(
+                l10n.signupSheetNotFound,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.appColors.secondaryText,
+                ),
+              ),
+            );
+          }
+
+          final title = isMarathi
+              ? (sheet.titleMr.isNotEmpty ? sheet.titleMr : sheet.titleEn)
+              : (sheet.titleEn.isNotEmpty ? sheet.titleEn : sheet.titleMr);
+          final desc = isMarathi ? sheet.descriptionMr : sheet.descriptionEn;
+
+          return StreamBuilder<List<SignupSlot>>(
+            stream: _slotsStream,
+            builder: (context, slotsSnapshot) {
+              final slots = slotsSnapshot.data ?? const [];
+
+              return StreamBuilder<List<SignupEntry>>(
+                stream: _entriesStream,
+                builder: (context, entriesSnapshot) {
+                  final entries = entriesSnapshot.data ?? const [];
+                  final totalCapacity = slots.fold<int>(
+                    0,
+                    (total, s) => total + s.capacity,
+                  );
+
+                  return Stack(
+                    children: [
+                      // Offscreen export target for screenshot
+                      Positioned(
+                        left: -_offscreenExportOffset,
+                        top: -_offscreenExportOffset,
+                        child: Screenshot(
+                          controller: _exportController,
+                          child: SignupSheetExportCard(
+                            sheet: sheet,
+                            slots: slots,
+                            totalClaims: entries.length,
+                            totalCapacity: totalCapacity,
+                            groupName: groupName,
+                            l10n: l10n,
+                            theme: theme,
+                            langCode: isMarathi ? 'mr' : 'en',
+                          ),
+                        ),
+                      ),
+                      ListView(
+                        padding: const EdgeInsets.all(16),
+                        children: [
+                          _buildOverviewCard(
+                            sheet,
+                            title,
+                            desc,
+                            groupName,
+                            l10n,
+                            theme,
+                          ),
+                          if (sheet.requiresJoinCode &&
+                              sheet.joinCode != null) ...[
+                            const SizedBox(height: 12),
+                            _buildJoinCodeCard(sheet, l10n, theme),
+                          ],
+                          const SizedBox(height: 12),
+                          _buildStatusSection(sheet, l10n, theme),
+                          const SizedBox(height: 12),
+                          _buildActionsRow(
+                            sheet,
+                            slots,
+                            entries,
+                            adminUser,
+                            l10n,
+                            theme,
+                            isMarathi,
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            l10n.signupSheetSlotsSectionHeading,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          ...slots.map((slot) {
+                            final slotEntries = entries
+                                .where((e) => e.slotId == slot.id)
+                                .toList();
+                            return AdminSlotEntriesSection(
+                              slot: slot,
+                              entries: slotEntries,
+                              onAddEntry: (s) =>
+                                  _showAddEntryDialog(sheet, s, l10n),
+                              onEditEntry: (e, s) =>
+                                  _showEditEntryDialog(sheet, s, e, l10n),
+                              onRemoveEntry: (e) =>
+                                  _confirmRemoveEntry(sheet, e, l10n),
+                            );
+                          }),
+                        ],
+                      ),
+                      if (_isProcessing)
+                        Positioned.fill(
+                          child: Container(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildOverviewCard(
+    SignupSheet sheet,
+    String title,
+    String desc,
+    String groupName,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                if (groupName.isNotEmpty)
+                  Chip(
+                    label: Text(groupName),
+                    visualDensity: VisualDensity.compact,
+                  ),
+              ],
+            ),
+            if (desc.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                desc,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.appColors.secondaryText,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildJoinCodeCard(
+    SignupSheet sheet,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            Icon(Icons.key, color: theme.colorScheme.primary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.signupSheetRequiresJoinCodeBadge,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.appColors.secondaryText,
+                    ),
+                  ),
+                  Text(
+                    sheet.joinCode!,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              tooltip: l10n.signupSheetCopyJoinCodeTooltip,
+              icon: const Icon(Icons.copy, size: 20),
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: sheet.joinCode!));
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l10n.joinCodeCopied)));
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusSection(
+    SignupSheet sheet,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'STATUS',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    letterSpacing: 1.2,
+                    fontWeight: FontWeight.bold,
+                    color: theme.appColors.secondaryText,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    _isStatusLocked ? Icons.lock_outline : Icons.lock_open,
+                    size: 20,
+                    color: _isStatusLocked
+                        ? theme.appColors.secondaryText
+                        : theme.colorScheme.primary,
+                  ),
+                  onPressed: () =>
+                      setState(() => _isStatusLocked = !_isStatusLocked),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            IgnorePointer(
+              ignoring: _isStatusLocked,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 200),
+                opacity: _isStatusLocked ? 0.6 : 1.0,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: SegmentedButton<SignupSheetStatus>(
+                    segments: [
+                      ButtonSegment(
+                        value: SignupSheetStatus.draft,
+                        label: Text(l10n.signupSheetStatusDraft),
+                      ),
+                      ButtonSegment(
+                        value: SignupSheetStatus.published,
+                        label: Text(l10n.signupSheetStatusPublished),
+                      ),
+                      ButtonSegment(
+                        value: SignupSheetStatus.closed,
+                        label: Text(l10n.signupSheetStatusClosed),
+                      ),
+                    ],
+                    selected: {sheet.status},
+                    onSelectionChanged: (selected) {
+                      final newStatus = selected.firstOrNull;
+                      if (newStatus != null && newStatus != sheet.status) {
+                        _updateStatus(sheet, newStatus, l10n);
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionsRow(
+    SignupSheet sheet,
+    List<SignupSlot> slots,
+    List<SignupEntry> entries,
+    AdminUser adminUser,
+    AppLocalizations l10n,
+    ThemeData theme,
+    bool isMarathi,
+  ) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        ElevatedButton.icon(
+          icon: const Icon(Icons.copy, size: 16),
+          label: Text(l10n.signupSheetDuplicateButton),
+          onPressed: () => _duplicateSheet(sheet, adminUser, l10n),
+        ),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.share, size: 16),
+          label: Text(l10n.signupSheetShareButton),
+          onPressed: () => _shareDeepLink(sheet, l10n, isMarathi),
+        ),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.image_outlined, size: 16),
+          label: Text(l10n.signupSheetExportButton),
+          onPressed: () => _exportSummaryImage(sheet, slots, entries, l10n),
+        ),
+      ],
+    );
+  }
+}

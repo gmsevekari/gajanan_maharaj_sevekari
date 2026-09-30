@@ -2347,4 +2347,136 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get signupSheetJoinCodePrefix => 'जॉईन कोड: ';
+
+  @override
+  String get adminSignupSheetDetailTitle => 'साइन-अप शीट तपशील';
+
+  @override
+  String get signupSheetDuplicateButton => 'शीटची प्रत तयार करा';
+
+  @override
+  String get signupSheetDuplicating => 'साइन-अप शीटची प्रत तयार करत आहे...';
+
+  @override
+  String get signupSheetDuplicateSuccess => 'शीटची प्रत यशस्वीरित्या तयार झाली';
+
+  @override
+  String get signupSheetDuplicateError => 'शीटची प्रत तयार करण्यात अयशस्वी';
+
+  @override
+  String get signupSheetShareButton => 'शेअर करा';
+
+  @override
+  String get signupSheetExportButton => 'सारांश निर्यात करा';
+
+  @override
+  String get signupSheetExporting => 'सारांश प्रतिमा तयार करत आहे...';
+
+  @override
+  String get signupSheetSharePrefix => 'साइन-अप शीट';
+
+  @override
+  String get signupSheetShareLinkPrefix => 'साइन अप लिंक';
+
+  @override
+  String get signupSheetStatusUpdateError => 'स्थिती अपडेट करण्यात अयशस्वी';
+
+  @override
+  String get signupSheetCopyJoinCodeTooltip => 'जॉईन कोड कॉपी करा';
+
+  @override
+  String get signupSheetDateRange => 'तारीख श्रेणी';
+
+  @override
+  String get signupSheetSlotsSectionHeading => 'स्लॉट्स आणि नोंदी';
+
+  @override
+  String get signupSheetAddEntryButton => 'भाविक जोडा';
+
+  @override
+  String get signupSheetEditEntryTitle => 'नोंद संपादित करा';
+
+  @override
+  String get signupSheetAddEntryTitle => 'भाविकाची नोंद जोडा';
+
+  @override
+  String get signupSheetEntryNameLabel => 'नाव';
+
+  @override
+  String get signupSheetEntryNameRequired => 'कृपया नाव प्रविष्ट करा';
+
+  @override
+  String get signupSheetEntryPhoneLabel => 'फोन';
+
+  @override
+  String get signupSheetEntryEmailLabel => 'ईमेल';
+
+  @override
+  String get signupSheetEntryNoteLabel => 'नोंद';
+
+  @override
+  String get signupSheetEntryPledgeLabel => 'संकल्पित रक्कम';
+
+  @override
+  String get signupSheetRemoveEntryTitle => 'नोंद काढा';
+
+  @override
+  String get signupSheetRemoveEntryConfirm =>
+      'तुम्हाला ही नोंद नक्की काढायची आहे का?';
+
+  @override
+  String get signupSheetEntryRemoveSuccess => 'नोंद यशस्वीरित्या काढली';
+
+  @override
+  String get signupSheetEntryRemoveError => 'नोंद काढण्यात अयशस्वी';
+
+  @override
+  String get signupSheetEntryAddSuccess => 'भाविक यशस्वीरित्या जोडला';
+
+  @override
+  String get signupSheetEntryAddError => 'भाविक जोडण्यात अयशस्वी';
+
+  @override
+  String get signupSheetEntryEditSuccess => 'नोंद यशस्वीरित्या अपडेट केली';
+
+  @override
+  String get signupSheetEntryEditError => 'नोंद अपडेट करण्यात अयशस्वी';
+
+  @override
+  String get signupSheetSlotFullError => 'हा स्लॉट आधीच भरला आहे';
+
+  @override
+  String get signupSheetSlotFullBadge => 'पूर्ण भरले';
+
+  @override
+  String signupSheetSlotClaimedCount(String claimed, String capacity) {
+    return '$capacity पैकी $claimed भरले';
+  }
+
+  @override
+  String signupSheetSuggestedAmountFormat(String amount) {
+    return 'सुचवलेले: $amount';
+  }
+
+  @override
+  String get signupSheetNoEntriesForSlot =>
+      'या स्लॉटसाठी अद्याप कोणत्याही भाविकाने साइन अप केलेले नाही';
+
+  @override
+  String get signupSheetExportSummaryTitle => 'साइन-अप शीट सारांश';
+
+  @override
+  String get signupSheetTotalSlotsLabel => 'एकूण स्लॉट्स';
+
+  @override
+  String get signupSheetTotalClaimsLabel => 'एकूण साइन-अप';
+
+  @override
+  String get signupSheetFillPercentageLabel => 'भरले';
+
+  @override
+  String get signupSheetExportFailed => 'प्रतिमा निर्यात करण्यात अयशस्वी';
+
+  @override
+  String get signupSheetNotFound => 'साइन-अप शीट सापडली नाही';
 }

@@ -895,5 +895,64 @@
   "adminSignupSheetsError": "Failed to load sign-up sheets. Please try again.",
   "signupSheetCreateTooltip": "Create Sign-Up Sheet",
   "signupSheetRequiresJoinCodeBadge": "Join Code Required",
-  "signupSheetJoinCodePrefix": "Join Code: "
+  "signupSheetJoinCodePrefix": "Join Code: ",
+  "adminSignupSheetDetailTitle": "Sign-Up Sheet Details",
+  "signupSheetDuplicateButton": "Duplicate Sheet",
+  "signupSheetDuplicating": "Duplicating sign-up sheet...",
+  "signupSheetDuplicateSuccess": "Sheet duplicated successfully",
+  "signupSheetDuplicateError": "Failed to duplicate sheet",
+  "signupSheetShareButton": "Share",
+  "signupSheetExportButton": "Export Summary",
+  "signupSheetExporting": "Generating summary image...",
+  "signupSheetSharePrefix": "Sign-Up Sheet",
+  "signupSheetShareLinkPrefix": "Sign up link",
+  "signupSheetStatusUpdateError": "Failed to update status",
+  "signupSheetCopyJoinCodeTooltip": "Copy Join Code",
+  "signupSheetDateRange": "Date Range",
+  "signupSheetSlotsSectionHeading": "Slots & Entries",
+  "signupSheetAddEntryButton": "Add Devotee",
+  "signupSheetEditEntryTitle": "Edit Entry",
+  "signupSheetAddEntryTitle": "Add Devotee Entry",
+  "signupSheetEntryNameLabel": "Name",
+  "signupSheetEntryNameRequired": "Please enter a name",
+  "signupSheetEntryPhoneLabel": "Phone",
+  "signupSheetEntryEmailLabel": "Email",
+  "signupSheetEntryNoteLabel": "Note",
+  "signupSheetEntryPledgeLabel": "Pledge Amount",
+  "signupSheetRemoveEntryTitle": "Remove Entry",
+  "signupSheetRemoveEntryConfirm": "Are you sure you want to remove this entry?",
+  "signupSheetEntryRemoveSuccess": "Entry removed successfully",
+  "signupSheetEntryRemoveError": "Failed to remove entry",
+  "signupSheetEntryAddSuccess": "Devotee added successfully",
+  "signupSheetEntryAddError": "Failed to add devotee",
+  "signupSheetEntryEditSuccess": "Entry updated successfully",
+  "signupSheetEntryEditError": "Failed to update entry",
+  "signupSheetSlotFullError": "This slot is already full",
+  "signupSheetSlotFullBadge": "Full",
+  "signupSheetSlotClaimedCount": "{claimed} of {capacity} claimed",
+  "@signupSheetSlotClaimedCount": {
+    "placeholders": {
+      "claimed": {
+        "type": "String"
+      },
+      "capacity": {
+        "type": "String"
+      }
+    }
+  },
+  "signupSheetSuggestedAmountFormat": "Suggested: {amount}",
+  "@signupSheetSuggestedAmountFormat": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "signupSheetNoEntriesForSlot": "No devotees have signed up for this slot yet",
+  "signupSheetExportSummaryTitle": "Sign-Up Sheet Summary",
+  "signupSheetTotalSlotsLabel": "Total Slots",
+  "signupSheetTotalClaimsLabel": "Total Signups",
+  "signupSheetFillPercentageLabel": "Filled",
+  "signupSheetExportFailed": "Failed to export image",
+  "signupSheetNotFound": "Sign-up sheet not found"
 }

@@ -2339,6 +2339,138 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signupSheetJoinCodePrefix => 'Join Code: ';
+
+  @override
+  String get adminSignupSheetDetailTitle => 'Sign-Up Sheet Details';
+
+  @override
+  String get signupSheetDuplicateButton => 'Duplicate Sheet';
+
+  @override
+  String get signupSheetDuplicating => 'Duplicating sign-up sheet...';
+
+  @override
+  String get signupSheetDuplicateSuccess => 'Sheet duplicated successfully';
+
+  @override
+  String get signupSheetDuplicateError => 'Failed to duplicate sheet';
+
+  @override
+  String get signupSheetShareButton => 'Share';
+
+  @override
+  String get signupSheetExportButton => 'Export Summary';
+
+  @override
+  String get signupSheetExporting => 'Generating summary image...';
+
+  @override
+  String get signupSheetSharePrefix => 'Sign-Up Sheet';
+
+  @override
+  String get signupSheetShareLinkPrefix => 'Sign up link';
+
+  @override
+  String get signupSheetStatusUpdateError => 'Failed to update status';
+
+  @override
+  String get signupSheetCopyJoinCodeTooltip => 'Copy Join Code';
+
+  @override
+  String get signupSheetDateRange => 'Date Range';
+
+  @override
+  String get signupSheetSlotsSectionHeading => 'Slots & Entries';
+
+  @override
+  String get signupSheetAddEntryButton => 'Add Devotee';
+
+  @override
+  String get signupSheetEditEntryTitle => 'Edit Entry';
+
+  @override
+  String get signupSheetAddEntryTitle => 'Add Devotee Entry';
+
+  @override
+  String get signupSheetEntryNameLabel => 'Name';
+
+  @override
+  String get signupSheetEntryNameRequired => 'Please enter a name';
+
+  @override
+  String get signupSheetEntryPhoneLabel => 'Phone';
+
+  @override
+  String get signupSheetEntryEmailLabel => 'Email';
+
+  @override
+  String get signupSheetEntryNoteLabel => 'Note';
+
+  @override
+  String get signupSheetEntryPledgeLabel => 'Pledge Amount';
+
+  @override
+  String get signupSheetRemoveEntryTitle => 'Remove Entry';
+
+  @override
+  String get signupSheetRemoveEntryConfirm =>
+      'Are you sure you want to remove this entry?';
+
+  @override
+  String get signupSheetEntryRemoveSuccess => 'Entry removed successfully';
+
+  @override
+  String get signupSheetEntryRemoveError => 'Failed to remove entry';
+
+  @override
+  String get signupSheetEntryAddSuccess => 'Devotee added successfully';
+
+  @override
+  String get signupSheetEntryAddError => 'Failed to add devotee';
+
+  @override
+  String get signupSheetEntryEditSuccess => 'Entry updated successfully';
+
+  @override
+  String get signupSheetEntryEditError => 'Failed to update entry';
+
+  @override
+  String get signupSheetSlotFullError => 'This slot is already full';
+
+  @override
+  String get signupSheetSlotFullBadge => 'Full';
+
+  @override
+  String signupSheetSlotClaimedCount(String claimed, String capacity) {
+    return '$claimed of $capacity claimed';
+  }
+
+  @override
+  String signupSheetSuggestedAmountFormat(String amount) {
+    return 'Suggested: $amount';
+  }
+
+  @override
+  String get signupSheetNoEntriesForSlot =>
+      'No devotees have signed up for this slot yet';
+
+  @override
+  String get signupSheetExportSummaryTitle => 'Sign-Up Sheet Summary';
+
+  @override
+  String get signupSheetTotalSlotsLabel => 'Total Slots';
+
+  @override
+  String get signupSheetTotalClaimsLabel => 'Total Signups';
+
+  @override
+  String get signupSheetFillPercentageLabel => 'Filled';
+
+  @override
+  String get signupSheetExportFailed => 'Failed to export image';
+
+  @override
+  String get signupSheetNotFound => 'Sign-up sheet not found';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).
