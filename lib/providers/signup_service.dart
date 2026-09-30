@@ -94,17 +94,34 @@ class SignupService {
         );
   }
 
-  /// Overwrites a slot's fields. Throws if [slot.id] is null — passing a
-  /// null id to Firestore's `.doc()` would silently create a new document
-  /// instead of updating the intended one.
+  /// Overwrites a slot's admin-editable fields (label, date, capacity,
+  /// suggestedAmount, sortOrder). `claimedCount` is deliberately excluded —
+  /// it's owned by claimSlot/cancelEntry's transactions, so an admin
+  /// saving a slot loaded before a concurrent claim/cancel can never
+  /// clobber it. Throws if [slot.id] is null — passing a null id to
+  /// Firestore's `.doc()` would silently create a new document instead of
+  /// updating the intended one.
   Future<void> updateSlot(String sheetId, SignupSlot slot) async {
     if (slot.id == null) {
       throw ArgumentError.value(slot.id, 'slot.id', 'must not be null');
     }
-    await _slotsRef(sheetId).doc(slot.id).set(slot.toMap());
+    final fields = slot.toMap()..remove('claimedCount');
+    await _slotsRef(sheetId).doc(slot.id).update(fields);
   }
 
+  /// Deletes a slot, refusing if it still has claimed entries — deleting it
+  /// anyway would orphan those entries (pointing at a missing slot).
   Future<void> deleteSlot(String sheetId, String slotId) async {
+    final snapshot = await _slotsRef(sheetId).doc(slotId).get();
+    if (snapshot.exists) {
+      final claimedCount = (snapshot.data()?['claimedCount'] as num?)?.toInt();
+      if ((claimedCount ?? 0) > 0) {
+        throw StateError(
+          'Cannot delete slot $slotId: it still has $claimedCount claimed '
+          'entr${claimedCount == 1 ? 'y' : 'ies'}.',
+        );
+      }
+    }
     await _slotsRef(sheetId).doc(slotId).delete();
   }
 
@@ -268,8 +285,13 @@ class SignupService {
       _removeEntryAndDecrementSlot(sheetId, entryId);
 
   /// Admin-initiated manual entry, bypassing the join-code check — the
-  /// admin is already authenticated as an admin.
-  Future<String> adminAddEntry({
+  /// admin is already authenticated as an admin. Still respects slot
+  /// capacity, same as [claimSlot]: an admin who wants to overbook a slot
+  /// must raise its capacity first via [updateSlot].
+  ///
+  /// Returns `{'success': true, 'entryId': ...}` or
+  /// `{'success': false, 'error': 'not_found' | 'slot_full'}`.
+  Future<Map<String, dynamic>> adminAddEntry({
     required String sheetId,
     required String slotId,
     required String name,
@@ -277,25 +299,36 @@ class SignupService {
     String? email,
     double? pledgeAmount,
     String? note,
-  }) async {
-    final entry = SignupEntry(
-      slotId: slotId,
-      name: name,
-      phone: phone,
-      email: email,
-      pledgeAmount: pledgeAmount,
-      note: note,
-      joinedAt: DateTime.now(),
-    );
-
-    final batch = _db.batch();
+  }) {
+    final slotRef = _slotsRef(sheetId).doc(slotId);
     final entryRef = _entriesRef(sheetId).doc();
-    batch.set(entryRef, entry.toMap());
-    batch.update(_slotsRef(sheetId).doc(slotId), {
-      'claimedCount': FieldValue.increment(1),
+
+    return _db.runTransaction<Map<String, dynamic>>((transaction) async {
+      final slotSnapshot = await transaction.get(slotRef);
+      if (!slotSnapshot.exists) {
+        return {'success': false, 'error': 'not_found'};
+      }
+
+      final slot = SignupSlot.fromMap(slotSnapshot.id, slotSnapshot.data()!);
+      if (slot.claimedCount >= slot.capacity) {
+        return {'success': false, 'error': 'slot_full'};
+      }
+
+      final entry = SignupEntry(
+        slotId: slotId,
+        name: name,
+        phone: phone,
+        email: email,
+        pledgeAmount: pledgeAmount,
+        note: note,
+        joinedAt: DateTime.now(),
+      );
+
+      transaction.set(entryRef, entry.toMap());
+      transaction.update(slotRef, {'claimedCount': FieldValue.increment(1)});
+
+      return {'success': true, 'entryId': entryRef.id};
     });
-    await batch.commit();
-    return entryRef.id;
   }
 
   String _generateJoinCode() {
