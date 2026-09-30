@@ -528,4 +528,29 @@ void main() {
       await expectLater(service.duplicateSheet('missing'), throwsArgumentError);
     });
   });
+
+  group('SignupService adminAddEntry', () {
+    test(
+      'creates an entry and increments claimedCount, bypassing the join code',
+      () async {
+        final sheetId = await service.createSheet(
+          buildSheet(requiresJoinCode: true, joinCode: 'ABC123'),
+        );
+        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+
+        final entryId = await service.adminAddEntry(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'Phoned-in Devotee',
+          phone: '+911234567890',
+        );
+
+        expect(entryId, isNotEmpty);
+        final entries = await service.getAllEntries(sheetId).first;
+        expect(entries.single.name, 'Phoned-in Devotee');
+        final slot = (await service.getSlots(sheetId).first).single;
+        expect(slot.claimedCount, 1);
+      },
+    );
+  });
 }

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
@@ -254,4 +256,88 @@ class SignupService {
   /// by different logic here.
   Future<void> adminRemoveEntry(String sheetId, String entryId) =>
       _removeEntryAndDecrementSlot(sheetId, entryId);
+
+  /// Admin-initiated manual entry, bypassing the join-code check — the
+  /// admin is already authenticated as an admin.
+  Future<String> adminAddEntry({
+    required String sheetId,
+    required String slotId,
+    required String name,
+    String? phone,
+    String? email,
+    double? pledgeAmount,
+    String? note,
+  }) async {
+    final entry = SignupEntry(
+      slotId: slotId,
+      name: name,
+      phone: phone,
+      email: email,
+      pledgeAmount: pledgeAmount,
+      note: note,
+      joinedAt: DateTime.now(),
+    );
+
+    final batch = _db.batch();
+    final entryRef = _entriesRef(sheetId).doc();
+    batch.set(entryRef, entry.toMap());
+    batch.update(_slotsRef(sheetId).doc(slotId), {
+      'claimedCount': FieldValue.increment(1),
+    });
+    await batch.commit();
+    return entryRef.id;
+  }
+
+  String _generateJoinCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final rnd = Random.secure();
+    return String.fromCharCodes(
+      Iterable.generate(6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))),
+    );
+  }
+
+  /// Copies a sheet's title/description/join-code-requirement and every
+  /// slot (with `claimedCount` reset to 0) into a new draft sheet. Entries
+  /// are never copied. A fresh join code is generated if the original
+  /// requires one.
+  Future<String> duplicateSheet(String sheetId) async {
+    final sourceSnapshot = await _sheetsRef.doc(sheetId).get();
+    if (!sourceSnapshot.exists) {
+      throw ArgumentError.value(sheetId, 'sheetId', 'sheet not found');
+    }
+    final source = SignupSheet.fromMap(
+      sourceSnapshot.id,
+      sourceSnapshot.data()!,
+    );
+    final now = DateTime.now();
+    final duplicate = SignupSheet(
+      titleEn: source.titleEn,
+      titleMr: source.titleMr,
+      descriptionEn: source.descriptionEn,
+      descriptionMr: source.descriptionMr,
+      groupId: source.groupId,
+      status: SignupSheetStatus.draft,
+      requiresJoinCode: source.requiresJoinCode,
+      joinCode: source.requiresJoinCode ? _generateJoinCode() : null,
+      startDate: source.startDate,
+      endDate: source.endDate,
+      createdAt: now,
+      updatedAt: now,
+      createdBy: source.createdBy,
+    );
+
+    final sourceSlots = await _slotsRef(sheetId).get();
+    final newSheetRef = _sheetsRef.doc();
+    final batch = _db.batch();
+    batch.set(newSheetRef, duplicate.toMap());
+
+    final newSlotsRef = _slotsRef(newSheetRef.id);
+    for (final doc in sourceSlots.docs) {
+      final slot = SignupSlot.fromMap(doc.id, doc.data());
+      batch.set(newSlotsRef.doc(), slot.copyWith(claimedCount: 0).toMap());
+    }
+
+    await batch.commit();
+    return newSheetRef.id;
+  }
 }
