@@ -46,9 +46,7 @@ void main() {
 
   group('AdminEntryEditDialog', () {
     testWidgets('renders add mode when entry is null', (tester) async {
-      await tester.pumpWidget(
-        createDialogWidget(onSave: (_, _, _, _, _) {}),
-      );
+      await tester.pumpWidget(createDialogWidget(onSave: (_, _, _, _, _) {}));
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
@@ -63,9 +61,7 @@ void main() {
     });
 
     testWidgets('validates required name field', (tester) async {
-      await tester.pumpWidget(
-        createDialogWidget(onSave: (_, _, _, _, _) {}),
-      );
+      await tester.pumpWidget(createDialogWidget(onSave: (_, _, _, _, _) {}));
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
@@ -155,7 +151,7 @@ void main() {
       expect(find.text('Existing Devotee'), findsOneWidget);
       expect(find.text('9876543210'), findsNWidgets(2));
       expect(find.text('devotee@test.com'), findsOneWidget);
-      expect(find.text('51.0'), findsOneWidget);
+      expect(find.text('51'), findsOneWidget);
       expect(find.text('Bringing prasad'), findsOneWidget);
 
       // Contact actions present
@@ -175,6 +171,26 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(deleteCalled, isTrue);
+    });
+
+    testWidgets('pre-fills a fractional pledge amount without trimming it', (
+      tester,
+    ) async {
+      final entry = SignupEntry(
+        id: 'entry_2',
+        slotId: 'slot_1',
+        name: 'Devotee With Cents',
+        pledgeAmount: 50.5,
+        joinedAt: DateTime.now(),
+      );
+
+      await tester.pumpWidget(
+        createDialogWidget(entry: entry, onSave: (_, _, _, _, _) {}),
+      );
+      await tester.tap(find.text('Open Dialog'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('50.5'), findsOneWidget);
     });
   });
 }

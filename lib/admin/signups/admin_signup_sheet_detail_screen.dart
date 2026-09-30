@@ -265,7 +265,6 @@ class _AdminSignupSheetDetailScreenState
 
   void _showEditEntryDialog(
     SignupSheet sheet,
-    SignupSlot slot,
     SignupEntry entry,
     AppLocalizations l10n,
   ) {
@@ -484,8 +483,8 @@ class _AdminSignupSheetDetailScreenState
                               entries: slotEntries,
                               onAddEntry: (s) =>
                                   _showAddEntryDialog(sheet, s, l10n),
-                              onEditEntry: (e, s) =>
-                                  _showEditEntryDialog(sheet, s, e, l10n),
+                              onEditEntry: (e, _) =>
+                                  _showEditEntryDialog(sheet, e, l10n),
                               onRemoveEntry: (e) =>
                                   _confirmRemoveEntry(sheet, e, l10n),
                             );
