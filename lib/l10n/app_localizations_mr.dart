@@ -1843,6 +1843,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get roleVaariCoordinator => 'वारी ॲडमिन';
 
   @override
+  String get roleSignupCoordinator => 'साइन-अप शीट्स समन्वयक';
+
+  @override
   String get atLeastOneRoleRequired => 'किमान एक रोल निवडणे आवश्यक आहे';
 
   @override
@@ -1977,6 +1980,10 @@ class AppLocalizationsMr extends AppLocalizations {
       'वारी पाहण्यासाठी कृपया एक ग्रुप निवडा.';
 
   @override
+  String get noSignupSheetsGroupsSelectedMessage =>
+      'साइन-अप शीट्स पाहण्यासाठी कृपया एक ग्रुप निवडा.';
+
+  @override
   String get vaariStepsSuffix => ' स्टेप्स';
 
   @override
@@ -2053,6 +2060,13 @@ class AppLocalizationsMr extends AppLocalizations {
   @override
   String get adminVaariModuleSubtitle =>
       'वारी तयार करा, सहभागी आणि स्टेप्स पहा';
+
+  @override
+  String get adminSignupGroupTitle => 'साइन-अप शीट्ससाठी गट निवडा';
+
+  @override
+  String get adminSignupSheetsModuleSubtitle =>
+      'साइन-अप शीट्स तयार करा आणि व्यवस्थापित करा';
 
   @override
   String get createVaariTitle => 'वारी तयार करा';

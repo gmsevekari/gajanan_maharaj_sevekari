@@ -211,5 +211,78 @@ void main() {
 
       expect(find.text('Vaari'), findsNothing);
     });
+
+    testWidgets('should show Sign-Up Sheets card for super_admin', (
+      tester,
+    ) async {
+      final mockSnapshot = MockDocumentSnapshot();
+      when(() => mockSnapshot.exists).thenReturn(true);
+      when(() => mockSnapshot.data()).thenReturn({
+        'roles': ['super_admin'],
+      });
+      when(
+        () => mockDoc.snapshots(),
+      ).thenAnswer((_) => Stream.value(mockSnapshot));
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sign-Up Sheets'), findsOneWidget);
+    });
+
+    testWidgets('should show Sign-Up Sheets card for group_admin', (
+      tester,
+    ) async {
+      final mockSnapshot = MockDocumentSnapshot();
+      when(() => mockSnapshot.exists).thenReturn(true);
+      when(() => mockSnapshot.data()).thenReturn({
+        'roles': ['group_admin'],
+        'groupId': 'gajanan_maharaj_seattle',
+      });
+      when(
+        () => mockDoc.snapshots(),
+      ).thenAnswer((_) => Stream.value(mockSnapshot));
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sign-Up Sheets'), findsOneWidget);
+    });
+
+    testWidgets('should show Sign-Up Sheets card for signup_coordinator', (
+      tester,
+    ) async {
+      final mockSnapshot = MockDocumentSnapshot();
+      when(() => mockSnapshot.exists).thenReturn(true);
+      when(() => mockSnapshot.data()).thenReturn({
+        'roles': ['signup_coordinator'],
+      });
+      when(
+        () => mockDoc.snapshots(),
+      ).thenAnswer((_) => Stream.value(mockSnapshot));
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sign-Up Sheets'), findsOneWidget);
+    });
+
+    testWidgets('should NOT show Sign-Up Sheets card for other roles', (
+      tester,
+    ) async {
+      final mockSnapshot = MockDocumentSnapshot();
+      when(() => mockSnapshot.exists).thenReturn(true);
+      when(() => mockSnapshot.data()).thenReturn({
+        'roles': ['temple_admin'],
+      });
+      when(
+        () => mockDoc.snapshots(),
+      ).thenAnswer((_) => Stream.value(mockSnapshot));
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sign-Up Sheets'), findsNothing);
+    });
   });
 }

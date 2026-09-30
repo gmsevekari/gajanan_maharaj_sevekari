@@ -1839,6 +1839,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roleVaariCoordinator => 'Vaari Coordinator';
 
   @override
+  String get roleSignupCoordinator => 'Sign-Up Sheets Coordinator';
+
+  @override
   String get atLeastOneRoleRequired => 'At least one role must be selected';
 
   @override
@@ -1972,6 +1975,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please select a group to view Vaari events.';
 
   @override
+  String get noSignupSheetsGroupsSelectedMessage =>
+      'Please select a group to view Sign-Up Sheets.';
+
+  @override
   String get vaariStepsSuffix => ' steps';
 
   @override
@@ -2048,6 +2055,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get adminVaariModuleSubtitle =>
       'Create events, manage participants and view steps data.';
+
+  @override
+  String get adminSignupGroupTitle => 'Select Group for Sign-Up Sheets';
+
+  @override
+  String get adminSignupSheetsModuleSubtitle =>
+      'Create and manage sign-up sheets';
 
   @override
   String get createVaariTitle => 'Create Vaari Event';

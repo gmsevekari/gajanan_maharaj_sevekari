@@ -147,6 +147,7 @@ void main() {
       expect(find.text('Parayan Admin'), findsOneWidget);
       expect(find.text('Namjap Admin'), findsOneWidget);
       expect(find.text('Vaari Coordinator'), findsOneWidget);
+      expect(find.text('Sign-Up Sheets Coordinator'), findsOneWidget);
 
       // Select Group Admin to show group dropdown
       await tester.tap(find.text('Group Admin'));
@@ -309,6 +310,12 @@ void main() {
       await tester.tap(find.text('Vaari Coordinator'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Vaari Coordinator'));
+      await tester.pumpAndSettle();
+
+      // Toggle Sign-Up Sheets Coordinator
+      await tester.tap(find.text('Sign-Up Sheets Coordinator'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Sign-Up Sheets Coordinator'));
       await tester.pumpAndSettle();
     });
 

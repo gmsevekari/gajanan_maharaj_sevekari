@@ -3573,6 +3573,12 @@ abstract class AppLocalizations {
   /// **'Vaari Coordinator'**
   String get roleVaariCoordinator;
 
+  /// No description provided for @roleSignupCoordinator.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-Up Sheets Coordinator'**
+  String get roleSignupCoordinator;
+
   /// No description provided for @atLeastOneRoleRequired.
   ///
   /// In en, this message translates to:
@@ -3813,6 +3819,12 @@ abstract class AppLocalizations {
   /// **'Please select a group to view Vaari events.'**
   String get noVaariGroupsSelectedMessage;
 
+  /// No description provided for @noSignupSheetsGroupsSelectedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a group to view Sign-Up Sheets.'**
+  String get noSignupSheetsGroupsSelectedMessage;
+
   /// No description provided for @vaariStepsSuffix.
   ///
   /// In en, this message translates to:
@@ -3944,6 +3956,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create events, manage participants and view steps data.'**
   String get adminVaariModuleSubtitle;
+
+  /// No description provided for @adminSignupGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Group for Sign-Up Sheets'**
+  String get adminSignupGroupTitle;
+
+  /// No description provided for @adminSignupSheetsModuleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create and manage sign-up sheets'**
+  String get adminSignupSheetsModuleSubtitle;
 
   /// No description provided for @createVaariTitle.
   ///

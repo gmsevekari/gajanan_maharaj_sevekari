@@ -116,6 +116,26 @@ void main() {
     expect(find.text(Routes.adminVaariDashboard), findsOneWidget);
   });
 
+  testWidgets('shows Sign-Up Sheets title when mode is signup', (
+    tester,
+  ) async {
+    await tester.pumpWidget(createTestWidget(mode: 'signup'));
+    await tester.pumpAndSettle();
+    expect(find.text('Select Group for Sign-Up Sheets'), findsOneWidget);
+  });
+
+  testWidgets('navigates to Sign-Up Sheets Dashboard when mode is signup', (
+    tester,
+  ) async {
+    await tester.pumpWidget(createTestWidget(mode: 'signup'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Group 1'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(Routes.adminSignupSheetsDashboard), findsOneWidget);
+  });
+
   testWidgets('navigates to home when home button is pressed', (tester) async {
     await tester.pumpWidget(createTestWidget());
     await tester.pumpAndSettle();

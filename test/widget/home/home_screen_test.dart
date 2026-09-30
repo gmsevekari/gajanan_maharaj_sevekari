@@ -153,6 +153,14 @@ void main() {
               ),
             );
           }
+          if (settings.name == Routes.signupSheetsList) {
+            return MaterialPageRoute(
+              builder: (_) => Scaffold(
+                appBar: AppBar(title: const Text('Signup Sheets List')),
+                body: Text('Group: ${(settings.arguments as Map)['groupId']}'),
+              ),
+            );
+          }
           return null;
         },
       ),
@@ -323,6 +331,55 @@ void main() {
         expect(vaariCard, findsOneWidget);
 
         await tester.tap(vaariCard);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(GajananMaharajGroupScreen), findsOneWidget);
+      },
+    );
+  });
+
+  group('HomeScreen Signup Sheets Card Navigation Tests', () {
+    testWidgets(
+      'navigates to SignupSheetsListScreen when single group selected',
+      (tester) async {
+        tester.view.physicalSize = const Size(1200, 1200);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        when(() => mockGroupProvider.selectedGroupIds).thenReturn(['g1']);
+
+        await tester.pumpWidget(createHomeScreen());
+        await tester.pumpAndSettle();
+
+        final signupCard = find.byKey(const Key('signup_sheets_card'));
+        expect(signupCard, findsOneWidget);
+
+        await tester.tap(signupCard);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Signup Sheets List'), findsOneWidget);
+        expect(find.text('Group: g1'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'navigates to GajananMaharajGroupScreen when multiple groups selected',
+      (tester) async {
+        tester.view.physicalSize = const Size(1200, 1200);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        when(() => mockGroupProvider.selectedGroupIds).thenReturn(['g1', 'g2']);
+
+        await tester.pumpWidget(createHomeScreen());
+        await tester.pumpAndSettle();
+
+        final signupCard = find.byKey(const Key('signup_sheets_card'));
+        expect(signupCard, findsOneWidget);
+
+        await tester.tap(signupCard);
         await tester.pumpAndSettle();
 
         expect(find.byType(GajananMaharajGroupScreen), findsOneWidget);
