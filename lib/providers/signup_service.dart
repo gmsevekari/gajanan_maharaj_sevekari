@@ -1,9 +1,8 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
 
 class SignupService {
   final FirebaseFirestore _db;
@@ -331,14 +330,6 @@ class SignupService {
     });
   }
 
-  String _generateJoinCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final rnd = Random.secure();
-    return String.fromCharCodes(
-      Iterable.generate(6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))),
-    );
-  }
-
   /// Copies a sheet's title/description/join-code-requirement and every
   /// slot (with `claimedCount` reset to 0) into a new draft sheet. Entries
   /// are never copied. A fresh join code is generated if the original
@@ -361,7 +352,7 @@ class SignupService {
       groupId: source.groupId,
       status: SignupSheetStatus.draft,
       requiresJoinCode: source.requiresJoinCode,
-      joinCode: source.requiresJoinCode ? _generateJoinCode() : null,
+      joinCode: source.requiresJoinCode ? generateJoinCode() : null,
       startDate: source.startDate,
       endDate: source.endDate,
       createdAt: now,

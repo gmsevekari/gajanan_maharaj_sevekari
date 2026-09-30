@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
@@ -6,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/models/vaari_event.dart';
 import 'package:gajanan_maharaj_sevekari/providers/vaari_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
+import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
 
 class AdminVaariCreateScreen extends StatefulWidget {
   final AdminUser adminUser;
@@ -58,14 +58,6 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
     super.dispose();
   }
 
-  String _generateJoinCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final rnd = Random.secure();
-    return String.fromCharCodes(
-      Iterable.generate(6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))),
-    );
-  }
-
   Future<void> _selectDate(BuildContext context, bool isStart) async {
     final pickedDate = await showDatePicker(
       context: context,
@@ -104,7 +96,7 @@ class _AdminVaariCreateScreenState extends State<AdminVaariCreateScreen> {
         throw Exception('Group ID is required to create an event');
       }
 
-      final joinCode = _generateJoinCode();
+      final joinCode = generateJoinCode();
       final docId = '${groupId}_${dateStr}_$joinCode';
 
       final targetDistance =

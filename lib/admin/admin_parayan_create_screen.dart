@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
 import 'package:gajanan_maharaj_sevekari/utils/locale_extensions.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:flutter/services.dart';
@@ -67,14 +67,6 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
     _descriptionEnController.dispose();
     _descriptionMrController.dispose();
     super.dispose();
-  }
-
-  String _generateJoinCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final rnd = Random.secure();
-    return String.fromCharCodes(
-      Iterable.generate(6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))),
-    );
   }
 
   /// Computes the end date based on the parayan type and start date.
@@ -261,7 +253,7 @@ class _AdminParayanCreateScreenState extends State<AdminParayanCreateScreen> {
         reminderTimes: formattedTimes,
         createdAt: DateTime.now(),
         sentReminders: const {},
-        joinCode: _generateJoinCode(),
+        joinCode: generateJoinCode(),
         groupId: groupId,
         timezone: _selectedTimezone,
         is4DayParayan: _is4DayParayan,

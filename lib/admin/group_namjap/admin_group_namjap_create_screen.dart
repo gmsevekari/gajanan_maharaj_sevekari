@@ -1,10 +1,10 @@
-import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/group_namjap_event.dart';
 import 'package:gajanan_maharaj_sevekari/providers/group_namjap_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
+import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
@@ -23,7 +23,8 @@ class AdminGroupNamjapCreateScreen extends StatefulWidget {
       _AdminGroupNamjapCreateScreenState();
 }
 
-class _AdminGroupNamjapCreateScreenState extends State<AdminGroupNamjapCreateScreen> {
+class _AdminGroupNamjapCreateScreenState
+    extends State<AdminGroupNamjapCreateScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameEnController = TextEditingController();
   final _nameMrController = TextEditingController();
@@ -50,14 +51,6 @@ class _AdminGroupNamjapCreateScreenState extends State<AdminGroupNamjapCreateScr
     super.initState();
     _firestore = widget.firestore ?? FirebaseFirestore.instance;
     _service = GroupNamjapService(firestore: _firestore);
-  }
-
-  String _generateJoinCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final rnd = Random();
-    return String.fromCharCodes(
-      Iterable.generate(6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))),
-    );
   }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
@@ -107,7 +100,7 @@ class _AdminGroupNamjapCreateScreenState extends State<AdminGroupNamjapCreateScr
         endDate: _endDate,
         targetCount: int.parse(_targetCountController.text.trim()),
         totalCount: 0,
-        joinCode: _generateJoinCode(),
+        joinCode: generateJoinCode(),
         status: 'upcoming',
         groupId: groupId,
         timezone: _selectedTimezone,
