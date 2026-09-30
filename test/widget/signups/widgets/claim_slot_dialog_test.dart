@@ -6,6 +6,9 @@ import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_slot_dialog.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockSignupService extends Mock implements SignupService {}
 
 void main() {
   late FakeFirebaseFirestore firestore;
@@ -453,5 +456,62 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets(
+      'shows a visible error and re-enables the form when claimSlot throws',
+      (tester) async {
+        final mockService = MockSignupService();
+        when(
+          () => mockService.claimSlot(
+            sheetId: any(named: 'sheetId'),
+            slotId: any(named: 'slotId'),
+            name: any(named: 'name'),
+            phone: any(named: 'phone'),
+            email: any(named: 'email'),
+            pledgeAmount: any(named: 'pledgeAmount'),
+            note: any(named: 'note'),
+            deviceId: any(named: 'deviceId'),
+            joinCode: any(named: 'joinCode'),
+          ),
+        ).thenThrow(Exception('network error'));
+
+        final slot = await slotById(openSheetId, plainSlotId);
+        await tester.pumpWidget(
+          wrap(
+            Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => showDialog(
+                  context: context,
+                  builder: (_) => ClaimSlotDialog(
+                    sheetId: openSheetId,
+                    slot: slot,
+                    requiresJoinCode: false,
+                    deviceId: 'device_1',
+                    signupService: mockService,
+                  ),
+                ),
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('Open'));
+        await tester.pumpAndSettle();
+
+        await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Failed to claim slot. Please try again.'),
+          findsOneWidget,
+        );
+        // The form must be re-enabled, not stuck showing the spinner.
+        expect(find.byType(CircularProgressIndicator), findsNothing);
+        expect(find.text('Save'), findsOneWidget);
+      },
+    );
   });
 }
