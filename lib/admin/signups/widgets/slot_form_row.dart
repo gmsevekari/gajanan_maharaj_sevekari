@@ -32,12 +32,18 @@ class SlotFormRow extends StatelessWidget {
     required this.onMoveDown,
   });
 
+  /// How far into the future an admin can schedule a slot. A fixed offset
+  /// from "now" rather than a hardcoded calendar year, so this doesn't need
+  /// bumping as real years pass.
+  static const Duration _maxSlotDateHorizon = Duration(days: 365 * 5);
+
   Future<void> _pickDate(BuildContext context) async {
+    final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
-      initialDate: date ?? DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: 30)),
-      lastDate: DateTime(2030),
+      initialDate: date ?? now,
+      firstDate: now.subtract(const Duration(days: 30)),
+      lastDate: now.add(_maxSlotDateHorizon),
     );
     if (picked != null) {
       onDateChanged(picked);

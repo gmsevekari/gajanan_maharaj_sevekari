@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/slot_form_row.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
@@ -162,8 +163,13 @@ class _AdminCreateSignupSheetScreenState
         );
         Navigator.pop(context);
       }
-    } catch (e) {
-      debugPrint('AdminCreateSignupSheetScreen._submit error: $e');
+    } on Exception catch (e) {
+      // Deliberately catches Exception, not Error: an Error subtype here
+      // (e.g. ArgumentError from a future bug) should crash visibly during
+      // development rather than being masked behind this generic message.
+      if (kDebugMode) {
+        debugPrint('AdminCreateSignupSheetScreen._submit error: $e');
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(localizations.signupSheetCreateError)),
@@ -266,7 +272,7 @@ class _AdminCreateSignupSheetScreenState
                     else
                       for (var i = 0; i < _slots.length; i++)
                         SlotFormRow(
-                          key: ValueKey(_slots[i]),
+                          key: ObjectKey(_slots[i]),
                           index: i,
                           labelEnController: _slots[i].labelEnController,
                           labelMrController: _slots[i].labelMrController,
