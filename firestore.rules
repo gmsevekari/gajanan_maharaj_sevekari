@@ -252,5 +252,52 @@ service cloud.firestore {
         allow delete: if isAdmin() || (resource.data.deviceId != null);
       }
     }
+
+    // Sign-Up Sheets: Publicly readable; Admin writable at the sheet level
+    match /signup_sheets/{sheetId} {
+      allow read: if true;
+      allow write: if isAdmin();
+
+      match /slots/{slotId} {
+        allow read: if true;
+        allow create, delete: if isAdmin();
+        // A devotee claiming/cancelling a slot isn't an admin, but the
+        // claimSlot/cancelEntry transaction still needs to increment or
+        // decrement claimedCount on their behalf. Non-admins may update
+        // *only* that one field, bounded within [0, capacity]; admins can
+        // still update anything (label, date, capacity, etc).
+        allow update: if isAdmin()
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedCount'])
+              && request.resource.data.claimedCount is int
+              && request.resource.data.claimedCount >= 0
+              && request.resource.data.claimedCount <= resource.data.capacity);
+      }
+
+      match /entries/{entryId} {
+        allow read: if true;
+        // A devotee's claimSlot and an admin's phoned-in adminAddEntry
+        // write identically-shaped documents — there is no rules-level
+        // distinction to draw between them, since the join code an
+        // admin bypasses is an anti-spam gate enforced in SignupService,
+        // not a secret (same as every other join code in this app).
+        allow create: if request.resource.data.keys().hasAll(['slotId', 'name', 'joinedAt'])
+          && request.resource.data.keys().hasOnly(['slotId', 'name', 'phone', 'email', 'deviceId', 'pledgeAmount', 'note', 'joinedAt'])
+          && request.resource.data.slotId is string
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0 && request.resource.data.name.size() < 100
+          && request.resource.data.joinedAt is timestamp
+          && (request.resource.data.get('phone', null) == null || (request.resource.data.get('phone', '') is string && request.resource.data.get('phone', '').size() < 30))
+          && (request.resource.data.get('email', null) == null || (request.resource.data.get('email', '') is string && request.resource.data.get('email', '').size() < 200))
+          && (request.resource.data.get('deviceId', null) == null || (request.resource.data.get('deviceId', '') is string && request.resource.data.get('deviceId', '').size() < 200))
+          && (request.resource.data.get('pledgeAmount', null) == null || request.resource.data.get('pledgeAmount', 0) is number)
+          && (request.resource.data.get('note', null) == null || (request.resource.data.get('note', '') is string && request.resource.data.get('note', '').size() < 500));
+        allow update: if isAdmin();
+        // Same trust model as Parayan/Group Namjap/Vaari participants:
+        // devotees aren't authenticated in this app, so rules can't verify
+        // "this device really owns this entry" — only that the entry has
+        // a deviceId at all. Admins can always remove any entry.
+        allow delete: if isAdmin() || (resource.data.deviceId != null);
+      }
+    }
   }
 }
