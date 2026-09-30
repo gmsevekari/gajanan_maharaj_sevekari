@@ -119,6 +119,19 @@ void main() {
       expect(sheet!.titleEn, 'Updated Title');
     });
 
+    test(
+      'updateSheet throws when sheet.id is null instead of writing a stray doc',
+      () async {
+        await expectLater(
+          service.updateSheet(buildSheet()),
+          throwsArgumentError,
+        );
+
+        final sheets = await service.getAllSheets('group_1').first;
+        expect(sheets, isEmpty);
+      },
+    );
+
     test('updateSheetStatus changes only the status and updatedAt', () async {
       final id = await service.createSheet(buildSheet());
       final before = (await service.getSheetById(id).first)!;
@@ -185,6 +198,21 @@ void main() {
       expect(updated.id, slotId);
       expect(updated.capacity, 10);
     });
+
+    test(
+      'updateSlot throws when slot.id is null instead of writing a stray doc',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+
+        await expectLater(
+          service.updateSlot(sheetId, buildSlot()),
+          throwsArgumentError,
+        );
+
+        final slots = await service.getSlots(sheetId).first;
+        expect(slots, isEmpty);
+      },
+    );
 
     test('deleteSlot removes the slot document', () async {
       final sheetId = await service.createSheet(buildSheet());
