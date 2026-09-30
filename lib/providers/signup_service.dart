@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 
 class SignupService {
   final FirebaseFirestore _db;
@@ -62,5 +63,46 @@ class SignupService {
       'status': newStatus.name,
       'updatedAt': Timestamp.now(),
     });
+  }
+
+  CollectionReference<Map<String, dynamic>> _slotsRef(String sheetId) =>
+      _sheetsRef.doc(sheetId).collection('slots');
+
+  /// Adds a slot with a Firestore auto-generated ID and returns it.
+  Future<String> addSlot(String sheetId, SignupSlot slot) async {
+    final docRef = await _slotsRef(sheetId).add(slot.toMap());
+    return docRef.id;
+  }
+
+  /// Slots for a sheet, ordered by their admin-defined sortOrder.
+  Stream<List<SignupSlot>> getSlots(String sheetId) {
+    return _slotsRef(sheetId)
+        .orderBy('sortOrder')
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => SignupSlot.fromMap(doc.id, doc.data()))
+              .toList(),
+        );
+  }
+
+  /// Overwrites a slot's fields. [slot.id] must be set.
+  Future<void> updateSlot(String sheetId, SignupSlot slot) async {
+    await _slotsRef(sheetId).doc(slot.id).set(slot.toMap());
+  }
+
+  Future<void> deleteSlot(String sheetId, String slotId) async {
+    await _slotsRef(sheetId).doc(slotId).delete();
+  }
+
+  /// Rewrites `sortOrder` on each slot to match its position in
+  /// [orderedSlotIds], in a single batch.
+  Future<void> reorderSlots(String sheetId, List<String> orderedSlotIds) async {
+    final batch = _db.batch();
+    final slotsRef = _slotsRef(sheetId);
+    for (var i = 0; i < orderedSlotIds.length; i++) {
+      batch.update(slotsRef.doc(orderedSlotIds[i]), {'sortOrder': i});
+    }
+    await batch.commit();
   }
 }
