@@ -2217,4 +2217,95 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get andSeparator => ' आणि ';
+
+  @override
+  String get adminCreateSignupSheetTitle => 'साइन-अप शीट तयार करा';
+
+  @override
+  String get signupSheetTitleEnLabel => 'शीर्षक (इंग्रजी)';
+
+  @override
+  String get signupSheetTitleEnRequired => 'कृपया इंग्रजी शीर्षक एंटर करा';
+
+  @override
+  String get signupSheetTitleMrLabel => 'शीर्षक (मराठी)';
+
+  @override
+  String get signupSheetTitleMrRequired => 'कृपया मराठी शीर्षक एंटर करा';
+
+  @override
+  String get signupSheetDescEnLabel => 'वर्णन (इंग्रजी)';
+
+  @override
+  String get signupSheetDescMrLabel => 'वर्णन (मराठी)';
+
+  @override
+  String get signupSheetRequiresJoinCodeLabel =>
+      'साइन अप करण्यासाठी जॉईन कोड आवश्यक करा';
+
+  @override
+  String get signupSheetSlotsHeading => 'स्लॉट्स';
+
+  @override
+  String get signupSheetAddSlotButton => 'स्लॉट जोडा';
+
+  @override
+  String get signupSheetNoSlotsMessage =>
+      'अजून स्लॉट्स नाहीत. एक तयार करण्यासाठी \"स्लॉट जोडा\" दाबा.';
+
+  @override
+  String get signupSheetSlotsRequiredError => 'कृपया किमान एक स्लॉट जोडा';
+
+  @override
+  String get signupSheetSlotHeading => 'स्लॉट';
+
+  @override
+  String get signupSheetSlotLabelEnLabel => 'स्लॉट लेबल (इंग्रजी)';
+
+  @override
+  String get signupSheetSlotLabelEnRequired => 'कृपया इंग्रजी लेबल एंटर करा';
+
+  @override
+  String get signupSheetSlotLabelMrLabel => 'स्लॉट लेबल (मराठी)';
+
+  @override
+  String get signupSheetSlotLabelMrRequired => 'कृपया मराठी लेबल एंटर करा';
+
+  @override
+  String get signupSheetSlotCapacityLabel => 'क्षमता';
+
+  @override
+  String get signupSheetSlotCapacityRequired => 'कृपया क्षमता एंटर करा';
+
+  @override
+  String get signupSheetSlotCapacityInvalid =>
+      'क्षमता ही सकारात्मक संख्या असावी';
+
+  @override
+  String get signupSheetSlotSuggestedAmountLabel => 'सुचवलेली रक्कम (ऐच्छिक)';
+
+  @override
+  String get signupSheetSlotSetDateLabel => 'तारीख सेट करा';
+
+  @override
+  String get signupSheetSlotNoDateLabel => 'तारीख सेट केलेली नाही';
+
+  @override
+  String get signupSheetRemoveSlotTooltip => 'स्लॉट काढा';
+
+  @override
+  String get signupSheetMoveSlotUpTooltip => 'स्लॉट वर हलवा';
+
+  @override
+  String get signupSheetMoveSlotDownTooltip => 'स्लॉट खाली हलवा';
+
+  @override
+  String get signupSheetSaveButton => 'जतन करा';
+
+  @override
+  String get signupSheetCreateSuccess => 'साइन-अप शीट यशस्वीरित्या तयार झाली';
+
+  @override
+  String get signupSheetCreateError =>
+      'साइन-अप शीट तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 }

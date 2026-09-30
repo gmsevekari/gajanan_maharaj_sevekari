@@ -2209,6 +2209,98 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get andSeparator => ' & ';
+
+  @override
+  String get adminCreateSignupSheetTitle => 'Create Sign-Up Sheet';
+
+  @override
+  String get signupSheetTitleEnLabel => 'Title (English)';
+
+  @override
+  String get signupSheetTitleEnRequired => 'Please enter English title';
+
+  @override
+  String get signupSheetTitleMrLabel => 'Title (Marathi)';
+
+  @override
+  String get signupSheetTitleMrRequired => 'Please enter Marathi title';
+
+  @override
+  String get signupSheetDescEnLabel => 'Description (English)';
+
+  @override
+  String get signupSheetDescMrLabel => 'Description (Marathi)';
+
+  @override
+  String get signupSheetRequiresJoinCodeLabel =>
+      'Require a join code to sign up';
+
+  @override
+  String get signupSheetSlotsHeading => 'Slots';
+
+  @override
+  String get signupSheetAddSlotButton => 'Add Slot';
+
+  @override
+  String get signupSheetNoSlotsMessage =>
+      'No slots yet. Tap \"Add Slot\" to create one.';
+
+  @override
+  String get signupSheetSlotsRequiredError => 'Please add at least one slot';
+
+  @override
+  String get signupSheetSlotHeading => 'Slot';
+
+  @override
+  String get signupSheetSlotLabelEnLabel => 'Slot Label (English)';
+
+  @override
+  String get signupSheetSlotLabelEnRequired => 'Please enter an English label';
+
+  @override
+  String get signupSheetSlotLabelMrLabel => 'Slot Label (Marathi)';
+
+  @override
+  String get signupSheetSlotLabelMrRequired => 'Please enter a Marathi label';
+
+  @override
+  String get signupSheetSlotCapacityLabel => 'Capacity';
+
+  @override
+  String get signupSheetSlotCapacityRequired => 'Please enter a capacity';
+
+  @override
+  String get signupSheetSlotCapacityInvalid =>
+      'Capacity must be a positive number';
+
+  @override
+  String get signupSheetSlotSuggestedAmountLabel =>
+      'Suggested Amount (optional)';
+
+  @override
+  String get signupSheetSlotSetDateLabel => 'Set Date';
+
+  @override
+  String get signupSheetSlotNoDateLabel => 'No date set';
+
+  @override
+  String get signupSheetRemoveSlotTooltip => 'Remove slot';
+
+  @override
+  String get signupSheetMoveSlotUpTooltip => 'Move slot up';
+
+  @override
+  String get signupSheetMoveSlotDownTooltip => 'Move slot down';
+
+  @override
+  String get signupSheetSaveButton => 'Save';
+
+  @override
+  String get signupSheetCreateSuccess => 'Sign-up sheet created successfully';
+
+  @override
+  String get signupSheetCreateError =>
+      'Failed to create sign-up sheet. Please try again.';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

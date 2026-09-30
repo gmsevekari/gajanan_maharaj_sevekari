@@ -4250,6 +4250,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **' & '**
   String get andSeparator;
+
+  /// No description provided for @adminCreateSignupSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Sign-Up Sheet'**
+  String get adminCreateSignupSheetTitle;
+
+  /// No description provided for @signupSheetTitleEnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title (English)'**
+  String get signupSheetTitleEnLabel;
+
+  /// No description provided for @signupSheetTitleEnRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter English title'**
+  String get signupSheetTitleEnRequired;
+
+  /// No description provided for @signupSheetTitleMrLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title (Marathi)'**
+  String get signupSheetTitleMrLabel;
+
+  /// No description provided for @signupSheetTitleMrRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter Marathi title'**
+  String get signupSheetTitleMrRequired;
+
+  /// No description provided for @signupSheetDescEnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (English)'**
+  String get signupSheetDescEnLabel;
+
+  /// No description provided for @signupSheetDescMrLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (Marathi)'**
+  String get signupSheetDescMrLabel;
+
+  /// No description provided for @signupSheetRequiresJoinCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Require a join code to sign up'**
+  String get signupSheetRequiresJoinCodeLabel;
+
+  /// No description provided for @signupSheetSlotsHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Slots'**
+  String get signupSheetSlotsHeading;
+
+  /// No description provided for @signupSheetAddSlotButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Slot'**
+  String get signupSheetAddSlotButton;
+
+  /// No description provided for @signupSheetNoSlotsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No slots yet. Tap \"Add Slot\" to create one.'**
+  String get signupSheetNoSlotsMessage;
+
+  /// No description provided for @signupSheetSlotsRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please add at least one slot'**
+  String get signupSheetSlotsRequiredError;
+
+  /// No description provided for @signupSheetSlotHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot'**
+  String get signupSheetSlotHeading;
+
+  /// No description provided for @signupSheetSlotLabelEnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot Label (English)'**
+  String get signupSheetSlotLabelEnLabel;
+
+  /// No description provided for @signupSheetSlotLabelEnRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an English label'**
+  String get signupSheetSlotLabelEnRequired;
+
+  /// No description provided for @signupSheetSlotLabelMrLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot Label (Marathi)'**
+  String get signupSheetSlotLabelMrLabel;
+
+  /// No description provided for @signupSheetSlotLabelMrRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a Marathi label'**
+  String get signupSheetSlotLabelMrRequired;
+
+  /// No description provided for @signupSheetSlotCapacityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity'**
+  String get signupSheetSlotCapacityLabel;
+
+  /// No description provided for @signupSheetSlotCapacityRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a capacity'**
+  String get signupSheetSlotCapacityRequired;
+
+  /// No description provided for @signupSheetSlotCapacityInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity must be a positive number'**
+  String get signupSheetSlotCapacityInvalid;
+
+  /// No description provided for @signupSheetSlotSuggestedAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested Amount (optional)'**
+  String get signupSheetSlotSuggestedAmountLabel;
+
+  /// No description provided for @signupSheetSlotSetDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Date'**
+  String get signupSheetSlotSetDateLabel;
+
+  /// No description provided for @signupSheetSlotNoDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'No date set'**
+  String get signupSheetSlotNoDateLabel;
+
+  /// No description provided for @signupSheetRemoveSlotTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove slot'**
+  String get signupSheetRemoveSlotTooltip;
+
+  /// No description provided for @signupSheetMoveSlotUpTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Move slot up'**
+  String get signupSheetMoveSlotUpTooltip;
+
+  /// No description provided for @signupSheetMoveSlotDownTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Move slot down'**
+  String get signupSheetMoveSlotDownTooltip;
+
+  /// No description provided for @signupSheetSaveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get signupSheetSaveButton;
+
+  /// No description provided for @signupSheetCreateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-up sheet created successfully'**
+  String get signupSheetCreateSuccess;
+
+  /// No description provided for @signupSheetCreateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create sign-up sheet. Please try again.'**
+  String get signupSheetCreateError;
 }
 
 class _AppLocalizationsDelegate

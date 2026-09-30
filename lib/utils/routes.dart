@@ -59,4 +59,6 @@ class Routes {
   static const String adminCreateVaari = '/admin_create_vaari';
   static const String adminVaariDetail = '/admin_vaari_detail';
   static const String adminVaariList = '/admin_vaari_list';
+
+  static const String adminCreateSignupSheet = '/admin_create_signup_sheet';
 }
