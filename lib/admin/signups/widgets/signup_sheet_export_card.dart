@@ -231,7 +231,7 @@ class SignupSheetExportCard extends StatelessWidget {
 
             const SizedBox(height: 12),
             Text(
-              '॥ अनंत कोटी ब्रह्मांडनायक गजानन महाराज की जय ॥',
+              l10n.signupSheetExportTagline,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.appColors.secondaryText,
                 fontStyle: FontStyle.italic,

@@ -2307,6 +2307,10 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSheetSaveButton => 'जतन करा';
 
   @override
+  String get signupSheetExportTagline =>
+      '॥ अनंत कोटी ब्रह्मांडनायक गजानन महाराज की जय ॥';
+
+  @override
   String get signupSheetCreateSuccess => 'साइन-अप शीट यशस्वीरित्या तयार झाली';
 
   @override
@@ -2315,6 +2319,9 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get adminSignupSheetsDashboardTitle => 'साइन-अप शीट्स';
+
+  @override
+  String get signupSheetStatusLabel => 'स्थिती';
 
   @override
   String get signupSheetStatusAll => 'सर्व';

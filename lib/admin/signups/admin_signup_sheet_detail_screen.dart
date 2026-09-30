@@ -606,7 +606,7 @@ class _AdminSignupSheetDetailScreenState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'STATUS',
+                  l10n.signupSheetStatusLabel,
                   style: theme.textTheme.labelSmall?.copyWith(
                     letterSpacing: 1.2,
                     fontWeight: FontWeight.bold,

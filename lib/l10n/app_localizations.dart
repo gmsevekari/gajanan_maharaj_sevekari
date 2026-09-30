@@ -4419,6 +4419,12 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get signupSheetSaveButton;
 
+  /// No description provided for @signupSheetExportTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'|| Anant Koti Brahmandanayak Gajanan Maharaj Ki Jai ||'**
+  String get signupSheetExportTagline;
+
   /// No description provided for @signupSheetCreateSuccess.
   ///
   /// In en, this message translates to:
@@ -4436,6 +4442,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign-Up Sheets'**
   String get adminSignupSheetsDashboardTitle;
+
+  /// No description provided for @signupSheetStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'STATUS'**
+  String get signupSheetStatusLabel;
 
   /// No description provided for @signupSheetStatusAll.
   ///

@@ -2300,6 +2300,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSheetSaveButton => 'Save';
 
   @override
+  String get signupSheetExportTagline =>
+      '|| Anant Koti Brahmandanayak Gajanan Maharaj Ki Jai ||';
+
+  @override
   String get signupSheetCreateSuccess => 'Sign-up sheet created successfully';
 
   @override
@@ -2308,6 +2312,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminSignupSheetsDashboardTitle => 'Sign-Up Sheets';
+
+  @override
+  String get signupSheetStatusLabel => 'STATUS';
 
   @override
   String get signupSheetStatusAll => 'All';
