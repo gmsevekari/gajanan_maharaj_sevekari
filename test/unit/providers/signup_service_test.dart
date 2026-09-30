@@ -401,6 +401,16 @@ void main() {
       expect(result, {'success': false, 'error': 'not_found'});
     });
 
+    test('returns not_found when the sheet does not exist', () async {
+      final result = await service.claimSlot(
+        sheetId: 'missing',
+        slotId: 'also_missing',
+        name: 'Jane',
+      );
+
+      expect(result, {'success': false, 'error': 'not_found'});
+    });
+
     test(
       // NOTE: fake_cloud_firestore's runTransaction is a passthrough
       // (`_DummyTransaction`) with no locking or retry — it does not
@@ -490,6 +500,32 @@ void main() {
         expect(entries, isEmpty);
         final slot = (await service.getSlots(sheetId).first).single;
         expect(slot.claimedCount, 0);
+      },
+    );
+
+    test(
+      'cancelEntry deletes the entry without error when its slot is already gone',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+        final claim = await service.claimSlot(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'Jane',
+        );
+        // Simulate the slot having been removed some other way (e.g. a
+        // manual console edit) while an entry still references it.
+        await fakeFirestore
+            .collection('signup_sheets')
+            .doc(sheetId)
+            .collection('slots')
+            .doc(slotId)
+            .delete();
+
+        await service.cancelEntry(sheetId, claim['entryId'] as String);
+
+        final entries = await service.getAllEntries(sheetId).first;
+        expect(entries, isEmpty);
       },
     );
   });
