@@ -252,7 +252,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         key: const Key('signup_sheets_card'),
         context: context,
         title: localizations.signupSheetsListTitle,
-        icon: Icons.assignment_ind_outlined,
+        imagePath: 'resources/images/icon/SignUps.png',
+        imageSize: 100.0,
         onTap: () => _navigateToGroupScopedList(
           context: context,
           targetRoute: Routes.signupSheetsList,
