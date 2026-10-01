@@ -2314,6 +2314,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSheetSaveButton => 'Save';
 
   @override
+  String get signupSheetHeaderImageLabel => 'Header Image';
+
+  @override
+  String get signupSheetAddImageButton => 'Add Image';
+
+  @override
+  String get signupSheetReplaceImageButton => 'Replace Image';
+
+  @override
+  String get signupSheetRemoveImageButton => 'Remove Image';
+
+  @override
+  String get signupSheetImageTooLargeError => 'Image must be smaller than 2 MB';
+
+  @override
+  String get signupSheetImageUploadError =>
+      'Failed to upload image. Please try again.';
+
+  @override
+  String get signupSheetUploadingImage => 'Uploading image...';
+
+  @override
+  String get signupSheetRemoveImageConfirmTitle => 'Remove Image?';
+
+  @override
+  String get signupSheetRemoveImageConfirmMessage =>
+      'Are you sure you want to remove the header image?';
+
+  @override
   String get signupSheetExportTagline =>
       '|| Anant Koti Brahmandanayak Gajanan Maharaj Ki Jai ||';
 

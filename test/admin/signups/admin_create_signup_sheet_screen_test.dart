@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_create_signup_sheet_screen.dart';
@@ -11,18 +14,53 @@ import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
 
 class MockAppConfigProvider extends Mock implements AppConfigProvider {}
 
+/// A real, decodable 1x1 transparent PNG - Image.memory() actually decodes
+/// the picked bytes to render a preview, so arbitrary filler bytes aren't
+/// enough; this is the smallest valid file that will do.
+final Uint8List _validPngBytes = Uint8List.fromList([
+  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, //
+  0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, //
+  0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, 0x89, 0x00, 0x00, 0x00, //
+  0x0A, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00, //
+  0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00, 0x00, 0x00, 0x00, 0x49, //
+  0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82, //
+]);
+
+/// Stands in for the real platform channel so tests can control exactly
+/// what `ImagePicker().pickImage(...)` returns, mirroring the
+/// PathProviderPlatform fake-subclass pattern used elsewhere in this project.
+class FakeImagePickerPlatform extends ImagePickerPlatform {
+  final Uint8List? imageBytes;
+  final String mimeType;
+
+  FakeImagePickerPlatform({this.imageBytes, this.mimeType = 'image/jpeg'});
+
+  @override
+  Future<XFile?> getImageFromSource({
+    required ImageSource source,
+    ImagePickerOptions options = const ImagePickerOptions(),
+  }) async {
+    if (imageBytes == null) return null;
+    return XFile.fromData(imageBytes!, mimeType: mimeType, name: 'header.jpg');
+  }
+}
+
 void main() {
   late FakeFirebaseFirestore firestore;
+  late MockFirebaseStorage storage;
   late AdminUser adminUser;
   late MockAppConfigProvider appConfigProvider;
 
   setUp(() {
     firestore = FakeFirebaseFirestore();
+    storage = MockFirebaseStorage();
+    ImagePickerPlatform.instance = FakeImagePickerPlatform();
     adminUser = const AdminUser(
       email: 'admin@test.com',
       roles: ['group_admin'],
@@ -82,6 +120,7 @@ void main() {
         AdminCreateSignupSheetScreen(
           adminUser: adminUser,
           firestore: firestore,
+          storage: storage,
         ),
       ),
     );
@@ -400,6 +439,120 @@ void main() {
       expect(data['requiresJoinCode'], true);
       expect(data['joinCode'], isNotNull);
       expect((data['joinCode'] as String).length, 6);
+    });
+
+    group('header image', () {
+      testWidgets('shows Add Image when none is picked', (tester) async {
+        await pumpScreen(tester);
+
+        expect(find.byKey(const Key('addHeaderImageButton')), findsOneWidget);
+        expect(find.byKey(const Key('removeHeaderImageButton')), findsNothing);
+      });
+
+      testWidgets('picking an image shows a preview with a remove control', (
+        tester,
+      ) async {
+        ImagePickerPlatform.instance = FakeImagePickerPlatform(
+          imageBytes: _validPngBytes,
+        );
+        await pumpScreen(tester);
+
+        await tester.tap(find.byKey(const Key('addHeaderImageButton')));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('addHeaderImageButton')), findsNothing);
+        expect(
+          find.byKey(const Key('removeHeaderImageButton')),
+          findsOneWidget,
+        );
+        expect(find.byType(Image), findsOneWidget);
+      });
+
+      testWidgets('removing a picked image returns to the Add Image state', (
+        tester,
+      ) async {
+        ImagePickerPlatform.instance = FakeImagePickerPlatform(
+          imageBytes: _validPngBytes,
+        );
+        await pumpScreen(tester);
+        await tester.tap(find.byKey(const Key('addHeaderImageButton')));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('removeHeaderImageButton')));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('addHeaderImageButton')), findsOneWidget);
+        expect(find.byKey(const Key('removeHeaderImageButton')), findsNothing);
+      });
+
+      testWidgets(
+        'shows an error and keeps Add Image when the picked file is too large',
+        (tester) async {
+          ImagePickerPlatform.instance = FakeImagePickerPlatform(
+            imageBytes: Uint8List(3 * 1024 * 1024),
+          );
+          await pumpScreen(tester);
+
+          await tester.tap(find.byKey(const Key('addHeaderImageButton')));
+          await tester.pumpAndSettle();
+
+          expect(find.text('Image must be smaller than 2 MB'), findsOneWidget);
+          expect(find.byKey(const Key('addHeaderImageButton')), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'submits with the picked image uploaded and headerImageUrl set',
+        (tester) async {
+          ImagePickerPlatform.instance = FakeImagePickerPlatform(
+            imageBytes: _validPngBytes,
+          );
+          await pumpScreen(tester);
+          await tester.tap(find.byKey(const Key('addHeaderImageButton')));
+          await tester.pumpAndSettle();
+
+          await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+          await tester.enterText(find.byKey(const Key('titleMrField')), 'T');
+          await tester.tap(find.text('Add Slot'));
+          await tester.pumpAndSettle();
+          await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
+          await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
+          await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+
+          await tester.tap(find.text('Save'));
+          await tester.pumpAndSettle();
+
+          final sheets = await firestore.collection('signup_sheets').get();
+          final data = sheets.docs.first.data();
+          expect(data['headerImageUrl'], isNotNull);
+          expect(
+            storage.storedDataMap.containsKey(
+              'signup_sheets/${sheets.docs.first.id}/header',
+            ),
+            true,
+          );
+        },
+      );
+
+      testWidgets('submits with no headerImageUrl when no image was picked', (
+        tester,
+      ) async {
+        await pumpScreen(tester);
+
+        await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+        await tester.enterText(find.byKey(const Key('titleMrField')), 'T');
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
+        await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
+        await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        final sheets = await firestore.collection('signup_sheets').get();
+        expect(sheets.docs.first.data()['headerImageUrl'], isNull);
+      });
     });
   });
 }

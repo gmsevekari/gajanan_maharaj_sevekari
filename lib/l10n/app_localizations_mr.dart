@@ -2321,6 +2321,35 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSheetSaveButton => 'जतन करा';
 
   @override
+  String get signupSheetHeaderImageLabel => 'हेडर इमेज';
+
+  @override
+  String get signupSheetAddImageButton => 'इमेज जोडा';
+
+  @override
+  String get signupSheetReplaceImageButton => 'इमेज बदला';
+
+  @override
+  String get signupSheetRemoveImageButton => 'इमेज काढा';
+
+  @override
+  String get signupSheetImageTooLargeError => 'इमेज 2 MB पेक्षा लहान असावी';
+
+  @override
+  String get signupSheetImageUploadError =>
+      'इमेज अपलोड करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get signupSheetUploadingImage => 'इमेज अपलोड होत आहे...';
+
+  @override
+  String get signupSheetRemoveImageConfirmTitle => 'इमेज काढायची आहे का?';
+
+  @override
+  String get signupSheetRemoveImageConfirmMessage =>
+      'तुम्हाला खात्री आहे की तुम्ही हेडर इमेज काढू इच्छिता?';
+
+  @override
   String get signupSheetExportTagline =>
       '॥ अनंत कोटी ब्रह्मांडनायक गजानन महाराज की जय ॥';
 

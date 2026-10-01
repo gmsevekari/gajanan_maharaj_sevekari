@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/slot_form_row.dart';
@@ -8,6 +9,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
+import 'package:image_picker/image_picker.dart';
 
 class _SlotFormRowData {
   final TextEditingController labelEnController = TextEditingController();
@@ -32,10 +34,15 @@ class AdminCreateSignupSheetScreen extends StatefulWidget {
   @visibleForTesting
   final FirebaseFirestore? firestore;
 
+  /// Injected for testing; defaults to [FirebaseStorage.instance].
+  @visibleForTesting
+  final FirebaseStorage? storage;
+
   const AdminCreateSignupSheetScreen({
     super.key,
     required this.adminUser,
     this.firestore,
+    this.storage,
   });
 
   @override
@@ -56,6 +63,10 @@ class _AdminCreateSignupSheetScreenState
   String? _slotsError;
   final List<_SlotFormRowData> _slots = [];
 
+  Uint8List? _headerImageBytes;
+  String? _headerImageContentType;
+  String? _imageError;
+
   late final FirebaseFirestore _firestore;
   late final SignupService _service;
 
@@ -63,7 +74,7 @@ class _AdminCreateSignupSheetScreenState
   void initState() {
     super.initState();
     _firestore = widget.firestore ?? FirebaseFirestore.instance;
-    _service = SignupService(firestore: _firestore);
+    _service = SignupService(firestore: _firestore, storage: widget.storage);
   }
 
   @override
@@ -105,6 +116,34 @@ class _AdminCreateSignupSheetScreenState
     });
   }
 
+  Future<void> _pickImage() async {
+    final localizations = AppLocalizations.of(context)!;
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked == null) return;
+
+    final bytes = await picked.readAsBytes();
+    if (!mounted) return;
+
+    if (bytes.length > SignupService.maxHeaderImageBytes) {
+      setState(() => _imageError = localizations.signupSheetImageTooLargeError);
+      return;
+    }
+
+    setState(() {
+      _headerImageBytes = bytes;
+      _headerImageContentType = picked.mimeType ?? 'image/jpeg';
+      _imageError = null;
+    });
+  }
+
+  void _removeImage() {
+    setState(() {
+      _headerImageBytes = null;
+      _headerImageContentType = null;
+      _imageError = null;
+    });
+  }
+
   Future<void> _submit() async {
     final localizations = AppLocalizations.of(context)!;
     final formValid = _formKey.currentState!.validate();
@@ -126,8 +165,20 @@ class _AdminCreateSignupSheetScreenState
         throw Exception('Group ID is required to create a sign-up sheet');
       }
 
+      String? sheetId;
+      String? headerImageUrl;
+      if (_headerImageBytes != null) {
+        sheetId = _service.newSheetId();
+        headerImageUrl = await _service.uploadHeaderImage(
+          sheetId: sheetId,
+          bytes: _headerImageBytes!,
+          contentType: _headerImageContentType!,
+        );
+      }
+
       final now = DateTime.now();
       final sheet = SignupSheet(
+        id: sheetId,
         titleEn: _titleEnController.text.trim(),
         titleMr: _titleMrController.text.trim(),
         descriptionEn: _descEnController.text.trim(),
@@ -138,6 +189,7 @@ class _AdminCreateSignupSheetScreenState
         createdAt: now,
         updatedAt: now,
         createdBy: widget.adminUser.email,
+        headerImageUrl: headerImageUrl,
       );
 
       final slots = [
@@ -247,6 +299,55 @@ class _AdminCreateSignupSheetScreenState
                         border: const OutlineInputBorder(),
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    Text(
+                      localizations.signupSheetHeaderImageLabel,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    if (_headerImageBytes != null)
+                      Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.memory(
+                              _headerImageBytes!,
+                              height: 150,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned(
+                            top: 4,
+                            right: 4,
+                            child: IconButton(
+                              key: const Key('removeHeaderImageButton'),
+                              icon: const Icon(Icons.close),
+                              tooltip:
+                                  localizations.signupSheetRemoveImageButton,
+                              style: IconButton.styleFrom(
+                                backgroundColor: theme.colorScheme.surface,
+                              ),
+                              onPressed: _removeImage,
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      OutlinedButton.icon(
+                        key: const Key('addHeaderImageButton'),
+                        icon: const Icon(Icons.image_outlined),
+                        label: Text(localizations.signupSheetAddImageButton),
+                        onPressed: _pickImage,
+                      ),
+                    if (_imageError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          _imageError!,
+                          style: TextStyle(color: theme.colorScheme.error),
+                        ),
+                      ),
                     const SizedBox(height: 16),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,

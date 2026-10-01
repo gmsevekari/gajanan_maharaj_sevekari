@@ -4443,6 +4443,60 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get signupSheetSaveButton;
 
+  /// No description provided for @signupSheetHeaderImageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Header Image'**
+  String get signupSheetHeaderImageLabel;
+
+  /// No description provided for @signupSheetAddImageButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Image'**
+  String get signupSheetAddImageButton;
+
+  /// No description provided for @signupSheetReplaceImageButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace Image'**
+  String get signupSheetReplaceImageButton;
+
+  /// No description provided for @signupSheetRemoveImageButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Image'**
+  String get signupSheetRemoveImageButton;
+
+  /// No description provided for @signupSheetImageTooLargeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Image must be smaller than 2 MB'**
+  String get signupSheetImageTooLargeError;
+
+  /// No description provided for @signupSheetImageUploadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload image. Please try again.'**
+  String get signupSheetImageUploadError;
+
+  /// No description provided for @signupSheetUploadingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading image...'**
+  String get signupSheetUploadingImage;
+
+  /// No description provided for @signupSheetRemoveImageConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Image?'**
+  String get signupSheetRemoveImageConfirmTitle;
+
+  /// No description provided for @signupSheetRemoveImageConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove the header image?'**
+  String get signupSheetRemoveImageConfirmMessage;
+
   /// No description provided for @signupSheetExportTagline.
   ///
   /// In en, this message translates to:
