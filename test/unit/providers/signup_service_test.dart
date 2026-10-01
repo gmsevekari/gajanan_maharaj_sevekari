@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
@@ -7,14 +10,17 @@ import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 
 void main() {
   late FakeFirebaseFirestore fakeFirestore;
+  late MockFirebaseStorage mockStorage;
   late SignupService service;
 
   setUp(() {
     fakeFirestore = FakeFirebaseFirestore();
-    service = SignupService(firestore: fakeFirestore);
+    mockStorage = MockFirebaseStorage();
+    service = SignupService(firestore: fakeFirestore, storage: mockStorage);
   });
 
   SignupSheet buildSheet({
+    String? id,
     String titleEn = 'Sunday Prasad Seva',
     String titleMr = 'रविवार प्रसाद सेवा',
     String groupId = 'group_1',
@@ -24,6 +30,7 @@ void main() {
   }) {
     final now = DateTime.now();
     return SignupSheet(
+      id: id,
       titleEn: titleEn,
       titleMr: titleMr,
       groupId: groupId,
@@ -60,6 +67,22 @@ void main() {
       expect(doc.exists, true);
       expect(doc.data()?['titleEn'], 'Sunday Prasad Seva');
     });
+
+    test(
+      'createSheet writes to a pre-set id instead of auto-generating one',
+      () async {
+        final preGeneratedId = service.newSheetId();
+
+        final id = await service.createSheet(buildSheet(id: preGeneratedId));
+
+        expect(id, preGeneratedId);
+        final doc = await fakeFirestore
+            .collection('signup_sheets')
+            .doc(preGeneratedId)
+            .get();
+        expect(doc.exists, true);
+      },
+    );
 
     test('getSheetById streams the created sheet', () async {
       final id = await service.createSheet(buildSheet());
@@ -778,6 +801,116 @@ void main() {
         final slotB = slots.firstWhere((s) => s.id == slotBId);
         expect(slotA.claimedCount, 1);
         expect(slotB.claimedCount, 0);
+      },
+    );
+  });
+
+  group('SignupService header image', () {
+    test(
+      'uploadHeaderImage stores the bytes and returns a download URL',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+
+        final url = await service.uploadHeaderImage(
+          sheetId: sheetId,
+          bytes: Uint8List.fromList(List.filled(1024, 1)),
+          contentType: 'image/jpeg',
+        );
+
+        expect(url, isNotEmpty);
+        expect(
+          mockStorage.storedDataMap.containsKey(
+            'signup_sheets/$sheetId/header',
+          ),
+          true,
+        );
+      },
+    );
+
+    test(
+      'uploadHeaderImage rejects a file larger than maxHeaderImageBytes',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+        final oversized = Uint8List(SignupService.maxHeaderImageBytes + 1);
+
+        expect(
+          () => service.uploadHeaderImage(
+            sheetId: sheetId,
+            bytes: oversized,
+            contentType: 'image/jpeg',
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          mockStorage.storedDataMap.containsKey(
+            'signup_sheets/$sheetId/header',
+          ),
+          false,
+        );
+      },
+    );
+
+    test('updateHeaderImageUrl sets the field on the sheet', () async {
+      final sheetId = await service.createSheet(buildSheet());
+
+      await service.updateHeaderImageUrl(
+        sheetId,
+        'https://example.com/header.jpg',
+      );
+
+      final sheet = await service.getSheetById(sheetId).first;
+      expect(sheet!.headerImageUrl, 'https://example.com/header.jpg');
+    });
+
+    test('updateHeaderImageUrl clears the field when passed null', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      await service.updateHeaderImageUrl(
+        sheetId,
+        'https://example.com/header.jpg',
+      );
+
+      await service.updateHeaderImageUrl(sheetId, null);
+
+      final sheet = await service.getSheetById(sheetId).first;
+      expect(sheet!.headerImageUrl, isNull);
+    });
+
+    test(
+      'removeHeaderImage deletes the Storage object and clears the field',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+        await service.uploadHeaderImage(
+          sheetId: sheetId,
+          bytes: Uint8List.fromList([1, 2, 3]),
+          contentType: 'image/jpeg',
+        );
+        await service.updateHeaderImageUrl(
+          sheetId,
+          'https://example.com/header.jpg',
+        );
+
+        await service.removeHeaderImage(sheetId);
+
+        final sheet = await service.getSheetById(sheetId).first;
+        expect(sheet!.headerImageUrl, isNull);
+        expect(
+          mockStorage.storedDataMap.containsKey(
+            'signup_sheets/$sheetId/header',
+          ),
+          false,
+        );
+      },
+    );
+
+    test(
+      'removeHeaderImage does not throw when no image was ever uploaded',
+      () async {
+        final sheetId = await service.createSheet(buildSheet());
+
+        await service.removeHeaderImage(sheetId);
+
+        final sheet = await service.getSheetById(sheetId).first;
+        expect(sheet!.headerImageUrl, isNull);
       },
     );
   });
