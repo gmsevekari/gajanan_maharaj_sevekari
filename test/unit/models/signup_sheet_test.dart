@@ -23,6 +23,7 @@ void main() {
         createdAt: createdAt,
         updatedAt: updatedAt,
         createdBy: 'admin@example.com',
+        headerImageUrl: 'https://example.com/header.jpg',
       );
 
       final map = sheet.toMap();
@@ -42,6 +43,21 @@ void main() {
       expect(roundTripped.createdAt, createdAt);
       expect(roundTripped.updatedAt, updatedAt);
       expect(roundTripped.createdBy, 'admin@example.com');
+      expect(roundTripped.headerImageUrl, 'https://example.com/header.jpg');
+    });
+
+    test('headerImageUrl defaults to null when not specified', () {
+      final sheet = SignupSheet(
+        titleEn: 'No Image',
+        titleMr: 'प्रतिमा नाही',
+        groupId: 'group1',
+        createdAt: DateTime(2026, 1, 1),
+        updatedAt: DateTime(2026, 1, 1),
+        createdBy: 'admin@example.com',
+      );
+
+      expect(sheet.headerImageUrl, isNull);
+      expect(sheet.toMap()['headerImageUrl'], isNull);
     });
 
     test('defaults to status draft when not specified', () {
@@ -248,6 +264,23 @@ void main() {
           expect(updated.joinCode, isNull);
         },
       );
+
+      test('updates the headerImageUrl field', () {
+        final updated = base.copyWith(
+          headerImageUrl: 'https://example.com/new.jpg',
+        );
+
+        expect(updated.headerImageUrl, 'https://example.com/new.jpg');
+      });
+
+      test('preserves headerImageUrl when not specified', () {
+        final withImage = base.copyWith(
+          headerImageUrl: 'https://example.com/a.jpg',
+        );
+        final updated = withImage.copyWith(titleEn: 'Updated');
+
+        expect(updated.headerImageUrl, 'https://example.com/a.jpg');
+      });
     });
 
     group('equality', () {
@@ -295,6 +328,23 @@ void main() {
 
         expect(a == b, isFalse);
       });
+
+      test('sheets differing only by headerImageUrl are not equal', () {
+        final createdAt = DateTime(2026, 1, 1);
+        final a = SignupSheet(
+          id: 'sheet1',
+          titleEn: 'T',
+          titleMr: 'T',
+          groupId: 'g',
+          createdAt: createdAt,
+          updatedAt: createdAt,
+          createdBy: 'admin@example.com',
+          headerImageUrl: 'https://example.com/a.jpg',
+        );
+        final b = a.copyWith(headerImageUrl: 'https://example.com/b.jpg');
+
+        expect(a == b, isFalse);
+      });
     });
 
     group('fromMap type guards', () {
@@ -310,6 +360,7 @@ void main() {
           'startDate': '2026-01-01',
           'endDate': 12345,
           'createdBy': 99,
+          'headerImageUrl': 7,
         });
 
         expect(sheet.titleEn, '');
@@ -322,6 +373,7 @@ void main() {
         expect(sheet.startDate, isNull);
         expect(sheet.endDate, isNull);
         expect(sheet.createdBy, '');
+        expect(sheet.headerImageUrl, isNull);
       });
     });
   });
