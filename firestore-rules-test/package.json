@@ -1,0 +1,13 @@
+{
+  "name": "firestore-rules-test",
+  "description": "Automated verification of firestore.rules against the Firebase emulator",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "firebase": "^12.19.0"
+  }
+}
