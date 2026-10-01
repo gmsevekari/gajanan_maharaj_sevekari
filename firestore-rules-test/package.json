@@ -1,10 +1,10 @@
 {
   "name": "firestore-rules-test",
-  "description": "Automated verification of firestore.rules against the Firebase emulator",
+  "description": "Automated verification of firestore.rules and storage.rules against the Firebase emulators",
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test --test-concurrency=1"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",

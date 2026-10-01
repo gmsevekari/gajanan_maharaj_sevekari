@@ -1,0 +1,31 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Mirrors firestore.rules's own isAdmin() exactly (same auth model:
+    // a verified-email user with a matching admin_allowlist doc), using
+    // Storage Rules v2's cross-service Firestore read since Storage has
+    // no admin_allowlist of its own.
+    function isAdmin() {
+      return request.auth != null &&
+             request.auth.token.email_verified == true &&
+             firestore.exists(/databases/(default)/documents/admin_allowlist/$(request.auth.token.email));
+    }
+
+    // Sign-Up Sheets header/display image: one object per sheet at a
+    // fixed path (signup_sheets/{sheetId}/header), publicly readable
+    // like the sheet itself, admin-only to write or delete. The size and
+    // content-type bounds are the real security boundary here - the app
+    // also checks file size client-side before even attempting an
+    // upload, but that's just a fast-fail UX nicety, not something a
+    // modified client could be trusted to enforce.
+    match /signup_sheets/{sheetId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if isAdmin();
+    }
+  }
+}
