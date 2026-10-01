@@ -42,6 +42,11 @@ import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/settings_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signups_screen.dart';
+import 'package:gajanan_maharaj_sevekari/signups/signup_sheets_list_screen.dart';
+import 'package:gajanan_maharaj_sevekari/signups/signup_sheet_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_sheets_dashboard.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_create_signup_sheet_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_sheet_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/social_media/social_media_screen.dart';
 import 'package:gajanan_maharaj_sevekari/splash/splash_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/namjap_screen.dart';
@@ -220,7 +225,7 @@ class _MyAppState extends State<MyApp> {
     debugPrint('Deep Link Received: $uri');
     String? id;
 
-    const knownFeatures = ['parayan', 'namjap', 'vaari'];
+    const knownFeatures = ['parayan', 'namjap', 'vaari', 'signup'];
 
     // 1. Handle Custom Scheme: gmsevekari://parayan/ID or gmsevekari:///parayan/ID
     if (uri.scheme == 'gmsevekari') {
@@ -262,11 +267,15 @@ class _MyAppState extends State<MyApp> {
         uri.toString().contains('/namjap/') || uri.host == 'namjap';
     final bool isVaari =
         uri.toString().contains('/vaari/') || uri.host == 'vaari';
+    final bool isSignup =
+        uri.toString().contains('/signup/') || uri.host == 'signup';
 
     final String routeName = isVaari
         ? Routes.vaariDetail
         : isNamjap
         ? Routes.groupNamjapDetail
+        : isSignup
+        ? Routes.signupSheetDetail
         : Routes.parayanDetail;
 
     if (id != null) {
@@ -275,6 +284,8 @@ class _MyAppState extends State<MyApp> {
             ? "Vaari"
             : isNamjap
             ? "Namjap"
+            : isSignup
+            ? "Signup"
             : "Parayan"} ID: $id with code: $joinCode',
       );
       DeepLinkManager.setPendingRoute(routeName, {
@@ -623,7 +634,10 @@ class _MyAppState extends State<MyApp> {
                       ),
                     );
                   }
-                  if (!adminUser.hasAnyRole(['vaari_coordinator', 'group_admin'])) {
+                  if (!adminUser.hasAnyRole([
+                    'vaari_coordinator',
+                    'group_admin',
+                  ])) {
                     return const Scaffold(
                       body: Center(child: Text('Access Denied')),
                     );
@@ -639,6 +653,69 @@ class _MyAppState extends State<MyApp> {
                     );
                   }
                   return AdminVaariCreateScreen(adminUser: args);
+                },
+                Routes.signupSheetsList: (context) {
+                  final args =
+                      ModalRoute.of(context)?.settings.arguments as Map?;
+                  return SignupSheetsListScreen(
+                    groupId: args?['groupId'],
+                    groupName: args?['groupName'],
+                  );
+                },
+                Routes.signupSheetDetail: (context) {
+                  final args = ModalRoute.of(context)?.settings.arguments;
+                  String? sheetId;
+                  if (args is String) {
+                    sheetId = args;
+                  } else if (args is Map) {
+                    sheetId =
+                        args['sheetId'] as String? ?? args['id'] as String?;
+                  }
+                  if (sheetId == null) {
+                    return const Scaffold(
+                      body: Center(
+                        child: Text(
+                          'Error: Missing SignupSheetDetail arguments',
+                        ),
+                      ),
+                    );
+                  }
+                  return SignupSheetDetailScreen(sheetId: sheetId);
+                },
+                Routes.adminSignupSheetsDashboard: (context) {
+                  final args = ModalRoute.of(context)?.settings.arguments;
+                  AdminUser? adminUser;
+                  if (args is Map<String, dynamic>) {
+                    adminUser = args['adminUser'] as AdminUser?;
+                  } else if (args is AdminUser) {
+                    adminUser = args;
+                  }
+                  if (adminUser == null) {
+                    return const Scaffold(
+                      body: Center(
+                        child: Text('Error: Missing AdminUser arguments'),
+                      ),
+                    );
+                  }
+                  if (!adminUser.hasAnyRole([
+                    'signup_coordinator',
+                    'group_admin',
+                  ])) {
+                    return const Scaffold(
+                      body: Center(child: Text('Access Denied')),
+                    );
+                  }
+                  return AdminSignupSheetsDashboard(adminUser: adminUser);
+                },
+                Routes.adminCreateSignupSheet: (context) {
+                  final args = ModalRoute.of(context)!.settings.arguments;
+                  if (args is! AdminUser ||
+                      !args.hasAnyRole(['signup_coordinator', 'group_admin'])) {
+                    return const Scaffold(
+                      body: Center(child: Text('Access Denied')),
+                    );
+                  }
+                  return AdminCreateSignupSheetScreen(adminUser: args);
                 },
                 Routes.onboarding: (context) => const GroupSelectionScreen(),
                 Routes.adminManageGroupAdmins: (context) {
@@ -920,6 +997,37 @@ class _MyAppState extends State<MyApp> {
                         body: Center(
                           child: Text(
                             'Error: Missing AdminVaariListScreen arguments',
+                          ),
+                        ),
+                      ),
+                    );
+                  case Routes.adminSignupSheetDetail:
+                    final args = settings.arguments;
+                    if (args is Map<String, dynamic>) {
+                      final adminUser = args['adminUser'] as AdminUser?;
+                      if (adminUser == null ||
+                          !adminUser.hasAnyRole([
+                            'signup_coordinator',
+                            'group_admin',
+                          ])) {
+                        return MaterialPageRoute(
+                          builder: (context) => const Scaffold(
+                            body: Center(child: Text('Access Denied')),
+                          ),
+                        );
+                      }
+                      return MaterialPageRoute(
+                        builder: (context) => AdminSignupSheetDetailScreen(
+                          sheetId: args['sheetId'] as String?,
+                          adminUser: args['adminUser'] as AdminUser,
+                        ),
+                      );
+                    }
+                    return MaterialPageRoute(
+                      builder: (context) => const Scaffold(
+                        body: Center(
+                          child: Text(
+                            'Error: Missing AdminSignupSheetDetailScreen arguments',
                           ),
                         ),
                       ),
