@@ -547,6 +547,7 @@ class _MyAppState extends State<MyApp> {
                     'parayan_coordinator',
                     'namjap_coordinator',
                     'vaari_coordinator',
+                    'signup_coordinator',
                     'group_admin',
                   ])) {
                     return const Scaffold(
