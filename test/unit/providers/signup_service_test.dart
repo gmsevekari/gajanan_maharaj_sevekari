@@ -313,6 +313,19 @@ void main() {
       final sheets = await service.getAllSheets('group_1').first;
       expect(sheets, isEmpty);
     });
+
+    test('writes to a pre-set id instead of auto-generating one', () async {
+      final preGeneratedId = service.newSheetId();
+
+      final sheetId = await service.createSheetWithSlots(
+        buildSheet(id: preGeneratedId),
+        [buildSlot()],
+      );
+
+      expect(sheetId, preGeneratedId);
+      final sheet = await service.getSheetById(preGeneratedId).first;
+      expect(sheet, isNotNull);
+    });
   });
 
   group('SignupService claimSlot', () {
