@@ -176,7 +176,7 @@ void main() {
       (tester) async {
         await pumpDashboard(tester);
 
-        expect(find.text('Sign-Up Sheets'), findsOneWidget);
+        expect(find.text('Sign Ups'), findsOneWidget);
         expect(find.text('All'), findsOneWidget);
         expect(find.text('Draft'), findsOneWidget);
         expect(find.text('Published'), findsOneWidget);
@@ -226,7 +226,7 @@ void main() {
       await seedSheets();
       await pumpDashboard(tester, locale: const Locale('mr'));
 
-      expect(find.text('साइन-अप शीट्स'), findsOneWidget);
+      expect(find.text('साइन अप्स'), findsOneWidget);
       expect(find.text('प्रसाद सेवा मसुदा'), findsOneWidget);
       expect(find.text('साडी सेवा प्रकाशित'), findsOneWidget);
       expect(find.text('अन्नकूट बंद'), findsOneWidget);
@@ -419,7 +419,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Sign-Up Sheets'), findsOneWidget);
+      expect(find.text('Sign Ups'), findsOneWidget);
     });
   });
 }

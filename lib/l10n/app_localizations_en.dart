@@ -2325,7 +2325,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Failed to create sign-up sheet. Please try again.';
 
   @override
-  String get adminSignupSheetsDashboardTitle => 'Sign-Up Sheets';
+  String get adminSignupSheetsDashboardTitle => 'Sign Ups';
 
   @override
   String get signupSheetStatusLabel => 'STATUS';
@@ -2494,7 +2494,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSheetNotFound => 'Sign-up sheet not found';
 
   @override
-  String get signupSheetsListTitle => 'Sign-Up Sheets';
+  String get signupSheetsListTitle => 'Sign Ups';
 
   @override
   String get signupSheetInvalidGroupError => 'Invalid group';

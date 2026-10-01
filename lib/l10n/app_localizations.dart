@@ -4464,7 +4464,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminSignupSheetsDashboardTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sign-Up Sheets'**
+  /// **'Sign Ups'**
   String get adminSignupSheetsDashboardTitle;
 
   /// No description provided for @signupSheetStatusLabel.
@@ -4788,7 +4788,7 @@ abstract class AppLocalizations {
   /// No description provided for @signupSheetsListTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sign-Up Sheets'**
+  /// **'Sign Ups'**
   String get signupSheetsListTitle;
 
   /// No description provided for @signupSheetInvalidGroupError.

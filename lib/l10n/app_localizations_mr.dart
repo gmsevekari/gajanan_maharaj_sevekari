@@ -2332,7 +2332,7 @@ class AppLocalizationsMr extends AppLocalizations {
       'साइन-अप शीट तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get adminSignupSheetsDashboardTitle => 'साइन-अप शीट्स';
+  String get adminSignupSheetsDashboardTitle => 'साइन अप्स';
 
   @override
   String get signupSheetStatusLabel => 'स्थिती';
@@ -2502,7 +2502,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSheetNotFound => 'साइन-अप शीट सापडली नाही';
 
   @override
-  String get signupSheetsListTitle => 'साइन-अप शीट्स';
+  String get signupSheetsListTitle => 'साइन अप्स';
 
   @override
   String get signupSheetInvalidGroupError => 'अवैध गट';

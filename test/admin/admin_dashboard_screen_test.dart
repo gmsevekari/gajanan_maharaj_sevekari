@@ -212,9 +212,7 @@ void main() {
       expect(find.text('Vaari'), findsNothing);
     });
 
-    testWidgets('should show Sign-Up Sheets card for super_admin', (
-      tester,
-    ) async {
+    testWidgets('should show Sign Ups card for super_admin', (tester) async {
       final mockSnapshot = MockDocumentSnapshot();
       when(() => mockSnapshot.exists).thenReturn(true);
       when(() => mockSnapshot.data()).thenReturn({
@@ -234,12 +232,10 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('Sign-Up Sheets'), findsOneWidget);
+      expect(find.text('Sign Ups'), findsOneWidget);
     });
 
-    testWidgets('should show Sign-Up Sheets card for group_admin', (
-      tester,
-    ) async {
+    testWidgets('should show Sign Ups card for group_admin', (tester) async {
       final mockSnapshot = MockDocumentSnapshot();
       when(() => mockSnapshot.exists).thenReturn(true);
       when(() => mockSnapshot.data()).thenReturn({
@@ -253,10 +249,10 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('Sign-Up Sheets'), findsOneWidget);
+      expect(find.text('Sign Ups'), findsOneWidget);
     });
 
-    testWidgets('should show Sign-Up Sheets card for signup_coordinator', (
+    testWidgets('should show Sign Ups card for signup_coordinator', (
       tester,
     ) async {
       final mockSnapshot = MockDocumentSnapshot();
@@ -271,10 +267,10 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('Sign-Up Sheets'), findsOneWidget);
+      expect(find.text('Sign Ups'), findsOneWidget);
     });
 
-    testWidgets('should NOT show Sign-Up Sheets card for other roles', (
+    testWidgets('should NOT show Sign Ups card for other roles', (
       tester,
     ) async {
       final mockSnapshot = MockDocumentSnapshot();
@@ -289,7 +285,7 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('Sign-Up Sheets'), findsNothing);
+      expect(find.text('Sign Ups'), findsNothing);
     });
   });
 }
