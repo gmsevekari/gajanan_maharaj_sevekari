@@ -219,6 +219,18 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
                   return ListView(
                     padding: const EdgeInsets.all(16),
                     children: [
+                      if (sheet.headerImageUrl != null) ...[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            sheet.headerImageUrl!,
+                            height: 180,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                       if (desc.isNotEmpty) ...[
                         Text(
                           desc,

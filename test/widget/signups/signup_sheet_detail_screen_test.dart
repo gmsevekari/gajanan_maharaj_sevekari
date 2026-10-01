@@ -37,7 +37,10 @@ void main() {
     );
   }
 
-  Future<String> createOpenSheet({bool requiresJoinCode = false}) async {
+  Future<String> createOpenSheet({
+    bool requiresJoinCode = false,
+    String? headerImageUrl,
+  }) async {
     final now = DateTime.now();
     return service.createSheet(
       SignupSheet(
@@ -52,6 +55,7 @@ void main() {
         createdAt: now,
         updatedAt: now,
         createdBy: 'admin@test.com',
+        headerImageUrl: headerImageUrl,
       ),
     );
   }
@@ -531,6 +535,50 @@ void main() {
       verify(
         () => mockService.getEntriesByDevice('sheet_rebuild', 'device_1'),
       ).called(1);
+    });
+
+    testWidgets('renders the header image when the sheet has one', (
+      tester,
+    ) async {
+      final sheetId = await createOpenSheet(
+        headerImageUrl: 'https://example.com/header.jpg',
+      );
+
+      await tester.pumpWidget(
+        wrap(
+          SignupSheetDetailScreen(
+            sheetId: sheetId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      // Image.network makes a real HTTP request with no network access in
+      // the test environment; expected and harmless here, since this
+      // test only checks that an Image widget renders, not its pixels.
+      tester.takeException();
+
+      expect(find.byType(Image), findsOneWidget);
+    });
+
+    testWidgets('renders no image when the sheet has none', (tester) async {
+      final sheetId = await createOpenSheet();
+
+      await tester.pumpWidget(
+        wrap(
+          SignupSheetDetailScreen(
+            sheetId: sheetId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Image), findsNothing);
     });
   });
 }
