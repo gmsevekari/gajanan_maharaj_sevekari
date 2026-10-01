@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_entry_edit_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_slot_entries_section.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_actions_row.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_export_card.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_header_image_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_join_code_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_overview_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_status_section.dart';
@@ -18,6 +20,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -35,6 +38,11 @@ class AdminSignupSheetDetailScreen extends StatefulWidget {
   @visibleForTesting
   final SignupService? signupService;
 
+  /// Injected for testing; defaults to [FirebaseStorage.instance]. Only
+  /// used when [signupService] is not provided.
+  @visibleForTesting
+  final FirebaseStorage? storage;
+
   /// Overrides the export screenshot capture; injected for testing since
   /// [ScreenshotController.capture] returns null in the widget-test
   /// environment (no real rendering surface), making the real
@@ -49,6 +57,7 @@ class AdminSignupSheetDetailScreen extends StatefulWidget {
     this.adminUser,
     this.firestore,
     this.signupService,
+    this.storage,
     this.exportCapture,
   });
 
@@ -64,6 +73,7 @@ class _AdminSignupSheetDetailScreenState
   late final SignupService _service;
   final ScreenshotController _exportController = ScreenshotController();
   bool _isProcessing = false;
+  bool _isUploadingImage = false;
   String _sheetId = '';
   Stream<SignupSheet?>? _sheetStream;
   Stream<List<SignupSlot>>? _slotsStream;
@@ -73,7 +83,8 @@ class _AdminSignupSheetDetailScreenState
   void initState() {
     super.initState();
     _service =
-        widget.signupService ?? SignupService(firestore: widget.firestore);
+        widget.signupService ??
+        SignupService(firestore: widget.firestore, storage: widget.storage);
   }
 
   @override
@@ -357,6 +368,88 @@ class _AdminSignupSheetDetailScreenState
     );
   }
 
+  Future<void> _pickAndUploadImage(
+    SignupSheet sheet,
+    AppLocalizations l10n,
+  ) async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked == null) return;
+
+    final bytes = await picked.readAsBytes();
+    if (!mounted) return;
+
+    if (bytes.length > SignupService.maxHeaderImageBytes) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(l10n.signupSheetImageTooLargeError)),
+        );
+      return;
+    }
+
+    setState(() => _isUploadingImage = true);
+    try {
+      final url = await _service.uploadHeaderImage(
+        sheetId: sheet.id!,
+        bytes: bytes,
+        contentType: picked.mimeType ?? 'image/jpeg',
+      );
+      await _service.updateHeaderImageUrl(sheet.id!, url);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(content: Text(l10n.signupSheetImageUploadError)),
+          );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isUploadingImage = false);
+      }
+    }
+  }
+
+  Future<void> _removeImage(SignupSheet sheet, AppLocalizations l10n) async {
+    try {
+      await _service.removeHeaderImage(sheet.id!);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(content: Text(l10n.signupSheetImageUploadError)),
+          );
+      }
+    }
+  }
+
+  void _confirmRemoveImage(SignupSheet sheet, AppLocalizations l10n) {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: Text(l10n.signupSheetRemoveImageConfirmTitle),
+        content: Text(l10n.signupSheetRemoveImageConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: Text(l10n.no),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogCtx).pop();
+              _removeImage(sheet, l10n);
+            },
+            child: Text(
+              l10n.yes,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -441,6 +534,15 @@ class _AdminSignupSheetDetailScreenState
                             title: title,
                             description: desc,
                             groupName: groupName,
+                          ),
+                          const SizedBox(height: 12),
+                          SignupSheetHeaderImageCard(
+                            headerImageUrl: sheet.headerImageUrl,
+                            isUploading: _isUploadingImage,
+                            onPickImage: () => _pickAndUploadImage(sheet, l10n),
+                            onRemoveImage: sheet.headerImageUrl == null
+                                ? null
+                                : () => _confirmRemoveImage(sheet, l10n),
                           ),
                           if (sheet.requiresJoinCode &&
                               sheet.joinCode != null) ...[
