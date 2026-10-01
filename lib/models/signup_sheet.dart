@@ -35,6 +35,11 @@ class SignupSheet {
   final DateTime updatedAt;
   final String createdBy;
 
+  /// Download URL of an optional admin-uploaded header/display image
+  /// (Firebase Storage, `signup_sheets/{id}/header`). Null when no image
+  /// has been uploaded.
+  final String? headerImageUrl;
+
   const SignupSheet({
     this.id,
     required this.titleEn,
@@ -50,6 +55,7 @@ class SignupSheet {
     required this.createdAt,
     required this.updatedAt,
     required this.createdBy,
+    this.headerImageUrl,
   }) : assert(
          requiresJoinCode || joinCode == null,
          'joinCode must be null when requiresJoinCode is false',
@@ -87,6 +93,9 @@ class SignupSheet {
           ? (data['updatedAt'] as Timestamp).toDate()
           : DateTime.now(),
       createdBy: data['createdBy'] is String ? data['createdBy'] as String : '',
+      headerImageUrl: data['headerImageUrl'] is String
+          ? data['headerImageUrl'] as String
+          : null,
     );
   }
 
@@ -105,6 +114,7 @@ class SignupSheet {
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
       'createdBy': createdBy,
+      'headerImageUrl': headerImageUrl,
     };
   }
 
@@ -123,6 +133,7 @@ class SignupSheet {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? createdBy,
+    String? headerImageUrl,
   }) {
     final newRequiresJoinCode = requiresJoinCode ?? this.requiresJoinCode;
     return SignupSheet(
@@ -140,6 +151,7 @@ class SignupSheet {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       createdBy: createdBy ?? this.createdBy,
+      headerImageUrl: headerImageUrl ?? this.headerImageUrl,
     );
   }
 
@@ -161,7 +173,8 @@ class SignupSheet {
           endDate == other.endDate &&
           createdAt == other.createdAt &&
           updatedAt == other.updatedAt &&
-          createdBy == other.createdBy;
+          createdBy == other.createdBy &&
+          headerImageUrl == other.headerImageUrl;
 
   @override
   int get hashCode =>
@@ -178,5 +191,6 @@ class SignupSheet {
       endDate.hashCode ^
       createdAt.hashCode ^
       updatedAt.hashCode ^
-      createdBy.hashCode;
+      createdBy.hashCode ^
+      headerImageUrl.hashCode;
 }
