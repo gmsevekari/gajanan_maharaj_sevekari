@@ -216,7 +216,9 @@ class SignupService {
       throw ArgumentError.value(slots, 'slots', 'must not be empty');
     }
 
-    final sheetRef = _sheetsRef.doc();
+    final sheetRef = sheet.id != null
+        ? _sheetsRef.doc(sheet.id)
+        : _sheetsRef.doc();
     final batch = _db.batch();
     batch.set(sheetRef, sheet.toMap());
 
