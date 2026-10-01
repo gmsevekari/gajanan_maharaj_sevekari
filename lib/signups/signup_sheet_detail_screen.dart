@@ -227,6 +227,19 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
                             height: 180,
                             width: double.infinity,
                             fit: BoxFit.cover,
+                            semanticLabel: l10n.signupSheetHeaderImageLabel,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  height: 180,
+                                  width: double.infinity,
+                                  color: theme.appColors.secondaryText
+                                      .withValues(alpha: 0.1),
+                                  alignment: Alignment.center,
+                                  child: Icon(
+                                    Icons.broken_image_outlined,
+                                    color: theme.appColors.secondaryText,
+                                  ),
+                                ),
                           ),
                         ),
                         const SizedBox(height: 16),

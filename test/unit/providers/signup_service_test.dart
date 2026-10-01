@@ -10,21 +10,29 @@ import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 
 /// firebase_storage_mocks' Reference.delete() never throws, so this
-/// stands in just for the "deletion failed for a reason other than
-/// already-gone" branch of SignupService.removeHeaderImage.
+/// stands in for both branches of deleteHeaderImageFile's error handling:
+/// pass code: 'object-not-found' for the tolerated "already gone" case,
+/// or any other code for the "real error, must rethrow" case.
 class _ThrowingReference implements Reference {
+  final String code;
+
+  _ThrowingReference({this.code = 'unauthorized'});
+
   @override
-  Future<void> delete() => Future.error(
-    FirebaseException(plugin: 'firebase_storage', code: 'unauthorized'),
-  );
+  Future<void> delete() =>
+      Future.error(FirebaseException(plugin: 'firebase_storage', code: code));
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _ThrowingHeaderImageStorage implements FirebaseStorage {
+  final String code;
+
+  _ThrowingHeaderImageStorage({this.code = 'unauthorized'});
+
   @override
-  Reference ref([String? path]) => _ThrowingReference();
+  Reference ref([String? path]) => _ThrowingReference(code: code);
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -960,6 +968,38 @@ void main() {
 
         expect(
           () => throwingService.removeHeaderImage(sheetId),
+          throwsA(isA<FirebaseException>()),
+        );
+      },
+    );
+
+    test(
+      'deleteHeaderImageFile swallows an object-not-found Storage error',
+      () async {
+        final throwingService = SignupService(
+          firestore: fakeFirestore,
+          storage: _ThrowingHeaderImageStorage(code: 'object-not-found'),
+        );
+        final sheetId = await service.createSheet(buildSheet());
+
+        await expectLater(
+          throwingService.deleteHeaderImageFile(sheetId),
+          completes,
+        );
+      },
+    );
+
+    test(
+      'deleteHeaderImageFile rethrows a Storage error that is not object-not-found',
+      () async {
+        final throwingService = SignupService(
+          firestore: fakeFirestore,
+          storage: _ThrowingHeaderImageStorage(code: 'unauthorized'),
+        );
+        final sheetId = await service.createSheet(buildSheet());
+
+        expect(
+          () => throwingService.deleteHeaderImageFile(sheetId),
           throwsA(isA<FirebaseException>()),
         );
       },

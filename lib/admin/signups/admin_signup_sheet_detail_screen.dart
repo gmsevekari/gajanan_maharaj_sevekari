@@ -73,7 +73,7 @@ class _AdminSignupSheetDetailScreenState
   late final SignupService _service;
   final ScreenshotController _exportController = ScreenshotController();
   bool _isProcessing = false;
-  bool _isUploadingImage = false;
+  bool _isProcessingImage = false;
   String _sheetId = '';
   Stream<SignupSheet?>? _sheetStream;
   Stream<List<SignupSlot>>? _slotsStream;
@@ -387,7 +387,7 @@ class _AdminSignupSheetDetailScreenState
       return;
     }
 
-    setState(() => _isUploadingImage = true);
+    setState(() => _isProcessingImage = true);
     try {
       final url = await _service.uploadHeaderImage(
         sheetId: sheet.id!,
@@ -395,7 +395,11 @@ class _AdminSignupSheetDetailScreenState
         contentType: picked.mimeType ?? 'image/jpeg',
       );
       await _service.updateHeaderImageUrl(sheet.id!, url);
-    } catch (_) {
+    } on Exception catch (_) {
+      // Deliberately catches Exception, not Error: an Error subtype here
+      // (e.g. a null-check failure from a future bug) should crash
+      // visibly during development rather than being masked behind this
+      // generic message.
       if (mounted) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
@@ -405,21 +409,26 @@ class _AdminSignupSheetDetailScreenState
       }
     } finally {
       if (mounted) {
-        setState(() => _isUploadingImage = false);
+        setState(() => _isProcessingImage = false);
       }
     }
   }
 
   Future<void> _removeImage(SignupSheet sheet, AppLocalizations l10n) async {
+    setState(() => _isProcessingImage = true);
     try {
       await _service.removeHeaderImage(sheet.id!);
-    } catch (_) {
+    } on Exception catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
-            SnackBar(content: Text(l10n.signupSheetImageUploadError)),
+            SnackBar(content: Text(l10n.signupSheetImageRemoveError)),
           );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isProcessingImage = false);
       }
     }
   }
@@ -538,7 +547,11 @@ class _AdminSignupSheetDetailScreenState
                           const SizedBox(height: 12),
                           SignupSheetHeaderImageCard(
                             headerImageUrl: sheet.headerImageUrl,
-                            isUploading: _isUploadingImage,
+                            // Covers both the upload and remove flows: the
+                            // card hides its buttons whenever this is true,
+                            // so a remove-confirm tap can't race a replace
+                            // tap (or vice versa) against the same object.
+                            isUploading: _isProcessingImage,
                             onPickImage: () => _pickAndUploadImage(sheet, l10n),
                             onRemoveImage: sheet.headerImageUrl == null
                                 ? null

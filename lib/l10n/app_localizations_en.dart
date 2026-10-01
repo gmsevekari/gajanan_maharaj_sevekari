@@ -2333,7 +2333,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Failed to upload image. Please try again.';
 
   @override
-  String get signupSheetUploadingImage => 'Uploading image...';
+  String get signupSheetUploadingImage => 'Please wait...';
+
+  @override
+  String get signupSheetImageRemoveError =>
+      'Failed to remove image. Please try again.';
 
   @override
   String get signupSheetRemoveImageConfirmTitle => 'Remove Image?';

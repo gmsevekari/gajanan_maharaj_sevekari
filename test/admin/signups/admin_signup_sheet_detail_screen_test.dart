@@ -1471,6 +1471,68 @@ void main() {
       expect(find.text('Add Image'), findsOneWidget);
     });
 
+    testWidgets(
+      'hides add/replace/remove buttons while a removal is in flight',
+      (tester) async {
+        final now = DateTime.now();
+        final sheet = SignupSheet(
+          id: 'sheet_removing',
+          titleEn: 'Removing Sheet',
+          titleMr: 'काढत आहे',
+          groupId: 'gajanan_maharaj_seattle',
+          createdAt: now,
+          updatedAt: now,
+          createdBy: 'admin@test.com',
+          headerImageUrl: 'https://example.com/header.jpg',
+        );
+        final mockService = MockSignupService();
+        when(
+          () => mockService.getSheetById('sheet_removing'),
+        ).thenAnswer((_) => Stream.value(sheet));
+        when(
+          () => mockService.getSlots('sheet_removing'),
+        ).thenAnswer((_) => Stream.value(const []));
+        when(
+          () => mockService.getAllEntries('sheet_removing'),
+        ).thenAnswer((_) => Stream.value(const []));
+        final removeCompleter = Completer<void>();
+        when(
+          () => mockService.removeHeaderImage('sheet_removing'),
+        ).thenAnswer((_) => removeCompleter.future);
+
+        setLargeScreen(tester);
+        addTearDown(() => resetScreen(tester));
+        await tester.pumpWidget(
+          createWidget(
+            child: AdminSignupSheetDetailScreen(
+              sheetId: 'sheet_removing',
+              adminUser: adminUser,
+              signupService: mockService,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        drainNetworkImageErrors(tester);
+
+        await tester.tap(find.byKey(const Key('removeHeaderImageButton')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Yes'));
+        await tester.pump();
+
+        // The removal is still pending (removeCompleter hasn't completed),
+        // so neither button should be tappable - this is what prevents a
+        // Replace tap from racing a Remove that's still in flight.
+        expect(
+          find.byKey(const Key('addOrReplaceHeaderImageButton')),
+          findsNothing,
+        );
+        expect(find.byKey(const Key('removeHeaderImageButton')), findsNothing);
+
+        removeCompleter.complete();
+        await tester.pumpAndSettle();
+      },
+    );
+
     testWidgets('shows an error snackbar when removal fails', (tester) async {
       final now = DateTime.now();
       final sheet = SignupSheet(
@@ -1517,7 +1579,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Failed to upload image. Please try again.'),
+        find.text('Failed to remove image. Please try again.'),
         findsOneWidget,
       );
     });

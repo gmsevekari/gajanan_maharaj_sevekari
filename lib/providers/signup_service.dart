@@ -78,14 +78,23 @@ class SignupService {
     });
   }
 
-  /// Deletes a sheet's header image from Storage (tolerating one that was
-  /// never uploaded) and clears the field on the sheet document.
-  Future<void> removeHeaderImage(String sheetId) async {
+  /// Deletes a sheet's header image object from Storage, tolerating one
+  /// that was never uploaded. Does not touch the sheet document - used
+  /// both by [removeHeaderImage] and to clean up an upload that was never
+  /// attached to a sheet (e.g. the sheet's own creation failed after the
+  /// image upload succeeded).
+  Future<void> deleteHeaderImageFile(String sheetId) async {
     try {
       await _headerImageRef(sheetId).delete();
     } on FirebaseException catch (e) {
       if (e.code != 'object-not-found') rethrow;
     }
+  }
+
+  /// Deletes a sheet's header image from Storage (tolerating one that was
+  /// never uploaded) and clears the field on the sheet document.
+  Future<void> removeHeaderImage(String sheetId) async {
+    await deleteHeaderImageFile(sheetId);
     await updateHeaderImageUrl(sheetId, null);
   }
 
@@ -206,8 +215,9 @@ class SignupService {
   }
 
   /// Creates a sheet and all of its slots in a single batch, so a sheet
-  /// with many slots never ends up partially written. Returns the new
-  /// sheet's auto-generated ID.
+  /// with many slots never ends up partially written. Writes to
+  /// [sheet.id] when already set (same pre-set-id support as
+  /// [createSheet]); otherwise auto-generates one. Returns the sheet's ID.
   Future<String> createSheetWithSlots(
     SignupSheet sheet,
     List<SignupSlot> slots,

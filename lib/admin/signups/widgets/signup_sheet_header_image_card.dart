@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
 /// Add/replace/remove controls for a sheet's header/display image, shown
@@ -43,6 +44,17 @@ class SignupSheetHeaderImageCard extends StatelessWidget {
                   height: 150,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  semanticLabel: l10n.signupSheetHeaderImageLabel,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    height: 150,
+                    width: double.infinity,
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.broken_image_outlined,
+                      color: theme.appColors.secondaryText,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 8),

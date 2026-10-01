@@ -20,11 +20,21 @@ service firebase.storage {
     // also checks file size client-side before even attempting an
     // upload, but that's just a fast-fail UX nicety, not something a
     // modified client could be trusted to enforce.
+    //
+    // contentType is an explicit raster-format allowlist, not
+    // 'image/.*' - Storage serves whatever Content-Type the uploader
+    // declares without sniffing the actual bytes, and image/svg+xml is a
+    // script-capable XML format. A crafted SVG uploaded under that
+    // declared type would be served back as image/svg+xml from this
+    // object's public URL and could execute script if ever opened
+    // directly in a browser outside this app. None of these raster
+    // formats can carry executable script the same way.
     match /signup_sheets/{sheetId}/{fileName} {
       allow read: if true;
       allow write: if isAdmin()
-        && request.resource.size < 2 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+        && request.resource.size <= 2 * 1024 * 1024
+        && request.resource.contentType in
+           ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
       allow delete: if isAdmin();
     }
   }

@@ -4482,8 +4482,14 @@ abstract class AppLocalizations {
   /// No description provided for @signupSheetUploadingImage.
   ///
   /// In en, this message translates to:
-  /// **'Uploading image...'**
+  /// **'Please wait...'**
   String get signupSheetUploadingImage;
+
+  /// No description provided for @signupSheetImageRemoveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove image. Please try again.'**
+  String get signupSheetImageRemoveError;
 
   /// No description provided for @signupSheetRemoveImageConfirmTitle.
   ///

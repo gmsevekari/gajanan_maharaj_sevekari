@@ -9,8 +9,11 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
+import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
@@ -19,6 +22,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
 
 class MockAppConfigProvider extends Mock implements AppConfigProvider {}
+
+class MockSignupService extends Mock implements SignupService {}
 
 /// A real, decodable 1x1 transparent PNG - Image.memory() actually decodes
 /// the picked bytes to render a preview, so arbitrary filler bytes aren't
@@ -56,6 +61,21 @@ void main() {
   late MockFirebaseStorage storage;
   late AdminUser adminUser;
   late MockAppConfigProvider appConfigProvider;
+
+  setUpAll(() {
+    registerFallbackValue(
+      SignupSheet(
+        titleEn: 'dummy',
+        titleMr: 'dummy',
+        groupId: 'dummy',
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026),
+        createdBy: 'dummy',
+      ),
+    );
+    registerFallbackValue(<SignupSlot>[]);
+    registerFallbackValue(Uint8List(0));
+  });
 
   setUp(() {
     firestore = FakeFirebaseFirestore();
@@ -552,6 +572,118 @@ void main() {
 
         final sheets = await firestore.collection('signup_sheets').get();
         expect(sheets.docs.first.data()['headerImageUrl'], isNull);
+      });
+
+      testWidgets(
+        'cleans up the uploaded image if sheet creation fails afterward',
+        (tester) async {
+          ImagePickerPlatform.instance = FakeImagePickerPlatform(
+            imageBytes: _validPngBytes,
+          );
+          final mockService = MockSignupService();
+          when(() => mockService.newSheetId()).thenReturn('sheet_orphan');
+          when(
+            () => mockService.uploadHeaderImage(
+              sheetId: any(named: 'sheetId'),
+              bytes: any(named: 'bytes'),
+              contentType: any(named: 'contentType'),
+            ),
+          ).thenAnswer((_) async => 'https://example.com/header.jpg');
+          when(
+            () => mockService.createSheetWithSlots(any(), any()),
+          ).thenThrow(Exception('Firestore write failed'));
+          when(
+            () => mockService.deleteHeaderImageFile('sheet_orphan'),
+          ).thenAnswer((_) async {});
+
+          setLargeScreen(tester);
+          addTearDown(() => resetScreen(tester));
+          await tester.pumpWidget(
+            createWidget(
+              AdminCreateSignupSheetScreen(
+                adminUser: adminUser,
+                signupService: mockService,
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          await tester.tap(find.byKey(const Key('addHeaderImageButton')));
+          await tester.pumpAndSettle();
+          await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+          await tester.enterText(find.byKey(const Key('titleMrField')), 'T');
+          await tester.tap(find.text('Add Slot'));
+          await tester.pumpAndSettle();
+          await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
+          await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
+          await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+
+          await tester.tap(find.text('Save'));
+          await tester.pumpAndSettle();
+
+          verify(
+            () => mockService.deleteHeaderImageFile('sheet_orphan'),
+          ).called(1);
+          expect(
+            find.text('Failed to create sign-up sheet. Please try again.'),
+            findsOneWidget,
+          );
+        },
+      );
+
+      testWidgets('still shows the original error when cleanup itself fails', (
+        tester,
+      ) async {
+        ImagePickerPlatform.instance = FakeImagePickerPlatform(
+          imageBytes: _validPngBytes,
+        );
+        final mockService = MockSignupService();
+        when(() => mockService.newSheetId()).thenReturn('sheet_orphan2');
+        when(
+          () => mockService.uploadHeaderImage(
+            sheetId: any(named: 'sheetId'),
+            bytes: any(named: 'bytes'),
+            contentType: any(named: 'contentType'),
+          ),
+        ).thenAnswer((_) async => 'https://example.com/header.jpg');
+        when(
+          () => mockService.createSheetWithSlots(any(), any()),
+        ).thenThrow(Exception('Firestore write failed'));
+        when(
+          () => mockService.deleteHeaderImageFile('sheet_orphan2'),
+        ).thenThrow(Exception('cleanup also failed'));
+
+        setLargeScreen(tester);
+        addTearDown(() => resetScreen(tester));
+        await tester.pumpWidget(
+          createWidget(
+            AdminCreateSignupSheetScreen(
+              adminUser: adminUser,
+              signupService: mockService,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('addHeaderImageButton')));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+        await tester.enterText(find.byKey(const Key('titleMrField')), 'T');
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
+        await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
+        await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        // The cleanup's own failure must not surface or replace the
+        // original "failed to create sheet" message.
+        expect(
+          find.text('Failed to create sign-up sheet. Please try again.'),
+          findsOneWidget,
+        );
       });
     });
   });

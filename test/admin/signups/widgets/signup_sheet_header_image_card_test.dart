@@ -72,7 +72,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Uploading image...'), findsOneWidget);
+    expect(find.text('Please wait...'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     expect(find.text('Add Image'), findsNothing);
   });

@@ -97,11 +97,25 @@ test('admin can upload a small image under the size limit', async () => {
   );
 });
 
-test('admin cannot upload a file at or over the 2 MB limit', async () => {
-  await assertFails(
+test('admin can upload a file at exactly the 2 MB limit', async () => {
+  // Matches SignupService.uploadHeaderImage's client-side check
+  // (bytes.length > maxHeaderImageBytes), which treats maxHeaderImageBytes
+  // itself as allowed - the rule must agree on this boundary, or a file
+  // that passes client-side validation would be rejected server-side.
+  await assertSucceeds(
     uploadBytes(
       ref(adminStorage(), 'signup_sheets/sheet2/header'),
       new Uint8Array(2 * ONE_MB),
+      { contentType: 'image/jpeg' },
+    ),
+  );
+});
+
+test('admin cannot upload a file over the 2 MB limit', async () => {
+  await assertFails(
+    uploadBytes(
+      ref(adminStorage(), 'signup_sheets/sheet2/header'),
+      new Uint8Array(2 * ONE_MB + 1),
       { contentType: 'image/jpeg' },
     ),
   );
@@ -113,6 +127,21 @@ test('admin cannot upload a non-image content type', async () => {
       ref(adminStorage(), 'signup_sheets/sheet2/header'),
       new Uint8Array(ONE_MB),
       { contentType: 'application/pdf' },
+    ),
+  );
+});
+
+// image/svg+xml is excluded even though it's an "image/*" type: SVG is a
+// script-capable XML format, and Storage serves whatever Content-Type the
+// uploader declares without sniffing the bytes, so allowing it would let a
+// malicious admin account store an XSS payload behind this object's public
+// read-anyone URL.
+test('admin cannot upload an SVG', async () => {
+  await assertFails(
+    uploadBytes(
+      ref(adminStorage(), 'signup_sheets/sheet2/header'),
+      new Uint8Array(ONE_MB),
+      { contentType: 'image/svg+xml' },
     ),
   );
 });

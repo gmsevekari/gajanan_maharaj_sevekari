@@ -38,11 +38,16 @@ class AdminCreateSignupSheetScreen extends StatefulWidget {
   @visibleForTesting
   final FirebaseStorage? storage;
 
+  /// Injected for testing.
+  @visibleForTesting
+  final SignupService? signupService;
+
   const AdminCreateSignupSheetScreen({
     super.key,
     required this.adminUser,
     this.firestore,
     this.storage,
+    this.signupService,
   });
 
   @override
@@ -67,14 +72,18 @@ class _AdminCreateSignupSheetScreenState
   String? _headerImageContentType;
   String? _imageError;
 
-  late final FirebaseFirestore _firestore;
   late final SignupService _service;
 
   @override
   void initState() {
     super.initState();
-    _firestore = widget.firestore ?? FirebaseFirestore.instance;
-    _service = SignupService(firestore: _firestore, storage: widget.storage);
+    // Only constructs a real SignupService (and only then touches
+    // FirebaseFirestore.instance/FirebaseStorage.instance as fallbacks)
+    // when no signupService override is supplied - a test that injects
+    // one shouldn't need Firebase initialized at all.
+    _service =
+        widget.signupService ??
+        SignupService(firestore: widget.firestore, storage: widget.storage);
   }
 
   @override
@@ -159,13 +168,16 @@ class _AdminCreateSignupSheetScreenState
 
     setState(() => _isLoading = true);
 
+    // Hoisted above the try so the catch block can clean up an uploaded
+    // image if the sheet itself fails to save afterward - otherwise that
+    // upload would be orphaned in Storage with nothing ever referencing it.
+    String? sheetId;
     try {
       final groupId = widget.adminUser.groupId;
       if (groupId == null) {
         throw Exception('Group ID is required to create a sign-up sheet');
       }
 
-      String? sheetId;
       String? headerImageUrl;
       if (_headerImageBytes != null) {
         sheetId = _service.newSheetId();
@@ -221,6 +233,15 @@ class _AdminCreateSignupSheetScreenState
       // development rather than being masked behind this generic message.
       if (kDebugMode) {
         debugPrint('AdminCreateSignupSheetScreen._submit error: $e');
+      }
+      if (sheetId != null) {
+        // Best-effort: an uploaded image whose sheet never got created
+        // would otherwise sit in Storage unreferenced forever. A cleanup
+        // failure here doesn't change the user-facing outcome - the
+        // original error below is what matters either way.
+        try {
+          await _service.deleteHeaderImageFile(sheetId);
+        } on Exception catch (_) {}
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

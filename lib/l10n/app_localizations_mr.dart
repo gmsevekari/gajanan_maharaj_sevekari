@@ -2340,7 +2340,11 @@ class AppLocalizationsMr extends AppLocalizations {
       'इमेज अपलोड करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get signupSheetUploadingImage => 'इमेज अपलोड होत आहे...';
+  String get signupSheetUploadingImage => 'कृपया थांबा...';
+
+  @override
+  String get signupSheetImageRemoveError =>
+      'इमेज काढण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
   String get signupSheetRemoveImageConfirmTitle => 'इमेज काढायची आहे का?';
