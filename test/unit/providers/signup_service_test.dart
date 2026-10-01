@@ -1,12 +1,34 @@
 import 'dart:typed_data';
 
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+
+/// firebase_storage_mocks' Reference.delete() never throws, so this
+/// stands in just for the "deletion failed for a reason other than
+/// already-gone" branch of SignupService.removeHeaderImage.
+class _ThrowingReference implements Reference {
+  @override
+  Future<void> delete() => Future.error(
+    FirebaseException(plugin: 'firebase_storage', code: 'unauthorized'),
+  );
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _ThrowingHeaderImageStorage implements FirebaseStorage {
+  @override
+  Reference ref([String? path]) => _ThrowingReference();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 void main() {
   late FakeFirebaseFirestore fakeFirestore;
@@ -911,6 +933,22 @@ void main() {
 
         final sheet = await service.getSheetById(sheetId).first;
         expect(sheet!.headerImageUrl, isNull);
+      },
+    );
+
+    test(
+      'removeHeaderImage rethrows a Storage error that is not object-not-found',
+      () async {
+        final throwingService = SignupService(
+          firestore: fakeFirestore,
+          storage: _ThrowingHeaderImageStorage(),
+        );
+        final sheetId = await service.createSheet(buildSheet());
+
+        expect(
+          () => throwingService.removeHeaderImage(sheetId),
+          throwsA(isA<FirebaseException>()),
+        );
       },
     );
   });

@@ -1,22 +1,92 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
 
 class SignupService {
-  final FirebaseFirestore _db;
+  /// Header images larger than this are rejected before an upload is even
+  /// attempted - the UI can check this up front, and storage.rules enforces
+  /// the same bound server-side as the real security boundary.
+  static const int maxHeaderImageBytes = 2 * 1024 * 1024;
 
-  SignupService({FirebaseFirestore? firestore})
-    : _db = firestore ?? FirebaseFirestore.instance;
+  final FirebaseFirestore _db;
+  final FirebaseStorage? _storageOverride;
+
+  SignupService({FirebaseFirestore? firestore, FirebaseStorage? storage})
+    : _db = firestore ?? FirebaseFirestore.instance,
+      _storageOverride = storage;
+
+  /// Resolved lazily (not in the constructor) so that call sites which
+  /// never touch header-image methods - including every existing test
+  /// that injects only a fake Firestore - don't need Firebase initialized
+  /// just to construct a SignupService.
+  FirebaseStorage get _storage => _storageOverride ?? FirebaseStorage.instance;
 
   CollectionReference<Map<String, dynamic>> get _sheetsRef =>
       _db.collection('signup_sheets');
 
-  /// Creates a new sheet with a Firestore auto-generated ID and returns it.
+  /// A fresh Firestore document id, generated without writing anything -
+  /// lets the caller know a sheet's id (for its Storage header-image path)
+  /// before the sheet document itself exists.
+  String newSheetId() => _sheetsRef.doc().id;
+
+  /// Creates a new sheet. Writes to [sheet.id] when already set (paired
+  /// with [newSheetId], so a header image can be uploaded to a known path
+  /// before the sheet document exists); otherwise auto-generates one via
+  /// Firestore, matching this method's original behavior.
   Future<String> createSheet(SignupSheet sheet) async {
+    if (sheet.id != null) {
+      await _sheetsRef.doc(sheet.id).set(sheet.toMap());
+      return sheet.id!;
+    }
     final docRef = await _sheetsRef.add(sheet.toMap());
     return docRef.id;
+  }
+
+  Reference _headerImageRef(String sheetId) =>
+      _storage.ref('signup_sheets/$sheetId/header');
+
+  /// Uploads a sheet's header/display image and returns its download URL.
+  /// Throws [ArgumentError] without attempting an upload when [bytes]
+  /// exceeds [maxHeaderImageBytes].
+  Future<String> uploadHeaderImage({
+    required String sheetId,
+    required Uint8List bytes,
+    required String contentType,
+  }) async {
+    if (bytes.length > maxHeaderImageBytes) {
+      throw ArgumentError.value(
+        bytes.length,
+        'bytes.length',
+        'exceeds maxHeaderImageBytes ($maxHeaderImageBytes)',
+      );
+    }
+    final ref = _headerImageRef(sheetId);
+    await ref.putData(bytes, SettableMetadata(contentType: contentType));
+    return ref.getDownloadURL();
+  }
+
+  /// Narrow update of just the header image URL field.
+  Future<void> updateHeaderImageUrl(String sheetId, String? url) async {
+    await _sheetsRef.doc(sheetId).update({
+      'headerImageUrl': url,
+      'updatedAt': Timestamp.now(),
+    });
+  }
+
+  /// Deletes a sheet's header image from Storage (tolerating one that was
+  /// never uploaded) and clears the field on the sheet document.
+  Future<void> removeHeaderImage(String sheetId) async {
+    try {
+      await _headerImageRef(sheetId).delete();
+    } on FirebaseException catch (e) {
+      if (e.code != 'object-not-found') rethrow;
+    }
+    await updateHeaderImageUrl(sheetId, null);
   }
 
   /// Streams a single sheet, or `null` if it doesn't exist.
