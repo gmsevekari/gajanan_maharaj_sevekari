@@ -82,7 +82,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('No active sign-up sheets'), findsOneWidget);
+      expect(find.text('No active sign ups'), findsOneWidget);
     });
 
     testWidgets(

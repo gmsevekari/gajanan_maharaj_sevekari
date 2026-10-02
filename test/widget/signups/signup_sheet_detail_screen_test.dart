@@ -76,7 +76,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Sign-up sheet not found'), findsOneWidget);
+      expect(find.text('Sign up not found'), findsOneWidget);
     });
 
     testWidgets('renders the sheet title, description, and slots', (

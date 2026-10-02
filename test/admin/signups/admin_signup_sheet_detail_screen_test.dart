@@ -182,7 +182,7 @@ void main() {
       tester,
     ) async {
       await pumpDetailScreen(tester, sheetId: 'missing_sheet');
-      expect(find.text('Sign-up sheet not found'), findsOneWidget);
+      expect(find.text('Sign up not found'), findsOneWidget);
     });
 
     testWidgets('renders sheet info, join code, and duplicate button', (
@@ -208,7 +208,7 @@ void main() {
       expect(find.text('Prasad Seva').first, findsOneWidget);
       expect(find.text('Help prepare prasad').first, findsOneWidget);
       expect(find.text('JOIN99'), findsOneWidget);
-      expect(find.text('Duplicate Sheet'), findsOneWidget);
+      expect(find.text('Duplicate'), findsOneWidget);
       expect(find.text('Share'), findsOneWidget);
       expect(find.text('Export Summary'), findsOneWidget);
     });
@@ -318,7 +318,7 @@ void main() {
         },
       );
 
-      await tester.tap(find.text('Duplicate Sheet'));
+      await tester.tap(find.text('Duplicate'));
       await tester.pumpAndSettle();
 
       expect(navSheetId, isNotNull);
@@ -486,10 +486,10 @@ void main() {
         locale: const Locale('mr'),
       );
 
-      expect(find.text('साइन-अप शीट तपशील'), findsOneWidget);
+      expect(find.text('साइन अप तपशील'), findsOneWidget);
       expect(find.text('प्रसाद सेवा').first, findsOneWidget);
       expect(find.text('मदत').first, findsOneWidget);
-      expect(find.text('शीटची प्रत तयार करा'), findsOneWidget);
+      expect(find.text('प्रत तयार करा'), findsOneWidget);
       expect(find.text('शेअर करा'), findsOneWidget);
       await tester.tap(find.text('शेअर करा'));
       await tester.pumpAndSettle();
@@ -581,10 +581,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Duplicate Sheet'));
+      await tester.tap(find.text('Duplicate'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Failed to duplicate sheet'), findsOneWidget);
+      expect(find.text('Failed to duplicate sign up'), findsOneWidget);
     });
 
     testWidgets('shows error snackbar when updateSheetStatus throws', (
@@ -1139,7 +1139,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Duplicate Sheet'));
+      await tester.tap(find.text('Duplicate'));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);

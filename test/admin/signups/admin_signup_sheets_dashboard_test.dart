@@ -181,7 +181,7 @@ void main() {
         expect(find.text('Draft'), findsOneWidget);
         expect(find.text('Published'), findsOneWidget);
         expect(find.text('Closed'), findsOneWidget);
-        expect(find.text('No sign-up sheets found'), findsOneWidget);
+        expect(find.text('No sign ups found'), findsOneWidget);
         expect(find.byType(FloatingActionButton), findsOneWidget);
       },
     );
@@ -381,7 +381,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Failed to load sign-up sheets. Please try again.'),
+        find.text('Failed to load sign ups. Please try again.'),
         findsOneWidget,
       );
     });

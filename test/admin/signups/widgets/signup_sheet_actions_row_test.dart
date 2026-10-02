@@ -25,7 +25,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Duplicate Sheet'), findsOneWidget);
+    expect(find.text('Duplicate'), findsOneWidget);
     expect(find.text('Share'), findsOneWidget);
     expect(find.text('Export Summary'), findsOneWidget);
   });
@@ -45,7 +45,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('Duplicate Sheet'));
+    await tester.tap(find.text('Duplicate'));
     await tester.tap(find.text('Share'));
     await tester.tap(find.text('Export Summary'));
     await tester.pumpAndSettle();

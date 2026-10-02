@@ -375,7 +375,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(
-          find.text('Failed to create sign-up sheet. Please try again.'),
+          find.text('Failed to create sign up. Please try again.'),
           findsOneWidget,
         );
         final sheets = await firestore.collection('signup_sheets').get();
@@ -625,7 +625,7 @@ void main() {
             () => mockService.deleteHeaderImageFile('sheet_orphan'),
           ).called(1);
           expect(
-            find.text('Failed to create sign-up sheet. Please try again.'),
+            find.text('Failed to create sign up. Please try again.'),
             findsOneWidget,
           );
         },
@@ -681,7 +681,7 @@ void main() {
         // The cleanup's own failure must not surface or replace the
         // original "failed to create sheet" message.
         expect(
-          find.text('Failed to create sign-up sheet. Please try again.'),
+          find.text('Failed to create sign up. Please try again.'),
           findsOneWidget,
         );
       });

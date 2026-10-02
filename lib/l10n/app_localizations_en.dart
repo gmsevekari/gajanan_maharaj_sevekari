@@ -1839,7 +1839,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roleVaariCoordinator => 'Vaari Coordinator';
 
   @override
-  String get roleSignupCoordinator => 'Sign-Up Sheets Coordinator';
+  String get roleSignupCoordinator => 'Sign-Up Coordinator';
 
   @override
   String get atLeastOneRoleRequired => 'At least one role must be selected';
@@ -1976,7 +1976,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noSignupSheetsGroupsSelectedMessage =>
-      'Please select a group to view Sign-Up Sheets.';
+      'Please select a group to view Sign Ups.';
 
   @override
   String get vaariStepsSuffix => ' steps';
@@ -2057,11 +2057,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Create events, manage participants and view steps data.';
 
   @override
-  String get adminSignupGroupTitle => 'Select Group for Sign-Up Sheets';
+  String get adminSignupGroupTitle => 'Select Group for Sign Ups';
 
   @override
-  String get adminSignupSheetsModuleSubtitle =>
-      'Create and manage sign-up sheets';
+  String get adminSignupSheetsModuleSubtitle => 'Create and manage sign ups';
 
   @override
   String get createVaariTitle => 'Create Vaari Event';
@@ -2225,7 +2224,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get andSeparator => ' & ';
 
   @override
-  String get adminCreateSignupSheetTitle => 'Create Sign-Up Sheet';
+  String get adminCreateSignupSheetTitle => 'Create Sign Up';
 
   @override
   String get signupSheetTitleEnLabel => 'Title (English)';
@@ -2351,11 +2350,11 @@ class AppLocalizationsEn extends AppLocalizations {
       '|| Anant Koti Brahmandanayak Gajanan Maharaj Ki Jai ||';
 
   @override
-  String get signupSheetCreateSuccess => 'Sign-up sheet created successfully';
+  String get signupSheetCreateSuccess => 'Sign up created successfully';
 
   @override
   String get signupSheetCreateError =>
-      'Failed to create sign-up sheet. Please try again.';
+      'Failed to create sign up. Please try again.';
 
   @override
   String get adminSignupSheetsDashboardTitle => 'Sign Ups';
@@ -2376,17 +2375,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSheetStatusClosed => 'Closed';
 
   @override
-  String get signupSheetNoSheetsFound => 'No sign-up sheets found';
+  String get signupSheetNoSheetsFound => 'No sign ups found';
 
   @override
   String get signupSheetNoGroupAssigned => 'No group assigned to admin';
 
   @override
   String get adminSignupSheetsError =>
-      'Failed to load sign-up sheets. Please try again.';
+      'Failed to load sign ups. Please try again.';
 
   @override
-  String get signupSheetCreateTooltip => 'Create Sign-Up Sheet';
+  String get signupSheetCreateTooltip => 'Create Sign Up';
 
   @override
   String get signupSheetRequiresJoinCodeBadge => 'Join Code Required';
@@ -2395,19 +2394,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSheetJoinCodePrefix => 'Join Code: ';
 
   @override
-  String get adminSignupSheetDetailTitle => 'Sign-Up Sheet Details';
+  String get adminSignupSheetDetailTitle => 'Sign Up Details';
 
   @override
-  String get signupSheetDuplicateButton => 'Duplicate Sheet';
+  String get signupSheetDuplicateButton => 'Duplicate';
 
   @override
-  String get signupSheetDuplicating => 'Duplicating sign-up sheet...';
+  String get signupSheetDuplicating => 'Duplicating sign up...';
 
   @override
-  String get signupSheetDuplicateSuccess => 'Sheet duplicated successfully';
+  String get signupSheetDuplicateSuccess => 'Sign up duplicated successfully';
 
   @override
-  String get signupSheetDuplicateError => 'Failed to duplicate sheet';
+  String get signupSheetDuplicateError => 'Failed to duplicate sign up';
 
   @override
   String get signupSheetShareButton => 'Share';
@@ -2419,7 +2418,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSheetExporting => 'Generating summary image...';
 
   @override
-  String get signupSheetSharePrefix => 'Sign-Up Sheet';
+  String get signupSheetSharePrefix => 'Sign Up';
 
   @override
   String get signupSheetShareLinkPrefix => 'Sign up link';
@@ -2509,7 +2508,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'No devotees have signed up for this slot yet';
 
   @override
-  String get signupSheetExportSummaryTitle => 'Sign-Up Sheet Summary';
+  String get signupSheetExportSummaryTitle => 'Sign Up Summary';
 
   @override
   String get signupSheetTotalSlotsLabel => 'Total Slots';
@@ -2524,7 +2523,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSheetExportFailed => 'Failed to export image';
 
   @override
-  String get signupSheetNotFound => 'Sign-up sheet not found';
+  String get signupSheetNotFound => 'Sign up not found';
 
   @override
   String get signupSheetsListTitle => 'Sign Ups';
@@ -2533,7 +2532,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSheetInvalidGroupError => 'Invalid group';
 
   @override
-  String get signupSheetNoActiveSheets => 'No active sign-up sheets';
+  String get signupSheetNoActiveSheets => 'No active sign ups';
 
   @override
   String get signupSheetMySignupsHeading => 'My Signups';

@@ -3576,7 +3576,7 @@ abstract class AppLocalizations {
   /// No description provided for @roleSignupCoordinator.
   ///
   /// In en, this message translates to:
-  /// **'Sign-Up Sheets Coordinator'**
+  /// **'Sign-Up Coordinator'**
   String get roleSignupCoordinator;
 
   /// No description provided for @atLeastOneRoleRequired.
@@ -3822,7 +3822,7 @@ abstract class AppLocalizations {
   /// No description provided for @noSignupSheetsGroupsSelectedMessage.
   ///
   /// In en, this message translates to:
-  /// **'Please select a group to view Sign-Up Sheets.'**
+  /// **'Please select a group to view Sign Ups.'**
   String get noSignupSheetsGroupsSelectedMessage;
 
   /// No description provided for @vaariStepsSuffix.
@@ -3960,13 +3960,13 @@ abstract class AppLocalizations {
   /// No description provided for @adminSignupGroupTitle.
   ///
   /// In en, this message translates to:
-  /// **'Select Group for Sign-Up Sheets'**
+  /// **'Select Group for Sign Ups'**
   String get adminSignupGroupTitle;
 
   /// No description provided for @adminSignupSheetsModuleSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Create and manage sign-up sheets'**
+  /// **'Create and manage sign ups'**
   String get adminSignupSheetsModuleSubtitle;
 
   /// No description provided for @createVaariTitle.
@@ -4278,7 +4278,7 @@ abstract class AppLocalizations {
   /// No description provided for @adminCreateSignupSheetTitle.
   ///
   /// In en, this message translates to:
-  /// **'Create Sign-Up Sheet'**
+  /// **'Create Sign Up'**
   String get adminCreateSignupSheetTitle;
 
   /// No description provided for @signupSheetTitleEnLabel.
@@ -4512,13 +4512,13 @@ abstract class AppLocalizations {
   /// No description provided for @signupSheetCreateSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Sign-up sheet created successfully'**
+  /// **'Sign up created successfully'**
   String get signupSheetCreateSuccess;
 
   /// No description provided for @signupSheetCreateError.
   ///
   /// In en, this message translates to:
-  /// **'Failed to create sign-up sheet. Please try again.'**
+  /// **'Failed to create sign up. Please try again.'**
   String get signupSheetCreateError;
 
   /// No description provided for @adminSignupSheetsDashboardTitle.
@@ -4560,7 +4560,7 @@ abstract class AppLocalizations {
   /// No description provided for @signupSheetNoSheetsFound.
   ///
   /// In en, this message translates to:
-  /// **'No sign-up sheets found'**
+  /// **'No sign ups found'**
   String get signupSheetNoSheetsFound;
 
   /// No description provided for @signupSheetNoGroupAssigned.
@@ -4572,13 +4572,13 @@ abstract class AppLocalizations {
   /// No description provided for @adminSignupSheetsError.
   ///
   /// In en, this message translates to:
-  /// **'Failed to load sign-up sheets. Please try again.'**
+  /// **'Failed to load sign ups. Please try again.'**
   String get adminSignupSheetsError;
 
   /// No description provided for @signupSheetCreateTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Create Sign-Up Sheet'**
+  /// **'Create Sign Up'**
   String get signupSheetCreateTooltip;
 
   /// No description provided for @signupSheetRequiresJoinCodeBadge.
@@ -4596,31 +4596,31 @@ abstract class AppLocalizations {
   /// No description provided for @adminSignupSheetDetailTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sign-Up Sheet Details'**
+  /// **'Sign Up Details'**
   String get adminSignupSheetDetailTitle;
 
   /// No description provided for @signupSheetDuplicateButton.
   ///
   /// In en, this message translates to:
-  /// **'Duplicate Sheet'**
+  /// **'Duplicate'**
   String get signupSheetDuplicateButton;
 
   /// No description provided for @signupSheetDuplicating.
   ///
   /// In en, this message translates to:
-  /// **'Duplicating sign-up sheet...'**
+  /// **'Duplicating sign up...'**
   String get signupSheetDuplicating;
 
   /// No description provided for @signupSheetDuplicateSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Sheet duplicated successfully'**
+  /// **'Sign up duplicated successfully'**
   String get signupSheetDuplicateSuccess;
 
   /// No description provided for @signupSheetDuplicateError.
   ///
   /// In en, this message translates to:
-  /// **'Failed to duplicate sheet'**
+  /// **'Failed to duplicate sign up'**
   String get signupSheetDuplicateError;
 
   /// No description provided for @signupSheetShareButton.
@@ -4644,7 +4644,7 @@ abstract class AppLocalizations {
   /// No description provided for @signupSheetSharePrefix.
   ///
   /// In en, this message translates to:
-  /// **'Sign-Up Sheet'**
+  /// **'Sign Up'**
   String get signupSheetSharePrefix;
 
   /// No description provided for @signupSheetShareLinkPrefix.
@@ -4812,7 +4812,7 @@ abstract class AppLocalizations {
   /// No description provided for @signupSheetExportSummaryTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sign-Up Sheet Summary'**
+  /// **'Sign Up Summary'**
   String get signupSheetExportSummaryTitle;
 
   /// No description provided for @signupSheetTotalSlotsLabel.
@@ -4842,7 +4842,7 @@ abstract class AppLocalizations {
   /// No description provided for @signupSheetNotFound.
   ///
   /// In en, this message translates to:
-  /// **'Sign-up sheet not found'**
+  /// **'Sign up not found'**
   String get signupSheetNotFound;
 
   /// No description provided for @signupSheetsListTitle.
@@ -4860,7 +4860,7 @@ abstract class AppLocalizations {
   /// No description provided for @signupSheetNoActiveSheets.
   ///
   /// In en, this message translates to:
-  /// **'No active sign-up sheets'**
+  /// **'No active sign ups'**
   String get signupSheetNoActiveSheets;
 
   /// No description provided for @signupSheetMySignupsHeading.

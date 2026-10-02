@@ -1843,7 +1843,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get roleVaariCoordinator => 'वारी ॲडमिन';
 
   @override
-  String get roleSignupCoordinator => 'साइन-अप शीट्स समन्वयक';
+  String get roleSignupCoordinator => 'साइन-अप समन्वयक';
 
   @override
   String get atLeastOneRoleRequired => 'किमान एक रोल निवडणे आवश्यक आहे';
@@ -1981,7 +1981,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get noSignupSheetsGroupsSelectedMessage =>
-      'साइन-अप शीट्स पाहण्यासाठी कृपया एक ग्रुप निवडा.';
+      'साइन अप्स पाहण्यासाठी कृपया एक ग्रुप निवडा.';
 
   @override
   String get vaariStepsSuffix => ' स्टेप्स';
@@ -2062,11 +2062,11 @@ class AppLocalizationsMr extends AppLocalizations {
       'वारी तयार करा, सहभागी आणि स्टेप्स पहा';
 
   @override
-  String get adminSignupGroupTitle => 'साइन-अप शीट्ससाठी गट निवडा';
+  String get adminSignupGroupTitle => 'साइन अप्ससाठी गट निवडा';
 
   @override
   String get adminSignupSheetsModuleSubtitle =>
-      'साइन-अप शीट्स तयार करा आणि व्यवस्थापित करा';
+      'साइन अप्स तयार करा आणि व्यवस्थापित करा';
 
   @override
   String get createVaariTitle => 'वारी तयार करा';
@@ -2233,7 +2233,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get andSeparator => ' आणि ';
 
   @override
-  String get adminCreateSignupSheetTitle => 'साइन-अप शीट तयार करा';
+  String get adminCreateSignupSheetTitle => 'साइन अप तयार करा';
 
   @override
   String get signupSheetTitleEnLabel => 'शीर्षक (इंग्रजी)';
@@ -2358,11 +2358,11 @@ class AppLocalizationsMr extends AppLocalizations {
       '॥ अनंत कोटी ब्रह्मांडनायक गजानन महाराज की जय ॥';
 
   @override
-  String get signupSheetCreateSuccess => 'साइन-अप शीट यशस्वीरित्या तयार झाली';
+  String get signupSheetCreateSuccess => 'साइन अप यशस्वीरित्या तयार झाले';
 
   @override
   String get signupSheetCreateError =>
-      'साइन-अप शीट तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+      'साइन अप तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
   String get adminSignupSheetsDashboardTitle => 'साइन अप्स';
@@ -2383,7 +2383,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSheetStatusClosed => 'बंद';
 
   @override
-  String get signupSheetNoSheetsFound => 'कोणतीही साइन-अप शीट सापडली नाही';
+  String get signupSheetNoSheetsFound => 'कोणतेही साइन अप सापडले नाही';
 
   @override
   String get signupSheetNoGroupAssigned =>
@@ -2391,10 +2391,10 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get adminSignupSheetsError =>
-      'साइन-अप शीट्स लोड करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+      'साइन अप्स लोड करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get signupSheetCreateTooltip => 'साइन-अप शीट तयार करा';
+  String get signupSheetCreateTooltip => 'साइन अप तयार करा';
 
   @override
   String get signupSheetRequiresJoinCodeBadge => 'जॉईन कोड आवश्यक';
@@ -2403,19 +2403,20 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSheetJoinCodePrefix => 'जॉईन कोड: ';
 
   @override
-  String get adminSignupSheetDetailTitle => 'साइन-अप शीट तपशील';
+  String get adminSignupSheetDetailTitle => 'साइन अप तपशील';
 
   @override
-  String get signupSheetDuplicateButton => 'शीटची प्रत तयार करा';
+  String get signupSheetDuplicateButton => 'प्रत तयार करा';
 
   @override
-  String get signupSheetDuplicating => 'साइन-अप शीटची प्रत तयार करत आहे...';
+  String get signupSheetDuplicating => 'साइन अपची प्रत तयार करत आहे...';
 
   @override
-  String get signupSheetDuplicateSuccess => 'शीटची प्रत यशस्वीरित्या तयार झाली';
+  String get signupSheetDuplicateSuccess =>
+      'साइन अपची प्रत यशस्वीरित्या तयार झाली';
 
   @override
-  String get signupSheetDuplicateError => 'शीटची प्रत तयार करण्यात अयशस्वी';
+  String get signupSheetDuplicateError => 'साइन अपची प्रत तयार करण्यात अयशस्वी';
 
   @override
   String get signupSheetShareButton => 'शेअर करा';
@@ -2427,7 +2428,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSheetExporting => 'सारांश प्रतिमा तयार करत आहे...';
 
   @override
-  String get signupSheetSharePrefix => 'साइन-अप शीट';
+  String get signupSheetSharePrefix => 'साइन अप';
 
   @override
   String get signupSheetShareLinkPrefix => 'साइन अप लिंक';
@@ -2517,7 +2518,7 @@ class AppLocalizationsMr extends AppLocalizations {
       'या स्लॉटसाठी अद्याप कोणत्याही भाविकाने साइन अप केलेले नाही';
 
   @override
-  String get signupSheetExportSummaryTitle => 'साइन-अप शीट सारांश';
+  String get signupSheetExportSummaryTitle => 'साइन अप सारांश';
 
   @override
   String get signupSheetTotalSlotsLabel => 'एकूण स्लॉट्स';
@@ -2532,7 +2533,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSheetExportFailed => 'प्रतिमा निर्यात करण्यात अयशस्वी';
 
   @override
-  String get signupSheetNotFound => 'साइन-अप शीट सापडली नाही';
+  String get signupSheetNotFound => 'साइन अप सापडले नाही';
 
   @override
   String get signupSheetsListTitle => 'साइन अप्स';
@@ -2541,7 +2542,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSheetInvalidGroupError => 'अवैध गट';
 
   @override
-  String get signupSheetNoActiveSheets => 'कोणतीही सक्रिय साइन-अप शीट नाही';
+  String get signupSheetNoActiveSheets => 'कोणतेही सक्रिय साइन अप नाही';
 
   @override
   String get signupSheetMySignupsHeading => 'माझे साइन-अप';
