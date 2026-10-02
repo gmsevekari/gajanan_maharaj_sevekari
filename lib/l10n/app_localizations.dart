@@ -4929,11 +4929,47 @@ abstract class AppLocalizations {
   /// **'You\'ve already signed up for this slot with this email or phone number.'**
   String get signupDuplicateEntryError;
 
-  /// No description provided for @signupSlotEntriesHeading.
+  /// No description provided for @signupUpcomingTab.
   ///
   /// In en, this message translates to:
-  /// **'Signed Up'**
-  String get signupSlotEntriesHeading;
+  /// **'Upcoming'**
+  String get signupUpcomingTab;
+
+  /// No description provided for @signupPastTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get signupPastTab;
+
+  /// No description provided for @signupEntriesHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Entries'**
+  String get signupEntriesHeading;
+
+  /// No description provided for @signupEntriesEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No one has signed up yet'**
+  String get signupEntriesEmptyMessage;
+
+  /// No description provided for @signupEntriesTitleColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get signupEntriesTitleColumn;
+
+  /// No description provided for @signupEntriesAvailableSlotsColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Slots'**
+  String get signupEntriesAvailableSlotsColumn;
+
+  /// No description provided for @signupNoSlotsInTabMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No slots here'**
+  String get signupNoSlotsInTabMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -968,5 +968,11 @@
   "signupClaimSuccess": "तुम्ही साइन अप केले आहे!",
   "signupClaimError": "स्लॉट क्लेम करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
   "signupDuplicateEntryError": "तुम्ही या ईमेल किंवा फोन नंबरने या स्लॉटसाठी आधीच साइन अप केले आहे.",
-  "signupSlotEntriesHeading": "साइन अप केलेले"
+  "signupUpcomingTab": "आगामी",
+  "signupPastTab": "मागील",
+  "signupEntriesHeading": "एंट्रीज",
+  "signupEntriesEmptyMessage": "अद्याप कोणीही साइन अप केलेले नाही",
+  "signupEntriesTitleColumn": "टायटल",
+  "signupEntriesAvailableSlotsColumn": "उपलब्ध स्लॉट्स",
+  "signupNoSlotsInTabMessage": "इथे कोणतेही स्लॉट्स नाहीत"
 }

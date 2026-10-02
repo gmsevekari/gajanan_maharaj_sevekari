@@ -10,7 +10,9 @@ import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
+import 'package:gajanan_maharaj_sevekari/signups/my_signups_screen.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signup_sheet_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/signups/signup_slots_screen.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -135,21 +137,10 @@ void main() {
       expect(find.text('Navigated to: /settings'), findsOneWidget);
     });
 
-    testWidgets('renders the sheet title, description, and slots', (
+    testWidgets('renders the sheet title, description, and nav cards', (
       tester,
     ) async {
       final sheetId = await createOpenSheet();
-      final now = DateTime.now();
-      await service.addSlot(
-        sheetId,
-        SignupSlot(
-          labelEn: 'Week 1',
-          labelMr: 'आठवडा १',
-          capacity: 3,
-          sortOrder: 0,
-          createdAt: now,
-        ),
-      );
 
       await tester.pumpWidget(
         wrap(
@@ -165,14 +156,217 @@ void main() {
 
       expect(find.text('Sunday Prasad Seva'), findsOneWidget);
       expect(find.text('Cook and serve prasad'), findsOneWidget);
-      expect(find.text('Week 1'), findsOneWidget);
-      expect(find.text('0 of 3 claimed'), findsOneWidget);
+      expect(find.text('My Signups'), findsOneWidget);
+      expect(find.text('Slots'), findsOneWidget);
+    });
+
+    testWidgets('tapping the My Sign Ups card opens MySignupsScreen', (
+      tester,
+    ) async {
+      final sheetId = await createOpenSheet();
+
+      await tester.pumpWidget(
+        wrap(
+          SignupSheetDetailScreen(
+            sheetId: sheetId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('My Signups'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(MySignupsScreen), findsOneWidget);
+    });
+
+    testWidgets('tapping the Slots card opens SignupSlotsScreen', (
+      tester,
+    ) async {
+      final sheetId = await createOpenSheet();
+
+      await tester.pumpWidget(
+        wrap(
+          SignupSheetDetailScreen(
+            sheetId: sheetId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Slots'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SignupSlotsScreen), findsOneWidget);
+    });
+
+    testWidgets('shows a message in the Entries table when there are none', (
+      tester,
+    ) async {
+      final sheetId = await createOpenSheet();
+
+      await tester.pumpWidget(
+        wrap(
+          SignupSheetDetailScreen(
+            sheetId: sheetId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Entries'), findsOneWidget);
+      expect(find.text('No one has signed up yet'), findsOneWidget);
+    });
+
+    testWidgets('lists every entry in the Entries table', (tester) async {
+      final sheetId = await createOpenSheet();
+      final slot1 = await service.addSlot(
+        sheetId,
+        SignupSlot(
+          labelEn: 'Week 1',
+          labelMr: 'आठवडा १',
+          date: DateTime(2026, 3, 15),
+          capacity: 3,
+          sortOrder: 0,
+          createdAt: DateTime.now(),
+        ),
+      );
+      final slot2 = await service.addSlot(
+        sheetId,
+        SignupSlot(
+          labelEn: 'Week 2',
+          labelMr: 'आठवडा २',
+          date: DateTime(2026, 3, 1),
+          capacity: 2,
+          sortOrder: 1,
+          createdAt: DateTime.now(),
+        ),
+      );
+      final slot3 = await service.addSlot(
+        sheetId,
+        SignupSlot(
+          labelEn: 'Week 3',
+          labelMr: 'आठवडा ३',
+          capacity: 1,
+          sortOrder: 2,
+          createdAt: DateTime.now(),
+        ),
+      );
+      // Same date as slot1, to exercise the sort's tie-break-by-name branch.
+      final slot4 = await service.addSlot(
+        sheetId,
+        SignupSlot(
+          labelEn: 'Week 4',
+          labelMr: 'आठवडा ४',
+          date: DateTime(2026, 3, 15),
+          capacity: 1,
+          sortOrder: 3,
+          createdAt: DateTime.now(),
+        ),
+      );
+      await service.claimSlot(sheetId: sheetId, slotId: slot1, name: 'Jane');
+      await service.claimSlot(sheetId: sheetId, slotId: slot2, name: 'Amit');
+      await service.claimSlot(sheetId: sheetId, slotId: slot3, name: 'Priya');
+      await service.claimSlot(sheetId: sheetId, slotId: slot4, name: 'Anil');
+
+      await tester.pumpWidget(
+        wrap(
+          SignupSheetDetailScreen(
+            sheetId: sheetId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Rows are sorted by slot date (slot3's null date sorts last, slot1
+      // and slot4 tie on date and fall back to comparing names) - verifies
+      // every branch of the comparator.
+      final dataTable = tester.widget<DataTable>(find.byType(DataTable));
+      final rows = dataTable.rows
+          .map(
+            (row) =>
+                row.cells.map((cell) => (cell.child as Text).data).toList(),
+          )
+          .toList();
+      expect(rows, [
+        ['March 1', 'Week 2', 'Amit', '1'], // slot2: 2 capacity - 1 claimed
+        ['March 15', 'Week 4', 'Anil', '0'], // slot4: 1 capacity - 1 claimed
+        ['March 15', 'Week 1', 'Jane', '2'], // slot1: 3 capacity - 1 claimed
+        ['-', 'Week 3', 'Priya', '0'], // slot3: no date, 1 cap - 1 claimed
+      ]);
+    });
+
+    testWidgets('shows the Marathi slot label in the Entries table', (
+      tester,
+    ) async {
+      final sheetId = await createOpenSheet();
+      final slotId = await service.addSlot(
+        sheetId,
+        SignupSlot(
+          labelEn: 'Week 1',
+          labelMr: 'आठवडा १',
+          capacity: 3,
+          sortOrder: 0,
+          createdAt: DateTime.now(),
+        ),
+      );
+      await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'Jane');
+
+      await tester.pumpWidget(
+        wrap(
+          SignupSheetDetailScreen(
+            sheetId: sheetId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+          locale: const Locale('mr'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('आठवडा १'), findsOneWidget);
     });
 
     testWidgets(
-      'shows the empty My Signups state when the device has no entries',
+      'shows a blank title and dash for an entry whose slot was deleted',
       (tester) async {
         final sheetId = await createOpenSheet();
+        final slotId = await service.addSlot(
+          sheetId,
+          SignupSlot(
+            labelEn: 'Week 1',
+            labelMr: 'आठवडा १',
+            capacity: 3,
+            sortOrder: 0,
+            createdAt: DateTime.now(),
+          ),
+        );
+        await service.claimSlot(
+          sheetId: sheetId,
+          slotId: slotId,
+          name: 'Orphan',
+        );
+        // Bypass SignupService.deleteSlot's claimed-entry guard to simulate
+        // an entry left behind after its slot is gone some other way.
+        await firestore
+            .collection('signups')
+            .doc(sheetId)
+            .collection('slots')
+            .doc(slotId)
+            .delete();
 
         await tester.pumpWidget(
           wrap(
@@ -186,229 +380,10 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('My Signups'), findsOneWidget);
-        expect(
-          find.text("You haven't signed up for anything yet"),
-          findsOneWidget,
-        );
+        expect(find.text('Orphan'), findsOneWidget);
+        expect(find.text('-'), findsNWidgets(2)); // date column + count column
       },
     );
-
-    testWidgets('tapping an open slot claims it and shows it in My Signups', (
-      tester,
-    ) async {
-      final sheetId = await createOpenSheet();
-      final now = DateTime.now();
-      await service.addSlot(
-        sheetId,
-        SignupSlot(
-          labelEn: 'Week 1',
-          labelMr: 'आठवडा १',
-          capacity: 3,
-          sortOrder: 0,
-          createdAt: now,
-        ),
-      );
-
-      await tester.pumpWidget(
-        wrap(
-          SignupSheetDetailScreen(
-            sheetId: sheetId,
-            deviceId: 'device_1',
-            firestore: firestore,
-            signupService: service,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byKey(const Key('signUpButton')));
-      await tester.pumpAndSettle();
-
-      await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
-      await tester.enterText(
-        find.byKey(const Key('claimPhoneField')),
-        '1234567890',
-      );
-      await tester.enterText(
-        find.byKey(const Key('claimEmailField')),
-        'jane@example.com',
-      );
-      await tester.tap(find.text('Save'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Yes'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('1 of 3 claimed'), findsOneWidget);
-      expect(find.text("You haven't signed up for anything yet"), findsNothing);
-      // Once in "My Signups", once in the slot's own list of who's signed up.
-      expect(find.text('Jane'), findsNWidgets(2));
-    });
-
-    testWidgets('tapping a full slot does not open the claim dialog', (
-      tester,
-    ) async {
-      final sheetId = await createOpenSheet();
-      final slotId = await service.addSlot(
-        sheetId,
-        SignupSlot(
-          labelEn: 'Week 1',
-          labelMr: 'आठवडा १',
-          capacity: 1,
-          sortOrder: 0,
-          createdAt: DateTime.now(),
-        ),
-      );
-      await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'First');
-
-      await tester.pumpWidget(
-        wrap(
-          SignupSheetDetailScreen(
-            sheetId: sheetId,
-            deviceId: 'device_2',
-            firestore: firestore,
-            signupService: service,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Full'), findsOneWidget);
-
-      await tester.tap(find.text('Week 1'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Claim Slot'), findsNothing);
-    });
-
-    testWidgets('cancelling an own entry removes it after confirmation', (
-      tester,
-    ) async {
-      final sheetId = await createOpenSheet();
-      final slotId = await service.addSlot(
-        sheetId,
-        SignupSlot(
-          labelEn: 'Week 1',
-          labelMr: 'आठवडा १',
-          capacity: 3,
-          sortOrder: 0,
-          createdAt: DateTime.now(),
-        ),
-      );
-      await service.claimSlot(
-        sheetId: sheetId,
-        slotId: slotId,
-        name: 'Jane',
-        deviceId: 'device_1',
-      );
-
-      await tester.pumpWidget(
-        wrap(
-          SignupSheetDetailScreen(
-            sheetId: sheetId,
-            deviceId: 'device_1',
-            firestore: firestore,
-            signupService: service,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Once in "My Signups", once in the slot's own list of who's signed up.
-      expect(find.text('Jane'), findsNWidgets(2));
-
-      await tester.tap(find.text('Cancel'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Cancel Signup?'), findsOneWidget);
-
-      await tester.tap(find.text('Yes'));
-      await tester.pumpAndSettle();
-
-      expect(
-        find.text("You haven't signed up for anything yet"),
-        findsOneWidget,
-      );
-      final entries = await service.getAllEntries(sheetId).first;
-      expect(entries, isEmpty);
-    });
-
-    testWidgets('declining the cancel confirmation keeps the entry', (
-      tester,
-    ) async {
-      final sheetId = await createOpenSheet();
-      final slotId = await service.addSlot(
-        sheetId,
-        SignupSlot(
-          labelEn: 'Week 1',
-          labelMr: 'आठवडा १',
-          capacity: 3,
-          sortOrder: 0,
-          createdAt: DateTime.now(),
-        ),
-      );
-      await service.claimSlot(
-        sheetId: sheetId,
-        slotId: slotId,
-        name: 'Jane',
-        deviceId: 'device_1',
-      );
-
-      await tester.pumpWidget(
-        wrap(
-          SignupSheetDetailScreen(
-            sheetId: sheetId,
-            deviceId: 'device_1',
-            firestore: firestore,
-            signupService: service,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Cancel'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('No'));
-      await tester.pumpAndSettle();
-
-      // Once in "My Signups", once in the slot's own list of who's signed up.
-      expect(find.text('Jane'), findsNWidgets(2));
-      final entries = await service.getAllEntries(sheetId).first;
-      expect(entries, hasLength(1));
-    });
-
-    testWidgets('passes requiresJoinCode through to the claim dialog', (
-      tester,
-    ) async {
-      final sheetId = await createOpenSheet(requiresJoinCode: true);
-      await service.addSlot(
-        sheetId,
-        SignupSlot(
-          labelEn: 'Week 1',
-          labelMr: 'आठवडा १',
-          capacity: 3,
-          sortOrder: 0,
-          createdAt: DateTime.now(),
-        ),
-      );
-
-      await tester.pumpWidget(
-        wrap(
-          SignupSheetDetailScreen(
-            sheetId: sheetId,
-            deviceId: 'device_1',
-            firestore: firestore,
-            signupService: service,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byKey(const Key('signUpButton')));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Join Code'), findsOneWidget);
-    });
 
     testWidgets('fetches the device id automatically when not injected', (
       tester,
@@ -430,10 +405,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(
-        find.text("You haven't signed up for anything yet"),
-        findsOneWidget,
-      );
+      expect(find.text('My Signups'), findsOneWidget);
     });
 
     testWidgets('resolves the sheet id from ModalRoute arguments', (
@@ -482,62 +454,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Sunday Prasad Seva'), findsOneWidget);
-    });
-
-    testWidgets('shows an error snackbar when cancelling an entry fails', (
-      tester,
-    ) async {
-      final entry = SignupEntry(
-        id: 'entry_1',
-        slotId: 'slot_1',
-        name: 'Jane',
-        deviceId: 'device_1',
-        joinedAt: DateTime.now(),
-      );
-      final sheet = SignupSheet(
-        id: 'sheet_err',
-        titleEn: 'Sheet',
-        titleMr: 'शीट',
-        groupId: 'group_1',
-        status: SignupSheetStatus.published,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        createdBy: 'admin@test.com',
-      );
-      final mockService = MockSignupService();
-      when(
-        () => mockService.getSheetById('sheet_err'),
-      ).thenAnswer((_) => Stream.value(sheet));
-      when(
-        () => mockService.getSlots('sheet_err'),
-      ).thenAnswer((_) => Stream.value(const []));
-      when(
-        () => mockService.getAllEntries('sheet_err'),
-      ).thenAnswer((_) => Stream.value([entry]));
-      when(
-        () => mockService.cancelEntry('sheet_err', 'entry_1'),
-      ).thenThrow(Exception('network error'));
-
-      await tester.pumpWidget(
-        wrap(
-          SignupSheetDetailScreen(
-            sheetId: 'sheet_err',
-            deviceId: 'device_1',
-            signupService: mockService,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Cancel'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Yes'));
-      await tester.pumpAndSettle();
-
-      expect(
-        find.text('Failed to cancel signup. Please try again.'),
-        findsOneWidget,
-      );
     });
 
     testWidgets('renders the Marathi title when locale is mr', (tester) async {

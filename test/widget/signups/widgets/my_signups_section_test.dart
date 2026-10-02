@@ -32,7 +32,7 @@ void main() {
     );
   }
 
-  testWidgets('shows the empty state when there are no entries', (
+  testWidgets('shows the given empty message when there are no entries', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -41,11 +41,12 @@ void main() {
           entries: const [],
           slots: const [],
           onCancelEntry: (_) {},
+          emptyMessage: 'Nothing here yet',
         ),
       ),
     );
 
-    expect(find.text("You haven't signed up for anything yet"), findsOneWidget);
+    expect(find.text('Nothing here yet'), findsOneWidget);
   });
 
   testWidgets('renders each entry with its slot label and a Cancel button', (
@@ -72,7 +73,12 @@ void main() {
 
     await tester.pumpWidget(
       wrap(
-        MySignupsSection(entries: entries, slots: slots, onCancelEntry: (_) {}),
+        MySignupsSection(
+          entries: entries,
+          slots: slots,
+          onCancelEntry: (_) {},
+          emptyMessage: 'Nothing here yet',
+        ),
       ),
     );
 
@@ -81,6 +87,34 @@ void main() {
     expect(find.text('John'), findsOneWidget);
     expect(find.text('Week 2'), findsOneWidget);
     expect(find.text('Cancel'), findsNWidgets(2));
+  });
+
+  testWidgets('hides the Cancel button when showCancelButton is false', (
+    tester,
+  ) async {
+    final entries = [
+      SignupEntry(
+        id: 'e1',
+        slotId: 's1',
+        name: 'Jane',
+        joinedAt: DateTime.now(),
+      ),
+    ];
+
+    await tester.pumpWidget(
+      wrap(
+        MySignupsSection(
+          entries: entries,
+          slots: [buildSlot()],
+          onCancelEntry: (_) {},
+          emptyMessage: 'Nothing here yet',
+          showCancelButton: false,
+        ),
+      ),
+    );
+
+    expect(find.text('Jane'), findsOneWidget);
+    expect(find.text('Cancel'), findsNothing);
   });
 
   testWidgets('falls back to the Marathi slot label when locale is mr', (
@@ -98,7 +132,12 @@ void main() {
 
     await tester.pumpWidget(
       wrap(
-        MySignupsSection(entries: entries, slots: slots, onCancelEntry: (_) {}),
+        MySignupsSection(
+          entries: entries,
+          slots: slots,
+          onCancelEntry: (_) {},
+          emptyMessage: 'Nothing here yet',
+        ),
         locale: const Locale('mr'),
       ),
     );
@@ -121,6 +160,7 @@ void main() {
           entries: [entry],
           slots: [buildSlot()],
           onCancelEntry: (e) => cancelled = e,
+          emptyMessage: 'Nothing here yet',
         ),
       ),
     );

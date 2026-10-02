@@ -2579,5 +2579,23 @@ class AppLocalizationsMr extends AppLocalizations {
       'तुम्ही या ईमेल किंवा फोन नंबरने या स्लॉटसाठी आधीच साइन अप केले आहे.';
 
   @override
-  String get signupSlotEntriesHeading => 'साइन अप केलेले';
+  String get signupUpcomingTab => 'आगामी';
+
+  @override
+  String get signupPastTab => 'मागील';
+
+  @override
+  String get signupEntriesHeading => 'एंट्रीज';
+
+  @override
+  String get signupEntriesEmptyMessage => 'अद्याप कोणीही साइन अप केलेले नाही';
+
+  @override
+  String get signupEntriesTitleColumn => 'टायटल';
+
+  @override
+  String get signupEntriesAvailableSlotsColumn => 'उपलब्ध स्लॉट्स';
+
+  @override
+  String get signupNoSlotsInTabMessage => 'इथे कोणतेही स्लॉट्स नाहीत';
 }

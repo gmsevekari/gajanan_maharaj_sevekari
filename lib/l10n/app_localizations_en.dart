@@ -2565,7 +2565,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'You\'ve already signed up for this slot with this email or phone number.';
 
   @override
-  String get signupSlotEntriesHeading => 'Signed Up';
+  String get signupUpcomingTab => 'Upcoming';
+
+  @override
+  String get signupPastTab => 'Past';
+
+  @override
+  String get signupEntriesHeading => 'Entries';
+
+  @override
+  String get signupEntriesEmptyMessage => 'No one has signed up yet';
+
+  @override
+  String get signupEntriesTitleColumn => 'Title';
+
+  @override
+  String get signupEntriesAvailableSlotsColumn => 'Available Slots';
+
+  @override
+  String get signupNoSlotsInTabMessage => 'No slots here';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

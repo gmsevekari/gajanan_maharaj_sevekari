@@ -6,9 +6,9 @@ import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
-import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_slot_dialog.dart';
-import 'package:gajanan_maharaj_sevekari/signups/widgets/my_signups_section.dart';
-import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_slot_tile.dart';
+import 'package:gajanan_maharaj_sevekari/signups/my_signups_screen.dart';
+import 'package:gajanan_maharaj_sevekari/signups/signup_slots_screen.dart';
+import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
@@ -68,10 +68,8 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
       _sheetId = newId;
       _sheetStream = _service.getSheetById(_sheetId);
       _slotsStream = _service.getSlots(_sheetId);
-      // All entries, not just this device's - the slot tiles below need
-      // every devotee's name to show who's signed up, and "My Signups" is
-      // just this same stream filtered client-side by deviceId, so one
-      // listener covers both instead of running two.
+      // The Entries table below needs every devotee's entry, not just this
+      // device's own.
       _entriesStream = _service.getAllEntries(_sheetId);
     }
   }
@@ -92,70 +90,6 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
     return args?['sheetId'] as String? ?? '';
   }
 
-  Future<void> _claimSlot(
-    SignupSheet sheet,
-    SignupSlot slot,
-    AppLocalizations l10n,
-  ) async {
-    final claimed = await showDialog<bool>(
-      context: context,
-      builder: (_) => ClaimSlotDialog(
-        sheetId: _sheetId,
-        slot: slot,
-        requiresJoinCode: sheet.requiresJoinCode,
-        deviceId: _deviceId,
-        signupService: _service,
-      ),
-    );
-
-    if (claimed == true && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.signupClaimSuccess)));
-    }
-  }
-
-  void _confirmCancelEntry(SignupEntry entry, AppLocalizations l10n) {
-    showDialog(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: Text(l10n.signupCancelSignupConfirmTitle),
-        content: Text(l10n.signupCancelSignupConfirmMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: Text(l10n.no),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogCtx).pop();
-              _cancelEntry(entry, l10n);
-            },
-            child: Text(
-              l10n.yes,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _cancelEntry(SignupEntry entry, AppLocalizations l10n) async {
-    try {
-      await _service.cancelEntry(_sheetId, entry.id!);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(l10n.signupCancelSignupSuccess)));
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(l10n.signupCancelSignupError)));
-    }
-  }
-
   List<Widget> _buildAppBarActions(BuildContext context) => [
     IconButton(
       icon: const ThemedIcon(LogicalIcon.home),
@@ -170,6 +104,35 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
       onPressed: () => Navigator.pushNamed(context, Routes.settings),
     ),
   ];
+
+  void _openMySignups() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MySignupsScreen(
+          sheetId: _sheetId,
+          deviceId: _deviceId!,
+          firestore: widget.firestore,
+          signupService: _service,
+        ),
+      ),
+    );
+  }
+
+  void _openSlots(SignupSheet sheet) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SignupSlotsScreen(
+          sheetId: _sheetId,
+          sheet: sheet,
+          deviceId: _deviceId,
+          firestore: widget.firestore,
+          signupService: _service,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -234,9 +197,6 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
                 stream: _entriesStream,
                 builder: (context, entriesSnapshot) {
                   final allEntries = entriesSnapshot.data ?? const [];
-                  final myEntries = allEntries
-                      .where((e) => e.deviceId == _deviceId)
-                      .toList();
 
                   return ListView(
                     padding: const EdgeInsets.all(16),
@@ -295,30 +255,32 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
                         ),
                         const SizedBox(height: 16),
                       ],
-                      MySignupsSection(
-                        entries: myEntries,
-                        slots: slots,
-                        onCancelEntry: (entry) =>
-                            _confirmCancelEntry(entry, l10n),
+                      _NavCard(
+                        icon: Icons.assignment_ind_outlined,
+                        label: l10n.signupMySignupsHeading,
+                        onTap: _openMySignups,
+                      ),
+                      const SizedBox(height: 12),
+                      _NavCard(
+                        icon: Icons.event_seat_outlined,
+                        label: l10n.signupSlotsHeading,
+                        onTap: () => _openSlots(sheet),
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        l10n.signupSlotsSectionHeading,
+                        l10n.signupEntriesHeading,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      for (final slot in slots)
-                        SignupSlotTile(
-                          slot: slot,
-                          entries: allEntries
-                              .where((e) => e.slotId == slot.id)
-                              .toList(),
-                          onTap: slot.claimedCount >= slot.capacity
-                              ? null
-                              : () => _claimSlot(sheet, slot, l10n),
-                        ),
+                      _EntriesTable(
+                        entries: allEntries,
+                        slots: slots,
+                        isMarathi: isMarathi,
+                        l10n: l10n,
+                        theme: theme,
+                      ),
                     ],
                   );
                 },
@@ -328,5 +290,143 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
         );
       },
     );
+  }
+}
+
+class _NavCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _NavCard({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(icon, color: theme.colorScheme.primary),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EntriesTable extends StatelessWidget {
+  final List<SignupEntry> entries;
+  final List<SignupSlot> slots;
+  final bool isMarathi;
+  final AppLocalizations l10n;
+  final ThemeData theme;
+
+  const _EntriesTable({
+    required this.entries,
+    required this.slots,
+    required this.isMarathi,
+    required this.l10n,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (entries.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Text(
+          l10n.signupEntriesEmptyMessage,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.appColors.secondaryText,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      );
+    }
+
+    final slotsById = {for (final slot in slots) slot.id: slot};
+    final langCode = isMarathi ? 'mr' : 'en';
+
+    final rows = entries.toList()
+      ..sort((a, b) {
+        final slotA = slotsById[a.slotId];
+        final slotB = slotsById[b.slotId];
+        final dateA = slotA?.date;
+        final dateB = slotB?.date;
+        if (dateA == null && dateB != null) return 1;
+        if (dateA != null && dateB == null) return -1;
+        if (dateA != null && dateB != null) {
+          final cmp = dateA.compareTo(dateB);
+          if (cmp != 0) return cmp;
+        }
+        return a.name.compareTo(b.name);
+      });
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: DataTable(
+        columns: [
+          DataColumn(label: Text(l10n.date)),
+          DataColumn(label: Text(l10n.signupEntriesTitleColumn)),
+          DataColumn(label: Text(l10n.name)),
+          DataColumn(label: Text(l10n.signupEntriesAvailableSlotsColumn)),
+        ],
+        rows: [
+          for (final entry in rows)
+            DataRow(
+              cells: [
+                DataCell(
+                  Text(
+                    slotsById[entry.slotId]?.date != null
+                        ? formatDateShort(
+                            slotsById[entry.slotId]!.date!,
+                            langCode,
+                          )
+                        : '-',
+                  ),
+                ),
+                DataCell(Text(_slotLabel(slotsById[entry.slotId]))),
+                DataCell(Text(entry.name)),
+                DataCell(Text(_availableSlots(slotsById[entry.slotId]))),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  String _slotLabel(SignupSlot? slot) {
+    if (slot == null) return '';
+    return isMarathi
+        ? (slot.labelMr.isNotEmpty ? slot.labelMr : slot.labelEn)
+        : (slot.labelEn.isNotEmpty ? slot.labelEn : slot.labelMr);
+  }
+
+  String _availableSlots(SignupSlot? slot) {
+    if (slot == null) return '-';
+    return (slot.capacity - slot.claimedCount)
+        .clamp(0, slot.capacity)
+        .toString();
   }
 }

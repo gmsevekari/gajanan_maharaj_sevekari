@@ -985,5 +985,11 @@
   "signupClaimSuccess": "You're signed up!",
   "signupClaimError": "Failed to claim slot. Please try again.",
   "signupDuplicateEntryError": "You've already signed up for this slot with this email or phone number.",
-  "signupSlotEntriesHeading": "Signed Up"
+  "signupUpcomingTab": "Upcoming",
+  "signupPastTab": "Past",
+  "signupEntriesHeading": "Entries",
+  "signupEntriesEmptyMessage": "No one has signed up yet",
+  "signupEntriesTitleColumn": "Title",
+  "signupEntriesAvailableSlotsColumn": "Available Slots",
+  "signupNoSlotsInTabMessage": "No slots here"
 }

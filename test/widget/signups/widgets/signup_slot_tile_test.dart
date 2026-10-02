@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_slot_tile.dart';
 
@@ -36,24 +35,9 @@ void main() {
     );
   }
 
-  SignupEntry buildEntry(String name) {
-    return SignupEntry(
-      id: name,
-      slotId: 'slot_1',
-      name: name,
-      joinedAt: DateTime.now(),
-    );
-  }
-
   testWidgets('renders the label and fill count', (tester) async {
     await tester.pumpWidget(
-      wrap(
-        SignupSlotTile(
-          slot: buildSlot(claimedCount: 1),
-          entries: const [],
-          onTap: () {},
-        ),
-      ),
+      wrap(SignupSlotTile(slot: buildSlot(claimedCount: 1), onTap: () {})),
     );
 
     expect(find.text('Week 1'), findsOneWidget);
@@ -65,7 +49,6 @@ void main() {
       wrap(
         SignupSlotTile(
           slot: buildSlot(date: DateTime(2026, 3, 15)),
-          entries: const [],
           onTap: () {},
         ),
       ),
@@ -76,7 +59,7 @@ void main() {
 
   testWidgets('shows nothing for the date when unset', (tester) async {
     await tester.pumpWidget(
-      wrap(SignupSlotTile(slot: buildSlot(), entries: const [], onTap: () {})),
+      wrap(SignupSlotTile(slot: buildSlot(), onTap: () {})),
     );
 
     expect(find.byIcon(Icons.calendar_today), findsNothing);
@@ -87,13 +70,7 @@ void main() {
   ) async {
     var tapped = false;
     await tester.pumpWidget(
-      wrap(
-        SignupSlotTile(
-          slot: buildSlot(),
-          entries: const [],
-          onTap: () => tapped = true,
-        ),
-      ),
+      wrap(SignupSlotTile(slot: buildSlot(), onTap: () => tapped = true)),
     );
 
     await tester.tap(find.byKey(const Key('signUpButton')));
@@ -109,7 +86,6 @@ void main() {
       wrap(
         SignupSlotTile(
           slot: buildSlot(capacity: 1, claimedCount: 1),
-          entries: const [],
           onTap: null,
         ),
       ),
@@ -126,42 +102,11 @@ void main() {
       wrap(
         SignupSlotTile(
           slot: buildSlot(labelEn: '', labelMr: 'आठवडा १'),
-          entries: const [],
           onTap: () {},
         ),
       ),
     );
 
     expect(find.text('आठवडा १'), findsOneWidget);
-  });
-
-  testWidgets('shows a message when no one has signed up yet', (tester) async {
-    await tester.pumpWidget(
-      wrap(SignupSlotTile(slot: buildSlot(), entries: const [], onTap: () {})),
-    );
-
-    expect(
-      find.text('No devotees have signed up for this slot yet'),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('lists the names of devotees already signed up', (tester) async {
-    await tester.pumpWidget(
-      wrap(
-        SignupSlotTile(
-          slot: buildSlot(claimedCount: 2),
-          entries: [buildEntry('Jane'), buildEntry('John')],
-          onTap: () {},
-        ),
-      ),
-    );
-
-    expect(find.text('Jane'), findsOneWidget);
-    expect(find.text('John'), findsOneWidget);
-    expect(
-      find.text('No devotees have signed up for this slot yet'),
-      findsNothing,
-    );
   });
 }

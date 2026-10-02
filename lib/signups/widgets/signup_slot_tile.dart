@@ -1,26 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 
-/// A single claimable slot card on [SignupSheetDetailScreen]: its date and
-/// live fill status, a Sign Up action (hidden once full), and the names of
-/// devotees already signed up - no contact details, unlike the admin's
-/// equivalent view, since this is visible to every devotee on the sheet.
+/// A single claimable slot card on [SignupSlotsScreen]: its date and live
+/// fill status, and a Sign Up action (hidden once full). Who's already
+/// signed up is shown separately, in the sheet's Entries table - not here.
 class SignupSlotTile extends StatelessWidget {
   final SignupSlot slot;
-  final List<SignupEntry> entries;
   final VoidCallback? onTap;
 
-  const SignupSlotTile({
-    super.key,
-    required this.slot,
-    required this.entries,
-    required this.onTap,
-  });
+  const SignupSlotTile({super.key, required this.slot, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -105,46 +97,6 @@ class SignupSlotTile extends StatelessWidget {
                     : theme.appColors.secondaryText,
               ),
             ),
-            const SizedBox(height: 12),
-            const Divider(height: 1),
-            const SizedBox(height: 8),
-            Text(
-              l10n.signupSlotEntriesHeading,
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.appColors.secondaryText,
-              ),
-            ),
-            const SizedBox(height: 4),
-            if (entries.isEmpty)
-              Text(
-                l10n.signupNoEntriesForSlot,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.appColors.secondaryText,
-                  fontStyle: FontStyle.italic,
-                ),
-              )
-            else
-              for (final entry in entries)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.person_outline,
-                        size: 14,
-                        color: theme.appColors.secondaryText,
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          entry.name,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
           ],
         ),
       ),
