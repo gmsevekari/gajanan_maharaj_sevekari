@@ -281,9 +281,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             adminUser.hasRole('signup_coordinator'))
                           _buildModuleCard(
                             context: context,
-                            title: localizations.signupSheetsListTitle,
-                            subtitle:
-                                localizations.adminSignupSheetsModuleSubtitle,
+                            title: localizations.signupsListTitle,
+                            subtitle: localizations.adminSignupsModuleSubtitle,
                             icon: Icons.assignment_ind_outlined,
                             color: theme.appColors.primarySwatch[600]!,
                             onTap: () {

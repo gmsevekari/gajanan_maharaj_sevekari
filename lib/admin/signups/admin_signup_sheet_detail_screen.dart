@@ -127,7 +127,7 @@ class _AdminSignupSheetDetailScreenState
         ? (sheet.titleMr.isNotEmpty ? sheet.titleMr : sheet.titleEn)
         : (sheet.titleEn.isNotEmpty ? sheet.titleEn : sheet.titleMr);
     final joinCodePart = sheet.requiresJoinCode && sheet.joinCode != null
-        ? '\n${l10n.signupSheetJoinCodePrefix}${sheet.joinCode}'
+        ? '\n${l10n.signupJoinCodePrefix}${sheet.joinCode}'
         : '';
     final codeQuery = sheet.requiresJoinCode && sheet.joinCode != null
         ? '?joinCode=${sheet.joinCode}'
@@ -136,7 +136,7 @@ class _AdminSignupSheetDetailScreenState
         'https://gajananmaharajsevekari.org/signup/${sheet.id}$codeQuery';
 
     final text =
-        '${l10n.signupSheetSharePrefix}: $title$joinCodePart\n\n${l10n.signupSheetShareLinkPrefix}: $url';
+        '${l10n.signupSharePrefix}: $title$joinCodePart\n\n${l10n.signupShareLinkPrefix}: $url';
 
     await SharePlus.instance.share(ShareParams(text: text));
   }
@@ -153,9 +153,7 @@ class _AdminSignupSheetDetailScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text(l10n.signupSheetDuplicateSuccess)),
-        );
+        ..showSnackBar(SnackBar(content: Text(l10n.signupDuplicateSuccess)));
       Navigator.pushReplacementNamed(
         context,
         Routes.adminSignupSheetDetail,
@@ -165,7 +163,7 @@ class _AdminSignupSheetDetailScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.signupSheetDuplicateError)));
+      ).showSnackBar(SnackBar(content: Text(l10n.signupDuplicateError)));
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
@@ -186,9 +184,7 @@ class _AdminSignupSheetDetailScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text(l10n.signupSheetStatusUpdateError)),
-        );
+        ..showSnackBar(SnackBar(content: Text(l10n.signupStatusUpdateError)));
     }
   }
 
@@ -211,14 +207,14 @@ class _AdminSignupSheetDetailScreenState
       await SharePlus.instance.share(
         ShareParams(
           files: [XFile(file.path)],
-          text: l10n.signupSheetExportSummaryTitle,
+          text: l10n.signupExportSummaryTitle,
         ),
       );
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(l10n.signupSheetExportFailed)));
+        ..showSnackBar(SnackBar(content: Text(l10n.signupExportFailed)));
     }
   }
 
@@ -246,28 +242,26 @@ class _AdminSignupSheetDetailScreenState
               ScaffoldMessenger.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
-                  SnackBar(content: Text(l10n.signupSheetEntryAddSuccess)),
+                  SnackBar(content: Text(l10n.signupEntryAddSuccess)),
                 );
             } else if (res['error'] == 'slot_full') {
               ScaffoldMessenger.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
-                  SnackBar(content: Text(l10n.signupSheetSlotFullError)),
+                  SnackBar(content: Text(l10n.signupSlotFullError)),
                 );
             } else {
               ScaffoldMessenger.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
-                  SnackBar(content: Text(l10n.signupSheetEntryAddError)),
+                  SnackBar(content: Text(l10n.signupEntryAddError)),
                 );
             }
           } catch (_) {
             if (!mounted) return;
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(content: Text(l10n.signupSheetEntryAddError)),
-              );
+              ..showSnackBar(SnackBar(content: Text(l10n.signupEntryAddError)));
           }
         },
       ),
@@ -299,14 +293,14 @@ class _AdminSignupSheetDetailScreenState
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
-                SnackBar(content: Text(l10n.signupSheetEntryEditSuccess)),
+                SnackBar(content: Text(l10n.signupEntryEditSuccess)),
               );
           } catch (_) {
             if (!mounted) return;
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
-                SnackBar(content: Text(l10n.signupSheetEntryEditError)),
+                SnackBar(content: Text(l10n.signupEntryEditError)),
               );
           }
         },
@@ -325,16 +319,12 @@ class _AdminSignupSheetDetailScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text(l10n.signupSheetEntryRemoveSuccess)),
-        );
+        ..showSnackBar(SnackBar(content: Text(l10n.signupEntryRemoveSuccess)));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text(l10n.signupSheetEntryRemoveError)),
-        );
+        ..showSnackBar(SnackBar(content: Text(l10n.signupEntryRemoveError)));
     }
   }
 
@@ -346,8 +336,8 @@ class _AdminSignupSheetDetailScreenState
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
-        title: Text(l10n.signupSheetRemoveEntryTitle),
-        content: Text(l10n.signupSheetRemoveEntryConfirm),
+        title: Text(l10n.signupRemoveEntryTitle),
+        content: Text(l10n.signupRemoveEntryConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogCtx).pop(),
@@ -381,9 +371,7 @@ class _AdminSignupSheetDetailScreenState
     if (bytes.length > SignupService.maxHeaderImageBytes) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text(l10n.signupSheetImageTooLargeError)),
-        );
+        ..showSnackBar(SnackBar(content: Text(l10n.signupImageTooLargeError)));
       return;
     }
 
@@ -403,9 +391,7 @@ class _AdminSignupSheetDetailScreenState
       if (mounted) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(content: Text(l10n.signupSheetImageUploadError)),
-          );
+          ..showSnackBar(SnackBar(content: Text(l10n.signupImageUploadError)));
       }
     } finally {
       if (mounted) {
@@ -422,9 +408,7 @@ class _AdminSignupSheetDetailScreenState
       if (mounted) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(content: Text(l10n.signupSheetImageRemoveError)),
-          );
+          ..showSnackBar(SnackBar(content: Text(l10n.signupImageRemoveError)));
       }
     } finally {
       if (mounted) {
@@ -437,8 +421,8 @@ class _AdminSignupSheetDetailScreenState
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
-        title: Text(l10n.signupSheetRemoveImageConfirmTitle),
-        content: Text(l10n.signupSheetRemoveImageConfirmMessage),
+        title: Text(l10n.signupRemoveImageConfirmTitle),
+        content: Text(l10n.signupRemoveImageConfirmMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogCtx).pop(),
@@ -477,7 +461,7 @@ class _AdminSignupSheetDetailScreenState
         : '';
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.adminSignupSheetDetailTitle)),
+      appBar: AppBar(title: Text(l10n.adminSignupDetailTitle)),
       body: StreamBuilder<SignupSheet?>(
         stream: _sheetStream,
         builder: (context, sheetSnapshot) {
@@ -489,7 +473,7 @@ class _AdminSignupSheetDetailScreenState
           if (sheet == null) {
             return Center(
               child: Text(
-                l10n.signupSheetNotFound,
+                l10n.signupNotFound,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.appColors.secondaryText,
                 ),
@@ -589,7 +573,7 @@ class _AdminSignupSheetDetailScreenState
                           ),
                           const SizedBox(height: 24),
                           Text(
-                            l10n.signupSheetSlotsSectionHeading,
+                            l10n.signupSlotsSectionHeading,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),

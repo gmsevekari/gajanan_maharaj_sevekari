@@ -1975,7 +1975,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please select a group to view Vaari events.';
 
   @override
-  String get noSignupSheetsGroupsSelectedMessage =>
+  String get noSignupsGroupsSelectedMessage =>
       'Please select a group to view Sign Ups.';
 
   @override
@@ -2060,7 +2060,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminSignupGroupTitle => 'Select Group for Sign Ups';
 
   @override
-  String get adminSignupSheetsModuleSubtitle => 'Create and manage sign ups';
+  String get adminSignupsModuleSubtitle => 'Create and manage sign ups';
 
   @override
   String get createVaariTitle => 'Create Vaari Event';
@@ -2224,348 +2224,341 @@ class AppLocalizationsEn extends AppLocalizations {
   String get andSeparator => ' & ';
 
   @override
-  String get adminCreateSignupSheetTitle => 'Create Sign Up';
+  String get adminCreateSignupTitle => 'Create Sign Up';
 
   @override
-  String get signupSheetTitleEnLabel => 'Title (English)';
+  String get signupTitleEnLabel => 'Title (English)';
 
   @override
-  String get signupSheetTitleEnRequired => 'Please enter English title';
+  String get signupTitleEnRequired => 'Please enter English title';
 
   @override
-  String get signupSheetTitleMrLabel => 'Title (Marathi, optional)';
+  String get signupTitleMrLabel => 'Title (Marathi, optional)';
 
   @override
-  String get signupSheetDescEnLabel => 'Description (English)';
+  String get signupDescEnLabel => 'Description (English)';
 
   @override
-  String get signupSheetDescMrLabel => 'Description (Marathi, optional)';
+  String get signupDescMrLabel => 'Description (Marathi, optional)';
 
   @override
-  String get signupSheetRequiresJoinCodeLabel =>
-      'Require a join code to sign up';
+  String get signupRequiresJoinCodeLabel => 'Require a join code to sign up';
 
   @override
-  String get signupSheetSlotsHeading => 'Slots';
+  String get signupSlotsHeading => 'Slots';
 
   @override
-  String get signupSheetAddSlotButton => 'Add Slot';
+  String get signupAddSlotButton => 'Add Slot';
 
   @override
-  String get signupSheetNoSlotsMessage =>
+  String get signupNoSlotsMessage =>
       'No slots yet. Tap \"Add Slot\" to create one.';
 
   @override
-  String get signupSheetSlotsRequiredError => 'Please add at least one slot';
+  String get signupSlotsRequiredError => 'Please add at least one slot';
 
   @override
-  String get signupSheetSlotHeading => 'Slot';
+  String get signupSlotHeading => 'Slot';
 
   @override
-  String get signupSheetSlotLabelEnLabel => 'Slot Label (English)';
+  String get signupSlotLabelEnLabel => 'Slot Label (English)';
 
   @override
-  String get signupSheetSlotLabelEnRequired => 'Please enter an English label';
+  String get signupSlotLabelEnRequired => 'Please enter an English label';
 
   @override
-  String get signupSheetSlotLabelMrLabel => 'Slot Label (Marathi, optional)';
+  String get signupSlotLabelMrLabel => 'Slot Label (Marathi, optional)';
 
   @override
-  String get signupSheetSlotCapacityLabel => 'Capacity';
+  String get signupSlotCapacityLabel => 'Capacity';
 
   @override
-  String get signupSheetSlotCapacityRequired => 'Please enter a capacity';
+  String get signupSlotCapacityRequired => 'Please enter a capacity';
 
   @override
-  String get signupSheetSlotCapacityInvalid =>
-      'Capacity must be a positive number';
+  String get signupSlotCapacityInvalid => 'Capacity must be a positive number';
 
   @override
-  String get signupSheetSlotSuggestedAmountLabel =>
-      'Suggested Amount (optional)';
+  String get signupSlotSuggestedAmountLabel => 'Suggested Amount (optional)';
 
   @override
-  String get signupSheetSlotSuggestedAmountInvalid =>
-      'Please enter a valid amount';
+  String get signupSlotSuggestedAmountInvalid => 'Please enter a valid amount';
 
   @override
-  String get signupSheetSlotSetDateLabel => 'Set Date';
+  String get signupSlotSetDateLabel => 'Set Date';
 
   @override
-  String get signupSheetSlotNoDateLabel => 'No date set';
+  String get signupSlotNoDateLabel => 'No date set';
 
   @override
-  String get signupSheetRemoveSlotTooltip => 'Remove slot';
+  String get signupRemoveSlotTooltip => 'Remove slot';
 
   @override
-  String get signupSheetMoveSlotUpTooltip => 'Move slot up';
+  String get signupMoveSlotUpTooltip => 'Move slot up';
 
   @override
-  String get signupSheetMoveSlotDownTooltip => 'Move slot down';
+  String get signupMoveSlotDownTooltip => 'Move slot down';
 
   @override
-  String get signupSheetSaveButton => 'Save';
+  String get signupSaveButton => 'Save';
 
   @override
-  String get signupSheetHeaderImageLabel => 'Header Image';
+  String get signupHeaderImageLabel => 'Header Image';
 
   @override
-  String get signupSheetAddImageButton => 'Add Image';
+  String get signupAddImageButton => 'Add Image';
 
   @override
-  String get signupSheetReplaceImageButton => 'Replace Image';
+  String get signupReplaceImageButton => 'Replace Image';
 
   @override
-  String get signupSheetRemoveImageButton => 'Remove Image';
+  String get signupRemoveImageButton => 'Remove Image';
 
   @override
-  String get signupSheetImageTooLargeError => 'Image must be smaller than 2 MB';
+  String get signupImageTooLargeError => 'Image must be smaller than 2 MB';
 
   @override
-  String get signupSheetImageUploadError =>
+  String get signupImageUploadError =>
       'Failed to upload image. Please try again.';
 
   @override
-  String get signupSheetUploadingImage => 'Please wait...';
+  String get signupUploadingImage => 'Please wait...';
 
   @override
-  String get signupSheetImageRemoveError =>
+  String get signupImageRemoveError =>
       'Failed to remove image. Please try again.';
 
   @override
-  String get signupSheetRemoveImageConfirmTitle => 'Remove Image?';
+  String get signupRemoveImageConfirmTitle => 'Remove Image?';
 
   @override
-  String get signupSheetRemoveImageConfirmMessage =>
+  String get signupRemoveImageConfirmMessage =>
       'Are you sure you want to remove the header image?';
 
   @override
-  String get signupSheetExportTagline =>
+  String get signupExportTagline =>
       '|| Anant Koti Brahmandanayak Gajanan Maharaj Ki Jai ||';
 
   @override
-  String get signupSheetCreateSuccess => 'Sign up created successfully';
+  String get signupCreateSuccess => 'Sign up created successfully';
 
   @override
-  String get signupSheetCreateError =>
-      'Failed to create sign up. Please try again.';
+  String get signupCreateError => 'Failed to create sign up. Please try again.';
 
   @override
-  String get adminSignupSheetsDashboardTitle => 'Sign Ups';
+  String get adminSignupsDashboardTitle => 'Sign Ups';
 
   @override
-  String get signupSheetStatusLabel => 'STATUS';
+  String get signupStatusLabel => 'STATUS';
 
   @override
-  String get signupSheetStatusAll => 'All';
+  String get signupStatusAll => 'All';
 
   @override
-  String get signupSheetStatusDraft => 'Draft';
+  String get signupStatusDraft => 'Draft';
 
   @override
-  String get signupSheetStatusPublished => 'Published';
+  String get signupStatusPublished => 'Published';
 
   @override
-  String get signupSheetStatusClosed => 'Closed';
+  String get signupStatusClosed => 'Closed';
 
   @override
-  String get signupSheetNoSheetsFound => 'No sign ups found';
+  String get signupNoSignupsFound => 'No sign ups found';
 
   @override
-  String get signupSheetNoGroupAssigned => 'No group assigned to admin';
+  String get signupNoGroupAssigned => 'No group assigned to admin';
 
   @override
-  String get adminSignupSheetsError =>
-      'Failed to load sign ups. Please try again.';
+  String get adminSignupsError => 'Failed to load sign ups. Please try again.';
 
   @override
-  String get signupSheetCreateTooltip => 'Create Sign Up';
+  String get signupCreateTooltip => 'Create Sign Up';
 
   @override
-  String get signupSheetRequiresJoinCodeBadge => 'Join Code Required';
+  String get signupRequiresJoinCodeBadge => 'Join Code Required';
 
   @override
-  String get signupSheetJoinCodePrefix => 'Join Code: ';
+  String get signupJoinCodePrefix => 'Join Code: ';
 
   @override
-  String get adminSignupSheetDetailTitle => 'Sign Up Details';
+  String get adminSignupDetailTitle => 'Sign Up Details';
 
   @override
-  String get signupSheetDuplicateButton => 'Duplicate';
+  String get signupDuplicateButton => 'Duplicate';
 
   @override
-  String get signupSheetDuplicating => 'Duplicating sign up...';
+  String get signupDuplicating => 'Duplicating sign up...';
 
   @override
-  String get signupSheetDuplicateSuccess => 'Sign up duplicated successfully';
+  String get signupDuplicateSuccess => 'Sign up duplicated successfully';
 
   @override
-  String get signupSheetDuplicateError => 'Failed to duplicate sign up';
+  String get signupDuplicateError => 'Failed to duplicate sign up';
 
   @override
-  String get signupSheetShareButton => 'Share';
+  String get signupShareButton => 'Share';
 
   @override
-  String get signupSheetExportButton => 'Export Summary';
+  String get signupExportButton => 'Export Summary';
 
   @override
-  String get signupSheetExporting => 'Generating summary image...';
+  String get signupExporting => 'Generating summary image...';
 
   @override
-  String get signupSheetSharePrefix => 'Sign Up';
+  String get signupSharePrefix => 'Sign Up';
 
   @override
-  String get signupSheetShareLinkPrefix => 'Sign up link';
+  String get signupShareLinkPrefix => 'Sign up link';
 
   @override
-  String get signupSheetStatusUpdateError => 'Failed to update status';
+  String get signupStatusUpdateError => 'Failed to update status';
 
   @override
-  String get signupSheetCopyJoinCodeTooltip => 'Copy Join Code';
+  String get signupCopyJoinCodeTooltip => 'Copy Join Code';
 
   @override
-  String get signupSheetDateRange => 'Date Range';
+  String get signupDateRange => 'Date Range';
 
   @override
-  String get signupSheetSlotsSectionHeading => 'Slots & Entries';
+  String get signupSlotsSectionHeading => 'Slots & Entries';
 
   @override
-  String get signupSheetAddEntryButton => 'Add Devotee';
+  String get signupAddEntryButton => 'Add Devotee';
 
   @override
-  String get signupSheetEditEntryTitle => 'Edit Entry';
+  String get signupEditEntryTitle => 'Edit Entry';
 
   @override
-  String get signupSheetAddEntryTitle => 'Add Devotee Entry';
+  String get signupAddEntryTitle => 'Add Devotee Entry';
 
   @override
-  String get signupSheetEntryNameLabel => 'Name';
+  String get signupEntryNameLabel => 'Name';
 
   @override
-  String get signupSheetEntryNameRequired => 'Please enter a name';
+  String get signupEntryNameRequired => 'Please enter a name';
 
   @override
-  String get signupSheetEntryPhoneLabel => 'Phone';
+  String get signupEntryPhoneLabel => 'Phone';
 
   @override
-  String get signupSheetEntryEmailLabel => 'Email';
+  String get signupEntryEmailLabel => 'Email';
 
   @override
-  String get signupSheetEntryNoteLabel => 'Note';
+  String get signupEntryNoteLabel => 'Note';
 
   @override
-  String get signupSheetEntryPledgeLabel => 'Pledge Amount';
+  String get signupEntryPledgeLabel => 'Pledge Amount';
 
   @override
-  String get signupSheetRemoveEntryTitle => 'Remove Entry';
+  String get signupRemoveEntryTitle => 'Remove Entry';
 
   @override
-  String get signupSheetRemoveEntryConfirm =>
+  String get signupRemoveEntryConfirm =>
       'Are you sure you want to remove this entry?';
 
   @override
-  String get signupSheetEntryRemoveSuccess => 'Entry removed successfully';
+  String get signupEntryRemoveSuccess => 'Entry removed successfully';
 
   @override
-  String get signupSheetEntryRemoveError => 'Failed to remove entry';
+  String get signupEntryRemoveError => 'Failed to remove entry';
 
   @override
-  String get signupSheetEntryAddSuccess => 'Devotee added successfully';
+  String get signupEntryAddSuccess => 'Devotee added successfully';
 
   @override
-  String get signupSheetEntryAddError => 'Failed to add devotee';
+  String get signupEntryAddError => 'Failed to add devotee';
 
   @override
-  String get signupSheetEntryEditSuccess => 'Entry updated successfully';
+  String get signupEntryEditSuccess => 'Entry updated successfully';
 
   @override
-  String get signupSheetEntryEditError => 'Failed to update entry';
+  String get signupEntryEditError => 'Failed to update entry';
 
   @override
-  String get signupSheetSlotFullError => 'This slot is already full';
+  String get signupSlotFullError => 'This slot is already full';
 
   @override
-  String get signupSheetSlotFullBadge => 'Full';
+  String get signupSlotFullBadge => 'Full';
 
   @override
-  String signupSheetSlotClaimedCount(String claimed, String capacity) {
+  String signupSlotClaimedCount(String claimed, String capacity) {
     return '$claimed of $capacity claimed';
   }
 
   @override
-  String signupSheetSuggestedAmountFormat(String amount) {
+  String signupSuggestedAmountFormat(String amount) {
     return 'Suggested: $amount';
   }
 
   @override
-  String get signupSheetNoEntriesForSlot =>
+  String get signupNoEntriesForSlot =>
       'No devotees have signed up for this slot yet';
 
   @override
-  String get signupSheetExportSummaryTitle => 'Sign Up Summary';
+  String get signupExportSummaryTitle => 'Sign Up Summary';
 
   @override
-  String get signupSheetTotalSlotsLabel => 'Total Slots';
+  String get signupTotalSlotsLabel => 'Total Slots';
 
   @override
-  String get signupSheetTotalClaimsLabel => 'Total Signups';
+  String get signupTotalClaimsLabel => 'Total Signups';
 
   @override
-  String get signupSheetFillPercentageLabel => 'Filled';
+  String get signupFillPercentageLabel => 'Filled';
 
   @override
-  String get signupSheetExportFailed => 'Failed to export image';
+  String get signupExportFailed => 'Failed to export image';
 
   @override
-  String get signupSheetNotFound => 'Sign up not found';
+  String get signupNotFound => 'Sign up not found';
 
   @override
-  String get signupSheetsListTitle => 'Sign Ups';
+  String get signupsListTitle => 'Sign Ups';
 
   @override
-  String get signupSheetInvalidGroupError => 'Invalid group';
+  String get signupInvalidGroupError => 'Invalid group';
 
   @override
-  String get signupSheetNoActiveSheets => 'No active sign ups';
+  String get signupNoActiveSignups => 'No active sign ups';
 
   @override
-  String get signupSheetMySignupsHeading => 'My Signups';
+  String get signupMySignupsHeading => 'My Signups';
 
   @override
-  String get signupSheetNoMySignups =>
-      'You haven\'t signed up for anything yet';
+  String get signupNoMySignups => 'You haven\'t signed up for anything yet';
 
   @override
-  String get signupSheetCancelSignupButton => 'Cancel';
+  String get signupCancelSignupButton => 'Cancel';
 
   @override
-  String get signupSheetCancelSignupConfirmTitle => 'Cancel Signup?';
+  String get signupCancelSignupConfirmTitle => 'Cancel Signup?';
 
   @override
-  String get signupSheetCancelSignupConfirmMessage =>
+  String get signupCancelSignupConfirmMessage =>
       'Are you sure you want to cancel this signup?';
 
   @override
-  String get signupSheetCancelSignupSuccess => 'Signup cancelled';
+  String get signupCancelSignupSuccess => 'Signup cancelled';
 
   @override
-  String get signupSheetCancelSignupError =>
+  String get signupCancelSignupError =>
       'Failed to cancel signup. Please try again.';
 
   @override
-  String get signupSheetClaimSlotTitle => 'Claim Slot';
+  String get signupClaimSlotTitle => 'Claim Slot';
 
   @override
-  String get signupSheetClaimConfirmTitle => 'Confirm Signup';
+  String get signupClaimConfirmTitle => 'Confirm Signup';
 
   @override
-  String get signupSheetClaimConfirmQuestion => 'Submit this signup?';
+  String get signupClaimConfirmQuestion => 'Submit this signup?';
 
   @override
-  String get signupSheetClaimSuccess => 'You\'re signed up!';
+  String get signupClaimSuccess => 'You\'re signed up!';
 
   @override
-  String get signupSheetClaimError => 'Failed to claim slot. Please try again.';
+  String get signupClaimError => 'Failed to claim slot. Please try again.';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

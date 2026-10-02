@@ -32,7 +32,7 @@ class SignupSheetHeaderImageCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              l10n.signupSheetHeaderImageLabel,
+              l10n.signupHeaderImageLabel,
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -44,7 +44,7 @@ class SignupSheetHeaderImageCard extends StatelessWidget {
                   height: 150,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  semanticLabel: l10n.signupSheetHeaderImageLabel,
+                  semanticLabel: l10n.signupHeaderImageLabel,
                   errorBuilder: (context, error, stackTrace) => Container(
                     height: 150,
                     width: double.infinity,
@@ -72,7 +72,7 @@ class SignupSheetHeaderImageCard extends StatelessWidget {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                       const SizedBox(width: 12),
-                      Text(l10n.signupSheetUploadingImage),
+                      Text(l10n.signupUploadingImage),
                     ],
                   ),
                 ),
@@ -85,8 +85,8 @@ class SignupSheetHeaderImageCard extends StatelessWidget {
                     icon: const Icon(Icons.image_outlined),
                     label: Text(
                       hasImage
-                          ? l10n.signupSheetReplaceImageButton
-                          : l10n.signupSheetAddImageButton,
+                          ? l10n.signupReplaceImageButton
+                          : l10n.signupAddImageButton,
                     ),
                     onPressed: onPickImage,
                   ),
@@ -95,7 +95,7 @@ class SignupSheetHeaderImageCard extends StatelessWidget {
                     TextButton.icon(
                       key: const Key('removeHeaderImageButton'),
                       icon: const Icon(Icons.delete_outline),
-                      label: Text(l10n.signupSheetRemoveImageButton),
+                      label: Text(l10n.signupRemoveImageButton),
                       style: TextButton.styleFrom(
                         foregroundColor: theme.colorScheme.error,
                       ),

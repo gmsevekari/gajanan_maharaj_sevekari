@@ -69,7 +69,7 @@ class _AdminSignupSheetsDashboardState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.adminSignupSheetsDashboardTitle),
+        title: Text(localizations.adminSignupsDashboardTitle),
         actions: [
           IconButton(
             icon: const ThemedIcon(LogicalIcon.home),
@@ -83,7 +83,7 @@ class _AdminSignupSheetsDashboardState
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        tooltip: localizations.signupSheetCreateTooltip,
+        tooltip: localizations.signupCreateTooltip,
         onPressed: () => Navigator.pushNamed(
           context,
           Routes.adminCreateSignupSheet,
@@ -97,7 +97,7 @@ class _AdminSignupSheetsDashboardState
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Text(
-                  localizations.signupSheetNoGroupAssigned,
+                  localizations.signupNoGroupAssigned,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.appColors.secondaryText,
                   ),
@@ -126,7 +126,7 @@ class _AdminSignupSheetsDashboardState
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            localizations.adminSignupSheetsError,
+                            localizations.adminSignupsError,
                             style: theme.textTheme.titleMedium,
                             textAlign: TextAlign.center,
                           ),
@@ -150,7 +150,7 @@ class _AdminSignupSheetsDashboardState
                       child: filteredSheets.isEmpty
                           ? Center(
                               child: Text(
-                                localizations.signupSheetNoSheetsFound,
+                                localizations.signupNoSignupsFound,
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: theme.appColors.secondaryText,
                                 ),
@@ -186,7 +186,7 @@ class _AdminSignupSheetsDashboardState
       child: Row(
         children: [
           ChoiceChip(
-            label: Text(localizations.signupSheetStatusAll),
+            label: Text(localizations.signupStatusAll),
             selected: _selectedStatus == null,
             onSelected: (selected) {
               if (selected) setState(() => _selectedStatus = null);
@@ -194,7 +194,7 @@ class _AdminSignupSheetsDashboardState
           ),
           const SizedBox(width: 8),
           ChoiceChip(
-            label: Text(localizations.signupSheetStatusDraft),
+            label: Text(localizations.signupStatusDraft),
             selected: _selectedStatus == SignupSheetStatus.draft,
             onSelected: (selected) {
               if (selected) {
@@ -204,7 +204,7 @@ class _AdminSignupSheetsDashboardState
           ),
           const SizedBox(width: 8),
           ChoiceChip(
-            label: Text(localizations.signupSheetStatusPublished),
+            label: Text(localizations.signupStatusPublished),
             selected: _selectedStatus == SignupSheetStatus.published,
             onSelected: (selected) {
               if (selected) {
@@ -214,7 +214,7 @@ class _AdminSignupSheetsDashboardState
           ),
           const SizedBox(width: 8),
           ChoiceChip(
-            label: Text(localizations.signupSheetStatusClosed),
+            label: Text(localizations.signupStatusClosed),
             selected: _selectedStatus == SignupSheetStatus.closed,
             onSelected: (selected) {
               if (selected) {
@@ -297,7 +297,7 @@ class _AdminSignupSheetsDashboardState
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${localizations.signupSheetJoinCodePrefix}${sheet.joinCode}',
+                      '${localizations.signupJoinCodePrefix}${sheet.joinCode}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.appColors.brandAccent,
                         fontWeight: FontWeight.w600,
@@ -320,15 +320,15 @@ class _AdminSignupSheetsDashboardState
   ) {
     final (String label, Color color) = switch (status) {
       SignupSheetStatus.draft => (
-        localizations.signupSheetStatusDraft,
+        localizations.signupStatusDraft,
         theme.appColors.warning,
       ),
       SignupSheetStatus.published => (
-        localizations.signupSheetStatusPublished,
+        localizations.signupStatusPublished,
         theme.appColors.success,
       ),
       SignupSheetStatus.closed => (
-        localizations.signupSheetStatusClosed,
+        localizations.signupStatusClosed,
         theme.appColors.secondaryText,
       ),
     };

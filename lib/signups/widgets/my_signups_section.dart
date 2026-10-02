@@ -24,7 +24,7 @@ class MySignupsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          l10n.signupSheetMySignupsHeading,
+          l10n.signupMySignupsHeading,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -34,7 +34,7 @@ class MySignupsSection extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
-              l10n.signupSheetNoMySignups,
+              l10n.signupNoMySignups,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.appColors.secondaryText,
                 fontStyle: FontStyle.italic,
@@ -49,7 +49,7 @@ class MySignupsSection extends StatelessWidget {
                 title: Text(entry.name),
                 trailing: TextButton(
                   onPressed: () => onCancelEntry(entry),
-                  child: Text(l10n.signupSheetCancelSignupButton),
+                  child: Text(l10n.signupCancelSignupButton),
                 ),
               ),
             ),

@@ -83,7 +83,7 @@ class AdminSlotEntriesSection extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      l10n.signupSheetSlotFullBadge,
+                      l10n.signupSlotFullBadge,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: theme.appColors.error,
                         fontWeight: FontWeight.bold,
@@ -129,7 +129,7 @@ class AdminSlotEntriesSection extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          l10n.signupSheetSuggestedAmountFormat(
+                          l10n.signupSuggestedAmountFormat(
                             slot.suggestedAmount.toString(),
                           ),
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -149,7 +149,7 @@ class AdminSlotEntriesSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  l10n.signupSheetSlotClaimedCount(claimedStr, capacityStr),
+                  l10n.signupSlotClaimedCount(claimedStr, capacityStr),
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: isFull
@@ -191,7 +191,7 @@ class AdminSlotEntriesSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${l10n.signupSheetSlotsHeading} (${entries.length})',
+                  '${l10n.signupSlotsHeading} (${entries.length})',
                   style: theme.textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.appColors.secondaryText,
@@ -199,7 +199,7 @@ class AdminSlotEntriesSection extends StatelessWidget {
                 ),
                 OutlinedButton.icon(
                   icon: const Icon(Icons.person_add_alt_1, size: 16),
-                  label: Text(l10n.signupSheetAddEntryButton),
+                  label: Text(l10n.signupAddEntryButton),
                   onPressed: () => onAddEntry(slot),
                   style: OutlinedButton.styleFrom(
                     visualDensity: VisualDensity.compact,
@@ -215,7 +215,7 @@ class AdminSlotEntriesSection extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
-                  l10n.signupSheetNoEntriesForSlot,
+                  l10n.signupNoEntriesForSlot,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.appColors.secondaryText,
                     fontStyle: FontStyle.italic,
@@ -257,7 +257,7 @@ class AdminSlotEntriesSection extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.edit_outlined, size: 18),
-                tooltip: l10n.signupSheetEditEntryTitle,
+                tooltip: l10n.signupEditEntryTitle,
                 visualDensity: VisualDensity.compact,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
@@ -270,7 +270,7 @@ class AdminSlotEntriesSection extends StatelessWidget {
                   size: 18,
                   color: theme.colorScheme.error,
                 ),
-                tooltip: l10n.signupSheetRemoveEntryTitle,
+                tooltip: l10n.signupRemoveEntryTitle,
                 visualDensity: VisualDensity.compact,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),

@@ -150,15 +150,15 @@ class SignupSheetExportCard extends StatelessWidget {
             Row(
               children: [
                 _buildStatItem(
-                  label: l10n.signupSheetTotalSlotsLabel,
+                  label: l10n.signupTotalSlotsLabel,
                   value: totalSlotsStr,
                 ),
                 _buildStatItem(
-                  label: l10n.signupSheetTotalClaimsLabel,
+                  label: l10n.signupTotalClaimsLabel,
                   value: '$totalClaimsStr / $totalCapacityStr',
                 ),
                 _buildStatItem(
-                  label: l10n.signupSheetFillPercentageLabel,
+                  label: l10n.signupFillPercentageLabel,
                   value: percentStr,
                 ),
               ],
@@ -206,7 +206,7 @@ class SignupSheetExportCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          l10n.signupSheetSlotClaimedCount(claimed, cap),
+                          l10n.signupSlotClaimedCount(claimed, cap),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.appColors.secondaryText,
                             fontSize: 11,
@@ -237,7 +237,7 @@ class SignupSheetExportCard extends StatelessWidget {
 
             const SizedBox(height: 12),
             Text(
-              l10n.signupSheetExportTagline,
+              l10n.signupExportTagline,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.appColors.secondaryText,
                 fontStyle: FontStyle.italic,

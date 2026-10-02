@@ -25,14 +25,14 @@ class SignupSlotTile extends StatelessWidget {
         onTap: onTap,
         title: Text(label),
         subtitle: Text(
-          l10n.signupSheetSlotClaimedCount(
+          l10n.signupSlotClaimedCount(
             slot.claimedCount.toString(),
             slot.capacity.toString(),
           ),
         ),
         trailing: isFull
             ? Text(
-                l10n.signupSheetSlotFullBadge,
+                l10n.signupSlotFullBadge,
                 style: TextStyle(
                   color: theme.appColors.error,
                   fontWeight: FontWeight.bold,

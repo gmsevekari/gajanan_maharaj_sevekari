@@ -39,7 +39,7 @@ class _SignupSheetStatusSectionState extends State<SignupSheetStatusSection> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  l10n.signupSheetStatusLabel,
+                  l10n.signupStatusLabel,
                   style: theme.textTheme.labelSmall?.copyWith(
                     letterSpacing: 1.2,
                     fontWeight: FontWeight.bold,
@@ -70,15 +70,15 @@ class _SignupSheetStatusSectionState extends State<SignupSheetStatusSection> {
                     segments: [
                       ButtonSegment(
                         value: SignupSheetStatus.draft,
-                        label: Text(l10n.signupSheetStatusDraft),
+                        label: Text(l10n.signupStatusDraft),
                       ),
                       ButtonSegment(
                         value: SignupSheetStatus.published,
-                        label: Text(l10n.signupSheetStatusPublished),
+                        label: Text(l10n.signupStatusPublished),
                       ),
                       ButtonSegment(
                         value: SignupSheetStatus.closed,
-                        label: Text(l10n.signupSheetStatusClosed),
+                        label: Text(l10n.signupStatusClosed),
                       ),
                     ],
                     selected: {widget.currentStatus},

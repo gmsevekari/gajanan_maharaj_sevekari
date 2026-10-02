@@ -1980,7 +1980,7 @@ class AppLocalizationsMr extends AppLocalizations {
       'वारी पाहण्यासाठी कृपया एक ग्रुप निवडा.';
 
   @override
-  String get noSignupSheetsGroupsSelectedMessage =>
+  String get noSignupsGroupsSelectedMessage =>
       'साइन अप्स पाहण्यासाठी कृपया एक ग्रुप निवडा.';
 
   @override
@@ -2065,7 +2065,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get adminSignupGroupTitle => 'साइन अप्ससाठी गट निवडा';
 
   @override
-  String get adminSignupSheetsModuleSubtitle =>
+  String get adminSignupsModuleSubtitle =>
       'साइन अप्स तयार करा आणि व्यवस्थापित करा';
 
   @override
@@ -2233,348 +2233,344 @@ class AppLocalizationsMr extends AppLocalizations {
   String get andSeparator => ' आणि ';
 
   @override
-  String get adminCreateSignupSheetTitle => 'साइन अप तयार करा';
+  String get adminCreateSignupTitle => 'साइन अप तयार करा';
 
   @override
-  String get signupSheetTitleEnLabel => 'शीर्षक (इंग्रजी)';
+  String get signupTitleEnLabel => 'शीर्षक (इंग्रजी)';
 
   @override
-  String get signupSheetTitleEnRequired => 'कृपया इंग्रजी शीर्षक एंटर करा';
+  String get signupTitleEnRequired => 'कृपया इंग्रजी शीर्षक एंटर करा';
 
   @override
-  String get signupSheetTitleMrLabel => 'शीर्षक (मराठी, ऐच्छिक)';
+  String get signupTitleMrLabel => 'शीर्षक (मराठी, ऐच्छिक)';
 
   @override
-  String get signupSheetDescEnLabel => 'वर्णन (इंग्रजी)';
+  String get signupDescEnLabel => 'वर्णन (इंग्रजी)';
 
   @override
-  String get signupSheetDescMrLabel => 'वर्णन (मराठी, ऐच्छिक)';
+  String get signupDescMrLabel => 'वर्णन (मराठी, ऐच्छिक)';
 
   @override
-  String get signupSheetRequiresJoinCodeLabel =>
+  String get signupRequiresJoinCodeLabel =>
       'साइन अप करण्यासाठी जॉईन कोड आवश्यक करा';
 
   @override
-  String get signupSheetSlotsHeading => 'स्लॉट्स';
+  String get signupSlotsHeading => 'स्लॉट्स';
 
   @override
-  String get signupSheetAddSlotButton => 'स्लॉट जोडा';
+  String get signupAddSlotButton => 'स्लॉट जोडा';
 
   @override
-  String get signupSheetNoSlotsMessage =>
+  String get signupNoSlotsMessage =>
       'अजून स्लॉट्स नाहीत. एक तयार करण्यासाठी \"स्लॉट जोडा\" दाबा.';
 
   @override
-  String get signupSheetSlotsRequiredError => 'कृपया किमान एक स्लॉट जोडा';
+  String get signupSlotsRequiredError => 'कृपया किमान एक स्लॉट जोडा';
 
   @override
-  String get signupSheetSlotHeading => 'स्लॉट';
+  String get signupSlotHeading => 'स्लॉट';
 
   @override
-  String get signupSheetSlotLabelEnLabel => 'स्लॉट लेबल (इंग्रजी)';
+  String get signupSlotLabelEnLabel => 'स्लॉट लेबल (इंग्रजी)';
 
   @override
-  String get signupSheetSlotLabelEnRequired => 'कृपया इंग्रजी लेबल एंटर करा';
+  String get signupSlotLabelEnRequired => 'कृपया इंग्रजी लेबल एंटर करा';
 
   @override
-  String get signupSheetSlotLabelMrLabel => 'स्लॉट लेबल (मराठी, ऐच्छिक)';
+  String get signupSlotLabelMrLabel => 'स्लॉट लेबल (मराठी, ऐच्छिक)';
 
   @override
-  String get signupSheetSlotCapacityLabel => 'क्षमता';
+  String get signupSlotCapacityLabel => 'क्षमता';
 
   @override
-  String get signupSheetSlotCapacityRequired => 'कृपया क्षमता एंटर करा';
+  String get signupSlotCapacityRequired => 'कृपया क्षमता एंटर करा';
 
   @override
-  String get signupSheetSlotCapacityInvalid =>
-      'क्षमता ही सकारात्मक संख्या असावी';
+  String get signupSlotCapacityInvalid => 'क्षमता ही सकारात्मक संख्या असावी';
 
   @override
-  String get signupSheetSlotSuggestedAmountLabel => 'सुचवलेली रक्कम (ऐच्छिक)';
+  String get signupSlotSuggestedAmountLabel => 'सुचवलेली रक्कम (ऐच्छिक)';
 
   @override
-  String get signupSheetSlotSuggestedAmountInvalid =>
-      'कृपया वैध रक्कम एंटर करा';
+  String get signupSlotSuggestedAmountInvalid => 'कृपया वैध रक्कम एंटर करा';
 
   @override
-  String get signupSheetSlotSetDateLabel => 'तारीख सेट करा';
+  String get signupSlotSetDateLabel => 'तारीख सेट करा';
 
   @override
-  String get signupSheetSlotNoDateLabel => 'तारीख सेट केलेली नाही';
+  String get signupSlotNoDateLabel => 'तारीख सेट केलेली नाही';
 
   @override
-  String get signupSheetRemoveSlotTooltip => 'स्लॉट काढा';
+  String get signupRemoveSlotTooltip => 'स्लॉट काढा';
 
   @override
-  String get signupSheetMoveSlotUpTooltip => 'स्लॉट वर हलवा';
+  String get signupMoveSlotUpTooltip => 'स्लॉट वर हलवा';
 
   @override
-  String get signupSheetMoveSlotDownTooltip => 'स्लॉट खाली हलवा';
+  String get signupMoveSlotDownTooltip => 'स्लॉट खाली हलवा';
 
   @override
-  String get signupSheetSaveButton => 'जतन करा';
+  String get signupSaveButton => 'जतन करा';
 
   @override
-  String get signupSheetHeaderImageLabel => 'हेडर इमेज';
+  String get signupHeaderImageLabel => 'हेडर इमेज';
 
   @override
-  String get signupSheetAddImageButton => 'इमेज जोडा';
+  String get signupAddImageButton => 'इमेज जोडा';
 
   @override
-  String get signupSheetReplaceImageButton => 'इमेज बदला';
+  String get signupReplaceImageButton => 'इमेज बदला';
 
   @override
-  String get signupSheetRemoveImageButton => 'इमेज काढा';
+  String get signupRemoveImageButton => 'इमेज काढा';
 
   @override
-  String get signupSheetImageTooLargeError => 'इमेज 2 MB पेक्षा लहान असावी';
+  String get signupImageTooLargeError => 'इमेज 2 MB पेक्षा लहान असावी';
 
   @override
-  String get signupSheetImageUploadError =>
+  String get signupImageUploadError =>
       'इमेज अपलोड करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get signupSheetUploadingImage => 'कृपया थांबा...';
+  String get signupUploadingImage => 'कृपया थांबा...';
 
   @override
-  String get signupSheetImageRemoveError =>
+  String get signupImageRemoveError =>
       'इमेज काढण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get signupSheetRemoveImageConfirmTitle => 'इमेज काढायची आहे का?';
+  String get signupRemoveImageConfirmTitle => 'इमेज काढायची आहे का?';
 
   @override
-  String get signupSheetRemoveImageConfirmMessage =>
+  String get signupRemoveImageConfirmMessage =>
       'तुम्हाला खात्री आहे की तुम्ही हेडर इमेज काढू इच्छिता?';
 
   @override
-  String get signupSheetExportTagline =>
+  String get signupExportTagline =>
       '॥ अनंत कोटी ब्रह्मांडनायक गजानन महाराज की जय ॥';
 
   @override
-  String get signupSheetCreateSuccess => 'साइन अप यशस्वीरित्या तयार झाले';
+  String get signupCreateSuccess => 'साइन अप यशस्वीरित्या तयार झाले';
 
   @override
-  String get signupSheetCreateError =>
+  String get signupCreateError =>
       'साइन अप तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get adminSignupSheetsDashboardTitle => 'साइन अप्स';
+  String get adminSignupsDashboardTitle => 'साइन अप्स';
 
   @override
-  String get signupSheetStatusLabel => 'स्थिती';
+  String get signupStatusLabel => 'स्थिती';
 
   @override
-  String get signupSheetStatusAll => 'सर्व';
+  String get signupStatusAll => 'सर्व';
 
   @override
-  String get signupSheetStatusDraft => 'मसुदा';
+  String get signupStatusDraft => 'मसुदा';
 
   @override
-  String get signupSheetStatusPublished => 'प्रकाशित';
+  String get signupStatusPublished => 'प्रकाशित';
 
   @override
-  String get signupSheetStatusClosed => 'बंद';
+  String get signupStatusClosed => 'बंद';
 
   @override
-  String get signupSheetNoSheetsFound => 'कोणतेही साइन अप सापडले नाही';
+  String get signupNoSignupsFound => 'कोणतेही साइन अप सापडले नाही';
 
   @override
-  String get signupSheetNoGroupAssigned =>
+  String get signupNoGroupAssigned =>
       'प्रशासकासाठी कोणताही गट नियुक्त केलेला नाही';
 
   @override
-  String get adminSignupSheetsError =>
+  String get adminSignupsError =>
       'साइन अप्स लोड करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get signupSheetCreateTooltip => 'साइन अप तयार करा';
+  String get signupCreateTooltip => 'साइन अप तयार करा';
 
   @override
-  String get signupSheetRequiresJoinCodeBadge => 'जॉईन कोड आवश्यक';
+  String get signupRequiresJoinCodeBadge => 'जॉईन कोड आवश्यक';
 
   @override
-  String get signupSheetJoinCodePrefix => 'जॉईन कोड: ';
+  String get signupJoinCodePrefix => 'जॉईन कोड: ';
 
   @override
-  String get adminSignupSheetDetailTitle => 'साइन अप तपशील';
+  String get adminSignupDetailTitle => 'साइन अप तपशील';
 
   @override
-  String get signupSheetDuplicateButton => 'प्रत तयार करा';
+  String get signupDuplicateButton => 'प्रत तयार करा';
 
   @override
-  String get signupSheetDuplicating => 'साइन अपची प्रत तयार करत आहे...';
+  String get signupDuplicating => 'साइन अपची प्रत तयार करत आहे...';
 
   @override
-  String get signupSheetDuplicateSuccess =>
-      'साइन अपची प्रत यशस्वीरित्या तयार झाली';
+  String get signupDuplicateSuccess => 'साइन अपची प्रत यशस्वीरित्या तयार झाली';
 
   @override
-  String get signupSheetDuplicateError => 'साइन अपची प्रत तयार करण्यात अयशस्वी';
+  String get signupDuplicateError => 'साइन अपची प्रत तयार करण्यात अयशस्वी';
 
   @override
-  String get signupSheetShareButton => 'शेअर करा';
+  String get signupShareButton => 'शेअर करा';
 
   @override
-  String get signupSheetExportButton => 'सारांश निर्यात करा';
+  String get signupExportButton => 'सारांश निर्यात करा';
 
   @override
-  String get signupSheetExporting => 'सारांश प्रतिमा तयार करत आहे...';
+  String get signupExporting => 'सारांश प्रतिमा तयार करत आहे...';
 
   @override
-  String get signupSheetSharePrefix => 'साइन अप';
+  String get signupSharePrefix => 'साइन अप';
 
   @override
-  String get signupSheetShareLinkPrefix => 'साइन अप लिंक';
+  String get signupShareLinkPrefix => 'साइन अप लिंक';
 
   @override
-  String get signupSheetStatusUpdateError => 'स्थिती अपडेट करण्यात अयशस्वी';
+  String get signupStatusUpdateError => 'स्थिती अपडेट करण्यात अयशस्वी';
 
   @override
-  String get signupSheetCopyJoinCodeTooltip => 'जॉईन कोड कॉपी करा';
+  String get signupCopyJoinCodeTooltip => 'जॉईन कोड कॉपी करा';
 
   @override
-  String get signupSheetDateRange => 'तारीख श्रेणी';
+  String get signupDateRange => 'तारीख श्रेणी';
 
   @override
-  String get signupSheetSlotsSectionHeading => 'स्लॉट्स आणि नोंदी';
+  String get signupSlotsSectionHeading => 'स्लॉट्स आणि नोंदी';
 
   @override
-  String get signupSheetAddEntryButton => 'भाविक जोडा';
+  String get signupAddEntryButton => 'भाविक जोडा';
 
   @override
-  String get signupSheetEditEntryTitle => 'नोंद संपादित करा';
+  String get signupEditEntryTitle => 'नोंद संपादित करा';
 
   @override
-  String get signupSheetAddEntryTitle => 'भाविकाची नोंद जोडा';
+  String get signupAddEntryTitle => 'भाविकाची नोंद जोडा';
 
   @override
-  String get signupSheetEntryNameLabel => 'नाव';
+  String get signupEntryNameLabel => 'नाव';
 
   @override
-  String get signupSheetEntryNameRequired => 'कृपया नाव प्रविष्ट करा';
+  String get signupEntryNameRequired => 'कृपया नाव प्रविष्ट करा';
 
   @override
-  String get signupSheetEntryPhoneLabel => 'फोन';
+  String get signupEntryPhoneLabel => 'फोन';
 
   @override
-  String get signupSheetEntryEmailLabel => 'ईमेल';
+  String get signupEntryEmailLabel => 'ईमेल';
 
   @override
-  String get signupSheetEntryNoteLabel => 'नोंद';
+  String get signupEntryNoteLabel => 'नोंद';
 
   @override
-  String get signupSheetEntryPledgeLabel => 'संकल्पित रक्कम';
+  String get signupEntryPledgeLabel => 'संकल्पित रक्कम';
 
   @override
-  String get signupSheetRemoveEntryTitle => 'नोंद काढा';
+  String get signupRemoveEntryTitle => 'नोंद काढा';
 
   @override
-  String get signupSheetRemoveEntryConfirm =>
+  String get signupRemoveEntryConfirm =>
       'तुम्हाला ही नोंद नक्की काढायची आहे का?';
 
   @override
-  String get signupSheetEntryRemoveSuccess => 'नोंद यशस्वीरित्या काढली';
+  String get signupEntryRemoveSuccess => 'नोंद यशस्वीरित्या काढली';
 
   @override
-  String get signupSheetEntryRemoveError => 'नोंद काढण्यात अयशस्वी';
+  String get signupEntryRemoveError => 'नोंद काढण्यात अयशस्वी';
 
   @override
-  String get signupSheetEntryAddSuccess => 'भाविक यशस्वीरित्या जोडला';
+  String get signupEntryAddSuccess => 'भाविक यशस्वीरित्या जोडला';
 
   @override
-  String get signupSheetEntryAddError => 'भाविक जोडण्यात अयशस्वी';
+  String get signupEntryAddError => 'भाविक जोडण्यात अयशस्वी';
 
   @override
-  String get signupSheetEntryEditSuccess => 'नोंद यशस्वीरित्या अपडेट केली';
+  String get signupEntryEditSuccess => 'नोंद यशस्वीरित्या अपडेट केली';
 
   @override
-  String get signupSheetEntryEditError => 'नोंद अपडेट करण्यात अयशस्वी';
+  String get signupEntryEditError => 'नोंद अपडेट करण्यात अयशस्वी';
 
   @override
-  String get signupSheetSlotFullError => 'हा स्लॉट आधीच भरला आहे';
+  String get signupSlotFullError => 'हा स्लॉट आधीच भरला आहे';
 
   @override
-  String get signupSheetSlotFullBadge => 'पूर्ण भरले';
+  String get signupSlotFullBadge => 'पूर्ण भरले';
 
   @override
-  String signupSheetSlotClaimedCount(String claimed, String capacity) {
+  String signupSlotClaimedCount(String claimed, String capacity) {
     return '$capacity पैकी $claimed भरले';
   }
 
   @override
-  String signupSheetSuggestedAmountFormat(String amount) {
+  String signupSuggestedAmountFormat(String amount) {
     return 'सुचवलेले: $amount';
   }
 
   @override
-  String get signupSheetNoEntriesForSlot =>
+  String get signupNoEntriesForSlot =>
       'या स्लॉटसाठी अद्याप कोणत्याही भाविकाने साइन अप केलेले नाही';
 
   @override
-  String get signupSheetExportSummaryTitle => 'साइन अप सारांश';
+  String get signupExportSummaryTitle => 'साइन अप सारांश';
 
   @override
-  String get signupSheetTotalSlotsLabel => 'एकूण स्लॉट्स';
+  String get signupTotalSlotsLabel => 'एकूण स्लॉट्स';
 
   @override
-  String get signupSheetTotalClaimsLabel => 'एकूण साइन-अप';
+  String get signupTotalClaimsLabel => 'एकूण साइन-अप';
 
   @override
-  String get signupSheetFillPercentageLabel => 'भरले';
+  String get signupFillPercentageLabel => 'भरले';
 
   @override
-  String get signupSheetExportFailed => 'प्रतिमा निर्यात करण्यात अयशस्वी';
+  String get signupExportFailed => 'प्रतिमा निर्यात करण्यात अयशस्वी';
 
   @override
-  String get signupSheetNotFound => 'साइन अप सापडले नाही';
+  String get signupNotFound => 'साइन अप सापडले नाही';
 
   @override
-  String get signupSheetsListTitle => 'साइन अप्स';
+  String get signupsListTitle => 'साइन अप्स';
 
   @override
-  String get signupSheetInvalidGroupError => 'अवैध गट';
+  String get signupInvalidGroupError => 'अवैध गट';
 
   @override
-  String get signupSheetNoActiveSheets => 'कोणतेही सक्रिय साइन अप नाही';
+  String get signupNoActiveSignups => 'कोणतेही सक्रिय साइन अप नाही';
 
   @override
-  String get signupSheetMySignupsHeading => 'माझे साइन-अप';
+  String get signupMySignupsHeading => 'माझे साइन-अप';
 
   @override
-  String get signupSheetNoMySignups =>
-      'आपण अद्याप कशासाठीही साइन अप केलेले नाही';
+  String get signupNoMySignups => 'आपण अद्याप कशासाठीही साइन अप केलेले नाही';
 
   @override
-  String get signupSheetCancelSignupButton => 'रद्द करा';
+  String get signupCancelSignupButton => 'रद्द करा';
 
   @override
-  String get signupSheetCancelSignupConfirmTitle => 'साइन-अप रद्द करायचे?';
+  String get signupCancelSignupConfirmTitle => 'साइन-अप रद्द करायचे?';
 
   @override
-  String get signupSheetCancelSignupConfirmMessage =>
+  String get signupCancelSignupConfirmMessage =>
       'आपल्याला हे साइन-अप रद्द करायचे आहे याची खात्री आहे का?';
 
   @override
-  String get signupSheetCancelSignupSuccess => 'साइन-अप रद्द केले';
+  String get signupCancelSignupSuccess => 'साइन-अप रद्द केले';
 
   @override
-  String get signupSheetCancelSignupError =>
+  String get signupCancelSignupError =>
       'साइन-अप रद्द करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get signupSheetClaimSlotTitle => 'स्लॉट क्लेम करा';
+  String get signupClaimSlotTitle => 'स्लॉट क्लेम करा';
 
   @override
-  String get signupSheetClaimConfirmTitle => 'साइन-अपची पुष्टी करा';
+  String get signupClaimConfirmTitle => 'साइन-अपची पुष्टी करा';
 
   @override
-  String get signupSheetClaimConfirmQuestion => 'हे साइन-अप सबमिट करायचे?';
+  String get signupClaimConfirmQuestion => 'हे साइन-अप सबमिट करायचे?';
 
   @override
-  String get signupSheetClaimSuccess => 'तुम्ही साइन अप केले आहे!';
+  String get signupClaimSuccess => 'तुम्ही साइन अप केले आहे!';
 
   @override
-  String get signupSheetClaimError =>
+  String get signupClaimError =>
       'स्लॉट क्लेम करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 }

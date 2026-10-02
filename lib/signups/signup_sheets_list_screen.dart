@@ -54,15 +54,13 @@ class _SignupSheetsListScreenState extends State<SignupSheetsListScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.groupName ?? l10n.signupSheetsListTitle),
-      ),
+      appBar: AppBar(title: Text(widget.groupName ?? l10n.signupsListTitle)),
       body: _sheetsStream == null
           ? Center(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Text(
-                  l10n.signupSheetInvalidGroupError,
+                  l10n.signupInvalidGroupError,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.appColors.secondaryText,
                   ),
@@ -81,7 +79,7 @@ class _SignupSheetsListScreenState extends State<SignupSheetsListScreen> {
                 if (sheets.isEmpty) {
                   return Center(
                     child: Text(
-                      l10n.signupSheetNoActiveSheets,
+                      l10n.signupNoActiveSignups,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.appColors.secondaryText,
                       ),
@@ -165,7 +163,7 @@ class _SheetCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      l10n.signupSheetRequiresJoinCodeBadge,
+                      l10n.signupRequiresJoinCodeBadge,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.appColors.brandAccent,
                         fontWeight: FontWeight.w600,

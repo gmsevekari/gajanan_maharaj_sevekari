@@ -65,23 +65,23 @@ class SlotFormRow extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    '${localizations.signupSheetSlotHeading} ${index + 1}',
+                    '${localizations.signupSlotHeading} ${index + 1}',
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.arrow_upward),
-                  tooltip: localizations.signupSheetMoveSlotUpTooltip,
+                  tooltip: localizations.signupMoveSlotUpTooltip,
                   onPressed: onMoveUp,
                 ),
                 IconButton(
                   icon: const Icon(Icons.arrow_downward),
-                  tooltip: localizations.signupSheetMoveSlotDownTooltip,
+                  tooltip: localizations.signupMoveSlotDownTooltip,
                   onPressed: onMoveDown,
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete_outline),
-                  tooltip: localizations.signupSheetRemoveSlotTooltip,
+                  tooltip: localizations.signupRemoveSlotTooltip,
                   onPressed: onRemove,
                 ),
               ],
@@ -90,12 +90,12 @@ class SlotFormRow extends StatelessWidget {
               key: Key('slotLabelEn_$index'),
               controller: labelEnController,
               decoration: InputDecoration(
-                labelText: localizations.signupSheetSlotLabelEnLabel,
+                labelText: localizations.signupSlotLabelEnLabel,
                 border: const OutlineInputBorder(),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return localizations.signupSheetSlotLabelEnRequired;
+                  return localizations.signupSlotLabelEnRequired;
                 }
                 return null;
               },
@@ -105,7 +105,7 @@ class SlotFormRow extends StatelessWidget {
               key: Key('slotLabelMr_$index'),
               controller: labelMrController,
               decoration: InputDecoration(
-                labelText: localizations.signupSheetSlotLabelMrLabel,
+                labelText: localizations.signupSlotLabelMrLabel,
                 border: const OutlineInputBorder(),
               ),
             ),
@@ -115,16 +115,16 @@ class SlotFormRow extends StatelessWidget {
               controller: capacityController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: localizations.signupSheetSlotCapacityLabel,
+                labelText: localizations.signupSlotCapacityLabel,
                 border: const OutlineInputBorder(),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return localizations.signupSheetSlotCapacityRequired;
+                  return localizations.signupSlotCapacityRequired;
                 }
                 final capacity = int.tryParse(value.trim());
                 if (capacity == null || capacity <= 0) {
-                  return localizations.signupSheetSlotCapacityInvalid;
+                  return localizations.signupSlotCapacityInvalid;
                 }
                 return null;
               },
@@ -137,7 +137,7 @@ class SlotFormRow extends StatelessWidget {
                 decimal: true,
               ),
               decoration: InputDecoration(
-                labelText: localizations.signupSheetSlotSuggestedAmountLabel,
+                labelText: localizations.signupSlotSuggestedAmountLabel,
                 border: const OutlineInputBorder(),
               ),
               validator: (value) {
@@ -146,7 +146,7 @@ class SlotFormRow extends StatelessWidget {
                 }
                 final amount = double.tryParse(value.trim());
                 if (amount == null || amount < 0) {
-                  return localizations.signupSheetSlotSuggestedAmountInvalid;
+                  return localizations.signupSlotSuggestedAmountInvalid;
                 }
                 return null;
               },
@@ -158,12 +158,12 @@ class SlotFormRow extends StatelessWidget {
                   child: Text(
                     date != null
                         ? DateFormat('yyyy-MM-dd').format(date!)
-                        : localizations.signupSheetSlotNoDateLabel,
+                        : localizations.signupSlotNoDateLabel,
                   ),
                 ),
                 TextButton(
                   onPressed: () => _pickDate(context),
-                  child: Text(localizations.signupSheetSlotSetDateLabel),
+                  child: Text(localizations.signupSlotSetDateLabel),
                 ),
                 if (date != null)
                   IconButton(

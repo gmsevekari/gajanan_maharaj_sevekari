@@ -62,19 +62,19 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.signupSheetClaimConfirmTitle),
+        title: Text(l10n.signupClaimConfirmTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${l10n.signupSheetEntryNameLabel}: $name',
+              '${l10n.signupEntryNameLabel}: $name',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            Text(l10n.signupSheetClaimConfirmQuestion),
+            Text(l10n.signupClaimConfirmQuestion),
           ],
         ),
         actions: [
@@ -129,7 +129,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _errorText = l10n.signupSheetClaimError;
+        _errorText = l10n.signupClaimError;
       });
       return;
     }
@@ -144,9 +144,9 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
     setState(() {
       _isLoading = false;
       _errorText = switch (result['error']) {
-        'slot_full' => l10n.signupSheetSlotFullError,
+        'slot_full' => l10n.signupSlotFullError,
         'invalid_join_code' => l10n.invalidJoinCode,
-        _ => l10n.signupSheetClaimError,
+        _ => l10n.signupClaimError,
       };
     });
   }
@@ -158,7 +158,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
     final showPledge = widget.slot.suggestedAmount != null;
 
     return AlertDialog(
-      title: Text(l10n.signupSheetClaimSlotTitle),
+      title: Text(l10n.signupClaimSlotTitle),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -171,12 +171,12 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 controller: _nameController,
                 maxLength: 100,
                 decoration: InputDecoration(
-                  labelText: l10n.signupSheetEntryNameLabel,
+                  labelText: l10n.signupEntryNameLabel,
                   border: const OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return l10n.signupSheetEntryNameRequired;
+                    return l10n.signupEntryNameRequired;
                   }
                   return null;
                 },
@@ -188,7 +188,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 keyboardType: TextInputType.phone,
                 maxLength: 30,
                 decoration: InputDecoration(
-                  labelText: l10n.signupSheetEntryPhoneLabel,
+                  labelText: l10n.signupEntryPhoneLabel,
                   border: const OutlineInputBorder(),
                 ),
               ),
@@ -199,7 +199,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 keyboardType: TextInputType.emailAddress,
                 maxLength: 200,
                 decoration: InputDecoration(
-                  labelText: l10n.signupSheetEntryEmailLabel,
+                  labelText: l10n.signupEntryEmailLabel,
                   border: const OutlineInputBorder(),
                 ),
               ),
@@ -212,14 +212,14 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                     decimal: true,
                   ),
                   decoration: InputDecoration(
-                    labelText: l10n.signupSheetEntryPledgeLabel,
+                    labelText: l10n.signupEntryPledgeLabel,
                     border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) return null;
                     final amount = double.tryParse(value.trim());
                     if (amount == null || amount < 0) {
-                      return l10n.signupSheetSlotSuggestedAmountInvalid;
+                      return l10n.signupSlotSuggestedAmountInvalid;
                     }
                     return null;
                   },
@@ -232,7 +232,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 maxLines: 2,
                 maxLength: 500,
                 decoration: InputDecoration(
-                  labelText: l10n.signupSheetEntryNoteLabel,
+                  labelText: l10n.signupEntryNoteLabel,
                   border: const OutlineInputBorder(),
                 ),
               ),
@@ -280,7 +280,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Text(l10n.signupSheetSaveButton),
+              : Text(l10n.signupSaveButton),
         ),
       ],
     );

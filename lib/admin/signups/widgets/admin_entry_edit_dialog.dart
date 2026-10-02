@@ -84,8 +84,8 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
-        title: Text(l10n.signupSheetRemoveEntryTitle),
-        content: Text(l10n.signupSheetRemoveEntryConfirm),
+        title: Text(l10n.signupRemoveEntryTitle),
+        content: Text(l10n.signupRemoveEntryConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogCtx).pop(),
@@ -115,9 +115,7 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
 
     return AlertDialog(
       title: Text(
-        isEditing
-            ? l10n.signupSheetEditEntryTitle
-            : l10n.signupSheetAddEntryTitle,
+        isEditing ? l10n.signupEditEntryTitle : l10n.signupAddEntryTitle,
       ),
       content: SingleChildScrollView(
         child: Form(
@@ -153,12 +151,12 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
                 key: const Key('entryNameField'),
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: l10n.signupSheetEntryNameLabel,
+                  labelText: l10n.signupEntryNameLabel,
                   border: const OutlineInputBorder(),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
-                    return l10n.signupSheetEntryNameRequired;
+                    return l10n.signupEntryNameRequired;
                   }
                   return null;
                 },
@@ -169,7 +167,7 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
-                  labelText: l10n.signupSheetEntryPhoneLabel,
+                  labelText: l10n.signupEntryPhoneLabel,
                   border: const OutlineInputBorder(),
                 ),
               ),
@@ -179,7 +177,7 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  labelText: l10n.signupSheetEntryEmailLabel,
+                  labelText: l10n.signupEntryEmailLabel,
                   border: const OutlineInputBorder(),
                 ),
               ),
@@ -191,14 +189,14 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
                   decimal: true,
                 ),
                 decoration: InputDecoration(
-                  labelText: l10n.signupSheetEntryPledgeLabel,
+                  labelText: l10n.signupEntryPledgeLabel,
                   border: const OutlineInputBorder(),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return null;
                   final parsed = double.tryParse(val.trim());
                   if (parsed == null || parsed < 0) {
-                    return l10n.signupSheetSlotSuggestedAmountInvalid;
+                    return l10n.signupSlotSuggestedAmountInvalid;
                   }
                   return null;
                 },
@@ -209,7 +207,7 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
                 controller: _noteController,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  labelText: l10n.signupSheetEntryNoteLabel,
+                  labelText: l10n.signupEntryNoteLabel,
                   border: const OutlineInputBorder(),
                 ),
               ),
@@ -222,7 +220,7 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
           TextButton(
             onPressed: () => _confirmDelete(context, l10n),
             child: Text(
-              l10n.signupSheetRemoveEntryTitle,
+              l10n.signupRemoveEntryTitle,
               style: TextStyle(color: theme.colorScheme.error),
             ),
           ),
@@ -232,7 +230,7 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
         ),
         ElevatedButton(
           onPressed: _handleSave,
-          child: Text(l10n.signupSheetSaveButton),
+          child: Text(l10n.signupSaveButton),
         ),
       ],
     );

@@ -118,7 +118,7 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
     if (claimed == true && mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.signupSheetClaimSuccess)));
+      ).showSnackBar(SnackBar(content: Text(l10n.signupClaimSuccess)));
     }
   }
 
@@ -126,8 +126,8 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
-        title: Text(l10n.signupSheetCancelSignupConfirmTitle),
-        content: Text(l10n.signupSheetCancelSignupConfirmMessage),
+        title: Text(l10n.signupCancelSignupConfirmTitle),
+        content: Text(l10n.signupCancelSignupConfirmMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogCtx).pop(),
@@ -154,16 +154,12 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text(l10n.signupSheetCancelSignupSuccess)),
-        );
+        ..showSnackBar(SnackBar(content: Text(l10n.signupCancelSignupSuccess)));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text(l10n.signupSheetCancelSignupError)),
-        );
+        ..showSnackBar(SnackBar(content: Text(l10n.signupCancelSignupError)));
     }
   }
 
@@ -179,7 +175,7 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
         if (_deviceId == null ||
             sheetSnapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-            appBar: AppBar(title: Text(l10n.signupSheetsListTitle)),
+            appBar: AppBar(title: Text(l10n.signupsListTitle)),
             body: const Center(child: CircularProgressIndicator()),
           );
         }
@@ -187,10 +183,10 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
         final sheet = sheetSnapshot.data;
         if (sheet == null) {
           return Scaffold(
-            appBar: AppBar(title: Text(l10n.signupSheetsListTitle)),
+            appBar: AppBar(title: Text(l10n.signupsListTitle)),
             body: Center(
               child: Text(
-                l10n.signupSheetNotFound,
+                l10n.signupNotFound,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.appColors.secondaryText,
                 ),
@@ -233,7 +229,7 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
                             height: 180,
                             width: double.infinity,
                             fit: BoxFit.cover,
-                            semanticLabel: l10n.signupSheetHeaderImageLabel,
+                            semanticLabel: l10n.signupHeaderImageLabel,
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(
                                   height: 180,
@@ -266,7 +262,7 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        l10n.signupSheetSlotsHeading,
+                        l10n.signupSlotsHeading,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),

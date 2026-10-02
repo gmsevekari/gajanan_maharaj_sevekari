@@ -134,7 +134,7 @@ class _AdminCreateSignupSheetScreenState
     if (!mounted) return;
 
     if (bytes.length > SignupService.maxHeaderImageBytes) {
-      setState(() => _imageError = localizations.signupSheetImageTooLargeError);
+      setState(() => _imageError = localizations.signupImageTooLargeError);
       return;
     }
 
@@ -159,9 +159,7 @@ class _AdminCreateSignupSheetScreenState
     final hasSlots = _slots.isNotEmpty;
 
     setState(() {
-      _slotsError = hasSlots
-          ? null
-          : localizations.signupSheetSlotsRequiredError;
+      _slotsError = hasSlots ? null : localizations.signupSlotsRequiredError;
     });
 
     if (!formValid || !hasSlots) return;
@@ -223,7 +221,7 @@ class _AdminCreateSignupSheetScreenState
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(localizations.signupSheetCreateSuccess)),
+          SnackBar(content: Text(localizations.signupCreateSuccess)),
         );
         Navigator.pop(context);
       }
@@ -245,7 +243,7 @@ class _AdminCreateSignupSheetScreenState
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(localizations.signupSheetCreateError)),
+          SnackBar(content: Text(localizations.signupCreateError)),
         );
       }
     } finally {
@@ -261,7 +259,7 @@ class _AdminCreateSignupSheetScreenState
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(localizations.adminCreateSignupSheetTitle)),
+      appBar: AppBar(title: Text(localizations.adminCreateSignupTitle)),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -275,12 +273,12 @@ class _AdminCreateSignupSheetScreenState
                       key: const Key('titleEnField'),
                       controller: _titleEnController,
                       decoration: InputDecoration(
-                        labelText: localizations.signupSheetTitleEnLabel,
+                        labelText: localizations.signupTitleEnLabel,
                         border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return localizations.signupSheetTitleEnRequired;
+                          return localizations.signupTitleEnRequired;
                         }
                         return null;
                       },
@@ -290,7 +288,7 @@ class _AdminCreateSignupSheetScreenState
                       key: const Key('titleMrField'),
                       controller: _titleMrController,
                       decoration: InputDecoration(
-                        labelText: localizations.signupSheetTitleMrLabel,
+                        labelText: localizations.signupTitleMrLabel,
                         border: const OutlineInputBorder(),
                       ),
                     ),
@@ -300,7 +298,7 @@ class _AdminCreateSignupSheetScreenState
                       controller: _descEnController,
                       maxLines: 3,
                       decoration: InputDecoration(
-                        labelText: localizations.signupSheetDescEnLabel,
+                        labelText: localizations.signupDescEnLabel,
                         border: const OutlineInputBorder(),
                       ),
                     ),
@@ -310,13 +308,13 @@ class _AdminCreateSignupSheetScreenState
                       controller: _descMrController,
                       maxLines: 3,
                       decoration: InputDecoration(
-                        labelText: localizations.signupSheetDescMrLabel,
+                        labelText: localizations.signupDescMrLabel,
                         border: const OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      localizations.signupSheetHeaderImageLabel,
+                      localizations.signupHeaderImageLabel,
                       style: theme.textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
@@ -338,8 +336,7 @@ class _AdminCreateSignupSheetScreenState
                             child: IconButton(
                               key: const Key('removeHeaderImageButton'),
                               icon: const Icon(Icons.close),
-                              tooltip:
-                                  localizations.signupSheetRemoveImageButton,
+                              tooltip: localizations.signupRemoveImageButton,
                               style: IconButton.styleFrom(
                                 backgroundColor: theme.colorScheme.surface,
                               ),
@@ -352,7 +349,7 @@ class _AdminCreateSignupSheetScreenState
                       OutlinedButton.icon(
                         key: const Key('addHeaderImageButton'),
                         icon: const Icon(Icons.image_outlined),
-                        label: Text(localizations.signupSheetAddImageButton),
+                        label: Text(localizations.signupAddImageButton),
                         onPressed: _pickImage,
                       ),
                     if (_imageError != null)
@@ -367,23 +364,21 @@ class _AdminCreateSignupSheetScreenState
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
                       value: _requiresJoinCode,
-                      title: Text(
-                        localizations.signupSheetRequiresJoinCodeLabel,
-                      ),
+                      title: Text(localizations.signupRequiresJoinCodeLabel),
                       onChanged: (value) {
                         setState(() => _requiresJoinCode = value);
                       },
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      localizations.signupSheetSlotsHeading,
+                      localizations.signupSlotsHeading,
                       style: theme.textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
                     if (_slots.isEmpty)
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Text(localizations.signupSheetNoSlotsMessage),
+                        child: Text(localizations.signupNoSlotsMessage),
                       )
                     else
                       for (var i = 0; i < _slots.length; i++)
@@ -415,7 +410,7 @@ class _AdminCreateSignupSheetScreenState
                       ),
                     OutlinedButton.icon(
                       icon: const Icon(Icons.add),
-                      label: Text(localizations.signupSheetAddSlotButton),
+                      label: Text(localizations.signupAddSlotButton),
                       onPressed: _addSlot,
                     ),
                     const SizedBox(height: 32),
@@ -426,7 +421,7 @@ class _AdminCreateSignupSheetScreenState
                         foregroundColor: theme.colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: Text(localizations.signupSheetSaveButton),
+                      child: Text(localizations.signupSaveButton),
                     ),
                   ],
                 ),

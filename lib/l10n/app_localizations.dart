@@ -3819,11 +3819,11 @@ abstract class AppLocalizations {
   /// **'Please select a group to view Vaari events.'**
   String get noVaariGroupsSelectedMessage;
 
-  /// No description provided for @noSignupSheetsGroupsSelectedMessage.
+  /// No description provided for @noSignupsGroupsSelectedMessage.
   ///
   /// In en, this message translates to:
   /// **'Please select a group to view Sign Ups.'**
-  String get noSignupSheetsGroupsSelectedMessage;
+  String get noSignupsGroupsSelectedMessage;
 
   /// No description provided for @vaariStepsSuffix.
   ///
@@ -3963,11 +3963,11 @@ abstract class AppLocalizations {
   /// **'Select Group for Sign Ups'**
   String get adminSignupGroupTitle;
 
-  /// No description provided for @adminSignupSheetsModuleSubtitle.
+  /// No description provided for @adminSignupsModuleSubtitle.
   ///
   /// In en, this message translates to:
   /// **'Create and manage sign ups'**
-  String get adminSignupSheetsModuleSubtitle;
+  String get adminSignupsModuleSubtitle;
 
   /// No description provided for @createVaariTitle.
   ///
@@ -4275,653 +4275,653 @@ abstract class AppLocalizations {
   /// **' & '**
   String get andSeparator;
 
-  /// No description provided for @adminCreateSignupSheetTitle.
+  /// No description provided for @adminCreateSignupTitle.
   ///
   /// In en, this message translates to:
   /// **'Create Sign Up'**
-  String get adminCreateSignupSheetTitle;
+  String get adminCreateSignupTitle;
 
-  /// No description provided for @signupSheetTitleEnLabel.
+  /// No description provided for @signupTitleEnLabel.
   ///
   /// In en, this message translates to:
   /// **'Title (English)'**
-  String get signupSheetTitleEnLabel;
+  String get signupTitleEnLabel;
 
-  /// No description provided for @signupSheetTitleEnRequired.
+  /// No description provided for @signupTitleEnRequired.
   ///
   /// In en, this message translates to:
   /// **'Please enter English title'**
-  String get signupSheetTitleEnRequired;
+  String get signupTitleEnRequired;
 
-  /// No description provided for @signupSheetTitleMrLabel.
+  /// No description provided for @signupTitleMrLabel.
   ///
   /// In en, this message translates to:
   /// **'Title (Marathi, optional)'**
-  String get signupSheetTitleMrLabel;
+  String get signupTitleMrLabel;
 
-  /// No description provided for @signupSheetDescEnLabel.
+  /// No description provided for @signupDescEnLabel.
   ///
   /// In en, this message translates to:
   /// **'Description (English)'**
-  String get signupSheetDescEnLabel;
+  String get signupDescEnLabel;
 
-  /// No description provided for @signupSheetDescMrLabel.
+  /// No description provided for @signupDescMrLabel.
   ///
   /// In en, this message translates to:
   /// **'Description (Marathi, optional)'**
-  String get signupSheetDescMrLabel;
+  String get signupDescMrLabel;
 
-  /// No description provided for @signupSheetRequiresJoinCodeLabel.
+  /// No description provided for @signupRequiresJoinCodeLabel.
   ///
   /// In en, this message translates to:
   /// **'Require a join code to sign up'**
-  String get signupSheetRequiresJoinCodeLabel;
+  String get signupRequiresJoinCodeLabel;
 
-  /// No description provided for @signupSheetSlotsHeading.
+  /// No description provided for @signupSlotsHeading.
   ///
   /// In en, this message translates to:
   /// **'Slots'**
-  String get signupSheetSlotsHeading;
+  String get signupSlotsHeading;
 
-  /// No description provided for @signupSheetAddSlotButton.
+  /// No description provided for @signupAddSlotButton.
   ///
   /// In en, this message translates to:
   /// **'Add Slot'**
-  String get signupSheetAddSlotButton;
+  String get signupAddSlotButton;
 
-  /// No description provided for @signupSheetNoSlotsMessage.
+  /// No description provided for @signupNoSlotsMessage.
   ///
   /// In en, this message translates to:
   /// **'No slots yet. Tap \"Add Slot\" to create one.'**
-  String get signupSheetNoSlotsMessage;
+  String get signupNoSlotsMessage;
 
-  /// No description provided for @signupSheetSlotsRequiredError.
+  /// No description provided for @signupSlotsRequiredError.
   ///
   /// In en, this message translates to:
   /// **'Please add at least one slot'**
-  String get signupSheetSlotsRequiredError;
+  String get signupSlotsRequiredError;
 
-  /// No description provided for @signupSheetSlotHeading.
+  /// No description provided for @signupSlotHeading.
   ///
   /// In en, this message translates to:
   /// **'Slot'**
-  String get signupSheetSlotHeading;
+  String get signupSlotHeading;
 
-  /// No description provided for @signupSheetSlotLabelEnLabel.
+  /// No description provided for @signupSlotLabelEnLabel.
   ///
   /// In en, this message translates to:
   /// **'Slot Label (English)'**
-  String get signupSheetSlotLabelEnLabel;
+  String get signupSlotLabelEnLabel;
 
-  /// No description provided for @signupSheetSlotLabelEnRequired.
+  /// No description provided for @signupSlotLabelEnRequired.
   ///
   /// In en, this message translates to:
   /// **'Please enter an English label'**
-  String get signupSheetSlotLabelEnRequired;
+  String get signupSlotLabelEnRequired;
 
-  /// No description provided for @signupSheetSlotLabelMrLabel.
+  /// No description provided for @signupSlotLabelMrLabel.
   ///
   /// In en, this message translates to:
   /// **'Slot Label (Marathi, optional)'**
-  String get signupSheetSlotLabelMrLabel;
+  String get signupSlotLabelMrLabel;
 
-  /// No description provided for @signupSheetSlotCapacityLabel.
+  /// No description provided for @signupSlotCapacityLabel.
   ///
   /// In en, this message translates to:
   /// **'Capacity'**
-  String get signupSheetSlotCapacityLabel;
+  String get signupSlotCapacityLabel;
 
-  /// No description provided for @signupSheetSlotCapacityRequired.
+  /// No description provided for @signupSlotCapacityRequired.
   ///
   /// In en, this message translates to:
   /// **'Please enter a capacity'**
-  String get signupSheetSlotCapacityRequired;
+  String get signupSlotCapacityRequired;
 
-  /// No description provided for @signupSheetSlotCapacityInvalid.
+  /// No description provided for @signupSlotCapacityInvalid.
   ///
   /// In en, this message translates to:
   /// **'Capacity must be a positive number'**
-  String get signupSheetSlotCapacityInvalid;
+  String get signupSlotCapacityInvalid;
 
-  /// No description provided for @signupSheetSlotSuggestedAmountLabel.
+  /// No description provided for @signupSlotSuggestedAmountLabel.
   ///
   /// In en, this message translates to:
   /// **'Suggested Amount (optional)'**
-  String get signupSheetSlotSuggestedAmountLabel;
+  String get signupSlotSuggestedAmountLabel;
 
-  /// No description provided for @signupSheetSlotSuggestedAmountInvalid.
+  /// No description provided for @signupSlotSuggestedAmountInvalid.
   ///
   /// In en, this message translates to:
   /// **'Please enter a valid amount'**
-  String get signupSheetSlotSuggestedAmountInvalid;
+  String get signupSlotSuggestedAmountInvalid;
 
-  /// No description provided for @signupSheetSlotSetDateLabel.
+  /// No description provided for @signupSlotSetDateLabel.
   ///
   /// In en, this message translates to:
   /// **'Set Date'**
-  String get signupSheetSlotSetDateLabel;
+  String get signupSlotSetDateLabel;
 
-  /// No description provided for @signupSheetSlotNoDateLabel.
+  /// No description provided for @signupSlotNoDateLabel.
   ///
   /// In en, this message translates to:
   /// **'No date set'**
-  String get signupSheetSlotNoDateLabel;
+  String get signupSlotNoDateLabel;
 
-  /// No description provided for @signupSheetRemoveSlotTooltip.
+  /// No description provided for @signupRemoveSlotTooltip.
   ///
   /// In en, this message translates to:
   /// **'Remove slot'**
-  String get signupSheetRemoveSlotTooltip;
+  String get signupRemoveSlotTooltip;
 
-  /// No description provided for @signupSheetMoveSlotUpTooltip.
+  /// No description provided for @signupMoveSlotUpTooltip.
   ///
   /// In en, this message translates to:
   /// **'Move slot up'**
-  String get signupSheetMoveSlotUpTooltip;
+  String get signupMoveSlotUpTooltip;
 
-  /// No description provided for @signupSheetMoveSlotDownTooltip.
+  /// No description provided for @signupMoveSlotDownTooltip.
   ///
   /// In en, this message translates to:
   /// **'Move slot down'**
-  String get signupSheetMoveSlotDownTooltip;
+  String get signupMoveSlotDownTooltip;
 
-  /// No description provided for @signupSheetSaveButton.
+  /// No description provided for @signupSaveButton.
   ///
   /// In en, this message translates to:
   /// **'Save'**
-  String get signupSheetSaveButton;
+  String get signupSaveButton;
 
-  /// No description provided for @signupSheetHeaderImageLabel.
+  /// No description provided for @signupHeaderImageLabel.
   ///
   /// In en, this message translates to:
   /// **'Header Image'**
-  String get signupSheetHeaderImageLabel;
+  String get signupHeaderImageLabel;
 
-  /// No description provided for @signupSheetAddImageButton.
+  /// No description provided for @signupAddImageButton.
   ///
   /// In en, this message translates to:
   /// **'Add Image'**
-  String get signupSheetAddImageButton;
+  String get signupAddImageButton;
 
-  /// No description provided for @signupSheetReplaceImageButton.
+  /// No description provided for @signupReplaceImageButton.
   ///
   /// In en, this message translates to:
   /// **'Replace Image'**
-  String get signupSheetReplaceImageButton;
+  String get signupReplaceImageButton;
 
-  /// No description provided for @signupSheetRemoveImageButton.
+  /// No description provided for @signupRemoveImageButton.
   ///
   /// In en, this message translates to:
   /// **'Remove Image'**
-  String get signupSheetRemoveImageButton;
+  String get signupRemoveImageButton;
 
-  /// No description provided for @signupSheetImageTooLargeError.
+  /// No description provided for @signupImageTooLargeError.
   ///
   /// In en, this message translates to:
   /// **'Image must be smaller than 2 MB'**
-  String get signupSheetImageTooLargeError;
+  String get signupImageTooLargeError;
 
-  /// No description provided for @signupSheetImageUploadError.
+  /// No description provided for @signupImageUploadError.
   ///
   /// In en, this message translates to:
   /// **'Failed to upload image. Please try again.'**
-  String get signupSheetImageUploadError;
+  String get signupImageUploadError;
 
-  /// No description provided for @signupSheetUploadingImage.
+  /// No description provided for @signupUploadingImage.
   ///
   /// In en, this message translates to:
   /// **'Please wait...'**
-  String get signupSheetUploadingImage;
+  String get signupUploadingImage;
 
-  /// No description provided for @signupSheetImageRemoveError.
+  /// No description provided for @signupImageRemoveError.
   ///
   /// In en, this message translates to:
   /// **'Failed to remove image. Please try again.'**
-  String get signupSheetImageRemoveError;
+  String get signupImageRemoveError;
 
-  /// No description provided for @signupSheetRemoveImageConfirmTitle.
+  /// No description provided for @signupRemoveImageConfirmTitle.
   ///
   /// In en, this message translates to:
   /// **'Remove Image?'**
-  String get signupSheetRemoveImageConfirmTitle;
+  String get signupRemoveImageConfirmTitle;
 
-  /// No description provided for @signupSheetRemoveImageConfirmMessage.
+  /// No description provided for @signupRemoveImageConfirmMessage.
   ///
   /// In en, this message translates to:
   /// **'Are you sure you want to remove the header image?'**
-  String get signupSheetRemoveImageConfirmMessage;
+  String get signupRemoveImageConfirmMessage;
 
-  /// No description provided for @signupSheetExportTagline.
+  /// No description provided for @signupExportTagline.
   ///
   /// In en, this message translates to:
   /// **'|| Anant Koti Brahmandanayak Gajanan Maharaj Ki Jai ||'**
-  String get signupSheetExportTagline;
+  String get signupExportTagline;
 
-  /// No description provided for @signupSheetCreateSuccess.
+  /// No description provided for @signupCreateSuccess.
   ///
   /// In en, this message translates to:
   /// **'Sign up created successfully'**
-  String get signupSheetCreateSuccess;
+  String get signupCreateSuccess;
 
-  /// No description provided for @signupSheetCreateError.
+  /// No description provided for @signupCreateError.
   ///
   /// In en, this message translates to:
   /// **'Failed to create sign up. Please try again.'**
-  String get signupSheetCreateError;
+  String get signupCreateError;
 
-  /// No description provided for @adminSignupSheetsDashboardTitle.
+  /// No description provided for @adminSignupsDashboardTitle.
   ///
   /// In en, this message translates to:
   /// **'Sign Ups'**
-  String get adminSignupSheetsDashboardTitle;
+  String get adminSignupsDashboardTitle;
 
-  /// No description provided for @signupSheetStatusLabel.
+  /// No description provided for @signupStatusLabel.
   ///
   /// In en, this message translates to:
   /// **'STATUS'**
-  String get signupSheetStatusLabel;
+  String get signupStatusLabel;
 
-  /// No description provided for @signupSheetStatusAll.
+  /// No description provided for @signupStatusAll.
   ///
   /// In en, this message translates to:
   /// **'All'**
-  String get signupSheetStatusAll;
+  String get signupStatusAll;
 
-  /// No description provided for @signupSheetStatusDraft.
+  /// No description provided for @signupStatusDraft.
   ///
   /// In en, this message translates to:
   /// **'Draft'**
-  String get signupSheetStatusDraft;
+  String get signupStatusDraft;
 
-  /// No description provided for @signupSheetStatusPublished.
+  /// No description provided for @signupStatusPublished.
   ///
   /// In en, this message translates to:
   /// **'Published'**
-  String get signupSheetStatusPublished;
+  String get signupStatusPublished;
 
-  /// No description provided for @signupSheetStatusClosed.
+  /// No description provided for @signupStatusClosed.
   ///
   /// In en, this message translates to:
   /// **'Closed'**
-  String get signupSheetStatusClosed;
+  String get signupStatusClosed;
 
-  /// No description provided for @signupSheetNoSheetsFound.
+  /// No description provided for @signupNoSignupsFound.
   ///
   /// In en, this message translates to:
   /// **'No sign ups found'**
-  String get signupSheetNoSheetsFound;
+  String get signupNoSignupsFound;
 
-  /// No description provided for @signupSheetNoGroupAssigned.
+  /// No description provided for @signupNoGroupAssigned.
   ///
   /// In en, this message translates to:
   /// **'No group assigned to admin'**
-  String get signupSheetNoGroupAssigned;
+  String get signupNoGroupAssigned;
 
-  /// No description provided for @adminSignupSheetsError.
+  /// No description provided for @adminSignupsError.
   ///
   /// In en, this message translates to:
   /// **'Failed to load sign ups. Please try again.'**
-  String get adminSignupSheetsError;
+  String get adminSignupsError;
 
-  /// No description provided for @signupSheetCreateTooltip.
+  /// No description provided for @signupCreateTooltip.
   ///
   /// In en, this message translates to:
   /// **'Create Sign Up'**
-  String get signupSheetCreateTooltip;
+  String get signupCreateTooltip;
 
-  /// No description provided for @signupSheetRequiresJoinCodeBadge.
+  /// No description provided for @signupRequiresJoinCodeBadge.
   ///
   /// In en, this message translates to:
   /// **'Join Code Required'**
-  String get signupSheetRequiresJoinCodeBadge;
+  String get signupRequiresJoinCodeBadge;
 
-  /// No description provided for @signupSheetJoinCodePrefix.
+  /// No description provided for @signupJoinCodePrefix.
   ///
   /// In en, this message translates to:
   /// **'Join Code: '**
-  String get signupSheetJoinCodePrefix;
+  String get signupJoinCodePrefix;
 
-  /// No description provided for @adminSignupSheetDetailTitle.
+  /// No description provided for @adminSignupDetailTitle.
   ///
   /// In en, this message translates to:
   /// **'Sign Up Details'**
-  String get adminSignupSheetDetailTitle;
+  String get adminSignupDetailTitle;
 
-  /// No description provided for @signupSheetDuplicateButton.
+  /// No description provided for @signupDuplicateButton.
   ///
   /// In en, this message translates to:
   /// **'Duplicate'**
-  String get signupSheetDuplicateButton;
+  String get signupDuplicateButton;
 
-  /// No description provided for @signupSheetDuplicating.
+  /// No description provided for @signupDuplicating.
   ///
   /// In en, this message translates to:
   /// **'Duplicating sign up...'**
-  String get signupSheetDuplicating;
+  String get signupDuplicating;
 
-  /// No description provided for @signupSheetDuplicateSuccess.
+  /// No description provided for @signupDuplicateSuccess.
   ///
   /// In en, this message translates to:
   /// **'Sign up duplicated successfully'**
-  String get signupSheetDuplicateSuccess;
+  String get signupDuplicateSuccess;
 
-  /// No description provided for @signupSheetDuplicateError.
+  /// No description provided for @signupDuplicateError.
   ///
   /// In en, this message translates to:
   /// **'Failed to duplicate sign up'**
-  String get signupSheetDuplicateError;
+  String get signupDuplicateError;
 
-  /// No description provided for @signupSheetShareButton.
+  /// No description provided for @signupShareButton.
   ///
   /// In en, this message translates to:
   /// **'Share'**
-  String get signupSheetShareButton;
+  String get signupShareButton;
 
-  /// No description provided for @signupSheetExportButton.
+  /// No description provided for @signupExportButton.
   ///
   /// In en, this message translates to:
   /// **'Export Summary'**
-  String get signupSheetExportButton;
+  String get signupExportButton;
 
-  /// No description provided for @signupSheetExporting.
+  /// No description provided for @signupExporting.
   ///
   /// In en, this message translates to:
   /// **'Generating summary image...'**
-  String get signupSheetExporting;
+  String get signupExporting;
 
-  /// No description provided for @signupSheetSharePrefix.
+  /// No description provided for @signupSharePrefix.
   ///
   /// In en, this message translates to:
   /// **'Sign Up'**
-  String get signupSheetSharePrefix;
+  String get signupSharePrefix;
 
-  /// No description provided for @signupSheetShareLinkPrefix.
+  /// No description provided for @signupShareLinkPrefix.
   ///
   /// In en, this message translates to:
   /// **'Sign up link'**
-  String get signupSheetShareLinkPrefix;
+  String get signupShareLinkPrefix;
 
-  /// No description provided for @signupSheetStatusUpdateError.
+  /// No description provided for @signupStatusUpdateError.
   ///
   /// In en, this message translates to:
   /// **'Failed to update status'**
-  String get signupSheetStatusUpdateError;
+  String get signupStatusUpdateError;
 
-  /// No description provided for @signupSheetCopyJoinCodeTooltip.
+  /// No description provided for @signupCopyJoinCodeTooltip.
   ///
   /// In en, this message translates to:
   /// **'Copy Join Code'**
-  String get signupSheetCopyJoinCodeTooltip;
+  String get signupCopyJoinCodeTooltip;
 
-  /// No description provided for @signupSheetDateRange.
+  /// No description provided for @signupDateRange.
   ///
   /// In en, this message translates to:
   /// **'Date Range'**
-  String get signupSheetDateRange;
+  String get signupDateRange;
 
-  /// No description provided for @signupSheetSlotsSectionHeading.
+  /// No description provided for @signupSlotsSectionHeading.
   ///
   /// In en, this message translates to:
   /// **'Slots & Entries'**
-  String get signupSheetSlotsSectionHeading;
+  String get signupSlotsSectionHeading;
 
-  /// No description provided for @signupSheetAddEntryButton.
+  /// No description provided for @signupAddEntryButton.
   ///
   /// In en, this message translates to:
   /// **'Add Devotee'**
-  String get signupSheetAddEntryButton;
+  String get signupAddEntryButton;
 
-  /// No description provided for @signupSheetEditEntryTitle.
+  /// No description provided for @signupEditEntryTitle.
   ///
   /// In en, this message translates to:
   /// **'Edit Entry'**
-  String get signupSheetEditEntryTitle;
+  String get signupEditEntryTitle;
 
-  /// No description provided for @signupSheetAddEntryTitle.
+  /// No description provided for @signupAddEntryTitle.
   ///
   /// In en, this message translates to:
   /// **'Add Devotee Entry'**
-  String get signupSheetAddEntryTitle;
+  String get signupAddEntryTitle;
 
-  /// No description provided for @signupSheetEntryNameLabel.
+  /// No description provided for @signupEntryNameLabel.
   ///
   /// In en, this message translates to:
   /// **'Name'**
-  String get signupSheetEntryNameLabel;
+  String get signupEntryNameLabel;
 
-  /// No description provided for @signupSheetEntryNameRequired.
+  /// No description provided for @signupEntryNameRequired.
   ///
   /// In en, this message translates to:
   /// **'Please enter a name'**
-  String get signupSheetEntryNameRequired;
+  String get signupEntryNameRequired;
 
-  /// No description provided for @signupSheetEntryPhoneLabel.
+  /// No description provided for @signupEntryPhoneLabel.
   ///
   /// In en, this message translates to:
   /// **'Phone'**
-  String get signupSheetEntryPhoneLabel;
+  String get signupEntryPhoneLabel;
 
-  /// No description provided for @signupSheetEntryEmailLabel.
+  /// No description provided for @signupEntryEmailLabel.
   ///
   /// In en, this message translates to:
   /// **'Email'**
-  String get signupSheetEntryEmailLabel;
+  String get signupEntryEmailLabel;
 
-  /// No description provided for @signupSheetEntryNoteLabel.
+  /// No description provided for @signupEntryNoteLabel.
   ///
   /// In en, this message translates to:
   /// **'Note'**
-  String get signupSheetEntryNoteLabel;
+  String get signupEntryNoteLabel;
 
-  /// No description provided for @signupSheetEntryPledgeLabel.
+  /// No description provided for @signupEntryPledgeLabel.
   ///
   /// In en, this message translates to:
   /// **'Pledge Amount'**
-  String get signupSheetEntryPledgeLabel;
+  String get signupEntryPledgeLabel;
 
-  /// No description provided for @signupSheetRemoveEntryTitle.
+  /// No description provided for @signupRemoveEntryTitle.
   ///
   /// In en, this message translates to:
   /// **'Remove Entry'**
-  String get signupSheetRemoveEntryTitle;
+  String get signupRemoveEntryTitle;
 
-  /// No description provided for @signupSheetRemoveEntryConfirm.
+  /// No description provided for @signupRemoveEntryConfirm.
   ///
   /// In en, this message translates to:
   /// **'Are you sure you want to remove this entry?'**
-  String get signupSheetRemoveEntryConfirm;
+  String get signupRemoveEntryConfirm;
 
-  /// No description provided for @signupSheetEntryRemoveSuccess.
+  /// No description provided for @signupEntryRemoveSuccess.
   ///
   /// In en, this message translates to:
   /// **'Entry removed successfully'**
-  String get signupSheetEntryRemoveSuccess;
+  String get signupEntryRemoveSuccess;
 
-  /// No description provided for @signupSheetEntryRemoveError.
+  /// No description provided for @signupEntryRemoveError.
   ///
   /// In en, this message translates to:
   /// **'Failed to remove entry'**
-  String get signupSheetEntryRemoveError;
+  String get signupEntryRemoveError;
 
-  /// No description provided for @signupSheetEntryAddSuccess.
+  /// No description provided for @signupEntryAddSuccess.
   ///
   /// In en, this message translates to:
   /// **'Devotee added successfully'**
-  String get signupSheetEntryAddSuccess;
+  String get signupEntryAddSuccess;
 
-  /// No description provided for @signupSheetEntryAddError.
+  /// No description provided for @signupEntryAddError.
   ///
   /// In en, this message translates to:
   /// **'Failed to add devotee'**
-  String get signupSheetEntryAddError;
+  String get signupEntryAddError;
 
-  /// No description provided for @signupSheetEntryEditSuccess.
+  /// No description provided for @signupEntryEditSuccess.
   ///
   /// In en, this message translates to:
   /// **'Entry updated successfully'**
-  String get signupSheetEntryEditSuccess;
+  String get signupEntryEditSuccess;
 
-  /// No description provided for @signupSheetEntryEditError.
+  /// No description provided for @signupEntryEditError.
   ///
   /// In en, this message translates to:
   /// **'Failed to update entry'**
-  String get signupSheetEntryEditError;
+  String get signupEntryEditError;
 
-  /// No description provided for @signupSheetSlotFullError.
+  /// No description provided for @signupSlotFullError.
   ///
   /// In en, this message translates to:
   /// **'This slot is already full'**
-  String get signupSheetSlotFullError;
+  String get signupSlotFullError;
 
-  /// No description provided for @signupSheetSlotFullBadge.
+  /// No description provided for @signupSlotFullBadge.
   ///
   /// In en, this message translates to:
   /// **'Full'**
-  String get signupSheetSlotFullBadge;
+  String get signupSlotFullBadge;
 
-  /// No description provided for @signupSheetSlotClaimedCount.
+  /// No description provided for @signupSlotClaimedCount.
   ///
   /// In en, this message translates to:
   /// **'{claimed} of {capacity} claimed'**
-  String signupSheetSlotClaimedCount(String claimed, String capacity);
+  String signupSlotClaimedCount(String claimed, String capacity);
 
-  /// No description provided for @signupSheetSuggestedAmountFormat.
+  /// No description provided for @signupSuggestedAmountFormat.
   ///
   /// In en, this message translates to:
   /// **'Suggested: {amount}'**
-  String signupSheetSuggestedAmountFormat(String amount);
+  String signupSuggestedAmountFormat(String amount);
 
-  /// No description provided for @signupSheetNoEntriesForSlot.
+  /// No description provided for @signupNoEntriesForSlot.
   ///
   /// In en, this message translates to:
   /// **'No devotees have signed up for this slot yet'**
-  String get signupSheetNoEntriesForSlot;
+  String get signupNoEntriesForSlot;
 
-  /// No description provided for @signupSheetExportSummaryTitle.
+  /// No description provided for @signupExportSummaryTitle.
   ///
   /// In en, this message translates to:
   /// **'Sign Up Summary'**
-  String get signupSheetExportSummaryTitle;
+  String get signupExportSummaryTitle;
 
-  /// No description provided for @signupSheetTotalSlotsLabel.
+  /// No description provided for @signupTotalSlotsLabel.
   ///
   /// In en, this message translates to:
   /// **'Total Slots'**
-  String get signupSheetTotalSlotsLabel;
+  String get signupTotalSlotsLabel;
 
-  /// No description provided for @signupSheetTotalClaimsLabel.
+  /// No description provided for @signupTotalClaimsLabel.
   ///
   /// In en, this message translates to:
   /// **'Total Signups'**
-  String get signupSheetTotalClaimsLabel;
+  String get signupTotalClaimsLabel;
 
-  /// No description provided for @signupSheetFillPercentageLabel.
+  /// No description provided for @signupFillPercentageLabel.
   ///
   /// In en, this message translates to:
   /// **'Filled'**
-  String get signupSheetFillPercentageLabel;
+  String get signupFillPercentageLabel;
 
-  /// No description provided for @signupSheetExportFailed.
+  /// No description provided for @signupExportFailed.
   ///
   /// In en, this message translates to:
   /// **'Failed to export image'**
-  String get signupSheetExportFailed;
+  String get signupExportFailed;
 
-  /// No description provided for @signupSheetNotFound.
+  /// No description provided for @signupNotFound.
   ///
   /// In en, this message translates to:
   /// **'Sign up not found'**
-  String get signupSheetNotFound;
+  String get signupNotFound;
 
-  /// No description provided for @signupSheetsListTitle.
+  /// No description provided for @signupsListTitle.
   ///
   /// In en, this message translates to:
   /// **'Sign Ups'**
-  String get signupSheetsListTitle;
+  String get signupsListTitle;
 
-  /// No description provided for @signupSheetInvalidGroupError.
+  /// No description provided for @signupInvalidGroupError.
   ///
   /// In en, this message translates to:
   /// **'Invalid group'**
-  String get signupSheetInvalidGroupError;
+  String get signupInvalidGroupError;
 
-  /// No description provided for @signupSheetNoActiveSheets.
+  /// No description provided for @signupNoActiveSignups.
   ///
   /// In en, this message translates to:
   /// **'No active sign ups'**
-  String get signupSheetNoActiveSheets;
+  String get signupNoActiveSignups;
 
-  /// No description provided for @signupSheetMySignupsHeading.
+  /// No description provided for @signupMySignupsHeading.
   ///
   /// In en, this message translates to:
   /// **'My Signups'**
-  String get signupSheetMySignupsHeading;
+  String get signupMySignupsHeading;
 
-  /// No description provided for @signupSheetNoMySignups.
+  /// No description provided for @signupNoMySignups.
   ///
   /// In en, this message translates to:
   /// **'You haven\'t signed up for anything yet'**
-  String get signupSheetNoMySignups;
+  String get signupNoMySignups;
 
-  /// No description provided for @signupSheetCancelSignupButton.
+  /// No description provided for @signupCancelSignupButton.
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
-  String get signupSheetCancelSignupButton;
+  String get signupCancelSignupButton;
 
-  /// No description provided for @signupSheetCancelSignupConfirmTitle.
+  /// No description provided for @signupCancelSignupConfirmTitle.
   ///
   /// In en, this message translates to:
   /// **'Cancel Signup?'**
-  String get signupSheetCancelSignupConfirmTitle;
+  String get signupCancelSignupConfirmTitle;
 
-  /// No description provided for @signupSheetCancelSignupConfirmMessage.
+  /// No description provided for @signupCancelSignupConfirmMessage.
   ///
   /// In en, this message translates to:
   /// **'Are you sure you want to cancel this signup?'**
-  String get signupSheetCancelSignupConfirmMessage;
+  String get signupCancelSignupConfirmMessage;
 
-  /// No description provided for @signupSheetCancelSignupSuccess.
+  /// No description provided for @signupCancelSignupSuccess.
   ///
   /// In en, this message translates to:
   /// **'Signup cancelled'**
-  String get signupSheetCancelSignupSuccess;
+  String get signupCancelSignupSuccess;
 
-  /// No description provided for @signupSheetCancelSignupError.
+  /// No description provided for @signupCancelSignupError.
   ///
   /// In en, this message translates to:
   /// **'Failed to cancel signup. Please try again.'**
-  String get signupSheetCancelSignupError;
+  String get signupCancelSignupError;
 
-  /// No description provided for @signupSheetClaimSlotTitle.
+  /// No description provided for @signupClaimSlotTitle.
   ///
   /// In en, this message translates to:
   /// **'Claim Slot'**
-  String get signupSheetClaimSlotTitle;
+  String get signupClaimSlotTitle;
 
-  /// No description provided for @signupSheetClaimConfirmTitle.
+  /// No description provided for @signupClaimConfirmTitle.
   ///
   /// In en, this message translates to:
   /// **'Confirm Signup'**
-  String get signupSheetClaimConfirmTitle;
+  String get signupClaimConfirmTitle;
 
-  /// No description provided for @signupSheetClaimConfirmQuestion.
+  /// No description provided for @signupClaimConfirmQuestion.
   ///
   /// In en, this message translates to:
   /// **'Submit this signup?'**
-  String get signupSheetClaimConfirmQuestion;
+  String get signupClaimConfirmQuestion;
 
-  /// No description provided for @signupSheetClaimSuccess.
+  /// No description provided for @signupClaimSuccess.
   ///
   /// In en, this message translates to:
   /// **'You\'re signed up!'**
-  String get signupSheetClaimSuccess;
+  String get signupClaimSuccess;
 
-  /// No description provided for @signupSheetClaimError.
+  /// No description provided for @signupClaimError.
   ///
   /// In en, this message translates to:
   /// **'Failed to claim slot. Please try again.'**
-  String get signupSheetClaimError;
+  String get signupClaimError;
 }
 
 class _AppLocalizationsDelegate

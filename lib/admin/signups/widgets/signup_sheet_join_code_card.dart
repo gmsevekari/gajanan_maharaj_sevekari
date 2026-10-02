@@ -28,7 +28,7 @@ class SignupSheetJoinCodeCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l10n.signupSheetRequiresJoinCodeBadge,
+                    l10n.signupRequiresJoinCodeBadge,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: theme.appColors.secondaryText,
                     ),
@@ -44,7 +44,7 @@ class SignupSheetJoinCodeCard extends StatelessWidget {
               ),
             ),
             IconButton(
-              tooltip: l10n.signupSheetCopyJoinCodeTooltip,
+              tooltip: l10n.signupCopyJoinCodeTooltip,
               icon: const Icon(Icons.copy, size: 20),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: joinCode));

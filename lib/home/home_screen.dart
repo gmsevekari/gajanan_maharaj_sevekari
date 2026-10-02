@@ -251,16 +251,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _buildIconGridItem(
         key: const Key('signup_sheets_card'),
         context: context,
-        title: localizations.signupSheetsListTitle,
+        title: localizations.signupsListTitle,
         imagePath: 'resources/images/icon/SignUps.png',
         imageSize: 100.0,
         onTap: () => _navigateToGroupScopedList(
           context: context,
           targetRoute: Routes.signupSheetsList,
-          title: localizations.signupSheetsListTitle,
-          noGroupSelectedMessage:
-              localizations.noSignupSheetsGroupsSelectedMessage,
-          noActiveItemsMessage: localizations.signupSheetNoActiveSheets,
+          title: localizations.signupsListTitle,
+          noGroupSelectedMessage: localizations.noSignupsGroupsSelectedMessage,
+          noActiveItemsMessage: localizations.signupNoActiveSignups,
         ),
       ),
     );
