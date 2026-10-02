@@ -222,10 +222,18 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Week 1'));
+      await tester.tap(find.byKey(const Key('signUpButton')));
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+      await tester.enterText(
+        find.byKey(const Key('claimPhoneField')),
+        '1234567890',
+      );
+      await tester.enterText(
+        find.byKey(const Key('claimEmailField')),
+        'jane@example.com',
+      );
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Yes'));
@@ -233,7 +241,8 @@ void main() {
 
       expect(find.text('1 of 3 claimed'), findsOneWidget);
       expect(find.text("You haven't signed up for anything yet"), findsNothing);
-      expect(find.text('Jane'), findsOneWidget);
+      // Once in "My Signups", once in the slot's own list of who's signed up.
+      expect(find.text('Jane'), findsNWidgets(2));
     });
 
     testWidgets('tapping a full slot does not open the claim dialog', (
@@ -305,7 +314,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Jane'), findsOneWidget);
+      // Once in "My Signups", once in the slot's own list of who's signed up.
+      expect(find.text('Jane'), findsNWidgets(2));
 
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
@@ -361,7 +371,8 @@ void main() {
       await tester.tap(find.text('No'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Jane'), findsOneWidget);
+      // Once in "My Signups", once in the slot's own list of who's signed up.
+      expect(find.text('Jane'), findsNWidgets(2));
       final entries = await service.getAllEntries(sheetId).first;
       expect(entries, hasLength(1));
     });
@@ -393,7 +404,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Week 1'));
+      await tester.tap(find.byKey(const Key('signUpButton')));
       await tester.pumpAndSettle();
 
       expect(find.text('Join Code'), findsOneWidget);
@@ -480,6 +491,7 @@ void main() {
         id: 'entry_1',
         slotId: 'slot_1',
         name: 'Jane',
+        deviceId: 'device_1',
         joinedAt: DateTime.now(),
       );
       final sheet = SignupSheet(
@@ -500,7 +512,7 @@ void main() {
         () => mockService.getSlots('sheet_err'),
       ).thenAnswer((_) => Stream.value(const []));
       when(
-        () => mockService.getEntriesByDevice('sheet_err', 'device_1'),
+        () => mockService.getAllEntries('sheet_err'),
       ).thenAnswer((_) => Stream.value([entry]));
       when(
         () => mockService.cancelEntry('sheet_err', 'entry_1'),
@@ -581,7 +593,7 @@ void main() {
       expect(find.text('Cook and serve prasad'), findsOneWidget);
     });
 
-    testWidgets('does not resubscribe to getEntriesByDevice on every rebuild', (
+    testWidgets('does not resubscribe to getAllEntries on every rebuild', (
       tester,
     ) async {
       final sheet = SignupSheet(
@@ -604,7 +616,7 @@ void main() {
         () => mockService.getSlots('sheet_rebuild'),
       ).thenAnswer((_) => slotsController.stream);
       when(
-        () => mockService.getEntriesByDevice('sheet_rebuild', 'device_1'),
+        () => mockService.getAllEntries('sheet_rebuild'),
       ).thenAnswer((_) => Stream.value(const []));
 
       await tester.pumpWidget(
@@ -620,15 +632,13 @@ void main() {
 
       // Simulate the slots stream emitting again (e.g. another devotee
       // claims a slot) - this must not tear down and resubscribe the
-      // unrelated "my entries" stream.
+      // unrelated entries stream.
       slotsController.add(const []);
       await tester.pumpAndSettle();
       slotsController.add(const []);
       await tester.pumpAndSettle();
 
-      verify(
-        () => mockService.getEntriesByDevice('sheet_rebuild', 'device_1'),
-      ).called(1);
+      verify(() => mockService.getAllEntries('sheet_rebuild')).called(1);
     });
 
     testWidgets('renders the header image when the sheet has one', (

@@ -2559,6 +2559,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signupClaimError => 'Failed to claim slot. Please try again.';
+
+  @override
+  String get signupDuplicateEntryError =>
+      'You\'ve already signed up for this slot with this email or phone number.';
+
+  @override
+  String get signupSlotEntriesHeading => 'Signed Up';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).

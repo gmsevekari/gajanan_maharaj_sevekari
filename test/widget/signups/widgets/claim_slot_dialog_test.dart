@@ -124,6 +124,23 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// Fills name/phone/email with values that pass validation, so a test
+  /// that isn't specifically exercising those fields can get past them.
+  Future<void> fillRequiredFields(
+    WidgetTester tester, {
+    String name = 'Jane',
+  }) async {
+    await tester.enterText(find.byKey(const Key('claimNameField')), name);
+    await tester.enterText(
+      find.byKey(const Key('claimPhoneField')),
+      '1234567890',
+    );
+    await tester.enterText(
+      find.byKey(const Key('claimEmailField')),
+      'jane@example.com',
+    );
+  }
+
   group('ClaimSlotDialog', () {
     testWidgets(
       'renders name/phone/email/note but not pledge or join code by default',
@@ -184,6 +201,43 @@ void main() {
       expect(find.text('Please enter a name'), findsOneWidget);
     });
 
+    testWidgets('validates that phone and email are required', (tester) async {
+      await openDialog(
+        tester,
+        sheetId: openSheetId,
+        slotId: plainSlotId,
+        requiresJoinCode: false,
+      );
+
+      await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Phone number is required'), findsOneWidget);
+      expect(find.text('Email is required'), findsOneWidget);
+    });
+
+    testWidgets('validates phone and email format', (tester) async {
+      await openDialog(
+        tester,
+        sheetId: openSheetId,
+        slotId: plainSlotId,
+        requiresJoinCode: false,
+      );
+
+      await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+      await tester.enterText(find.byKey(const Key('claimPhoneField')), '123');
+      await tester.enterText(
+        find.byKey(const Key('claimEmailField')),
+        'not-an-email',
+      );
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter a valid phone number'), findsOneWidget);
+      expect(find.text('Please enter a valid email address'), findsOneWidget);
+    });
+
     testWidgets(
       'shows a confirmation dialog before submitting, and cancelling it does not claim',
       (tester) async {
@@ -194,7 +248,7 @@ void main() {
           requiresJoinCode: false,
         );
 
-        await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+        await fillRequiredFields(tester);
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
 
@@ -219,7 +273,7 @@ void main() {
         requiresJoinCode: false,
       );
 
-      await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+      await fillRequiredFields(tester);
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Yes'));
@@ -249,7 +303,7 @@ void main() {
         requiresJoinCode: false,
       );
 
-      await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+      await fillRequiredFields(tester);
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Yes'));
@@ -269,7 +323,7 @@ void main() {
         requiresJoinCode: true,
       );
 
-      await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+      await fillRequiredFields(tester);
       await tester.enterText(
         find.byKey(const Key('claimJoinCodeField')),
         'WRONG',
@@ -282,6 +336,44 @@ void main() {
       expect(find.text('Invalid Join Code!'), findsOneWidget);
       expect(find.byType(ClaimSlotDialog), findsOneWidget);
     });
+
+    testWidgets(
+      'shows a visible error and stays open for a duplicate email or phone',
+      (tester) async {
+        // donationSlotId has capacity 5, so this exercises the duplicate
+        // check specifically rather than slot_full (which runs after it
+        // but would otherwise also apply on a capacity-1 slot).
+        await service.claimSlot(
+          sheetId: openSheetId,
+          slotId: donationSlotId,
+          name: 'First',
+          phone: '1234567890',
+          email: 'jane@example.com',
+        );
+
+        await openDialog(
+          tester,
+          sheetId: openSheetId,
+          slotId: donationSlotId,
+          requiresJoinCode: false,
+        );
+
+        await fillRequiredFields(tester, name: 'Jane Again');
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(
+            "You've already signed up for this slot with this email or "
+            'phone number.',
+          ),
+          findsOneWidget,
+        );
+        expect(find.byType(ClaimSlotDialog), findsOneWidget);
+      },
+    );
 
     testWidgets('submits phone, email, and note when filled in', (
       tester,
@@ -339,7 +431,7 @@ void main() {
           requiresJoinCode: false,
         );
 
-        await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+        await fillRequiredFields(tester);
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
 
@@ -357,7 +449,7 @@ void main() {
         requiresJoinCode: false,
       );
 
-      await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+      await fillRequiredFields(tester);
       await tester.enterText(find.byKey(const Key('claimPledgeField')), '25.5');
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
@@ -420,7 +512,7 @@ void main() {
           requiresJoinCode: true,
         );
 
-        await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+        await fillRequiredFields(tester);
         await tester.enterText(
           find.byKey(const Key('claimJoinCodeField')),
           'abc123',
@@ -496,7 +588,7 @@ void main() {
       await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+      await fillRequiredFields(tester);
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Yes'));
@@ -549,7 +641,7 @@ void main() {
         await tester.tap(find.text('Open'));
         await tester.pumpAndSettle();
 
-        await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+        await fillRequiredFields(tester);
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Yes'));

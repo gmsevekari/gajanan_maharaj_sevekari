@@ -478,6 +478,95 @@ void main() {
       expect(result, {'success': false, 'error': 'not_found'});
     });
 
+    test('rejects a second claim on the same slot with the same email, '
+        'without creating an entry', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 5));
+      await service.claimSlot(
+        sheetId: sheetId,
+        slotId: slotId,
+        name: 'Jane',
+        email: 'jane@example.com',
+      );
+
+      final result = await service.claimSlot(
+        sheetId: sheetId,
+        slotId: slotId,
+        name: 'Jane Again',
+        email: 'JANE@EXAMPLE.COM', // case-insensitive match
+      );
+
+      expect(result, {'success': false, 'error': 'duplicate_entry'});
+      final entries = await service.getAllEntries(sheetId).first;
+      expect(entries, hasLength(1));
+    });
+
+    test('rejects a second claim on the same slot with the same phone '
+        'regardless of formatting, without creating an entry', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 5));
+      await service.claimSlot(
+        sheetId: sheetId,
+        slotId: slotId,
+        name: 'Jane',
+        phone: '(123) 456-7890',
+      );
+
+      final result = await service.claimSlot(
+        sheetId: sheetId,
+        slotId: slotId,
+        name: 'Jane Again',
+        phone: '123-456-7890',
+      );
+
+      expect(result, {'success': false, 'error': 'duplicate_entry'});
+      final entries = await service.getAllEntries(sheetId).first;
+      expect(entries, hasLength(1));
+    });
+
+    test('allows the same email/phone to claim a different slot on the same '
+        'sheet', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slot1 = await service.addSlot(sheetId, buildSlot(capacity: 5));
+      final slot2 = await service.addSlot(sheetId, buildSlot(capacity: 5));
+      await service.claimSlot(
+        sheetId: sheetId,
+        slotId: slot1,
+        name: 'Jane',
+        email: 'jane@example.com',
+        phone: '1234567890',
+      );
+
+      final result = await service.claimSlot(
+        sheetId: sheetId,
+        slotId: slot2,
+        name: 'Jane',
+        email: 'jane@example.com',
+        phone: '1234567890',
+      );
+
+      expect(result['success'], true);
+      final entries = await service.getAllEntries(sheetId).first;
+      expect(entries, hasLength(2));
+    });
+
+    test('allows two claims on the same slot when neither has an email or '
+        'phone to match on', () async {
+      final sheetId = await service.createSheet(buildSheet());
+      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 5));
+      await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'A');
+
+      final result = await service.claimSlot(
+        sheetId: sheetId,
+        slotId: slotId,
+        name: 'B',
+      );
+
+      expect(result['success'], true);
+      final entries = await service.getAllEntries(sheetId).first;
+      expect(entries, hasLength(2));
+    });
+
     test(
       // NOTE: fake_cloud_firestore's runTransaction is a passthrough
       // (`_DummyTransaction`) with no locking or retry — it does not

@@ -50,6 +50,15 @@ class SignupSheetHeaderImageCard extends StatelessWidget {
                     width: double.infinity,
                     fit: BoxFit.fitWidth,
                     semanticLabel: l10n.signupHeaderImageLabel,
+                    loadingBuilder: (context, child, progress) {
+                      if (progress == null) return child;
+                      return Container(
+                        constraints: const BoxConstraints(minHeight: 150),
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        child: const CircularProgressIndicator(),
+                      );
+                    },
                     errorBuilder: (context, error, stackTrace) => Container(
                       constraints: const BoxConstraints(minHeight: 150),
                       width: double.infinity,

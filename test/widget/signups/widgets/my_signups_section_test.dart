@@ -3,15 +3,32 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/my_signups_section.dart';
 
 void main() {
-  Widget wrap(Widget child) {
+  Widget wrap(Widget child, {Locale locale = const Locale('en')}) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
+      locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(body: child),
+    );
+  }
+
+  SignupSlot buildSlot({
+    String id = 's1',
+    String labelEn = 'Week 1',
+    String labelMr = 'आठवडा १',
+  }) {
+    return SignupSlot(
+      id: id,
+      labelEn: labelEn,
+      labelMr: labelMr,
+      capacity: 3,
+      sortOrder: 0,
+      createdAt: DateTime.now(),
     );
   }
 
@@ -19,13 +36,21 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      wrap(MySignupsSection(entries: const [], onCancelEntry: (_) {})),
+      wrap(
+        MySignupsSection(
+          entries: const [],
+          slots: const [],
+          onCancelEntry: (_) {},
+        ),
+      ),
     );
 
     expect(find.text("You haven't signed up for anything yet"), findsOneWidget);
   });
 
-  testWidgets('renders each entry with a Cancel button', (tester) async {
+  testWidgets('renders each entry with its slot label and a Cancel button', (
+    tester,
+  ) async {
     final entries = [
       SignupEntry(
         id: 'e1',
@@ -40,14 +65,45 @@ void main() {
         joinedAt: DateTime.now(),
       ),
     ];
+    final slots = [
+      buildSlot(id: 's1', labelEn: 'Week 1'),
+      buildSlot(id: 's2', labelEn: 'Week 2'),
+    ];
 
     await tester.pumpWidget(
-      wrap(MySignupsSection(entries: entries, onCancelEntry: (_) {})),
+      wrap(
+        MySignupsSection(entries: entries, slots: slots, onCancelEntry: (_) {}),
+      ),
     );
 
     expect(find.text('Jane'), findsOneWidget);
+    expect(find.text('Week 1'), findsOneWidget);
     expect(find.text('John'), findsOneWidget);
+    expect(find.text('Week 2'), findsOneWidget);
     expect(find.text('Cancel'), findsNWidgets(2));
+  });
+
+  testWidgets('falls back to the Marathi slot label when locale is mr', (
+    tester,
+  ) async {
+    final entries = [
+      SignupEntry(
+        id: 'e1',
+        slotId: 's1',
+        name: 'Jane',
+        joinedAt: DateTime.now(),
+      ),
+    ];
+    final slots = [buildSlot(id: 's1', labelMr: 'आठवडा १')];
+
+    await tester.pumpWidget(
+      wrap(
+        MySignupsSection(entries: entries, slots: slots, onCancelEntry: (_) {}),
+        locale: const Locale('mr'),
+      ),
+    );
+
+    expect(find.text('आठवडा १'), findsOneWidget);
   });
 
   testWidgets('invokes onCancelEntry with the tapped entry', (tester) async {
@@ -61,7 +117,11 @@ void main() {
 
     await tester.pumpWidget(
       wrap(
-        MySignupsSection(entries: [entry], onCancelEntry: (e) => cancelled = e),
+        MySignupsSection(
+          entries: [entry],
+          slots: [buildSlot()],
+          onCancelEntry: (e) => cancelled = e,
+        ),
       ),
     );
 

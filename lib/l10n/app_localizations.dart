@@ -4922,6 +4922,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to claim slot. Please try again.'**
   String get signupClaimError;
+
+  /// No description provided for @signupDuplicateEntryError.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve already signed up for this slot with this email or phone number.'**
+  String get signupDuplicateEntryError;
+
+  /// No description provided for @signupSlotEntriesHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed Up'**
+  String get signupSlotEntriesHeading;
 }
 
 class _AppLocalizationsDelegate

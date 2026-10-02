@@ -2573,4 +2573,11 @@ class AppLocalizationsMr extends AppLocalizations {
   @override
   String get signupClaimError =>
       'स्लॉट क्लेम करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get signupDuplicateEntryError =>
+      'तुम्ही या ईमेल किंवा फोन नंबरने या स्लॉटसाठी आधीच साइन अप केले आहे.';
+
+  @override
+  String get signupSlotEntriesHeading => 'साइन अप केलेले';
 }

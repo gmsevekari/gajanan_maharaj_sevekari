@@ -68,27 +68,18 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
       _sheetId = newId;
       _sheetStream = _service.getSheetById(_sheetId);
       _slotsStream = _service.getSlots(_sheetId);
-      _updateEntriesStream();
-    }
-  }
-
-  /// Caches the "my entries" stream by field, like [_sheetStream]/
-  /// [_slotsStream], instead of creating it inline in build() - otherwise
-  /// every rebuild would tear down and resubscribe it, resetting "My
-  /// Signups" to loading and churning a Firestore listener for no reason.
-  void _updateEntriesStream() {
-    if (_deviceId != null) {
-      _entriesStream = _service.getEntriesByDevice(_sheetId, _deviceId!);
+      // All entries, not just this device's - the slot tiles below need
+      // every devotee's name to show who's signed up, and "My Signups" is
+      // just this same stream filtered client-side by deviceId, so one
+      // listener covers both instead of running two.
+      _entriesStream = _service.getAllEntries(_sheetId);
     }
   }
 
   Future<void> _getDeviceId() async {
     final id = await UniqueIdService.getUniqueId();
     if (mounted) {
-      setState(() {
-        _deviceId = id;
-        _updateEntriesStream();
-      });
+      setState(() => _deviceId = id);
     }
   }
 
@@ -241,8 +232,11 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
 
               return StreamBuilder<List<SignupEntry>>(
                 stream: _entriesStream,
-                builder: (context, myEntriesSnapshot) {
-                  final myEntries = myEntriesSnapshot.data ?? const [];
+                builder: (context, entriesSnapshot) {
+                  final allEntries = entriesSnapshot.data ?? const [];
+                  final myEntries = allEntries
+                      .where((e) => e.deviceId == _deviceId)
+                      .toList();
 
                   return ListView(
                     padding: const EdgeInsets.all(16),
@@ -262,6 +256,17 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
                               width: double.infinity,
                               fit: BoxFit.fitWidth,
                               semanticLabel: l10n.signupHeaderImageLabel,
+                              loadingBuilder: (context, child, progress) {
+                                if (progress == null) return child;
+                                return Container(
+                                  constraints: const BoxConstraints(
+                                    minHeight: 180,
+                                  ),
+                                  width: double.infinity,
+                                  alignment: Alignment.center,
+                                  child: const CircularProgressIndicator(),
+                                );
+                              },
                               errorBuilder: (context, error, stackTrace) =>
                                   Container(
                                     constraints: const BoxConstraints(
@@ -292,12 +297,13 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
                       ],
                       MySignupsSection(
                         entries: myEntries,
+                        slots: slots,
                         onCancelEntry: (entry) =>
                             _confirmCancelEntry(entry, l10n),
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        l10n.signupSlotsHeading,
+                        l10n.signupSlotsSectionHeading,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -306,6 +312,9 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
                       for (final slot in slots)
                         SignupSlotTile(
                           slot: slot,
+                          entries: allEntries
+                              .where((e) => e.slotId == slot.id)
+                              .toList(),
                           onTap: slot.claimedCount >= slot.capacity
                               ? null
                               : () => _claimSlot(sheet, slot, l10n),

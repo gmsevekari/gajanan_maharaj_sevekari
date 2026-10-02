@@ -966,5 +966,7 @@
   "signupClaimConfirmTitle": "साइन-अप कन्फर्म करा",
   "signupClaimConfirmQuestion": "हे साइन-अप सबमिट करायचे?",
   "signupClaimSuccess": "तुम्ही साइन अप केले आहे!",
-  "signupClaimError": "स्लॉट क्लेम करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा."
+  "signupClaimError": "स्लॉट क्लेम करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+  "signupDuplicateEntryError": "तुम्ही या ईमेल किंवा फोन नंबरने या स्लॉटसाठी आधीच साइन अप केले आहे.",
+  "signupSlotEntriesHeading": "साइन अप केलेले"
 }

@@ -110,12 +110,8 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
         sheetId: widget.sheetId,
         slotId: widget.slot.id!,
         name: _nameController.text.trim(),
-        phone: _phoneController.text.trim().isEmpty
-            ? null
-            : _phoneController.text.trim(),
-        email: _emailController.text.trim().isEmpty
-            ? null
-            : _emailController.text.trim(),
+        phone: _phoneController.text.trim(),
+        email: _emailController.text.trim(),
         pledgeAmount: pledgeText.isEmpty ? null : double.tryParse(pledgeText),
         note: _noteController.text.trim().isEmpty
             ? null
@@ -146,6 +142,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
       _errorText = switch (result['error']) {
         'slot_full' => l10n.signupSlotFullError,
         'invalid_join_code' => l10n.invalidJoinCode,
+        'duplicate_entry' => l10n.signupDuplicateEntryError,
         _ => l10n.signupClaimError,
       };
     });
@@ -191,6 +188,19 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                   labelText: l10n.signupEntryPhoneLabel,
                   border: const OutlineInputBorder(),
                 ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return l10n.phoneRequired;
+                  }
+                  final digitCount = value
+                      .trim()
+                      .replaceAll(RegExp(r'\D'), '')
+                      .length;
+                  if (digitCount < 8) {
+                    return l10n.invalidPhoneError;
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -202,6 +212,18 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                   labelText: l10n.signupEntryEmailLabel,
                   border: const OutlineInputBorder(),
                 ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return l10n.emailRequired;
+                  }
+                  final emailRegex = RegExp(
+                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                  );
+                  if (!emailRegex.hasMatch(value.trim())) {
+                    return l10n.invalidEmail;
+                  }
+                  return null;
+                },
               ),
               if (showPledge) ...[
                 const SizedBox(height: 12),

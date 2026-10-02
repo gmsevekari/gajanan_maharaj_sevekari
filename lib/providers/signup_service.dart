@@ -290,13 +290,58 @@ class SignupService {
     await _entriesRef(sheetId).doc(entry.id).update(fields);
   }
 
+  /// True if [slotId] already has an entry matching [email] or [phone]
+  /// (case/format-insensitive). Checked before [claimSlot] opens its
+  /// transaction, since Firestore transactions can't run queries - this is
+  /// a best-effort UX guard against accidental double sign-up, not a hard
+  /// security boundary, so a race between two near-simultaneous claims with
+  /// the same contact info could still both succeed.
+  Future<bool> _hasDuplicateEntry({
+    required String sheetId,
+    required String slotId,
+    String? email,
+    String? phone,
+  }) async {
+    final normalizedEmail = email?.trim().toLowerCase();
+    final normalizedPhone = phone?.replaceAll(RegExp(r'\D'), '');
+    if ((normalizedEmail == null || normalizedEmail.isEmpty) &&
+        (normalizedPhone == null || normalizedPhone.isEmpty)) {
+      return false;
+    }
+
+    final snapshot = await _entriesRef(
+      sheetId,
+    ).where('slotId', isEqualTo: slotId).get();
+
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+      final existingEmail = (data['email'] as String?)?.trim().toLowerCase();
+      final existingPhone = (data['phone'] as String?)?.replaceAll(
+        RegExp(r'\D'),
+        '',
+      );
+      if (normalizedEmail != null &&
+          normalizedEmail.isNotEmpty &&
+          existingEmail == normalizedEmail) {
+        return true;
+      }
+      if (normalizedPhone != null &&
+          normalizedPhone.isNotEmpty &&
+          existingPhone == normalizedPhone) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /// Claims a slot for a devotee. Runs in a transaction so a slot can
   /// never be over-claimed: reads the sheet (for join-code validation) and
   /// the slot (for capacity), then writes the entry and increments the
   /// slot's `claimedCount` together, or writes nothing at all.
   ///
   /// Returns `{'success': true, 'entryId': ...}` or
-  /// `{'success': false, 'error': 'not_found' | 'invalid_join_code' | 'slot_full'}`.
+  /// `{'success': false, 'error': 'not_found' | 'invalid_join_code' |
+  /// 'slot_full' | 'duplicate_entry'}`.
   Future<Map<String, dynamic>> claimSlot({
     required String sheetId,
     required String slotId,
@@ -307,7 +352,16 @@ class SignupService {
     double? pledgeAmount,
     String? note,
     String? joinCode,
-  }) {
+  }) async {
+    if (await _hasDuplicateEntry(
+      sheetId: sheetId,
+      slotId: slotId,
+      email: email,
+      phone: phone,
+    )) {
+      return {'success': false, 'error': 'duplicate_entry'};
+    }
+
     final sheetRef = _sheetsRef.doc(sheetId);
     final slotRef = _slotsRef(sheetId).doc(slotId);
     final entryRef = _entriesRef(sheetId).doc();

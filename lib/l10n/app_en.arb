@@ -983,5 +983,7 @@
   "signupClaimConfirmTitle": "Confirm Signup",
   "signupClaimConfirmQuestion": "Submit this signup?",
   "signupClaimSuccess": "You're signed up!",
-  "signupClaimError": "Failed to claim slot. Please try again."
+  "signupClaimError": "Failed to claim slot. Please try again.",
+  "signupDuplicateEntryError": "You've already signed up for this slot with this email or phone number.",
+  "signupSlotEntriesHeading": "Signed Up"
 }
