@@ -185,6 +185,44 @@ void main() {
       expect(find.text('Sign up not found'), findsOneWidget);
     });
 
+    testWidgets('tapping home icon pops until first route', (tester) async {
+      await pumpDetailScreen(tester, sheetId: 'missing_sheet');
+
+      expect(find.byType(IconButton), findsWidgets);
+      await tester.tap(
+        find
+            .byWidgetPredicate((w) => w is IconButton && w.onPressed != null)
+            .first,
+      );
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('tapping settings icon navigates to settings route', (
+      tester,
+    ) async {
+      var navigatedToSettings = false;
+      await pumpDetailScreen(
+        tester,
+        sheetId: 'missing_sheet',
+        routes: {
+          Routes.settings: (context) {
+            navigatedToSettings = true;
+            return const Scaffold(body: Text('Settings Mock'));
+          },
+        },
+      );
+
+      await tester.tap(
+        find
+            .byWidgetPredicate((w) => w is IconButton && w.onPressed != null)
+            .at(1),
+      );
+      await tester.pumpAndSettle();
+
+      expect(navigatedToSettings, isTrue);
+      expect(find.text('Settings Mock'), findsOneWidget);
+    });
+
     testWidgets('renders sheet info, join code, and duplicate button', (
       tester,
     ) async {
@@ -486,14 +524,14 @@ void main() {
         locale: const Locale('mr'),
       );
 
-      expect(find.text('साइन अप तपशील'), findsOneWidget);
+      expect(find.text('साइन अप डिटेल्स'), findsOneWidget);
       expect(find.text('प्रसाद सेवा').first, findsOneWidget);
       expect(find.text('मदत').first, findsOneWidget);
-      expect(find.text('प्रत तयार करा'), findsOneWidget);
-      expect(find.text('शेअर करा'), findsOneWidget);
-      await tester.tap(find.text('शेअर करा'));
+      expect(find.text('डुप्लीकेट करा'), findsOneWidget);
+      expect(find.text('शेअर'), findsOneWidget);
+      await tester.tap(find.text('शेअर'));
       await tester.pumpAndSettle();
-      expect(find.text('स्लॉट्स आणि नोंदी'), findsOneWidget);
+      expect(find.text('स्लॉट्स आणि एंट्रीज'), findsOneWidget);
     });
 
     testWidgets('falls back to the English description when Marathi is blank', (
@@ -1032,7 +1070,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Share'));
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Share'));
       await tester.pumpAndSettle();
     });
 
@@ -1065,7 +1103,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Export Summary'));
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Export Summary'));
       await tester.pumpAndSettle();
     });
 
@@ -1113,7 +1151,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        await tester.tap(find.widgetWithText(OutlinedButton, 'Export Summary'));
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Export Summary'));
         await tester.pumpAndSettle();
 
         expect(find.text('Failed to export image'), findsOneWidget);

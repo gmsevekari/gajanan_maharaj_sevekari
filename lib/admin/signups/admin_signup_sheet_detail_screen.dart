@@ -20,6 +20,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -461,7 +462,20 @@ class _AdminSignupSheetDetailScreenState
         : '';
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.adminSignupDetailTitle)),
+      appBar: AppBar(
+        title: Text(l10n.adminSignupDetailTitle),
+        actions: [
+          IconButton(
+            icon: const ThemedIcon(LogicalIcon.home),
+            onPressed: () =>
+                Navigator.of(context).popUntil((route) => route.isFirst),
+          ),
+          IconButton(
+            icon: const ThemedIcon(LogicalIcon.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          ),
+        ],
+      ),
       body: StreamBuilder<SignupSheet?>(
         stream: _sheetStream,
         builder: (context, sheetSnapshot) {

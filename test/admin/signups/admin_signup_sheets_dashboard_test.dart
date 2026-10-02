@@ -231,8 +231,8 @@ void main() {
       expect(find.text('साडी सेवा प्रकाशित'), findsOneWidget);
       expect(find.text('अन्नकूट बंद'), findsOneWidget);
       expect(find.text('सर्व'), findsOneWidget);
-      expect(find.text('मसुदा'), findsNWidgets(2)); // chip + badge
-      expect(find.text('प्रकाशित'), findsNWidgets(2)); // chip + badge
+      expect(find.text('ड्राफ्ट'), findsNWidgets(2)); // chip + badge
+      expect(find.text('पब्लिश्ड'), findsNWidgets(2)); // chip + badge
       expect(find.text('बंद'), findsNWidgets(2)); // chip + badge
     });
 

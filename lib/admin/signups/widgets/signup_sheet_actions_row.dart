@@ -27,12 +27,12 @@ class SignupSheetActionsRow extends StatelessWidget {
           label: Text(l10n.signupDuplicateButton),
           onPressed: onDuplicate,
         ),
-        OutlinedButton.icon(
+        ElevatedButton.icon(
           icon: const Icon(Icons.share, size: 16),
           label: Text(l10n.signupShareButton),
           onPressed: onShare,
         ),
-        OutlinedButton.icon(
+        ElevatedButton.icon(
           icon: const Icon(Icons.image_outlined, size: 16),
           label: Text(l10n.signupExportButton),
           onPressed: onExport,

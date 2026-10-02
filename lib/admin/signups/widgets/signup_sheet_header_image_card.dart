@@ -39,20 +39,26 @@ class SignupSheetHeaderImageCard extends StatelessWidget {
             if (hasImage) ...[
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  headerImageUrl!,
-                  height: 150,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  semanticLabel: l10n.signupHeaderImageLabel,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    height: 150,
+                child: ConstrainedBox(
+                  // No fixed height: the image lays out at its own
+                  // resolution (width-matched, aspect-ratio preserved) so
+                  // nothing is cropped, with this minimum only as a floor
+                  // for small images and a stable placeholder while loading.
+                  constraints: const BoxConstraints(minHeight: 150),
+                  child: Image.network(
+                    headerImageUrl!,
                     width: double.infinity,
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.broken_image_outlined,
-                      color: theme.appColors.secondaryText,
+                    fit: BoxFit.fitWidth,
+                    semanticLabel: l10n.signupHeaderImageLabel,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      constraints: const BoxConstraints(minHeight: 150),
+                      width: double.infinity,
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.broken_image_outlined,
+                        color: theme.appColors.secondaryText,
+                      ),
                     ),
                   ),
                 ),

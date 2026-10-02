@@ -2236,13 +2236,13 @@ class AppLocalizationsMr extends AppLocalizations {
   String get adminCreateSignupTitle => 'साइन अप तयार करा';
 
   @override
-  String get signupTitleEnLabel => 'शीर्षक (इंग्रजी)';
+  String get signupTitleEnLabel => 'टायटल (इंग्रजी)';
 
   @override
-  String get signupTitleEnRequired => 'कृपया इंग्रजी शीर्षक एंटर करा';
+  String get signupTitleEnRequired => 'कृपया इंग्रजी टायटल एंटर करा';
 
   @override
-  String get signupTitleMrLabel => 'शीर्षक (मराठी, ऐच्छिक)';
+  String get signupTitleMrLabel => 'टायटल (मराठी, ऐच्छिक)';
 
   @override
   String get signupDescEnLabel => 'वर्णन (इंग्रजी)';
@@ -2258,14 +2258,14 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSlotsHeading => 'स्लॉट्स';
 
   @override
-  String get signupAddSlotButton => 'स्लॉट जोडा';
+  String get signupAddSlotButton => 'स्लॉट   ॲड करा';
 
   @override
   String get signupNoSlotsMessage =>
-      'अजून स्लॉट्स नाहीत. एक तयार करण्यासाठी \"स्लॉट जोडा\" दाबा.';
+      'अजून स्लॉट्स नाहीत. एक तयार करण्यासाठी \"स्लॉट ॲड करा\" दाबा.';
 
   @override
-  String get signupSlotsRequiredError => 'कृपया किमान एक स्लॉट जोडा';
+  String get signupSlotsRequiredError => 'कृपया किमान एक स्लॉट ॲड करा';
 
   @override
   String get signupSlotHeading => 'स्लॉट';
@@ -2286,13 +2286,13 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSlotCapacityRequired => 'कृपया क्षमता एंटर करा';
 
   @override
-  String get signupSlotCapacityInvalid => 'क्षमता ही सकारात्मक संख्या असावी';
+  String get signupSlotCapacityInvalid => 'क्षमता ही पॉझिटिव्ह संख्या असावी';
 
   @override
   String get signupSlotSuggestedAmountLabel => 'सुचवलेली रक्कम (ऐच्छिक)';
 
   @override
-  String get signupSlotSuggestedAmountInvalid => 'कृपया वैध रक्कम एंटर करा';
+  String get signupSlotSuggestedAmountInvalid => 'कृपया व्हॅलिड रक्कम एंटर करा';
 
   @override
   String get signupSlotSetDateLabel => 'तारीख सेट करा';
@@ -2301,7 +2301,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSlotNoDateLabel => 'तारीख सेट केलेली नाही';
 
   @override
-  String get signupRemoveSlotTooltip => 'स्लॉट काढा';
+  String get signupRemoveSlotTooltip => 'स्लॉट रिमूव्ह करा';
 
   @override
   String get signupMoveSlotUpTooltip => 'स्लॉट वर हलवा';
@@ -2310,19 +2310,19 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupMoveSlotDownTooltip => 'स्लॉट खाली हलवा';
 
   @override
-  String get signupSaveButton => 'जतन करा';
+  String get signupSaveButton => 'सेव्ह करा';
 
   @override
   String get signupHeaderImageLabel => 'हेडर इमेज';
 
   @override
-  String get signupAddImageButton => 'इमेज जोडा';
+  String get signupAddImageButton => 'इमेज ॲड करा';
 
   @override
   String get signupReplaceImageButton => 'इमेज बदला';
 
   @override
-  String get signupRemoveImageButton => 'इमेज काढा';
+  String get signupRemoveImageButton => 'इमेज रिमूव्ह करा';
 
   @override
   String get signupImageTooLargeError => 'इमेज 2 MB पेक्षा लहान असावी';
@@ -2339,11 +2339,11 @@ class AppLocalizationsMr extends AppLocalizations {
       'इमेज काढण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get signupRemoveImageConfirmTitle => 'इमेज काढायची आहे का?';
+  String get signupRemoveImageConfirmTitle => 'इमेज रिमूव्ह करायची आहे का?';
 
   @override
   String get signupRemoveImageConfirmMessage =>
-      'तुम्हाला खात्री आहे की तुम्ही हेडर इमेज काढू इच्छिता?';
+      'तुम्हाला खात्री आहे की तुम्ही हेडर इमेज रिमूव्ह करू इच्छिता?';
 
   @override
   String get signupExportTagline =>
@@ -2360,16 +2360,16 @@ class AppLocalizationsMr extends AppLocalizations {
   String get adminSignupsDashboardTitle => 'साइन अप्स';
 
   @override
-  String get signupStatusLabel => 'स्थिती';
+  String get signupStatusLabel => 'स्टेटस';
 
   @override
   String get signupStatusAll => 'सर्व';
 
   @override
-  String get signupStatusDraft => 'मसुदा';
+  String get signupStatusDraft => 'ड्राफ्ट';
 
   @override
-  String get signupStatusPublished => 'प्रकाशित';
+  String get signupStatusPublished => 'पब्लिश्ड';
 
   @override
   String get signupStatusClosed => 'बंद';
@@ -2379,7 +2379,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get signupNoGroupAssigned =>
-      'प्रशासकासाठी कोणताही गट नियुक्त केलेला नाही';
+      'ॲडमिन साठी कोणताही ग्रुप असाइन केलेला नाही';
 
   @override
   String get adminSignupsError =>
@@ -2395,28 +2395,28 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupJoinCodePrefix => 'जॉईन कोड: ';
 
   @override
-  String get adminSignupDetailTitle => 'साइन अप तपशील';
+  String get adminSignupDetailTitle => 'साइन अप डिटेल्स';
 
   @override
-  String get signupDuplicateButton => 'प्रत तयार करा';
+  String get signupDuplicateButton => 'डुप्लीकेट करा';
 
   @override
-  String get signupDuplicating => 'साइन अपची प्रत तयार करत आहे...';
+  String get signupDuplicating => 'साइन अप डुप्लिकेट करत आहे...';
 
   @override
-  String get signupDuplicateSuccess => 'साइन अपची प्रत यशस्वीरित्या तयार झाली';
+  String get signupDuplicateSuccess => 'साइन अप डुप्लिकेट यशस्वी झाले';
 
   @override
-  String get signupDuplicateError => 'साइन अपची प्रत तयार करण्यात अयशस्वी';
+  String get signupDuplicateError => 'साइन अप डुप्लिकेट करण्यात अयशस्वी';
 
   @override
-  String get signupShareButton => 'शेअर करा';
+  String get signupShareButton => 'शेअर';
 
   @override
-  String get signupExportButton => 'सारांश निर्यात करा';
+  String get signupExportButton => 'समरी एक्सपोर्ट';
 
   @override
-  String get signupExporting => 'सारांश प्रतिमा तयार करत आहे...';
+  String get signupExporting => 'समरी तयार करत आहे...';
 
   @override
   String get signupSharePrefix => 'साइन अप';
@@ -2425,31 +2425,31 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupShareLinkPrefix => 'साइन अप लिंक';
 
   @override
-  String get signupStatusUpdateError => 'स्थिती अपडेट करण्यात अयशस्वी';
+  String get signupStatusUpdateError => 'स्टेटस अपडेट करण्यात अयशस्वी';
 
   @override
   String get signupCopyJoinCodeTooltip => 'जॉईन कोड कॉपी करा';
 
   @override
-  String get signupDateRange => 'तारीख श्रेणी';
+  String get signupDateRange => 'तारीख रेंज';
 
   @override
-  String get signupSlotsSectionHeading => 'स्लॉट्स आणि नोंदी';
+  String get signupSlotsSectionHeading => 'स्लॉट्स आणि एंट्रीज';
 
   @override
   String get signupAddEntryButton => 'भाविक जोडा';
 
   @override
-  String get signupEditEntryTitle => 'नोंद संपादित करा';
+  String get signupEditEntryTitle => 'एंट्री एडिट करा';
 
   @override
-  String get signupAddEntryTitle => 'भाविकाची नोंद जोडा';
+  String get signupAddEntryTitle => 'भाविकची एंट्री जोडा';
 
   @override
   String get signupEntryNameLabel => 'नाव';
 
   @override
-  String get signupEntryNameRequired => 'कृपया नाव प्रविष्ट करा';
+  String get signupEntryNameRequired => 'कृपया नाव एंटर करा';
 
   @override
   String get signupEntryPhoneLabel => 'फोन';
@@ -2464,35 +2464,35 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupEntryPledgeLabel => 'संकल्पित रक्कम';
 
   @override
-  String get signupRemoveEntryTitle => 'नोंद काढा';
+  String get signupRemoveEntryTitle => 'एंट्री काढा';
 
   @override
   String get signupRemoveEntryConfirm =>
-      'तुम्हाला ही नोंद नक्की काढायची आहे का?';
+      'तुम्हाला ही एंट्री नक्की काढायची आहे का?';
 
   @override
-  String get signupEntryRemoveSuccess => 'नोंद यशस्वीरित्या काढली';
+  String get signupEntryRemoveSuccess => 'एंट्री यशस्वीरित्या काढली';
 
   @override
-  String get signupEntryRemoveError => 'नोंद काढण्यात अयशस्वी';
+  String get signupEntryRemoveError => 'एंट्री काढण्यात अयशस्वी';
 
   @override
-  String get signupEntryAddSuccess => 'भाविक यशस्वीरित्या जोडला';
+  String get signupEntryAddSuccess => 'भाविक ॲड केले';
 
   @override
-  String get signupEntryAddError => 'भाविक जोडण्यात अयशस्वी';
+  String get signupEntryAddError => 'भाविक ॲड करण्यात अयशस्वी';
 
   @override
-  String get signupEntryEditSuccess => 'नोंद यशस्वीरित्या अपडेट केली';
+  String get signupEntryEditSuccess => 'एंट्री यशस्वीरित्या अपडेट केली';
 
   @override
-  String get signupEntryEditError => 'नोंद अपडेट करण्यात अयशस्वी';
+  String get signupEntryEditError => 'एंट्री अपडेट करण्यात अयशस्वी';
 
   @override
-  String get signupSlotFullError => 'हा स्लॉट आधीच भरला आहे';
+  String get signupSlotFullError => 'हा स्लॉट पूर्ण भरला आहे';
 
   @override
-  String get signupSlotFullBadge => 'पूर्ण भरले';
+  String get signupSlotFullBadge => 'स्लॉट पूर्ण';
 
   @override
   String signupSlotClaimedCount(String claimed, String capacity) {
@@ -2515,13 +2515,13 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupTotalSlotsLabel => 'एकूण स्लॉट्स';
 
   @override
-  String get signupTotalClaimsLabel => 'एकूण साइन-अप';
+  String get signupTotalClaimsLabel => 'एकूण साइन-अप्स';
 
   @override
-  String get signupFillPercentageLabel => 'भरले';
+  String get signupFillPercentageLabel => 'भरलेले';
 
   @override
-  String get signupExportFailed => 'प्रतिमा निर्यात करण्यात अयशस्वी';
+  String get signupExportFailed => 'इमेज एक्सपोर्ट करण्यात अयशस्वी';
 
   @override
   String get signupNotFound => 'साइन अप सापडले नाही';
@@ -2530,13 +2530,13 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupsListTitle => 'साइन अप्स';
 
   @override
-  String get signupInvalidGroupError => 'अवैध गट';
+  String get signupInvalidGroupError => 'अवैध ग्रुप';
 
   @override
   String get signupNoActiveSignups => 'कोणतेही सक्रिय साइन अप नाही';
 
   @override
-  String get signupMySignupsHeading => 'माझे साइन-अप';
+  String get signupMySignupsHeading => 'माझे साइन-अप्स';
 
   @override
   String get signupNoMySignups => 'आपण अद्याप कशासाठीही साइन अप केलेले नाही';
@@ -2562,7 +2562,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupClaimSlotTitle => 'स्लॉट क्लेम करा';
 
   @override
-  String get signupClaimConfirmTitle => 'साइन-अपची पुष्टी करा';
+  String get signupClaimConfirmTitle => 'साइन-अप कन्फर्म करा';
 
   @override
   String get signupClaimConfirmQuestion => 'हे साइन-अप सबमिट करायचे?';
