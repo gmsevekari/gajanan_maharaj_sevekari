@@ -2458,7 +2458,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupEntryEmailLabel => 'ईमेल';
 
   @override
-  String get signupEntryNoteLabel => 'नोंद';
+  String get signupEntryNoteLabel => 'नोट';
 
   @override
   String get signupEntryPledgeLabel => 'संकल्पित रक्कम';

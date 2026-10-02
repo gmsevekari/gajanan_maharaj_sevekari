@@ -5,6 +5,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 /// Published sign-up sheets for a single group. Reached via the
 /// group-selection indirection described in the design doc - by the time
@@ -54,7 +55,23 @@ class _SignupSheetsListScreenState extends State<SignupSheetsListScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.groupName ?? l10n.signupsListTitle)),
+      appBar: AppBar(
+        title: Text(widget.groupName ?? l10n.signupsListTitle),
+        actions: [
+          IconButton(
+            icon: const ThemedIcon(LogicalIcon.home),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+              (route) => false,
+            ),
+          ),
+          IconButton(
+            icon: const ThemedIcon(LogicalIcon.settings),
+            onPressed: () => Navigator.pushNamed(context, Routes.settings),
+          ),
+        ],
+      ),
       body: _sheetsStream == null
           ? Center(
               child: Padding(

@@ -9,7 +9,9 @@ import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_slot_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/my_signups_section.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_slot_tile.dart';
+import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class SignupSheetDetailScreen extends StatefulWidget {
   final String? sheetId;
@@ -163,6 +165,21 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
     }
   }
 
+  List<Widget> _buildAppBarActions(BuildContext context) => [
+    IconButton(
+      icon: const ThemedIcon(LogicalIcon.home),
+      onPressed: () => Navigator.pushNamedAndRemoveUntil(
+        context,
+        Routes.home,
+        (route) => false,
+      ),
+    ),
+    IconButton(
+      icon: const ThemedIcon(LogicalIcon.settings),
+      onPressed: () => Navigator.pushNamed(context, Routes.settings),
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -175,7 +192,10 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
         if (_deviceId == null ||
             sheetSnapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-            appBar: AppBar(title: Text(l10n.signupsListTitle)),
+            appBar: AppBar(
+              title: Text(l10n.signupsListTitle),
+              actions: _buildAppBarActions(context),
+            ),
             body: const Center(child: CircularProgressIndicator()),
           );
         }
@@ -183,7 +203,10 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
         final sheet = sheetSnapshot.data;
         if (sheet == null) {
           return Scaffold(
-            appBar: AppBar(title: Text(l10n.signupsListTitle)),
+            appBar: AppBar(
+              title: Text(l10n.signupsListTitle),
+              actions: _buildAppBarActions(context),
+            ),
             body: Center(
               child: Text(
                 l10n.signupNotFound,
@@ -207,7 +230,10 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
                   : sheet.descriptionMr);
 
         return Scaffold(
-          appBar: AppBar(title: Text(title)),
+          appBar: AppBar(
+            title: Text(title),
+            actions: _buildAppBarActions(context),
+          ),
           body: StreamBuilder<List<SignupSlot>>(
             stream: _slotsStream,
             builder: (context, slotsSnapshot) {

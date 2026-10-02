@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signup_sheets_list_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   late FakeFirebaseFirestore firestore;
@@ -15,17 +18,24 @@ void main() {
     service = SignupService(firestore: firestore);
   });
 
-  Widget wrap(Widget child) {
-    return MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      onGenerateRoute: (settings) => MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(title: Text(settings.name ?? '')),
-          body: Text('Navigated to: ${settings.name}'),
+  Widget wrap(Widget child, {Locale? locale}) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => FestivalProvider()),
+      ],
+      child: MaterialApp(
+        locale: locale,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        onGenerateRoute: (settings) => MaterialPageRoute(
+          builder: (context) => Scaffold(
+            appBar: AppBar(title: Text(settings.name ?? '')),
+            body: Text('Navigated to: ${settings.name}'),
+          ),
         ),
+        home: child,
       ),
-      home: child,
     );
   }
 
@@ -66,6 +76,50 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Invalid group'), findsOneWidget);
+    });
+
+    testWidgets('tapping home icon navigates to home', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          SignupSheetsListScreen(
+            groupId: 'group_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find
+            .byWidgetPredicate((w) => w is IconButton && w.onPressed != null)
+            .first,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Navigated to: /home'), findsOneWidget);
+    });
+
+    testWidgets('tapping settings icon navigates to settings', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          SignupSheetsListScreen(
+            groupId: 'group_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find
+            .byWidgetPredicate((w) => w is IconButton && w.onPressed != null)
+            .at(1),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Navigated to: /settings'), findsOneWidget);
     });
 
     testWidgets('shows an empty state when there are no active sheets', (
@@ -195,15 +249,13 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('mr'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: SignupSheetsListScreen(
+        wrap(
+          SignupSheetsListScreen(
             groupId: 'group_1',
             firestore: firestore,
             signupService: service,
           ),
+          locale: const Locale('mr'),
         ),
       );
       await tester.pumpAndSettle();
@@ -231,15 +283,13 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('mr'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: SignupSheetsListScreen(
+        wrap(
+          SignupSheetsListScreen(
             groupId: 'group_1',
             firestore: firestore,
             signupService: service,
           ),
+          locale: const Locale('mr'),
         ),
       );
       await tester.pumpAndSettle();
