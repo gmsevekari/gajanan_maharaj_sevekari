@@ -2233,16 +2233,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSheetTitleEnRequired => 'Please enter English title';
 
   @override
-  String get signupSheetTitleMrLabel => 'Title (Marathi)';
-
-  @override
-  String get signupSheetTitleMrRequired => 'Please enter Marathi title';
+  String get signupSheetTitleMrLabel => 'Title (Marathi, optional)';
 
   @override
   String get signupSheetDescEnLabel => 'Description (English)';
 
   @override
-  String get signupSheetDescMrLabel => 'Description (Marathi)';
+  String get signupSheetDescMrLabel => 'Description (Marathi, optional)';
 
   @override
   String get signupSheetRequiresJoinCodeLabel =>
@@ -2271,10 +2268,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSheetSlotLabelEnRequired => 'Please enter an English label';
 
   @override
-  String get signupSheetSlotLabelMrLabel => 'Slot Label (Marathi)';
-
-  @override
-  String get signupSheetSlotLabelMrRequired => 'Please enter a Marathi label';
+  String get signupSheetSlotLabelMrLabel => 'Slot Label (Marathi, optional)';
 
   @override
   String get signupSheetSlotCapacityLabel => 'Capacity';

@@ -293,12 +293,6 @@ class _AdminCreateSignupSheetScreenState
                         labelText: localizations.signupSheetTitleMrLabel,
                         border: const OutlineInputBorder(),
                       ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return localizations.signupSheetTitleMrRequired;
-                        }
-                        return null;
-                      },
                     ),
                     const SizedBox(height: 16),
                     TextFormField(

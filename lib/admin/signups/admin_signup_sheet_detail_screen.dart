@@ -500,7 +500,13 @@ class _AdminSignupSheetDetailScreenState
           final title = isMarathi
               ? (sheet.titleMr.isNotEmpty ? sheet.titleMr : sheet.titleEn)
               : (sheet.titleEn.isNotEmpty ? sheet.titleEn : sheet.titleMr);
-          final desc = isMarathi ? sheet.descriptionMr : sheet.descriptionEn;
+          final desc = isMarathi
+              ? (sheet.descriptionMr.isNotEmpty
+                    ? sheet.descriptionMr
+                    : sheet.descriptionEn)
+              : (sheet.descriptionEn.isNotEmpty
+                    ? sheet.descriptionEn
+                    : sheet.descriptionMr);
 
           return StreamBuilder<List<SignupSlot>>(
             stream: _slotsStream,

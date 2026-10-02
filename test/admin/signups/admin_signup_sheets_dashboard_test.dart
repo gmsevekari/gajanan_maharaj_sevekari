@@ -236,6 +236,50 @@ void main() {
       expect(find.text('बंद'), findsNWidgets(2)); // chip + badge
     });
 
+    testWidgets('falls back to the English description when Marathi is blank', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      await firestore.collection('signups').add({
+        'titleEn': 'Diwali Faral',
+        'titleMr': 'दिवाळी फराळ',
+        'descriptionEn': 'Help pack Diwali faral',
+        'descriptionMr': '',
+        'groupId': 'gajanan_maharaj_seattle',
+        'status': 'published',
+        'requiresJoinCode': false,
+        'createdAt': Timestamp.fromDate(now),
+        'updatedAt': Timestamp.fromDate(now),
+        'createdBy': 'admin@test.com',
+      });
+
+      await pumpDashboard(tester, locale: const Locale('mr'));
+
+      expect(find.text('Help pack Diwali faral'), findsOneWidget);
+    });
+
+    testWidgets('falls back to the Marathi description when English is blank', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      await firestore.collection('signups').add({
+        'titleEn': 'Diwali Faral',
+        'titleMr': 'दिवाळी फराळ',
+        'descriptionEn': '',
+        'descriptionMr': 'दिवाळी फराळ पॅक करण्यासाठी मदत',
+        'groupId': 'gajanan_maharaj_seattle',
+        'status': 'published',
+        'requiresJoinCode': false,
+        'createdAt': Timestamp.fromDate(now),
+        'updatedAt': Timestamp.fromDate(now),
+        'createdBy': 'admin@test.com',
+      });
+
+      await pumpDashboard(tester);
+
+      expect(find.text('दिवाळी फराळ पॅक करण्यासाठी मदत'), findsOneWidget);
+    });
+
     testWidgets('filter chips filter sheets by status', (tester) async {
       await seedSheets();
       await pumpDashboard(tester);

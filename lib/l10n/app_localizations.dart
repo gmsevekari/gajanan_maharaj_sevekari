@@ -4296,14 +4296,8 @@ abstract class AppLocalizations {
   /// No description provided for @signupSheetTitleMrLabel.
   ///
   /// In en, this message translates to:
-  /// **'Title (Marathi)'**
+  /// **'Title (Marathi, optional)'**
   String get signupSheetTitleMrLabel;
-
-  /// No description provided for @signupSheetTitleMrRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter Marathi title'**
-  String get signupSheetTitleMrRequired;
 
   /// No description provided for @signupSheetDescEnLabel.
   ///
@@ -4314,7 +4308,7 @@ abstract class AppLocalizations {
   /// No description provided for @signupSheetDescMrLabel.
   ///
   /// In en, this message translates to:
-  /// **'Description (Marathi)'**
+  /// **'Description (Marathi, optional)'**
   String get signupSheetDescMrLabel;
 
   /// No description provided for @signupSheetRequiresJoinCodeLabel.
@@ -4368,14 +4362,8 @@ abstract class AppLocalizations {
   /// No description provided for @signupSheetSlotLabelMrLabel.
   ///
   /// In en, this message translates to:
-  /// **'Slot Label (Marathi)'**
+  /// **'Slot Label (Marathi, optional)'**
   String get signupSheetSlotLabelMrLabel;
-
-  /// No description provided for @signupSheetSlotLabelMrRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter a Marathi label'**
-  String get signupSheetSlotLabelMrRequired;
 
   /// No description provided for @signupSheetSlotCapacityLabel.
   ///

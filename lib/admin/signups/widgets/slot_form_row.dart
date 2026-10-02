@@ -108,12 +108,6 @@ class SlotFormRow extends StatelessWidget {
                 labelText: localizations.signupSheetSlotLabelMrLabel,
                 border: const OutlineInputBorder(),
               ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return localizations.signupSheetSlotLabelMrRequired;
-                }
-                return null;
-              },
             ),
             const SizedBox(height: 12),
             TextFormField(

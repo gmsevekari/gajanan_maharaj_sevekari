@@ -496,6 +496,32 @@ void main() {
       expect(find.text('स्लॉट्स आणि नोंदी'), findsOneWidget);
     });
 
+    testWidgets('falls back to the English description when Marathi is blank', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      final sheetRef = await firestore.collection('signups').add({
+        'titleEn': 'Prasad Seva',
+        'titleMr': 'प्रसाद सेवा',
+        'descriptionEn': 'Help cook prasad',
+        'descriptionMr': '',
+        'groupId': 'gajanan_maharaj_seattle',
+        'status': SignupSheetStatus.draft.name,
+        'requiresJoinCode': false,
+        'createdAt': Timestamp.fromDate(now),
+        'updatedAt': Timestamp.fromDate(now),
+        'createdBy': 'admin@test.com',
+      });
+
+      await pumpDetailScreen(
+        tester,
+        sheetId: sheetRef.id,
+        locale: const Locale('mr'),
+      );
+
+      expect(find.text('Help cook prasad').first, findsOneWidget);
+    });
+
     testWidgets('shows slot full error when admin adds entry to full slot', (
       tester,
     ) async {

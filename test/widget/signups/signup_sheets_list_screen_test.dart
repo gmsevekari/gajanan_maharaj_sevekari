@@ -184,6 +184,8 @@ void main() {
         SignupSheet(
           titleEn: 'Sunday Prasad Seva',
           titleMr: 'रविवार प्रसाद सेवा',
+          descriptionEn: 'Cook and serve prasad',
+          descriptionMr: 'प्रसाद शिजवा आणि वाढा',
           groupId: 'group_1',
           status: SignupSheetStatus.published,
           createdAt: now,
@@ -207,6 +209,42 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('रविवार प्रसाद सेवा'), findsOneWidget);
+      expect(find.text('प्रसाद शिजवा आणि वाढा'), findsOneWidget);
+    });
+
+    testWidgets('falls back to the English description when Marathi is blank', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      await service.createSheet(
+        SignupSheet(
+          titleEn: 'Sunday Prasad Seva',
+          titleMr: 'रविवार प्रसाद सेवा',
+          descriptionEn: 'Cook and serve prasad',
+          descriptionMr: '',
+          groupId: 'group_1',
+          status: SignupSheetStatus.published,
+          createdAt: now,
+          updatedAt: now,
+          createdBy: 'admin@test.com',
+        ),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('mr'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: SignupSheetsListScreen(
+            groupId: 'group_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Cook and serve prasad'), findsOneWidget);
     });
   });
 }

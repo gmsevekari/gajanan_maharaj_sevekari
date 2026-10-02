@@ -237,7 +237,13 @@ class _AdminSignupSheetsDashboardState
     final title = isMarathi
         ? (sheet.titleMr.isNotEmpty ? sheet.titleMr : sheet.titleEn)
         : (sheet.titleEn.isNotEmpty ? sheet.titleEn : sheet.titleMr);
-    final description = isMarathi ? sheet.descriptionMr : sheet.descriptionEn;
+    final description = isMarathi
+        ? (sheet.descriptionMr.isNotEmpty
+              ? sheet.descriptionMr
+              : sheet.descriptionEn)
+        : (sheet.descriptionEn.isNotEmpty
+              ? sheet.descriptionEn
+              : sheet.descriptionMr);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),

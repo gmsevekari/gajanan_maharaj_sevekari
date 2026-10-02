@@ -85,4 +85,67 @@ void main() {
       expect(find.text('5 of 5 claimed'), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'falls back to English description and slot label when Marathi is blank '
+    'and langCode is mr',
+    (tester) async {
+      final now = DateTime.now();
+      final sheet = SignupSheet(
+        id: 'sheet_1',
+        titleEn: 'Sunday Prasad Seva',
+        titleMr: 'रविवार प्रसाद सेवा',
+        descriptionEn: 'Cook and serve prasad',
+        descriptionMr: '',
+        groupId: 'gajanan_maharaj_seattle',
+        status: SignupSheetStatus.published,
+        requiresJoinCode: false,
+        createdAt: now,
+        updatedAt: now,
+        createdBy: 'admin@test.com',
+      );
+
+      final slots = [
+        SignupSlot(
+          id: 'slot_1',
+          labelEn: 'Week 1 - Team A',
+          labelMr: '',
+          capacity: 5,
+          claimedCount: 4,
+          sortOrder: 0,
+          createdAt: now,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) {
+                final l10n = AppLocalizations.of(context)!;
+                final theme = Theme.of(context);
+                return SignupSheetExportCard(
+                  sheet: sheet,
+                  slots: slots,
+                  totalClaims: 4,
+                  totalCapacity: 5,
+                  groupName: 'Seattle',
+                  l10n: l10n,
+                  theme: theme,
+                  langCode: 'mr',
+                );
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Cook and serve prasad'), findsOneWidget);
+      expect(find.text('Week 1 - Team A'), findsOneWidget);
+    },
+  );
 }

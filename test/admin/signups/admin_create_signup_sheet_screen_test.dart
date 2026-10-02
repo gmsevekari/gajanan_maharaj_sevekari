@@ -154,9 +154,9 @@ void main() {
         await pumpScreen(tester);
 
         expect(find.text('Title (English)'), findsOneWidget);
-        expect(find.text('Title (Marathi)'), findsOneWidget);
+        expect(find.text('Title (Marathi, optional)'), findsOneWidget);
         expect(find.text('Description (English)'), findsOneWidget);
-        expect(find.text('Description (Marathi)'), findsOneWidget);
+        expect(find.text('Description (Marathi, optional)'), findsOneWidget);
         expect(find.text('Require a join code to sign up'), findsOneWidget);
         expect(find.text('Add Slot'), findsOneWidget);
         expect(
@@ -175,7 +175,22 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Please enter English title'), findsOneWidget);
-      expect(find.text('Please enter Marathi title'), findsOneWidget);
+      expect(find.text('Please add at least one slot'), findsOneWidget);
+    });
+
+    testWidgets('Marathi title is optional and does not block saving', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+
+      await tester.enterText(
+        find.byKey(const Key('titleEnField')),
+        'Prasad Seva',
+      );
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter English title'), findsNothing);
       expect(find.text('Please add at least one slot'), findsOneWidget);
     });
 
@@ -192,15 +207,31 @@ void main() {
         findsNothing,
       );
       expect(find.text('Slot Label (English)'), findsOneWidget);
-      expect(find.text('Slot Label (Marathi)'), findsOneWidget);
+      expect(find.text('Slot Label (Marathi, optional)'), findsOneWidget);
       expect(find.text('Capacity'), findsOneWidget);
 
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
       expect(find.text('Please enter an English label'), findsOneWidget);
-      expect(find.text('Please enter a Marathi label'), findsOneWidget);
       expect(find.text('Please enter a capacity'), findsOneWidget);
+    });
+
+    testWidgets('Marathi slot label is optional and does not block saving', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+
+      await tester.tap(find.text('Add Slot'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'Morning');
+      await tester.enterText(find.byKey(const Key('slotCapacity_0')), '5');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter an English label'), findsNothing);
+      expect(find.text('Please enter a capacity'), findsNothing);
     });
 
     testWidgets('removing a slot removes its row', (tester) async {

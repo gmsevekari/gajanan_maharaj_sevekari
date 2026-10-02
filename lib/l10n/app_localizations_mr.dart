@@ -2242,16 +2242,13 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSheetTitleEnRequired => 'कृपया इंग्रजी शीर्षक एंटर करा';
 
   @override
-  String get signupSheetTitleMrLabel => 'शीर्षक (मराठी)';
-
-  @override
-  String get signupSheetTitleMrRequired => 'कृपया मराठी शीर्षक एंटर करा';
+  String get signupSheetTitleMrLabel => 'शीर्षक (मराठी, ऐच्छिक)';
 
   @override
   String get signupSheetDescEnLabel => 'वर्णन (इंग्रजी)';
 
   @override
-  String get signupSheetDescMrLabel => 'वर्णन (मराठी)';
+  String get signupSheetDescMrLabel => 'वर्णन (मराठी, ऐच्छिक)';
 
   @override
   String get signupSheetRequiresJoinCodeLabel =>
@@ -2280,10 +2277,7 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSheetSlotLabelEnRequired => 'कृपया इंग्रजी लेबल एंटर करा';
 
   @override
-  String get signupSheetSlotLabelMrLabel => 'स्लॉट लेबल (मराठी)';
-
-  @override
-  String get signupSheetSlotLabelMrRequired => 'कृपया मराठी लेबल एंटर करा';
+  String get signupSheetSlotLabelMrLabel => 'स्लॉट लेबल (मराठी, ऐच्छिक)';
 
   @override
   String get signupSheetSlotCapacityLabel => 'क्षमता';
