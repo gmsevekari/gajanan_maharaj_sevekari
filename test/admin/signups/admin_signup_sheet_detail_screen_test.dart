@@ -189,7 +189,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signup_sheets').add({
+      final sheetRef = await firestore.collection('signups').add({
         'titleEn': 'Prasad Seva',
         'titleMr': 'प्रसाद सेवा',
         'descriptionEn': 'Help prepare prasad',
@@ -215,7 +215,7 @@ void main() {
 
     testWidgets('copies join code to clipboard', (tester) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signup_sheets').add({
+      final sheetRef = await firestore.collection('signups').add({
         'titleEn': 'Prasad Seva',
         'titleMr': 'प्रसाद सेवा',
         'descriptionEn': 'Description',
@@ -239,7 +239,7 @@ void main() {
 
     testWidgets('unlocks and updates status to published', (tester) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signup_sheets').add({
+      final sheetRef = await firestore.collection('signups').add({
         'titleEn': 'Draft Sheet',
         'titleMr': 'मसुदा',
         'descriptionEn': 'Draft',
@@ -269,7 +269,7 @@ void main() {
 
       // Verify Firestore status updated
       final updated = await firestore
-          .collection('signup_sheets')
+          .collection('signups')
           .doc(sheetRef.id)
           .get();
       expect(updated.data()?['status'], 'published');
@@ -280,7 +280,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signup_sheets').add({
+      final sheetRef = await firestore.collection('signups').add({
         'titleEn': 'Original Sheet',
         'titleMr': 'मूळ शीट',
         'descriptionEn': 'Desc',
@@ -327,14 +327,14 @@ void main() {
 
       // Verify duplicate exists in Firestore as draft with 0 claimedCount
       final duplicateDoc = await firestore
-          .collection('signup_sheets')
+          .collection('signups')
           .doc(navSheetId)
           .get();
       expect(duplicateDoc.data()?['status'], 'draft');
       expect(duplicateDoc.data()?['titleEn'], 'Original Sheet');
 
       final duplicateSlots = await firestore
-          .collection('signup_sheets')
+          .collection('signups')
           .doc(navSheetId)
           .collection('slots')
           .get();
@@ -344,7 +344,7 @@ void main() {
 
     testWidgets('manually adds an entry to a slot via dialog', (tester) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signup_sheets').add({
+      final sheetRef = await firestore.collection('signups').add({
         'titleEn': 'Sheet 1',
         'titleMr': 'शीट १',
         'descriptionEn': '',
@@ -397,7 +397,7 @@ void main() {
 
     testWidgets('edits and removes an entry', (tester) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signup_sheets').add({
+      final sheetRef = await firestore.collection('signups').add({
         'titleEn': 'Sheet 1',
         'titleMr': 'शीट १',
         'descriptionEn': '',
@@ -467,7 +467,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signup_sheets').add({
+      final sheetRef = await firestore.collection('signups').add({
         'titleEn': 'Prasad Seva',
         'titleMr': 'प्रसाद सेवा',
         'descriptionEn': 'Help',
@@ -500,7 +500,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signup_sheets').add({
+      final sheetRef = await firestore.collection('signups').add({
         'titleEn': 'Full Sheet',
         'titleMr': 'शीट',
         'descriptionEn': '',
@@ -644,7 +644,7 @@ void main() {
       'resolves arguments from ModalRoute settings when not in constructor',
       (tester) async {
         final now = DateTime.now();
-        final sheetRef = await firestore.collection('signup_sheets').add({
+        final sheetRef = await firestore.collection('signups').add({
           'titleEn': 'Route Args Sheet',
           'titleMr': 'शीट',
           'descriptionEn': '',
@@ -700,7 +700,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signup_sheets').add({
+      final sheetRef = await firestore.collection('signups').add({
         'titleEn': 'Cancel Remove Sheet',
         'titleMr': '',
         'groupId': 'gajanan_maharaj_seattle',
@@ -980,7 +980,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signup_sheets').add({
+      final sheetRef = await firestore.collection('signups').add({
         'titleEn': 'Shareable Sheet',
         'titleMr': '',
         'groupId': 'gajanan_maharaj_seattle',
@@ -1014,7 +1014,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signup_sheets').add({
+      final sheetRef = await firestore.collection('signups').add({
         'titleEn': 'Exportable Sheet',
         'titleMr': '',
         'groupId': 'gajanan_maharaj_seattle',
@@ -1061,7 +1061,7 @@ void main() {
         });
 
         final now = DateTime.now();
-        final sheetRef = await firestore.collection('signup_sheets').add({
+        final sheetRef = await firestore.collection('signups').add({
           'titleEn': 'Exportable Sheet',
           'titleMr': '',
           'groupId': 'gajanan_maharaj_seattle',
@@ -1152,7 +1152,7 @@ void main() {
       'deleting from within edit dialog triggers confirm remove dialog',
       (tester) async {
         final now = DateTime.now();
-        final sheetRef = await firestore.collection('signup_sheets').add({
+        final sheetRef = await firestore.collection('signups').add({
           'titleEn': 'Dialog Delete Sheet',
           'titleMr': '',
           'groupId': 'gajanan_maharaj_seattle',
@@ -1287,7 +1287,7 @@ void main() {
 
     Future<String> seedSheet({String? headerImageUrl}) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signup_sheets').add({
+      final sheetRef = await firestore.collection('signups').add({
         'titleEn': 'Prasad Seva',
         'titleMr': 'प्रसाद सेवा',
         'descriptionEn': 'Description',
@@ -1342,13 +1342,10 @@ void main() {
       await tester.pumpAndSettle();
       drainNetworkImageErrors(tester);
 
-      final doc = await firestore
-          .collection('signup_sheets')
-          .doc(sheetId)
-          .get();
+      final doc = await firestore.collection('signups').doc(sheetId).get();
       expect(doc.data()?['headerImageUrl'], isNotNull);
       expect(
-        storage.storedDataMap.containsKey('signup_sheets/$sheetId/header'),
+        storage.storedDataMap.containsKey('signups/$sheetId/header'),
         true,
       );
       expect(find.text('Replace Image'), findsOneWidget);
@@ -1444,10 +1441,7 @@ void main() {
       await tester.pumpAndSettle();
       drainNetworkImageErrors(tester);
 
-      final doc = await firestore
-          .collection('signup_sheets')
-          .doc(sheetId)
-          .get();
+      final doc = await firestore.collection('signups').doc(sheetId).get();
       expect(doc.data()?['headerImageUrl'], 'https://example.com/header.jpg');
     });
 
@@ -1463,10 +1457,7 @@ void main() {
       await tester.tap(find.text('Yes'));
       await tester.pumpAndSettle();
 
-      final doc = await firestore
-          .collection('signup_sheets')
-          .doc(sheetId)
-          .get();
+      final doc = await firestore.collection('signups').doc(sheetId).get();
       expect(doc.data()?['headerImageUrl'], isNull);
       expect(find.text('Add Image'), findsOneWidget);
     });

@@ -321,9 +321,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Please enter a valid amount'), findsNothing);
-      final sheets = await firestore.collection('signup_sheets').get();
+      final sheets = await firestore.collection('signups').get();
       final slots = await firestore
-          .collection('signup_sheets')
+          .collection('signups')
           .doc(sheets.docs.first.id)
           .collection('slots')
           .get();
@@ -378,7 +378,7 @@ void main() {
           find.text('Failed to create sign up. Please try again.'),
           findsOneWidget,
         );
-        final sheets = await firestore.collection('signup_sheets').get();
+        final sheets = await firestore.collection('signups').get();
         expect(sheets.docs, isEmpty);
       },
     );
@@ -412,7 +412,7 @@ void main() {
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
 
-        final sheets = await firestore.collection('signup_sheets').get();
+        final sheets = await firestore.collection('signups').get();
         expect(sheets.docs.length, 1);
         final sheetData = sheets.docs.first.data();
         expect(sheetData['titleEn'], 'Sunday Prasad Seva');
@@ -423,7 +423,7 @@ void main() {
         expect(sheetData['joinCode'], isNull);
 
         final slots = await firestore
-            .collection('signup_sheets')
+            .collection('signups')
             .doc(sheets.docs.first.id)
             .collection('slots')
             .get();
@@ -454,7 +454,7 @@ void main() {
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
-      final sheets = await firestore.collection('signup_sheets').get();
+      final sheets = await firestore.collection('signups').get();
       final data = sheets.docs.first.data();
       expect(data['requiresJoinCode'], true);
       expect(data['joinCode'], isNotNull);
@@ -542,12 +542,12 @@ void main() {
           await tester.tap(find.text('Save'));
           await tester.pumpAndSettle();
 
-          final sheets = await firestore.collection('signup_sheets').get();
+          final sheets = await firestore.collection('signups').get();
           final data = sheets.docs.first.data();
           expect(data['headerImageUrl'], isNotNull);
           expect(
             storage.storedDataMap.containsKey(
-              'signup_sheets/${sheets.docs.first.id}/header',
+              'signups/${sheets.docs.first.id}/header',
             ),
             true,
           );
@@ -570,7 +570,7 @@ void main() {
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
 
-        final sheets = await firestore.collection('signup_sheets').get();
+        final sheets = await firestore.collection('signups').get();
         expect(sheets.docs.first.data()['headerImageUrl'], isNull);
       });
 

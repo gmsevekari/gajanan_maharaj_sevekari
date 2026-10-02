@@ -254,7 +254,7 @@ service cloud.firestore {
     }
 
     // Sign-Up Sheets: Publicly readable; Admin writable at the sheet level
-    match /signup_sheets/{sheetId} {
+    match /signups/{sheetId} {
       allow read: if true;
       allow write: if isAdmin();
 

@@ -51,7 +51,7 @@ beforeEach(async () => {
       roles: ['super_admin'],
     });
     await uploadBytes(
-      ref(context.storage(), 'signup_sheets/sheet1/header'),
+      ref(context.storage(), 'signups/sheet1/header'),
       new Uint8Array([1, 2, 3]),
       { contentType: 'image/jpeg' },
     );
@@ -73,14 +73,14 @@ function adminStorage() {
 
 test('anyone can read a header image', async () => {
   await assertSucceeds(
-    getBytes(ref(unauthedStorage(), 'signup_sheets/sheet1/header')),
+    getBytes(ref(unauthedStorage(), 'signups/sheet1/header')),
   );
 });
 
 test('non-admin cannot upload a header image', async () => {
   await assertFails(
     uploadBytes(
-      ref(unauthedStorage(), 'signup_sheets/sheet2/header'),
+      ref(unauthedStorage(), 'signups/sheet2/header'),
       new Uint8Array([1, 2, 3]),
       { contentType: 'image/jpeg' },
     ),
@@ -90,7 +90,7 @@ test('non-admin cannot upload a header image', async () => {
 test('admin can upload a small image under the size limit', async () => {
   await assertSucceeds(
     uploadBytes(
-      ref(adminStorage(), 'signup_sheets/sheet2/header'),
+      ref(adminStorage(), 'signups/sheet2/header'),
       new Uint8Array(ONE_MB),
       { contentType: 'image/jpeg' },
     ),
@@ -104,9 +104,19 @@ test('admin can upload a file at exactly the 2 MB limit', async () => {
   // that passes client-side validation would be rejected server-side.
   await assertSucceeds(
     uploadBytes(
-      ref(adminStorage(), 'signup_sheets/sheet2/header'),
+      ref(adminStorage(), 'signups/sheet2/header'),
       new Uint8Array(2 * ONE_MB),
       { contentType: 'image/jpeg' },
+    ),
+  );
+});
+
+test('admin can upload an image/jpg file', async () => {
+  await assertSucceeds(
+    uploadBytes(
+      ref(adminStorage(), 'signups/sheet2/header'),
+      new Uint8Array(ONE_MB),
+      { contentType: 'image/jpg' },
     ),
   );
 });
@@ -114,7 +124,7 @@ test('admin can upload a file at exactly the 2 MB limit', async () => {
 test('admin cannot upload a file over the 2 MB limit', async () => {
   await assertFails(
     uploadBytes(
-      ref(adminStorage(), 'signup_sheets/sheet2/header'),
+      ref(adminStorage(), 'signups/sheet2/header'),
       new Uint8Array(2 * ONE_MB + 1),
       { contentType: 'image/jpeg' },
     ),
@@ -124,7 +134,7 @@ test('admin cannot upload a file over the 2 MB limit', async () => {
 test('admin cannot upload a non-image content type', async () => {
   await assertFails(
     uploadBytes(
-      ref(adminStorage(), 'signup_sheets/sheet2/header'),
+      ref(adminStorage(), 'signups/sheet2/header'),
       new Uint8Array(ONE_MB),
       { contentType: 'application/pdf' },
     ),
@@ -139,7 +149,7 @@ test('admin cannot upload a non-image content type', async () => {
 test('admin cannot upload an SVG', async () => {
   await assertFails(
     uploadBytes(
-      ref(adminStorage(), 'signup_sheets/sheet2/header'),
+      ref(adminStorage(), 'signups/sheet2/header'),
       new Uint8Array(ONE_MB),
       { contentType: 'image/svg+xml' },
     ),
@@ -148,12 +158,12 @@ test('admin cannot upload an SVG', async () => {
 
 test('non-admin cannot delete a header image', async () => {
   await assertFails(
-    deleteObject(ref(unauthedStorage(), 'signup_sheets/sheet1/header')),
+    deleteObject(ref(unauthedStorage(), 'signups/sheet1/header')),
   );
 });
 
 test('admin can delete a header image', async () => {
   await assertSucceeds(
-    deleteObject(ref(adminStorage(), 'signup_sheets/sheet1/header')),
+    deleteObject(ref(adminStorage(), 'signups/sheet1/header')),
   );
 });

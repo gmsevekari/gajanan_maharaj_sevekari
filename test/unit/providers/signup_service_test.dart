@@ -93,7 +93,7 @@ void main() {
       final id = await service.createSheet(buildSheet());
 
       expect(id, isNotEmpty);
-      final doc = await fakeFirestore.collection('signup_sheets').doc(id).get();
+      final doc = await fakeFirestore.collection('signups').doc(id).get();
       expect(doc.exists, true);
       expect(doc.data()?['titleEn'], 'Sunday Prasad Seva');
     });
@@ -107,7 +107,7 @@ void main() {
 
         expect(id, preGeneratedId);
         final doc = await fakeFirestore
-            .collection('signup_sheets')
+            .collection('signups')
             .doc(preGeneratedId)
             .get();
         expect(doc.exists, true);
@@ -213,7 +213,7 @@ void main() {
 
         expect(slotId, isNotEmpty);
         final doc = await fakeFirestore
-            .collection('signup_sheets')
+            .collection('signups')
             .doc(sheetId)
             .collection('slots')
             .doc(slotId)
@@ -583,7 +583,7 @@ void main() {
         // Simulate the slot having been removed some other way (e.g. a
         // manual console edit) while an entry still references it.
         await fakeFirestore
-            .collection('signup_sheets')
+            .collection('signups')
             .doc(sheetId)
             .collection('slots')
             .doc(slotId)
@@ -862,9 +862,7 @@ void main() {
 
         expect(url, isNotEmpty);
         expect(
-          mockStorage.storedDataMap.containsKey(
-            'signup_sheets/$sheetId/header',
-          ),
+          mockStorage.storedDataMap.containsKey('signups/$sheetId/header'),
           true,
         );
       },
@@ -885,9 +883,7 @@ void main() {
           throwsArgumentError,
         );
         expect(
-          mockStorage.storedDataMap.containsKey(
-            'signup_sheets/$sheetId/header',
-          ),
+          mockStorage.storedDataMap.containsKey('signups/$sheetId/header'),
           false,
         );
       },
@@ -937,9 +933,7 @@ void main() {
         final sheet = await service.getSheetById(sheetId).first;
         expect(sheet!.headerImageUrl, isNull);
         expect(
-          mockStorage.storedDataMap.containsKey(
-            'signup_sheets/$sheetId/header',
-          ),
+          mockStorage.storedDataMap.containsKey('signups/$sheetId/header'),
           false,
         );
       },

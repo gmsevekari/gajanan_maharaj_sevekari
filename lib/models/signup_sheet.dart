@@ -36,7 +36,7 @@ class SignupSheet {
   final String createdBy;
 
   /// Download URL of an optional admin-uploaded header/display image
-  /// (Firebase Storage, `signup_sheets/{id}/header`). Null when no image
+  /// (Firebase Storage, `signups/{id}/header`). Null when no image
   /// has been uploaded.
   final String? headerImageUrl;
 

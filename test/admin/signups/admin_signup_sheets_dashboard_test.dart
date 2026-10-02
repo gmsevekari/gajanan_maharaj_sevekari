@@ -110,7 +110,7 @@ void main() {
   Future<void> seedSheets() async {
     final now = DateTime.now();
     // Sheet 1: draft with join code
-    await firestore.collection('signup_sheets').add({
+    await firestore.collection('signups').add({
       'titleEn': 'Prasad Seva Draft',
       'titleMr': 'प्रसाद सेवा मसुदा',
       'descriptionEn': 'Help cook Prasad',
@@ -125,7 +125,7 @@ void main() {
     });
 
     // Sheet 2: published without join code
-    await firestore.collection('signup_sheets').add({
+    await firestore.collection('signups').add({
       'titleEn': 'Saree Seva Published',
       'titleMr': 'साडी सेवा प्रकाशित',
       'descriptionEn': 'Navaratri saree sponsorship',
@@ -140,7 +140,7 @@ void main() {
     });
 
     // Sheet 3: closed
-    await firestore.collection('signup_sheets').add({
+    await firestore.collection('signups').add({
       'titleEn': 'Annakut Closed',
       'titleMr': 'अन्नकूट बंद',
       'descriptionEn': 'Past event',
@@ -155,7 +155,7 @@ void main() {
     });
 
     // Sheet for different group (should not be listed)
-    await firestore.collection('signup_sheets').add({
+    await firestore.collection('signups').add({
       'titleEn': 'Other Group Sheet',
       'titleMr': 'दुसरा गट',
       'descriptionEn': 'Other group',

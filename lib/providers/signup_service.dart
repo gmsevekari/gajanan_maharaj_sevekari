@@ -27,7 +27,7 @@ class SignupService {
   FirebaseStorage get _storage => _storageOverride ?? FirebaseStorage.instance;
 
   CollectionReference<Map<String, dynamic>> get _sheetsRef =>
-      _db.collection('signup_sheets');
+      _db.collection('signups');
 
   /// A fresh Firestore document id, generated without writing anything -
   /// lets the caller know a sheet's id (for its Storage header-image path)
@@ -48,7 +48,7 @@ class SignupService {
   }
 
   Reference _headerImageRef(String sheetId) =>
-      _storage.ref('signup_sheets/$sheetId/header');
+      _storage.ref('signups/$sheetId/header');
 
   /// Uploads a sheet's header/display image and returns its download URL.
   /// Throws [ArgumentError] without attempting an upload when [bytes]
@@ -65,8 +65,15 @@ class SignupService {
         'exceeds maxHeaderImageBytes ($maxHeaderImageBytes)',
       );
     }
+    final normalizedContentType =
+        contentType.toLowerCase().trim() == 'image/jpg'
+        ? 'image/jpeg'
+        : contentType.trim();
     final ref = _headerImageRef(sheetId);
-    await ref.putData(bytes, SettableMetadata(contentType: contentType));
+    await ref.putData(
+      bytes,
+      SettableMetadata(contentType: normalizedContentType),
+    );
     return ref.getDownloadURL();
   }
 
