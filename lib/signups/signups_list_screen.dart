@@ -133,13 +133,6 @@ class _SignupCard extends StatelessWidget {
     final title = isMarathi
         ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
         : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);
-    final description = isMarathi
-        ? (signup.descriptionMr.isNotEmpty
-              ? signup.descriptionMr
-              : signup.descriptionEn)
-        : (signup.descriptionEn.isNotEmpty
-              ? signup.descriptionEn
-              : signup.descriptionMr);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -161,17 +154,6 @@ class _SignupCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              if (description.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                Text(
-                  description,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.appColors.secondaryText,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
               if (signup.requiresJoinCode) ...[
                 const SizedBox(height: 10),
                 Row(

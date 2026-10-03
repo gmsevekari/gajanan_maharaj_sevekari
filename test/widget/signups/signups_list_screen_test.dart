@@ -138,7 +138,7 @@ void main() {
     });
 
     testWidgets(
-      'lists published signups for the group, with title and description',
+      'lists published signups for the group by title, without the description',
       (tester) async {
         await createSignup(
           titleEn: 'Sunday Prasad Seva',
@@ -157,7 +157,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Sunday Prasad Seva'), findsOneWidget);
-        expect(find.text('Cook and serve prasad'), findsOneWidget);
+        expect(find.text('Cook and serve prasad'), findsNothing);
       },
     );
 
@@ -253,40 +253,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('रविवार प्रसाद सेवा'), findsOneWidget);
-      expect(find.text('प्रसाद शिजवा आणि वाढा'), findsOneWidget);
-    });
-
-    testWidgets('falls back to the English description when Marathi is blank', (
-      tester,
-    ) async {
-      final now = DateTime.now();
-      await service.createSignup(
-        Signup(
-          titleEn: 'Sunday Prasad Seva',
-          titleMr: 'रविवार प्रसाद सेवा',
-          descriptionEn: 'Cook and serve prasad',
-          descriptionMr: '',
-          groupId: 'group_1',
-          status: SignupStatus.published,
-          createdAt: now,
-          updatedAt: now,
-          createdBy: 'admin@test.com',
-        ),
-      );
-
-      await tester.pumpWidget(
-        wrap(
-          SignupsListScreen(
-            groupId: 'group_1',
-            firestore: firestore,
-            signupService: service,
-          ),
-          locale: const Locale('mr'),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Cook and serve prasad'), findsOneWidget);
+      expect(find.text('प्रसाद शिजवा आणि वाढा'), findsNothing);
     });
   });
 

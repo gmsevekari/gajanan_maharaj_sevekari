@@ -9,7 +9,6 @@ import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_slot_entrie
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_actions_row.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_export_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_header_image_card.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_join_code_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_overview_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_status_section.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
@@ -544,13 +543,6 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
         final title = isMarathi
             ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
             : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);
-        final desc = isMarathi
-            ? (signup.descriptionMr.isNotEmpty
-                  ? signup.descriptionMr
-                  : signup.descriptionEn)
-            : (signup.descriptionEn.isNotEmpty
-                  ? signup.descriptionEn
-                  : signup.descriptionMr);
 
         return page(
           title,
@@ -593,8 +585,11 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
                         children: [
                           SignupOverviewCard(
                             title: title,
-                            description: desc,
                             groupName: groupName,
+                            status: signup.status,
+                            joinCode: signup.requiresJoinCode
+                                ? signup.joinCode
+                                : null,
                           ),
                           const SizedBox(height: 12),
                           SignupHeaderImageCard(
@@ -610,11 +605,6 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
                                 ? null
                                 : () => _confirmRemoveImage(signup, l10n),
                           ),
-                          if (signup.requiresJoinCode &&
-                              signup.joinCode != null) ...[
-                            const SizedBox(height: 12),
-                            SignupJoinCodeCard(joinCode: signup.joinCode!),
-                          ],
                           const SizedBox(height: 12),
                           SignupStatusSection(
                             currentStatus: signup.status,

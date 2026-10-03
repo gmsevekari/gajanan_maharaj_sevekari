@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_join_code_card.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_join_code_row.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
@@ -15,7 +15,7 @@ void main() {
   }
 
   testWidgets('renders the join code', (tester) async {
-    await tester.pumpWidget(wrap(const SignupJoinCodeCard(joinCode: 'ABC123')));
+    await tester.pumpWidget(wrap(const SignupJoinCodeRow(joinCode: 'ABC123')));
 
     expect(find.text('ABC123'), findsOneWidget);
   });
@@ -23,7 +23,7 @@ void main() {
   testWidgets('copies the join code to the clipboard when tapped', (
     tester,
   ) async {
-    await tester.pumpWidget(wrap(const SignupJoinCodeCard(joinCode: 'ABC123')));
+    await tester.pumpWidget(wrap(const SignupJoinCodeRow(joinCode: 'ABC123')));
 
     await tester.tap(find.byTooltip('Copy Join Code'));
     await tester.pumpAndSettle();

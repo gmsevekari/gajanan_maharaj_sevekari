@@ -5,6 +5,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_overview_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
@@ -283,7 +284,28 @@ void main() {
       await pumpDetailScreen(tester, signupId: signupRef.id);
 
       expect(find.text('Prasad Seva').first, findsOneWidget);
-      expect(find.text('Help prepare prasad').first, findsOneWidget);
+      // The card shows no description (the hidden export image still does).
+      expect(
+        find.descendant(
+          of: find.byType(SignupOverviewCard),
+          matching: find.text('Help prepare prasad'),
+        ),
+        findsNothing,
+      );
+      expect(
+        find.descendant(
+          of: find.byType(SignupOverviewCard),
+          matching: find.text('JOIN99'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byType(SignupOverviewCard),
+          matching: find.text('Draft'),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('JOIN99'), findsOneWidget);
       expect(find.text('Duplicate'), findsOneWidget);
       expect(find.text('Share'), findsOneWidget);
@@ -627,7 +649,6 @@ void main() {
           findsOneWidget,
         );
         expect(find.text('प्रसाद सेवा').first, findsOneWidget);
-        expect(find.text('मदत').first, findsOneWidget);
         expect(find.text('Duplicate'), findsOneWidget);
         expect(find.text('Share'), findsOneWidget);
         await tester.tap(find.text('Share'));
@@ -635,32 +656,6 @@ void main() {
         expect(find.text('Slots & Entries'), findsOneWidget);
       },
     );
-
-    testWidgets('falls back to the English description when Marathi is blank', (
-      tester,
-    ) async {
-      final now = DateTime.now();
-      final signupRef = await firestore.collection('signups').add({
-        'titleEn': 'Prasad Seva',
-        'titleMr': 'प्रसाद सेवा',
-        'descriptionEn': 'Help cook prasad',
-        'descriptionMr': '',
-        'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupStatus.draft.name,
-        'requiresJoinCode': false,
-        'createdAt': Timestamp.fromDate(now),
-        'updatedAt': Timestamp.fromDate(now),
-        'createdBy': 'admin@test.com',
-      });
-
-      await pumpDetailScreen(
-        tester,
-        signupId: signupRef.id,
-        locale: const Locale('mr'),
-      );
-
-      expect(find.text('Help cook prasad').first, findsOneWidget);
-    });
 
     testWidgets('shows slot full error when admin adds entry to full slot', (
       tester,
