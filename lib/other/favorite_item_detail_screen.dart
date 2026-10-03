@@ -94,7 +94,7 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
     final fontProvider = Provider.of<FontProvider>(context);
 
     final currentItem = widget.contentList[_currentIndex];
-    final currentTitle = locale.useMarathiDetailContent
+    final currentTitle = locale.useMarathiContent
         ? ((currentItem['title_mr']?.toString().isNotEmpty == true)
               ? currentItem['title_mr']!
               : '')
@@ -245,7 +245,7 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {
           final item = widget.contentList[index];
-          final title = locale.useMarathiDetailContent
+          final title = locale.useMarathiContent
               ? item['title_mr']
               : item['title_en'];
           final isPlaying = index == _currentIndex;
@@ -288,7 +288,7 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
     }
 
     final theme = Theme.of(context);
-    final contentKey = locale.useMarathiDetailContent
+    final contentKey = locale.useMarathiContent
         ? 'content_mr'
         : 'content_en';
     final text = (val) {

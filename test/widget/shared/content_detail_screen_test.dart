@@ -116,7 +116,7 @@ void main() {
       expect(find.byType(ContentDetailScreen), findsOneWidget);
     });
 
-    testWidgets('en_MR shows the Marathi title with English UI strings', (
+    testWidgets('en_MR shows Marathi title, body and UI strings', (
       WidgetTester tester,
     ) async {
       mockContentAsset();
@@ -132,7 +132,8 @@ void main() {
       expect(find.text('गजानन बावनन्नी'), findsWidgets);
       expect(find.text('मराठी मजकूर'), findsOneWidget);
       expect(find.text('Gajanan Bavanni'), findsNothing);
-      expect(find.text('Read'), findsOneWidget);
+      expect(find.text('वाचा'), findsOneWidget);
+      expect(find.text('Read'), findsNothing);
     });
 
     testWidgets('en shows the English title', (WidgetTester tester) async {

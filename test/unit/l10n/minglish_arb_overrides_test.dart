@@ -1,13 +1,20 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
 /// Tests for the Minglish (en_MR) locale.
 ///
-/// en_MR shows English UI strings everywhere; Marathi appears only as content
-/// on the content detail screen, which reads the item's own Marathi fields
-/// rather than ARB strings.
+/// en_MR is Marathi by default, except that English words which Marathi
+/// writes in Devanagari (delete, group, admin, ...) are written in Latin
+/// script instead, e.g. "थीम डिलीट करा" becomes "theme delete करा".
 void main() {
+  Map<String, dynamic> readArb(String name) =>
+      jsonDecode(File('lib/l10n/$name').readAsStringSync())
+          as Map<String, dynamic>;
+
   group('AppLocalizationsEnMr', () {
     late AppLocalizations enMr;
     late AppLocalizations en;
@@ -23,48 +30,83 @@ void main() {
       expect(enMr.minglish, 'Minglish (Marathi-English)');
     });
 
-    group('content titles stay English', () {
-      test('granthTitle', () {
-        expect(enMr.granthTitle, en.granthTitle);
-        expect(enMr.granthTitle, isNot(mr.granthTitle));
-      });
-
-      test('aartiTitle', () {
-        expect(enMr.aartiTitle, en.aartiTitle);
-        expect(enMr.aartiTitle, isNot(mr.aartiTitle));
-      });
-
-      test('parayanTitle', () {
-        expect(enMr.parayanTitle, en.parayanTitle);
-        expect(enMr.parayanTitle, isNot(mr.parayanTitle));
-      });
-
-      test('aboutMaharajTitle', () {
-        expect(enMr.aboutMaharajTitle, en.aboutMaharajTitle);
-        expect(enMr.aboutMaharajTitle, isNot(mr.aboutMaharajTitle));
-      });
+    test('uses Marathi for words that have no English loanword', () {
+      expect(enMr.granthTitle, 'गजानन विजय ग्रंथ');
+      expect(enMr.granthTitle, mr.granthTitle);
+      expect(enMr.aartiTitle, mr.aartiTitle);
+      expect(enMr.parayanTitle, mr.parayanTitle);
+      expect(enMr.aboutMaharajTitle, mr.aboutMaharajTitle);
+      expect(enMr.granthTitle, isNot(en.granthTitle));
     });
 
-    group('UI chrome stays English', () {
-      test('appName', () {
-        expect(enMr.appName, en.appName);
-      });
+    test('writes English loanwords in Latin script', () {
+      expect(mr.settings, 'सेटिंग्ज');
+      expect(enMr.settings, 'settings');
+      expect(mr.deleteTheme, 'थीम डिलीट करा');
+      expect(enMr.deleteTheme, 'theme delete करा');
+    });
 
-      test('searchHint', () {
-        expect(enMr.searchHint, en.searchHint);
-      });
+    test('keeps Marathi suffixes in Devanagari after the English word', () {
+      expect(enMr.savedThemes, 'माझ्या themes');
+    });
+  });
 
-      test('settings', () {
-        expect(enMr.settings, 'Settings');
-      });
+  group('app_en_MR.arb', () {
+    final enMr = readArb('app_en_MR.arb');
+    final mr = readArb('app_mr.arb');
+    String stringOf(Map<String, dynamic> arb, String key) => arb[key] as String;
 
-      test('language', () {
-        expect(enMr.language, 'Language');
-      });
+    test('translates every key that the Marathi file does', () {
+      final mrKeys = mr.keys.where((k) => !k.startsWith('@'));
+      final missing = mrKeys.where((k) => !enMr.containsKey(k)).toList();
+      expect(missing, isEmpty);
+    });
 
-      test('cancel', () {
-        expect(enMr.cancel, 'Cancel');
+    test('has no English loanword left in Devanagari', () {
+      const loanwords = [
+        'ग्रुप',
+        'डिलीट',
+        'ॲडमिन',
+        'अपडेट',
+        'स्टेटस',
+        'स्लॉट',
+        'नोटिफिकेशन',
+        'इमेज',
+        'थीम',
+        'लिस्ट',
+        'सेव्ह',
+        'ईमेल',
+        'कॉपी',
+        'शेअर',
+        'सबमिट',
+        'क्लेम',
+        'रिपोर्ट',
+        'इव्हेंट',
+        'सेटिंग्ज',
+        'साइन अप',
+        'साईन-अप',
+        'डॅशबोर्ड',
+      ];
+      final offenders = <String>[];
+      enMr.forEach((key, value) {
+        if (key.startsWith('@') || key == '@@locale' || value is! String) {
+          return;
+        }
+        for (final word in loanwords) {
+          if (value.contains(word)) offenders.add('$key: $word');
+        }
       });
+      expect(offenders, isEmpty);
+    });
+
+    test('keeps ICU placeholders intact', () {
+      for (final key in ['eventOnDate']) {
+        if (!mr.containsKey(key)) continue;
+        final placeholders = RegExp(r'\{(\w+)').allMatches(stringOf(mr, key));
+        for (final match in placeholders) {
+          expect(stringOf(enMr, key), contains('{${match.group(1)}'));
+        }
+      }
     });
   });
 }

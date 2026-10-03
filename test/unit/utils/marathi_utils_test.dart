@@ -73,10 +73,10 @@ void main() {
       expect(formatLocalizedText('Adhyay 1', const Locale('mr')), 'Adhyay १');
     });
 
-    test('keeps English numerals for en_MR locale', () {
+    test('converts to Marathi numerals for en_MR locale', () {
       expect(
         formatLocalizedText('Adhyay 1', const Locale('en', 'MR')),
-        'Adhyay 1',
+        'Adhyay १',
       );
     });
 

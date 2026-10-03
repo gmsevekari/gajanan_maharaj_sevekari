@@ -8,8 +8,8 @@ void main() {
       expect(const Locale('mr').useMarathiContent, isTrue);
     });
 
-    test('is false for en_MR (English UI everywhere)', () {
-      expect(const Locale('en', 'MR').useMarathiContent, isFalse);
+    test('is true for en_MR', () {
+      expect(const Locale('en', 'MR').useMarathiContent, isTrue);
     });
 
     test('is false for en', () {
@@ -33,8 +33,8 @@ void main() {
       expect(const Locale('mr').localizedContent(enText, mrText), mrText);
     });
 
-    test('returns English text for en_MR locale', () {
-      expect(const Locale('en', 'MR').localizedContent(enText, mrText), enText);
+    test('returns Marathi text for en_MR locale', () {
+      expect(const Locale('en', 'MR').localizedContent(enText, mrText), mrText);
     });
 
     test('returns English text for en locale', () {
@@ -51,51 +51,6 @@ void main() {
 
     test('handles both strings empty gracefully', () {
       expect(const Locale('mr').localizedContent('', ''), '');
-    });
-  });
-
-  group('LocaleContent.useMarathiDetailContent', () {
-    test('is true for mr', () {
-      expect(const Locale('mr').useMarathiDetailContent, isTrue);
-    });
-
-    test('is true for en_MR', () {
-      expect(const Locale('en', 'MR').useMarathiDetailContent, isTrue);
-    });
-
-    test('is false for en', () {
-      expect(const Locale('en').useMarathiDetailContent, isFalse);
-    });
-
-    test('is false for en with unrelated country code', () {
-      expect(const Locale('en', 'US').useMarathiDetailContent, isFalse);
-    });
-  });
-
-  group('LocaleContent.localizedDetailContent', () {
-    const enText = 'Gajanan Vijay Granth';
-    const mrText = 'गजानन विजय ग्रंथ';
-
-    test('returns Marathi text for mr locale', () {
-      expect(const Locale('mr').localizedDetailContent(enText, mrText), mrText);
-    });
-
-    test('returns Marathi text for en_MR locale', () {
-      expect(
-        const Locale('en', 'MR').localizedDetailContent(enText, mrText),
-        mrText,
-      );
-    });
-
-    test('returns English text for en locale', () {
-      expect(const Locale('en').localizedDetailContent(enText, mrText), enText);
-    });
-
-    test('falls back to English when mrText is empty for en_MR', () {
-      expect(
-        const Locale('en', 'MR').localizedDetailContent(enText, ''),
-        enText,
-      );
     });
   });
 }

@@ -2607,5 +2607,2611 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   AppLocalizationsEnMr() : super('en_MR');
 
   @override
+  String get font => 'font';
+
+  @override
+  String get granthTitle => 'गजानन विजय ग्रंथ';
+
+  @override
+  String get guruCharitraTitle => 'श्री गुरु चरित्र';
+
+  @override
+  String get stotraTitle => 'स्तोत्र संग्रह';
+
+  @override
+  String get namavaliTitle => 'अष्टोत्तरशत नामावली';
+
+  @override
+  String get aartiTitle => 'आरती संग्रह';
+
+  @override
+  String get bhajanTitle => 'भजन संग्रह';
+
+  @override
+  String get sankalpTitle => 'साप्ताहिक अभिषेक आणि पूजा संकल्प';
+
+  @override
+  String get parayanTitle => 'पारायण';
+
+  @override
+  String get parayanListTitle => 'पारायण सूची';
+
+  @override
+  String get songTitle => 'गाणी';
+
+  @override
+  String get aboutMaharajTitle => 'महाराजांविषयी';
+
+  @override
+  String get aboutGanapatiTitle => 'गणपती बाप्पाविषयी';
+
+  @override
+  String get aboutShriramTitle => 'प्रभु श्रीरामांविषयी';
+
+  @override
+  String get aboutBabaTitle => 'बाबांविषयी';
+
+  @override
+  String get aboutHanumanTitle => 'श्री हनुमानाविषयी';
+
+  @override
+  String get aboutDattaMaharajTitle => 'श्री दत्त महाराजांविषयी';
+
+  @override
+  String get calendarTitle => 'कार्यक्रम दिनदर्शिका';
+
+  @override
+  String get donationsTitle => 'देणगी';
+
+  @override
+  String get galleryTitle => 'gallery';
+
+  @override
+  String get appName => 'गजानन महाराज सेवेकरी';
+
+  @override
+  String get settings => 'settings';
+
+  @override
+  String get language => 'भाषा';
+
+  @override
+  String get theme => 'theme';
+
+  @override
+  String get about => 'बद्दल';
+
+  @override
+  String get disclaimer => 'अस्वीकरण';
+
+  @override
+  String get contactUs => 'संपर्क साधा';
+
+  @override
+  String get lightTheme => 'light theme';
+
+  @override
+  String get darkTheme => 'dark theme';
+
+  @override
+  String get systemTheme => 'system theme';
+
+  @override
+  String get colorPalette => 'रंग palette';
+
+  @override
+  String get themeSaffron => 'भगवा';
+
+  @override
+  String get themeMaroon => 'मरून';
+
+  @override
+  String get themeSandalwood => 'चंदन';
+
+  @override
+  String get themeIndigo => 'निळा';
+
+  @override
+  String get themeTulsi => 'तुळस हिरवा';
+
+  @override
+  String get themeKumkum => 'लाल';
+
+  @override
+  String get themeLotus => 'कमळ गुलाबी';
+
+  @override
+  String get themePeacock => 'मोर निळा';
+
+  @override
+  String get themeCustom => 'custom';
+
+  @override
+  String get customColorPicker => 'तुमचा रंग निवडा';
+
+  @override
+  String get savedThemes => 'माझ्या themes';
+
+  @override
+  String get saveTheme => 'theme save करा';
+
+  @override
+  String get deleteTheme => 'theme delete करा';
+
+  @override
+  String get themeSaved => 'theme save झाली';
+
+  @override
+  String get themeDeleted => 'theme delete झाली';
+
+  @override
+  String get noSavedThemes => 'अद्याप कोणतीही theme save केलेली नाही';
+
+  @override
+  String get themeAlreadySaved => 'ही theme आधीच save केलेली आहे';
+
+  @override
+  String get hexLabel => 'hex code';
+
+  @override
+  String get english => 'इंग्रजी';
+
+  @override
+  String get marathi => 'मराठी';
+
+  @override
   String get minglish => 'Minglish (Marathi-English)';
+
+  @override
+  String get adhyay => 'अध्याय';
+
+  @override
+  String get read => 'वाचा';
+
+  @override
+  String get listen => 'ऐका';
+
+  @override
+  String get stotraAvahan => 'गजानन महाराज आवाहन';
+
+  @override
+  String get stotraBavanni => 'गजानन महाराज बावन्नी';
+
+  @override
+  String get dailyAartis => 'दैनंदिन आरत्या';
+
+  @override
+  String get eventAartis => 'विशेष आरत्या';
+
+  @override
+  String get otherAartis => 'इतर आरत्या';
+
+  @override
+  String get otherStotras => 'इतर स्तोत्रं';
+
+  @override
+  String get otherBhajans => 'इतर भजन';
+
+  @override
+  String get ganapatiAarti => 'गणपतीची आरती';
+
+  @override
+  String get deviAarti => 'देवीची आरती';
+
+  @override
+  String get dattaMaharajAarti => 'दत्त महाराज आरती';
+
+  @override
+  String get shankarAarti => 'शंकराची आरती';
+
+  @override
+  String get vitthalAarti => 'विठ्ठलाची आरती';
+
+  @override
+  String get khandobaAarti => 'खंडोबाची आरती';
+
+  @override
+  String get saiBabaAarti => 'साई बाबा आरती';
+
+  @override
+  String get dnyaneshwarMaharajAarti => 'ज्ञानेश्वर महाराज आरती';
+
+  @override
+  String get tukaramMaharajAarti => 'तुकाराम महाराज आरती';
+
+  @override
+  String get karpurAarti => 'कर्पूर आरती';
+
+  @override
+  String get findMyAllocationLabel => 'माझे अध्याय शोधा';
+
+  @override
+  String get findMyAllocationPlaceholder =>
+      'तुमचे अध्याय पाहण्यासाठी \'माझे अध्याय शोधा\' वर click करा.';
+
+  @override
+  String get claimedLabel => 'अध्याय claim केलेले';
+
+  @override
+  String get unclaimedLabel => 'अध्याय claim न केलेले';
+
+  @override
+  String get claimSuccessMessage => 'अध्याय यशस्वीरीत्या claim झाले!';
+
+  @override
+  String get alreadyLinkedPrompt =>
+      'हा phone number आधीच दुसऱ्या phone वर जोडला गेला आहे. तो या phone वर घ्यायचा आहे का?';
+
+  @override
+  String get phoneNumberHint => 'phone number टाका';
+
+  @override
+  String get invalidPhoneError => 'कृपया योग्य phone number टाका';
+
+  @override
+  String get claimInProgress => 'अध्याय claim करत आहे...';
+
+  @override
+  String get noAllocationFound =>
+      'या phone number शी कोणतेही अध्याय जोडलेले नाहीत.';
+
+  @override
+  String get prarthana => 'प्रार्थना';
+
+  @override
+  String get mantrapushpanjali => 'मंत्रपुष्पांजली';
+
+  @override
+  String get kakadAarti => 'काकड आरती';
+
+  @override
+  String get madhyanAarti => 'मध्यान आरती';
+
+  @override
+  String get dhoopAarti => 'धूप आरती';
+
+  @override
+  String get shejAarti => 'शेज आरती';
+
+  @override
+  String get prakatDinAarti => 'प्रकट दिन आरती';
+
+  @override
+  String get ashadhiEkadashiAarti => 'आषाढी एकादशी आरती';
+
+  @override
+  String get dattaJayantiAarti => 'दत्त जयंती आरती';
+
+  @override
+  String get ramNavamiAarti => 'राम नवमी आरती';
+
+  @override
+  String get akshayTritiyaAarti => 'अक्षय तृतीया आरती';
+
+  @override
+  String get rushiPanchamiAarti => 'ऋषी पंचमी आरती';
+
+  @override
+  String get name => 'नाव';
+
+  @override
+  String get bhajanGajananachya => 'गजाननाच्या चरणी जुळवु';
+
+  @override
+  String get bhajanMurtiAhe => 'मूर्ती आहे शेगावला';
+
+  @override
+  String get location => 'स्थान';
+
+  @override
+  String get date => 'तारीख';
+
+  @override
+  String get selectDate => 'तारीख निवडा';
+
+  @override
+  String get generateSankalp => 'संकल्प तयार करा';
+
+  @override
+  String sankalpGenerated(String location, String date) {
+    return '$location साठी $date रोजीचा संकल्प येथे संपूर्ण चातुर्मास पुस्तकानुसार तयार केला जाईल.';
+  }
+
+  @override
+  String get chooseParayanType => 'पारायण प्रकार निवडा:';
+
+  @override
+  String get oneDayParayan => '१-दिवसीय पारायण';
+
+  @override
+  String get threeDayParayan => '३-दिवसीय पारायण';
+
+  @override
+  String get guruPushyaParayan => 'गुरुपुष्यामृत योग पारायण';
+
+  @override
+  String get oneDayParayanProgress => '१-दिवसीय पारायण प्रगती';
+
+  @override
+  String get threeDayParayanProgress => '३-दिवसीय पारायण प्रगती';
+
+  @override
+  String get day => 'दिवस';
+
+  @override
+  String get donationInstruction =>
+      'कृपया देणगीसाठी QR code scan करा किंवा खालील बटणावर click करा. जय गजानन 🙏🏻';
+
+  @override
+  String get donateViaZelle =>
+      'gajananmaharajseattle@gmail.com वर Zelle द्वारे देणगी द्या';
+
+  @override
+  String get zelleQRCode => 'Zelle QR code';
+
+  @override
+  String get qrCodeHere => 'येथे QR code';
+
+  @override
+  String get couldNotOpenZelle => 'Zelle उघडू शकलो नाही.';
+
+  @override
+  String get eventOnDate => 'कोणतेही आगामी कार्यक्रम नाहीत';
+
+  @override
+  String get aboutMaharajContent =>
+      'श्री गजानन महाराजांबद्दलची सविस्तर माहिती आणि इतिहास येथे प्रदर्शित केला जाईल. सामग्री मोठ्या, सुवाच्य मराठी मजकुरात सादर केली आहे, जी वृद्ध वापरकर्त्यांना सहज वाचता येईल.';
+
+  @override
+  String get upcomingEvent => 'आगामी कार्यक्रम';
+
+  @override
+  String get prakatDinUtsav => 'प्रकट दिन उत्सव';
+
+  @override
+  String get weeklyPooja => 'साप्ताहिक पूजा';
+
+  @override
+  String get aboutMaharajScreenTitle => 'श्री संत गजानन महाराज';
+
+  @override
+  String get aboutMaharajLocation => 'शेगाव, महाराष्ट्र';
+
+  @override
+  String get aboutMaharajPragatDin =>
+      'प्रगट दिन: २३ फेब्रुवारी १८७८ (माघ वद्य सप्तमी)';
+
+  @override
+  String get aboutMaharajChant => '|| गण गण गणात बोते ||';
+
+  @override
+  String get cardTitleJeevanParichay => 'जीवन परिचय';
+
+  @override
+  String get cardContentJeevanParichay =>
+      'संत श्री गजानन महाराज हे महाराष्ट्रातील एक प्रतिष्ठित संत आहेत, जे त्यांच्या साधेपणासाठी, दिव्य अस्तित्वासाठी आणि चमत्कारी कार्यांसाठी ओळखले जातात. त्यांच्या ३२ वर्षांच्या लहान पण दिव्य आयुष्यात त्यांनी अनेक लोकांच्या जीवनाचा मार्ग प्रकाशित केला.\n\nत्यांचे मूळ, जन्म आणि वंश अज्ञात असले तरी त्यांचा प्रभाव शाश्वत आहे. ३२ वर्षे त्यांनी शेगावच्या पवित्र भूमीला पावन केले आणि तिचे एका आध्यात्मिक तीर्थक्षेत्रात रूपांतर केले. ते खऱ्या अर्थाने \"योगीराज\" होते, ज्यांनी त्यांच्या चमत्कारी लीलांद्वारे आणि केवळ त्यांच्या उपस्थितीने असंख्य जीवांना मार्गदर्शन केले, ज्यातून शांतता आणि पूर्ण देवत्व पसरत असे.';
+
+  @override
+  String get cardTitlePragatItihas => 'प्रगट इतिहास';
+
+  @override
+  String get cardContentPragatItihas =>
+      'महाराज प्रथम २३ फेब्रुवारी १८७८ (माघ वद्य सप्तमी) रोजी (महाराष्ट्रातील बुलढाणा जिल्ह्यातील) शेगाव येथे प्रकट झाले.\n\nमहाराज एका तेजस्वी तरुणाच्या रूपात रस्त्यावर बसून टाकून दिलेल्या पत्रावळीवरील अन्नाचे कण वेचून खात होते. त्यांच्या या कृतीतून त्यांची पहिली महान शिकवण मिळाली: \'अन्नं ब्रह्मेति\' (अन्न हे पूर्णब्रह्म आहे) — अन्नाची नासाडी कधीही करू नये आणि एका आत्मज्ञानी जीवासाठी सर्व पदार्थ एकसमान असतात. त्यांच्या प्रकटीकरणाच्या क्षणापासूनच भक्त त्यांना \"योगीराज\" म्हणून ओळखू लागले.';
+
+  @override
+  String get cardTitleShikvan => 'शिकवण आणि तत्त्वज्ञान';
+
+  @override
+  String get cardContentShikvan =>
+      'त्यांची वागणूक बालकासारखी निरागस आणि काहीशी \'उन्मन\' (with divine madness) असे, आणि ते सदैव परब्रह्माशी एकरूप होऊन जगत.\n\nत्यांच्या तत्त्वज्ञानाचे सार त्यांच्या मुखी सतत असणाऱ्या \"गण गण गणात बोते\" या मंत्रात सामावलेले आहे. या मंत्राचा अर्थ असा आहे की, प्रत्येक जीवाचा आत्मा हा त्या विश्वव्यापी ब्रह्माचाच एक अंश आहे आणि ईश्वराचा वास चराचरातील कणाकणात आहे.\n\nत्यांच्या शिकवणीचे मुख्य स्तंभ:\n* अन्न हे पूर्णब्रह्म: अन्नाला देवाचे रूप मानून त्याचा आदर करणे.\n* समभाव: त्यांनी श्रीमंत-गरीब, उच्च-नीच किंवा मानव-प्राणी असा कोणताही भेद न करता सर्वांवर समान प्रेम केले.\n* कर्मयोग: फळाची अपेक्षा न ठेवता आपले कर्तव्य करत राहणे, यावर त्यांनी भर दिला.\n* जीवनमूल्ये: भक्ती, सेवा, सदाचार आणि त्याग या मार्गांवर चालण्याचे मार्गदर्शन त्यांनी भक्तांना केले.';
+
+  @override
+  String get cardTitleSamadhi => 'समाधी विवरण';
+
+  @override
+  String get cardContentSamadhi =>
+      'महाराजांनी शेगावमध्ये ३२ वर्षे वास्तव्य केले. या काळात त्यांनी भक्तांना सन्मार्गावर आणण्यासाठी असंख्य चमत्कार (लीला) केले. त्यानंतर, ८ सप्टेंबर १९१० (ऋषी पंचमी) रोजी त्यांनी \'संजीवन समाधी\' घेतली. संजीवन समाधी ही अशी अवस्था आहे, जिथे संत स्वतःहून आपला देह त्यागतात, पण त्यांचे चैतन्य त्या समाधीत जागृत असते.\n\nत्यांचा पार्थिव देह जरी शेगावच्या समाधी मंदिरात विसावला असला, तरी त्यांचे आध्यात्मिक अस्तित्व हे काळाच्या पलीकडचे आणि शाश्वत आहे. समाधी घेण्यापूर्वी त्यांनी आपल्या भक्तांना आश्वस्त केले होते: \"मी गेलो असे मानू नका, भक्तीत अंतर करू नका. तुमच्या रक्षणासाठी मी सदैव तुमच्या पाठीशी असेन.\"\n\nआज शेगाव हे \"विदर्भाचे पंढरपूर\" म्हणून ओळखले जाते, जिथे लाखो भाविक या महापुरुषाच्या अस्तित्वाची अनुभूती घेण्यासाठी येतात.';
+
+  @override
+  String get footerQuote => 'भक्तांच्या हाकेला धावून जाणारे दयासागर';
+
+  @override
+  String get socialMediaTitle => 'social media';
+
+  @override
+  String get officialSocialMediaHandles => 'अधिकृत social media handles';
+
+  @override
+  String get facebook => 'Facebook';
+
+  @override
+  String get youtube => 'YouTube';
+
+  @override
+  String get instagram => 'Instagram';
+
+  @override
+  String get googlePhotos => 'Google फोटोज़';
+
+  @override
+  String get whatsapp => 'WhatsApp';
+
+  @override
+  String get sendTextTooltip => 'मजकूर पाठवा';
+
+  @override
+  String get officialPage => 'अधिकृत page';
+
+  @override
+  String get videosAndStreams => 'videos आणि live streams';
+
+  @override
+  String get photosAndReels => 'photos आणि reels';
+
+  @override
+  String get photoGallery => 'photo gallery';
+
+  @override
+  String get whatsappAdminContact => 'WhatsApp group admin contact';
+
+  @override
+  String get officialLinks => 'अधिकृत links';
+
+  @override
+  String get socialMedia => 'social media';
+
+  @override
+  String get nityopasanaTitle => 'नित्योपासना';
+
+  @override
+  String get share => 'share करा';
+
+  @override
+  String get narrator => 'निवेदक';
+
+  @override
+  String get internetRequired => 'video playback साठी internet आवश्यक आहे';
+
+  @override
+  String get shareMessage => 'गजानन विजय ग्रंथाचा हा अध्याय नक्की ऐका';
+
+  @override
+  String get signupsTitle => 'sign-up';
+
+  @override
+  String get signupsDescription =>
+      'विविध सेवांसाठी sign up करण्यासाठी कृपया खालील link वापरा.';
+
+  @override
+  String get sundayPrasadSevaSignup => 'रविवार प्रसाद सेवा';
+
+  @override
+  String get sundayPrasadSevaSignupDescription =>
+      'रविवार प्रसाद सेवेसाठी sign up करा';
+
+  @override
+  String get vastralankarSevaSignup => 'वस्त्रालंकार सेवा';
+
+  @override
+  String get vastralankarSevaSignupDescription =>
+      'वस्त्रालंकार सेवेसाठी sign up करा';
+
+  @override
+  String get allEvents => 'सर्व उत्सव';
+
+  @override
+  String get searchEvent => 'उत्सव शोधा...';
+
+  @override
+  String get allEventsList => 'सर्व उत्सव';
+
+  @override
+  String get namavaliFooter => 'श्री गजाननार्पणमस्तु';
+
+  @override
+  String get otherTitle => 'इतर';
+
+  @override
+  String get guruGeeta => 'गुरु गीता';
+
+  @override
+  String get dattaMajala => 'दत्ता मजला प्रसन्न होशी';
+
+  @override
+  String get karunaTripadi => 'श्रीकरुणात्रिपदी';
+
+  @override
+  String get gajananBavanni => 'गजानन बावन्नी';
+
+  @override
+  String get siddhaMangal => 'श्रीसिद्धमङ्गलस्तोत्र';
+
+  @override
+  String get ghorKashtodharan => 'श्री घोरकष्टोद्धारणस्तोत्र';
+
+  @override
+  String get dattaStuti => 'दत्त स्तुती';
+
+  @override
+  String get namjap => 'नामजप';
+
+  @override
+  String get namavaliListenTitle => 'अष्टोत्तरशतनामावली - रवींद्र साठे';
+
+  @override
+  String get namavaliShareMessage =>
+      'गजानन महाराज अष्टोत्तरशतनामावली नक्की ऐका';
+
+  @override
+  String contentShareMessage(Object url) {
+    return 'हे पहा: $url';
+  }
+
+  @override
+  String copyrightMessage(String year) {
+    return '© $year गजानन महाराज Seattle';
+  }
+
+  @override
+  String get downloadAppTitle => 'app download करा';
+
+  @override
+  String get downloadAppSubtitle =>
+      'इंटरनेटशिवाय वापरण्यासाठी आमचे अधिकृत app download करा';
+
+  @override
+  String get downloadAppButton => 'मिळवा';
+
+  @override
+  String get notificationPreferences => 'notification प्राधान्ये';
+
+  @override
+  String get weeklyPoojaReminder => 'साप्ताहिक पूजा आठवण';
+
+  @override
+  String get notificationsDisabledMessage =>
+      ' notifications प्राप्त करण्यासाठी, कृपया तुमच्या device settings मध्ये त्या सक्षम करा.';
+
+  @override
+  String get notificationDialogTitle => 'अद्ययावत रहा!';
+
+  @override
+  String get notificationDialogBody =>
+      'पूजा, उत्सवाची आठवण आणि मंदिराचे महत्त्वाचे notifications मिळवण्यासाठी सक्षम करा.\n\nतुम्ही हे कधीही \'settings > notification प्राधान्ये\' मध्ये बदलू शकता.';
+
+  @override
+  String get notificationDialogAllow => 'परवानगी द्या';
+
+  @override
+  String get notificationDialogDeny => 'आता नको';
+
+  @override
+  String get openSettings => 'settings उघडा';
+
+  @override
+  String get specialEvents => 'विशेष उत्सव';
+
+  @override
+  String get gajananChant => 'गण गण गणात बोते';
+
+  @override
+  String get chantGanpatiBappa => 'गणपती बाप्पा मोरया';
+
+  @override
+  String get chantHappyDiwali => 'शुभ दीपावली';
+
+  @override
+  String get chantOmGajananay => 'ॐ श्री गजाननाय नमः';
+
+  @override
+  String get chantShriGajananJaiGajanan => 'श्री गजानन जय गजानन';
+
+  @override
+  String get namjapTitle => 'नामजप';
+
+  @override
+  String get individualNamjapLabel => 'वैयक्तिक नामजप';
+
+  @override
+  String get individualNamjapDescription =>
+      'स्वतः जप करा किंवा विशिष्ट वेळेसाठी / माळांसाठी ऐका.';
+
+  @override
+  String get groupNamjapLabel => 'group नामजप';
+
+  @override
+  String get groupNamjapDescription =>
+      'group नामजपमध्ये सहभागी व्हा आणि सामूहिक संकल्पासाठी योगदान द्या.';
+
+  @override
+  String get malaCountingTab => 'माळा मोजणी';
+
+  @override
+  String get timeBasedTab => 'वेळ आधारित';
+
+  @override
+  String get manualJapTab => 'manual';
+
+  @override
+  String get targetMalaCount => 'लक्ष्य (माळा)';
+
+  @override
+  String get setTarget => 'लक्ष्य निश्चित करा';
+
+  @override
+  String get start => 'सुरू';
+
+  @override
+  String get reset => 'reset करा';
+
+  @override
+  String get count => 'मोजणी';
+
+  @override
+  String totalMalasCompleted(int count) {
+    return 'एकूण पूर्ण झालेल्या माळा: $count';
+  }
+
+  @override
+  String get hours => 'तास';
+
+  @override
+  String get minutes => 'मिनिटे';
+
+  @override
+  String get duration => 'कालावधी';
+
+  @override
+  String get timeRemaining => 'उर्वरित वेळ';
+
+  @override
+  String get cancel => 'रद्द करा';
+
+  @override
+  String get ok => 'ठीक आहे';
+
+  @override
+  String get other => 'इतर';
+
+  @override
+  String get selectMalaCount => 'माळ संख्या निवडा';
+
+  @override
+  String get mala => 'माळ';
+
+  @override
+  String get malas => 'माळा';
+
+  @override
+  String get startPlay => 'सुरू करा';
+
+  @override
+  String get audioJapWillStart => 'audio जप चालू होईल';
+
+  @override
+  String get keepPhoneUnlocked =>
+      'नामजप सुरू ठेवण्यासाठी कृपया phone unlock ठेवा';
+
+  @override
+  String get tap => 'tap करा';
+
+  @override
+  String get tapToEdit => 'बदलण्यासाठी tap करा';
+
+  @override
+  String get jap => 'जप';
+
+  @override
+  String get enterCustomTarget => 'लक्ष्य माळा number टाका (उदा. ११)';
+
+  @override
+  String get search => 'शोधा';
+
+  @override
+  String get searchHint => 'स्तोत्रे, भजने शोधा...';
+
+  @override
+  String get noResultsFound => 'काहीही आढळले नाही';
+
+  @override
+  String get japTimeCompleted => 'जप वेळ पूर्ण झाली!';
+
+  @override
+  String targetMalasCompleted(String count) {
+    return '$count माळांचे लक्ष्य पूर्ण झाले!';
+  }
+
+  @override
+  String get templeNotifications => 'मंदिराचे notifications';
+
+  @override
+  String get templeNotificationsNote =>
+      '(उदा., स्वयंसेवक विनंती, महत्त्वाचे notifications)';
+
+  @override
+  String get adminAccess => 'admin access';
+
+  @override
+  String get googleSignInWebNotSupported =>
+      'web वर Google sign-in बंद केले आहे. कृपया admin access साठी mobile app वापरा.';
+
+  @override
+  String get logoutInactivity => 'निष्क्रियतेमुळे log out झाले.';
+
+  @override
+  String get notificationRecently => 'काही वेळापूर्वी';
+
+  @override
+  String get noNewNotifications => 'नवीन notifications नाहीत';
+
+  @override
+  String get errorRetrieveEmail => 'वापरकर्ता email प्राप्त करण्यात अयशस्वी.';
+
+  @override
+  String get signInError =>
+      'sign in करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get accessDeniedNotAuthorized =>
+      'प्रवेश नाकारला: तुमचा email admin access साठी अधिकृत नाही.';
+
+  @override
+  String get notificationDeleteTooltip => 'delete करा';
+
+  @override
+  String get notificationDefaultTitle => 'notification';
+
+  @override
+  String get adminRestrictedArea => 'admin प्रतिबंधित क्षेत्र';
+
+  @override
+  String get adminSignInInstruction => 'कृपया Google account ने sign in करा.';
+
+  @override
+  String get adminDashboardTitle => 'admin dashboard';
+
+  @override
+  String get logoutLabel => 'log out';
+
+  @override
+  String get loggedInAs => 'log in email';
+
+  @override
+  String get unknownAdmin => 'अज्ञात admin';
+
+  @override
+  String get adminModules => 'admin विभाग';
+
+  @override
+  String get templeNotificationsModuleTitle => 'मंदिराचे notifications';
+
+  @override
+  String get templeNotificationsModuleSubtitle =>
+      'सर्व सदस्यांना manual push notification पाठवा';
+
+  @override
+  String get notificationSentSuccess => 'notification यशस्वीरित्या पाठवले!';
+
+  @override
+  String notificationSendError(String error) {
+    return 'notification पाठवण्यात अयशस्वी: $error';
+  }
+
+  @override
+  String get notAuthenticatedError => 'त्रुटी: log in नाही';
+
+  @override
+  String get broadcastNotificationInstruction =>
+      'मंदिराच्या notifications ना subscribe केलेल्या सर्वांना त्वरित push notification पाठविले जाईल.';
+
+  @override
+  String get notificationTitleLabel => 'notification चे शीर्षक';
+
+  @override
+  String get notificationTitleHint => 'उदा., स्वयंसेवक पाहिजेत';
+
+  @override
+  String get notificationTitleRequired => 'कृपया शीर्षक लिहा';
+
+  @override
+  String get notificationMessageLabel => 'notification message';
+
+  @override
+  String get notificationMessageHint =>
+      'उदा., आम्हाला रविवारच्या प्रसादासाठी १० स्वयंसेवकांची गरज आहे! sign up करा: https://example.com\n\nवापरकर्त्यांसाठी URL आपोआप highlight केल्या जातील आणि tap करता येतील.';
+
+  @override
+  String get notificationMessageRequired =>
+      'कृपया notification चा message लिहा';
+
+  @override
+  String get broadcastButtonLabel => 'notification पाठवा';
+
+  @override
+  String get allNotifications => 'सर्व notifications';
+
+  @override
+  String notificationRetentionMessage(String days) {
+    return 'notifications $days दिवसांनंतर आपोआप delete केले जातील';
+  }
+
+  @override
+  String get today => 'आज';
+
+  @override
+  String get yesterday => 'काल';
+
+  @override
+  String get lastWeek => 'मागील आठवडा';
+
+  @override
+  String twoWeeksBack(String count) {
+    return '$count आठवड्यांपूर्वी';
+  }
+
+  @override
+  String threeWeeksBack(String count) {
+    return '$count आठवड्यांपूर्वी';
+  }
+
+  @override
+  String get older => 'जुने';
+
+  @override
+  String get parayanCoordinationModuleTitle => 'पारायण आयोजन';
+
+  @override
+  String get parayanCoordinationModuleSubtitle =>
+      'नवीन पारायण तयार करा आणि manage करा';
+
+  @override
+  String get createParayanTitle => 'पारायण तयार करा';
+
+  @override
+  String get englishDetailsHeader => 'इंग्रजी तपशील (English Details)';
+
+  @override
+  String get marathiDetailsHeader => 'मराठी तपशील (Marathi Details)';
+
+  @override
+  String get parayanNameLabel => 'पारायणाचे नाव (इंग्रजी)';
+
+  @override
+  String get parayanNameHint => 'उदा., Prakat Din Parayan';
+
+  @override
+  String get parayanNameRequired => 'कृपया इंग्रजी नाव लिहा';
+
+  @override
+  String get parayanNameMrLabel => 'पारायणाचे नाव (मराठी)';
+
+  @override
+  String get parayanNameMrHint => 'उदा., प्रकट दिन पारायण';
+
+  @override
+  String get parayanNameMrRequired => 'कृपया मराठी नाव लिहा';
+
+  @override
+  String get parayanDescriptionLabel => 'वर्णन (इंग्रजी)';
+
+  @override
+  String get parayanDescriptionHint =>
+      '1-Day Parayan of Gajanan Vijay Granth on the auspicious occasion of Prakat Din';
+
+  @override
+  String get parayanDescriptionMrLabel => 'वर्णन (मराठी)';
+
+  @override
+  String get parayanDescriptionMrHint =>
+      'प्रकट दिनाच्या शुभ प्रसंगी गजानन विजय ग्रंथाचे 1-दिवसीय पारायण';
+
+  @override
+  String get parayanDateLabel => 'पारायण दिनांक';
+
+  @override
+  String get remindersFixedLabel =>
+      'reminder या वेळेत पाठवले जातील: दुपारी १:००, ४:०० आणि संध्याकाळी ७:००';
+
+  @override
+  String get parayanTypeLabel => 'पारायण प्रकार';
+
+  @override
+  String get startDateLabel => 'सुरुवात तारीख';
+
+  @override
+  String get endDateLabel => 'अंतिम तारीख';
+
+  @override
+  String get reminderTimeLabel => 'reminder notification वेळ';
+
+  @override
+  String get createParayanButton => 'नवीन पारायण तयार करा';
+
+  @override
+  String get addParticipantLabel => 'सदस्य add करा';
+
+  @override
+  String get nameAlphabetRegexError =>
+      'केवळ अक्षरे, अंक आणि space वापरण्याची परवानगी आहे';
+
+  @override
+  String get parayanJoinedSuccess =>
+      'तुम्ही पारायणासाठी यशस्वीरित्या sign-up केले आहे!';
+
+  @override
+  String get parayanUpdatedSuccess =>
+      'तुमचे पारायण sign-up यशस्वीरित्या update केले आहे!';
+
+  @override
+  String get addHousehold => 'दुसरे कुटुंब add करा';
+
+  @override
+  String get addParticipant => 'दुसरा सदस्य add करा';
+
+  @override
+  String get submitAll => 'सर्व submit करा';
+
+  @override
+  String get householdLabel => 'कुटुंब';
+
+  @override
+  String get participantsAddedSuccess => 'सदस्य यशस्वीरित्या add केले';
+
+  @override
+  String get assignedAdhyaysLabel => 'तुमचे नियुक्त अध्याय';
+
+  @override
+  String get markAsRead => 'वाचले म्हणून mark करा';
+
+  @override
+  String get readingCompleted => 'वाचन पूर्ण झाले';
+
+  @override
+  String get submitReadingStatus => 'status submit करा';
+
+  @override
+  String get manualPingLabel => 'reminder notification पाठवा - लवकरच येत आहे';
+
+  @override
+  String statsParticipants(int count) {
+    return 'एकूण सदस्य: $count';
+  }
+
+  @override
+  String get joinParayanLabel => 'पारायणात सहभागी व्हा';
+
+  @override
+  String get signedUpLabel => 'sign-up केले आहे';
+
+  @override
+  String get noActiveParayans => 'सध्या कोणतेही सक्रिय पारायण नाहीत.';
+
+  @override
+  String get adhyaysCompleted => 'अध्याय पूर्ण झाले';
+
+  @override
+  String get totalSignups => 'एकूण sign-up';
+
+  @override
+  String get ongoingParayansLabel => 'चालू पारायण';
+
+  @override
+  String get upcomingScheduleLabel => 'पुढील वेळापत्रक';
+
+  @override
+  String get nextParayanLabel => 'पुढील पारायण';
+
+  @override
+  String get viewAllLabel => 'सर्व पहा';
+
+  @override
+  String get heroCardTitle => 'नवीन पारायण सुरू करा';
+
+  @override
+  String get parayanDetailsHeader => 'पारायण तपशील';
+
+  @override
+  String get dateLabel => 'दिनांक';
+
+  @override
+  String get typeLabel => 'प्रकार';
+
+  @override
+  String get allAllocationsLabel => 'सहभागी सदस्य';
+
+  @override
+  String get adhyayAllocationTab => 'अध्याय वाटप';
+
+  @override
+  String get myAllocationTab => 'माझे अध्याय';
+
+  @override
+  String get upcomingParayanMessage =>
+      'पारायण sign-up पूर्ण झाल्यावर अध्याय वाटप केले जाईल';
+
+  @override
+  String get noSignupsFound => 'अद्याप कोणीही सहभागी झाले नाही';
+
+  @override
+  String get notAllocated => 'वाटप अद्याप झाले नाही';
+
+  @override
+  String get videoUnavailable => 'video उपलब्ध नाही';
+
+  @override
+  String get noDataAvailable => 'माहिती उपलब्ध नाही';
+
+  @override
+  String statusUpcomingOneDay(Object date) {
+    return 'पारायण $date रोजी आहे. सहभाग अद्याप सुरू झालेला नाही.';
+  }
+
+  @override
+  String statusUpcomingMultiDay(Object date) {
+    return 'पारायण $date पासून सुरू होईल. सहभाग अद्याप सुरू झालेला नाही.';
+  }
+
+  @override
+  String get statusEnrolling => 'प्रवेश सुरू';
+
+  @override
+  String get statusOngoing => 'सुरू आहे';
+
+  @override
+  String get statusCompleted => 'पूर्ण झालेले';
+
+  @override
+  String parayanWillStartOn(String date) {
+    return 'पारायण $date पासून सुरू होईल';
+  }
+
+  @override
+  String get day1Label => 'दिवस १';
+
+  @override
+  String get day2Label => 'दिवस २';
+
+  @override
+  String get day3Label => 'दिवस ३';
+
+  @override
+  String get myAllocationTitle => 'माझी स्थिती';
+
+  @override
+  String get submitLabel => 'submit करा';
+
+  @override
+  String get activeLabel => 'सक्रिय पारायण #';
+
+  @override
+  String get completedLabel => 'पूर्ण पारायण #';
+
+  @override
+  String get emailRequired => 'email ID आवश्यक आहे';
+
+  @override
+  String get invalidEmail => 'कृपया योग्य email ID टाका';
+
+  @override
+  String get phoneRequired => 'phone number आवश्यक आहे';
+
+  @override
+  String get invalidPhone => 'कृपया योग्य १०-अंकी phone number प्रविष्ट करा';
+
+  @override
+  String get overviewTab => 'आढावा';
+
+  @override
+  String get participantsTab => 'सदस्य';
+
+  @override
+  String get participantsLabel => 'सदस्य';
+
+  @override
+  String get progressLabel => 'प्रगती';
+
+  @override
+  String get quickActionsLabel => 'त्वरित कृती';
+
+  @override
+  String adminAdhyaysLabel(String adhyays) {
+    return 'अध्याय: $adhyays';
+  }
+
+  @override
+  String get totalParticipantsLabel => 'एकूण सदस्य';
+
+  @override
+  String get remindersStatusLabel => 'notification status';
+
+  @override
+  String get reminderSentStatus => 'पाठवले';
+
+  @override
+  String get reminderPendingStatus => 'पाठवायचे आहे';
+
+  @override
+  String get updateStatusLabel => 'पारायण status';
+
+  @override
+  String get statusUpcoming => 'आगामी';
+
+  @override
+  String get statusAllocated => 'वाटप पूर्ण';
+
+  @override
+  String statusEnrollingDesc(Object date) {
+    return 'प्रवेश सुरू आहे. पारायण $date रोजी सुरू होईल.';
+  }
+
+  @override
+  String statusAllocatedDesc(Object date) {
+    return 'अध्याय वाटप पूर्ण झाले आहे. पारायण $date रोजी सुरू होईल.';
+  }
+
+  @override
+  String get statusUpdateSuccess => 'status यशस्वीरित्या update केले';
+
+  @override
+  String get successLabel => 'यशस्वी';
+
+  @override
+  String get closeLabel => 'बंद करा';
+
+  @override
+  String groupLabel(String group) {
+    return 'गट $group';
+  }
+
+  @override
+  String get adhyayCompletionTitle => 'अध्याय पूर्तता';
+
+  @override
+  String get recentlyCompletedParayanLabel => 'नुकतेच पूर्ण झालेले पारायण';
+
+  @override
+  String get noCompletedParayans => 'कोणतेही नुकतेच पूर्ण झालेले पारायण नाही';
+
+  @override
+  String get upcomingParayansTab => 'आगामी';
+
+  @override
+  String get completedParayansTab => 'पूर्ण झालेले';
+
+  @override
+  String get parayanReminders => 'पारायण reminder';
+
+  @override
+  String get parayanRemindersNote =>
+      'तुम्हाला नेमून दिलेले परायणाचे अध्याय वाचण्याची आठवण करून देणारे notifications प्राप्त करा';
+
+  @override
+  String get favorites => 'favorites';
+
+  @override
+  String get myFavorites => 'माझे favorites';
+
+  @override
+  String get createPlaylist => 'नवीन list तयार करा';
+
+  @override
+  String get renamePlaylist => 'list चे नाव बदला';
+
+  @override
+  String get deletePlaylist => 'list delete करा';
+
+  @override
+  String get playlistName => 'list चे नाव';
+
+  @override
+  String get addAarti => 'add करा';
+
+  @override
+  String get removeAarti => 'delete करा';
+
+  @override
+  String get playAll => 'सर्व play करा';
+
+  @override
+  String get readAll => 'सर्व वाचा';
+
+  @override
+  String get addToPlaylist => 'list मध्ये add करा';
+
+  @override
+  String get createNewPlaylist => 'नवीन list तयार करा';
+
+  @override
+  String get playlistCreated => 'list तयार केली';
+
+  @override
+  String get playlistRenamed => 'list चे नाव बदलले';
+
+  @override
+  String get playlistDeleted => 'list delete केली';
+
+  @override
+  String get playlistNameRequired => 'list चे नाव आवश्यक आहे';
+
+  @override
+  String get playlistNameMaxChars => 'list चे नाव ५० अक्षरांपेक्षा कमी असावे';
+
+  @override
+  String get playlistNameAlphanumeric =>
+      'list च्या नावात फक्त अक्षरे, अंक आणि space असावेत';
+
+  @override
+  String get playlistAlreadyExists => 'या नावाची list आधीच अस्तित्वात आहे';
+
+  @override
+  String get addedToPlaylist => 'list मध्ये add केले';
+
+  @override
+  String get removedFromPlaylist => 'list मधून delete केले';
+
+  @override
+  String get defaultPlaylistCannotBeDeleted =>
+      'default list delete करता येत नाही';
+
+  @override
+  String get editEnrollmentLabel => 'sign-up बदला';
+
+  @override
+  String get updateEnrollmentLabel => 'sign-up update करा';
+
+  @override
+  String get filterAll => 'सर्व';
+
+  @override
+  String get filterCompleted => 'पूर्ण झालेले';
+
+  @override
+  String get filterPending => 'अपूर्ण';
+
+  @override
+  String get exportAllocations => 'status export करा';
+
+  @override
+  String get exportingGroups => 'गट snapshot तयार करत आहे...';
+
+  @override
+  String get seattleGajananMaharajParivar => 'Seattle गजानन महाराज परिवार';
+
+  @override
+  String get jaiGajanan => 'जय गजानन';
+
+  @override
+  String get parayanParticipant => 'सदस्य';
+
+  @override
+  String get adhyaysLabel => 'अध्याय';
+
+  @override
+  String get statusLabel => 'status';
+
+  @override
+  String get shareParayan => 'पारायण share करा';
+
+  @override
+  String get deleteSignupLabel => 'sign-up delete करा';
+
+  @override
+  String get signupDeletedSuccess =>
+      'तुमचे sign-up यशस्वीरित्या delete केले आहे.';
+
+  @override
+  String get deleteSignupConfirmTitle => 'sign-up delete करा?';
+
+  @override
+  String get deleteSignupConfirmMessage =>
+      'तुमचे sign-up delete केले जाईल. तुम्ही खात्रीने तुमचे sign-up delete करू इच्छिता?';
+
+  @override
+  String get duplicateNameError => 'हे नाव आधीच वापरले आहे';
+
+  @override
+  String get maxMembersError =>
+      'एका घरातून जास्तीत जास्त ५ सदस्य sign-up करू शकतात';
+
+  @override
+  String get householdMembersLabel => 'घरातील सदस्य';
+
+  @override
+  String get addLabel => 'सदस्य add करा';
+
+  @override
+  String get phoneNumberLabel => 'phone number';
+
+  @override
+  String get joiningSignupProgress => 'पारायणासाठी sign-up करत आहे...';
+
+  @override
+  String get updatingSignupProgress => 'तुमचे sign-up update करत आहे...';
+
+  @override
+  String get deletingSignupProgress => 'तुमचे sign-up delete करत आहे...';
+
+  @override
+  String get confirm => 'confirm करा';
+
+  @override
+  String get subscribingProgress => 'notifications subscribe करत आहे...';
+
+  @override
+  String get nothingHereYet => 'येथे अद्याप काहीही नाही आहे';
+
+  @override
+  String get unsubscribingProgress => 'notifications unsubscribe करत आहे...';
+
+  @override
+  String get exportSuffixAllocated => ' - अध्याय वाटप';
+
+  @override
+  String get exportSuffixOngoing => ' - आत्ताचे status';
+
+  @override
+  String get exportSuffixCompleted => ' पूर्ण झाले. जय गजानन 🙏🏻';
+
+  @override
+  String get exportToCalendar => 'calendar export करा';
+
+  @override
+  String get shareParayanAction => 'हे पारायण join करा';
+
+  @override
+  String get shareLink => 'link';
+
+  @override
+  String get deletePlaylistConfirm =>
+      'तुम्ही खात्रीने ही list delete करू इच्छिता?';
+
+  @override
+  String get updateAvailableTitle => 'update उपलब्ध';
+
+  @override
+  String get forcedUpdateMessage =>
+      'app वापरण्यासाठी update करणे आवश्यक आहे. कृपया app update करा.';
+
+  @override
+  String get recommendedUpdateMessage =>
+      'app चे नवीन version उपलब्ध आहे. तुम्ही आता update करू इच्छिता का?';
+
+  @override
+  String get latestVersionLabel => 'नवीन version';
+
+  @override
+  String get currentVersionLabel => 'आत्ताचे version';
+
+  @override
+  String get updateNow => 'आता update करा';
+
+  @override
+  String get updateLater => 'नंतर';
+
+  @override
+  String get noParayansFound => 'चालू वर्षासाठी कोणतेही पारायण सापडले नाही';
+
+  @override
+  String get joinCodeTitle => 'join code enter करा';
+
+  @override
+  String get joinCodeHint => '६-अक्षरी code enter करा';
+
+  @override
+  String get invalidJoinCode => 'join code चुकीचा आहे!';
+
+  @override
+  String get copyInviteLink => 'निमंत्रण link copy करा';
+
+  @override
+  String get copyJoinCode => 'join code copy करा';
+
+  @override
+  String get joinCodeCopied => 'join code clipboard वर copy केला';
+
+  @override
+  String get inviteLinkCopied => 'निमंत्रण link clipboard वर copy केली';
+
+  @override
+  String get joinCodeLabel => 'join code';
+
+  @override
+  String get shareWithCode => 'code सह share करा';
+
+  @override
+  String get guruPushyaEndDateRequired =>
+      'कृपया गुरुपुष्यामृत योग पारायणाची समाप्ती तारीख आणि वेळ set करा';
+
+  @override
+  String get confirmCompletionTitle => 'खात्री करा';
+
+  @override
+  String get confirmCompletionMessage =>
+      'तुम्हाला नियुक्त केलेला अध्याय वाचून पूर्ण झाला आहे का?';
+
+  @override
+  String get confirmStepsSubmissionTitle => 'submission ची खात्री करा';
+
+  @override
+  String get confirmStepsSubmissionQuestion =>
+      'तुम्हाला ही माहिती submit करायची खात्री आहे का?';
+
+  @override
+  String get no => 'नाही';
+
+  @override
+  String get yes => 'हो';
+
+  @override
+  String get readingProgressUpdated => 'अध्याय status update केले आहे';
+
+  @override
+  String get homeStoriesTitle => 'बाल कथा';
+
+  @override
+  String get storiesTitle => 'कथा';
+
+  @override
+  String get audiosTitle => 'audios';
+
+  @override
+  String get videosTitle => 'videos';
+
+  @override
+  String get reportTypoTitle => 'चूक report करा';
+
+  @override
+  String get reportTypoLabel => 'चूक';
+
+  @override
+  String get suggestedCorrectionLabel => 'सुधारित मजकूर (optional)';
+
+  @override
+  String get reportTypoSuccess => 'धन्यवाद! तुमची दुरुस्ती नोंदवली गेली आहे.';
+
+  @override
+  String get reportTypoError =>
+      'दुरुस्ती नोंदवता आली नाही. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get adminTypoReportsModuleTitle => 'typo reports';
+
+  @override
+  String get adminTypoReportsModuleSubtitle => 'मजकुरातील दुरुस्त्या तपासा';
+
+  @override
+  String get typoNotificationToggleLabel => 'typo report notifications';
+
+  @override
+  String get markAsFixed => 'fix mark करा';
+
+  @override
+  String get selectTextToReportHint =>
+      'कृपया आधी चुकीचा मजकूर निवडा आणि मग या चिन्हावर click करा.';
+
+  @override
+  String get typoReportConfirmDeleteMessage =>
+      'तुम्ही हा report delete करू इच्छिता?';
+
+  @override
+  String get typoReportDeleteButton => 'report delete करा';
+
+  @override
+  String get typoReportIncorrectTextLabel => 'चुकीचा मजकूर:';
+
+  @override
+  String get typoReportSuggestedCorrectionLabel => 'सुधारित मजकूर:';
+
+  @override
+  String get typoReportNoSuggestion => '(सुधारणा दिली नाही)';
+
+  @override
+  String get typoReportNoPendingReports => 'कोणतेही typo report केले नाहीत';
+
+  @override
+  String typoReportPathLabel(String path) {
+    return 'पथ: $path';
+  }
+
+  @override
+  String get parayanGroupLabel => 'पारायण group';
+
+  @override
+  String get statusOngoingDesc =>
+      'पारायण सध्या सुरू आहे. कृपया तुमचे नेमून दिलेले अध्याय पूर्ण करा.';
+
+  @override
+  String get statusCompletedDesc =>
+      'पारायण यशस्वीरीत्या पूर्ण झाले आहे. जय गजानन!';
+
+  @override
+  String get adminParayanGroupTitle => 'पारायण groups';
+
+  @override
+  String get parayanAlreadyExists =>
+      'या group मध्ये या तारखेसाठी आणि type साठी पारायण आधीच अस्तित्वात आहे.';
+
+  @override
+  String get useMobileAppForParayan => 'पारायणासाठी कृपया mobile app वापरा';
+
+  @override
+  String get groupNamjapModuleTitle => 'group नामजप';
+
+  @override
+  String get groupNamjapModuleSubtitle => 'group नामजप आणि आकडेवारी manage करा';
+
+  @override
+  String get createGroupNamjapTitle => 'नवीन group नामजप तयार करा';
+
+  @override
+  String get groupNamjapDashboardTitle => 'group नामजप';
+
+  @override
+  String get groupNamjapCompleted => 'पूर्ण झालेले group नामजप';
+
+  @override
+  String get groupNamjapRecentlyCompleted => 'नुकतेच पूर्ण झालेले group नामजप';
+
+  @override
+  String get groupNamjapOngoing => 'सुरू असलेले group नामजप';
+
+  @override
+  String get groupNamjapUpcoming => 'आगामी group नामजप';
+
+  @override
+  String get groupNamjapNoOngoing => 'सध्या कोणतेही सक्रिय group नामजप नाहीत';
+
+  @override
+  String get groupNamjapNoUpcoming => 'सध्या कोणतेही आगामी group नामजप नाहीत';
+
+  @override
+  String get groupNamjapNoCompleted =>
+      'अद्याप कोणतेही पूर्ण झालेले group नामजप नाहीत';
+
+  @override
+  String get groupNamjapEventDetails => 'तपशील';
+
+  @override
+  String get groupNamjapJoinCode => 'join code';
+
+  @override
+  String get groupNamjapProgress => 'प्रगती';
+
+  @override
+  String get groupNamjapParticipants => 'सहभागी';
+
+  @override
+  String get groupNamjapNoParticipants => 'अद्याप कोणीही सहभागी झालेले नाही.';
+
+  @override
+  String get groupNamjapNameEn => 'event चे नाव (इंग्रजी)';
+
+  @override
+  String get groupNamjapNameMr => 'event चे नाव (मराठी)';
+
+  @override
+  String get groupNamjapSankalpEn => 'संकल्प (इंग्रजी)';
+
+  @override
+  String get groupNamjapSankalpMr => 'संकल्प (मराठी)';
+
+  @override
+  String get groupNamjapTargetCount => 'लक्ष्य';
+
+  @override
+  String get groupNamjapStartDate => 'सुरुवातीची तारीख';
+
+  @override
+  String get groupNamjapEndDate => 'शेवटची तारीख';
+
+  @override
+  String get groupNamjapCreateSuccess => 'group नामजप यशस्वीरित्या तयार झाला!';
+
+  @override
+  String get groupNamjapRequired => 'आवश्यक';
+
+  @override
+  String get groupNamjapMustBeNumber => 'संख्या असणे आवश्यक आहे';
+
+  @override
+  String get groupNamjapTargetPrefix => 'लक्ष्य: ';
+
+  @override
+  String get groupNamjapAchieved => 'पूर्ण: ';
+
+  @override
+  String get groupNamjapOf => ' पैकी ';
+
+  @override
+  String get groupNamjapMantra => 'मंत्र';
+
+  @override
+  String get groupNamjapTotalParticipants => 'एकूण सहभागी';
+
+  @override
+  String get groupNamjapAchievedLabel => 'पूर्ण केलेले';
+
+  @override
+  String get groupNamjapQuickActions => 'त्वरित कृती';
+
+  @override
+  String get groupNamjapShare => 'नामजप share करा';
+
+  @override
+  String get groupNamjapExportStatus => 'status export करा';
+
+  @override
+  String get groupNamjapSankalpLabel => 'संकल्प';
+
+  @override
+  String get groupNamjapStatusLabel => 'नामजप status';
+
+  @override
+  String get groupNamjapEventNotFound => 'event सापडला नाही';
+
+  @override
+  String get groupNamjapFailedToCapture => 'screenshot capture करण्यात अयशस्वी';
+
+  @override
+  String get groupNamjapStatusExport => 'नामजप status';
+
+  @override
+  String get groupNamjapSharePrefix => 'नामजपमध्ये सामील व्हा';
+
+  @override
+  String get groupNamjapShareLinkPrefix => 'link';
+
+  @override
+  String get groupNamjapTableColName => 'नाव';
+
+  @override
+  String get groupNamjapTableColPhone => 'phone';
+
+  @override
+  String get groupNamjapTableColTotalChants => 'नामजप';
+
+  @override
+  String get signUp => 'sign-up करा';
+
+  @override
+  String get totalCountLabel => 'एकूण जप';
+
+  @override
+  String get myTotalLabel => 'माझा जप';
+
+  @override
+  String get manualEntryLabel => 'नामजप count add करा';
+
+  @override
+  String get mantraLabel => 'मंत्र';
+
+  @override
+  String get dateRangeLabel => 'कालावधी';
+
+  @override
+  String groupNamjapSubmitCount(String count) {
+    return 'नामजप submit करा: $count';
+  }
+
+  @override
+  String get dashami => 'दशमी';
+
+  @override
+  String get ekadashi => 'एकादशी';
+
+  @override
+  String get dwadashi => 'द्वादशी';
+
+  @override
+  String get memberName => 'सदस्याचे नाव';
+
+  @override
+  String get phone => 'phone number';
+
+  @override
+  String get fieldRequired => 'ही माहिती भरणे आवश्यक आहे';
+
+  @override
+  String get deleteSignupSuccess => 'sign-up यशस्वीरित्या delete झाले';
+
+  @override
+  String get editLabel => 'sign-up बदला';
+
+  @override
+  String get updateLabel => 'sign-up update करा';
+
+  @override
+  String get deleteSignupConfirmMessageNamjap =>
+      'तुम्ही खात्रीने या नामजपासाठी तुमचे sign-up delete करू इच्छिता?';
+
+  @override
+  String get groupNamjapTimezone => 'timezone';
+
+  @override
+  String get upcomingActiveTab => 'आगामी / सक्रिय';
+
+  @override
+  String get previous => 'मागील';
+
+  @override
+  String get next => 'पुढील';
+
+  @override
+  String get home => 'home';
+
+  @override
+  String get manageGroups => 'groups manage करा';
+
+  @override
+  String get activeGroups => 'तुमचे groups';
+
+  @override
+  String get availableGroups => 'उपलब्ध असलेले groups';
+
+  @override
+  String get dragToReorder => 'groups क्रमवार लावण्यासाठी long press करा';
+
+  @override
+  String get noActiveGroups =>
+      'तुम्ही कोणतेही group निवडले नाही. खालील groups मधून निवडा';
+
+  @override
+  String get groupAdded => 'group add झाला';
+
+  @override
+  String get groupRemoved => 'group काढला';
+
+  @override
+  String get onboardingWelcome => 'श्री गजानन महाराज सेवेकरी';
+
+  @override
+  String get onboardingDescription =>
+      'तुमच्या group चे पारायण आणि नामजप पाहण्यासाठी/सहभागी होण्यासाठी, कृपया तुमच्याशी संबंधित गजानन महाराज group निवडा. तुम्ही हे नंतर कधीही settings मध्ये बदलू शकता.';
+
+  @override
+  String get finishOnboarding => 'save करा';
+
+  @override
+  String get swipeHint => 'इतर groups साठी swipe करा';
+
+  @override
+  String get noParayanGroupsSelectedMessage =>
+      'कृपया पारायण पाहण्यासाठी/सहभागी होण्यासाठी settings -> groups manage करा मधून एक किंवा अधिक groups निवडा. जय गजानन 🙏🏻';
+
+  @override
+  String get noNamjapGroupsSelectedMessage =>
+      'कृपया group नामजप पाहण्यासाठी/सहभागी होण्यासाठी settings -> groups manage करा मधून एक किंवा अधिक groups निवडा. जय गजानन 🙏🏻';
+
+  @override
+  String get manageGroupAdminsModuleTitle => 'manage group admins';
+
+  @override
+  String get manageGroupAdminsModuleSubtitle => 'group admins manage करा';
+
+  @override
+  String get manageGroupAdminsTitle => 'manage group admins';
+
+  @override
+  String get addGroupAdminTitle => 'group admin add करा';
+
+  @override
+  String get adminEmailLabel => 'admin email';
+
+  @override
+  String get rolesLabel => 'roles';
+
+  @override
+  String get addAdminButton => 'admin add करा';
+
+  @override
+  String get deleteAdminConfirm =>
+      'तुम्हाला खात्री आहे की तुम्हाला हा admin काढायचा आहे?';
+
+  @override
+  String get adminDeleteSuccess => 'admin यशस्वीरित्या काढला गेला';
+
+  @override
+  String get adminAddSuccess => 'admin यशस्वीरित्या add झाला';
+
+  @override
+  String get selectGroupLabel => 'group निवडा';
+
+  @override
+  String get delete => 'delete करा';
+
+  @override
+  String get adminGroupLabel => 'group';
+
+  @override
+  String get errorLabel => 'त्रुटी';
+
+  @override
+  String get noAdminsFound => 'कोणतेही admin सापडले नाहीत';
+
+  @override
+  String get roleSuperAdmin => 'super admin';
+
+  @override
+  String get roleGroupAdmin => 'group admin';
+
+  @override
+  String get roleParayanCoordinator => 'पारायण admin';
+
+  @override
+  String get roleNamjapCoordinator => 'नामजप admin';
+
+  @override
+  String get roleVaariCoordinator => 'वारी admin';
+
+  @override
+  String get roleSignupCoordinator => 'sign-up समन्वयक';
+
+  @override
+  String get atLeastOneRoleRequired => 'किमान एक role निवडणे आवश्यक आहे';
+
+  @override
+  String get groupRequired => 'कृपया एक group निवडा';
+
+  @override
+  String get savingLabel => 'save करत आहे...';
+
+  @override
+  String get editAdminTitle => 'admin संपादन करा';
+
+  @override
+  String get updateAdminButton => 'admin update करा';
+
+  @override
+  String get deleteAdminButton => 'admin delete करा';
+
+  @override
+  String get adminAlreadyExists => 'या email चा admin आधीच अस्तित्वात आहे';
+
+  @override
+  String get adminUpdateSuccess => 'admin यशस्वीरित्या update झाला';
+
+  @override
+  String get adminNamjapGroupTitle => 'नामजप groups';
+
+  @override
+  String get updatingStatus => 'स्थिती update होत आहे...';
+
+  @override
+  String get discardUnsavedCountTitle => 'जतन न केलेली संख्या';
+
+  @override
+  String get discardUnsavedCountMessage =>
+      'तुमची काही नामजप संख्या जतन केलेली नाही. तुम्हाला ती रद्द करून बाहेर पडायचे आहे का?';
+
+  @override
+  String get discardLabel => 'रद्द करा';
+
+  @override
+  String get createParayanWithAllocation => 'allocation सह पारायण तयार करा';
+
+  @override
+  String get selectLastParayan => 'मागील पारायण निवडा';
+
+  @override
+  String get lastParayanLabel => 'मागील पारायण';
+
+  @override
+  String get createWithAllocationButton => 'तयार करा आणि allocate करा';
+
+  @override
+  String get duplicateDateError => 'या तारखेसाठी पारायण आधीच अस्तित्वात आहे.';
+
+  @override
+  String get failedToLoadEvents => 'मागील पारायण events load करण्यात अयशस्वी.';
+
+  @override
+  String get selectPreviousParayanError =>
+      'कृपया allocation copy करण्यासाठी मागील पारायण निवडा.';
+
+  @override
+  String createParayanSuccess(String title) {
+    return 'allocation सह पारायण \"$title\" यशस्वीरीत्या तयार केले आहे.';
+  }
+
+  @override
+  String get noPreviousParayansFound =>
+      'copy करण्यासाठी मागील गुंजन पारायण सापडले नाहीत.';
+
+  @override
+  String get failedToCreateParayan => 'पारायण तयार करण्यात अयशस्वी.';
+
+  @override
+  String get missingAdminError => 'admin परवानगी नाही.';
+
+  @override
+  String parayanCreatedSuccess(String title) {
+    return 'पारायण \"$title\" यशस्वीरीत्या तयार केले आहे.';
+  }
+
+  @override
+  String get endDateBeforeStartDateError =>
+      'अंतिम तारीख आणि वेळ सुरुवातीच्या तारीख आणि वेळेनंतर असणे आवश्यक आहे.';
+
+  @override
+  String get timezoneLabel => 'timezone';
+
+  @override
+  String get timezoneSeattle => 'Seattle (Pacific वेळ)';
+
+  @override
+  String get timezoneIndia => 'भारत (IST)';
+
+  @override
+  String get groupIdRequiredError =>
+      'पारायण event तयार करण्यासाठी group ID आवश्यक आहे.';
+
+  @override
+  String get missingParayanGroupError => 'missing पारायण group';
+
+  @override
+  String get navigateFromDashboardPrompt =>
+      'कृपया एका विशिष्ट group coordination dashboard वरून navigate करा.';
+
+  @override
+  String get failedToUpdateStatus => 'event status update करण्यात अयशस्वी.';
+
+  @override
+  String get failedToUpdateCompletion =>
+      'event पूर्णता update करण्यात अयशस्वी.';
+
+  @override
+  String get failedToExport => 'groups export करण्यात अयशस्वी.';
+
+  @override
+  String get vaariTitle => 'वारी';
+
+  @override
+  String get vaariDescription =>
+      'सामूहिक वारीचा भाग म्हणून चालून steps report करा.';
+
+  @override
+  String get noActiveVaaris => 'सध्या कोणतीही सक्रिय वारी उपलब्ध नाही';
+
+  @override
+  String get noCompletedVaaris => 'अजूनपर्यंत कोणतीही वारी पूर्ण झालेली नाही';
+
+  @override
+  String get noVaariGroupsSelectedMessage =>
+      'वारी पाहण्यासाठी कृपया एक group निवडा.';
+
+  @override
+  String get noSignupsGroupsSelectedMessage =>
+      'sign ups पाहण्यासाठी कृपया एक group निवडा.';
+
+  @override
+  String get vaariStepsSuffix => ' steps';
+
+  @override
+  String vaariDistanceSuffix(String unit) {
+    return ' $unit';
+  }
+
+  @override
+  String get vaariLoadError =>
+      'वारी events load करता आले नाहीत. कृपया नंतर पुन्हा प्रयत्न करा.';
+
+  @override
+  String get vaariInvalidGroupError =>
+      'वारी events उघडता आले नाहीत: group निवडलेला नाही.';
+
+  @override
+  String get vaariEventDetails => 'event तपशील';
+
+  @override
+  String get vaariEventNotFound => 'event सापडला नाही';
+
+  @override
+  String get deleteSignupConfirmMessageVaari =>
+      'तुम्हाला या वारीसाठीची तुमची नोंदणी नक्की काढून टाकायची आहे का?';
+
+  @override
+  String get descriptionLabel => 'वर्णन';
+
+  @override
+  String get totalStepsLabel => 'एकूण steps';
+
+  @override
+  String get totalDistanceLabel => 'एकूण अंतर';
+
+  @override
+  String get distanceLabel => 'अंतर';
+
+  @override
+  String get vaariTotalParticipants => 'सहभागी';
+
+  @override
+  String get addStepsLabel => 'steps add करा';
+
+  @override
+  String get addStepsOrDistanceTitle => 'steps / अंतर add करा';
+
+  @override
+  String estimatedDistance(String distance, String unit) {
+    return 'अंदाजित अंतर: $distance $unit';
+  }
+
+  @override
+  String estimatedSteps(String steps) {
+    return 'अंदाजित steps: $steps';
+  }
+
+  @override
+  String get stepsLabel => 'steps';
+
+  @override
+  String distanceOptionalLabel(String unit) {
+    return 'अंतर $unit मध्ये';
+  }
+
+  @override
+  String get stepsSubmittedSuccess => 'steps यशस्वीरित्या submit केल्या';
+
+  @override
+  String get adminVaariDashboardTitle => 'वारी dashboard';
+
+  @override
+  String get adminVaariGroupTitle => 'वारीसाठी गट निवडा';
+
+  @override
+  String get adminVaariModuleSubtitle => 'वारी तयार करा, सहभागी आणि steps पहा';
+
+  @override
+  String get adminSignupGroupTitle => 'sign upsसाठी गट निवडा';
+
+  @override
+  String get adminSignupsModuleSubtitle =>
+      'sign ups तयार करा आणि व्यवस्थापित करा';
+
+  @override
+  String get createVaariTitle => 'वारी तयार करा';
+
+  @override
+  String get vaariCreateSuccess => 'वारी यशस्वीरित्या तयार झाली';
+
+  @override
+  String get vaariCreateError =>
+      'वारी तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get adminVaariNoOngoing => 'सध्या कोणतीही चालू वारी नाही';
+
+  @override
+  String get adminVaariNoUpcoming => 'कोणतीही आगामी वारी नाही';
+
+  @override
+  String get adminVaariNoCompleted => 'कोणतीही पूर्ण झालेली वारी नाही';
+
+  @override
+  String get adminVaariOngoing => 'चालू वारी';
+
+  @override
+  String get adminVaariUpcoming => 'आगामी वारी';
+
+  @override
+  String get adminVaariCompleted => 'पूर्ण वारी';
+
+  @override
+  String get adminVaariSharePrefix => 'आमच्या वारीमध्ये सामील व्हा';
+
+  @override
+  String get adminVaariJoinCode => 'सामील होण्याचा code';
+
+  @override
+  String get adminVaariShareLinkPrefix => 'या link द्वारे सामील व्हा';
+
+  @override
+  String get adminVaariTotalSteps => 'एकूण steps';
+
+  @override
+  String get adminVaariTotalDistance => 'एकूण अंतर';
+
+  @override
+  String get adminVaariParticipantsList => 'सहभागींची यादी';
+
+  @override
+  String get vaariExportProgress => 'वारीची प्रगती';
+
+  @override
+  String get adminVaariTargetDistance => 'सामूहिक लक्ष्य अंतर';
+
+  @override
+  String get adminVaariTargetDistancePrefix => 'सामूहिक लक्ष्य: ';
+
+  @override
+  String get adminVaariNameEnLabel => 'event चे नाव (इंग्रजी)';
+
+  @override
+  String get adminVaariNameMrLabel => 'event चे नाव (मराठी)';
+
+  @override
+  String get adminVaariDescEnLabel => 'वर्णन (इंग्रजी)';
+
+  @override
+  String get adminVaariDescMrLabel => 'वर्णन (मराठी)';
+
+  @override
+  String get distanceUnitDropdownLabel => 'अंतराचे एकक';
+
+  @override
+  String get adminVaariInvalidTargetDistance =>
+      'कृपया योग्य सकारात्मक संख्या टाका';
+
+  @override
+  String get adminVaariSaveEvent => 'save करा';
+
+  @override
+  String get copyTooltip => 'copy करा';
+
+  @override
+  String get shareLinkTooltip => 'link share करा';
+
+  @override
+  String get adminVaariStatusUpdateError =>
+      'status update करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get adminVaariShareError =>
+      'share करता आले नाही. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get adminVaariLoadError => 'data load करण्यात त्रुटी';
+
+  @override
+  String get vaariRouteProgressLabel => 'मार्गातील प्रगती';
+
+  @override
+  String vaariLapLabel(String lapNumber) {
+    return 'वारी $lapNumber';
+  }
+
+  @override
+  String vaariLapCompleteLabel(String lapNumber) {
+    return 'वारी $lapNumber पूर्ण झाली!';
+  }
+
+  @override
+  String get vaariGroupProgressLegend => 'Seattle वारी';
+
+  @override
+  String get vaariActualPalkhiLegend => 'आळंदी वारी';
+
+  @override
+  String get adminVaariNameEnRequired => 'कृपया इंग्रजी नाव enter करा';
+
+  @override
+  String get adminVaariNameMrRequired => 'कृपया मराठी नाव enter करा';
+
+  @override
+  String get adminVaariDescEnRequired => 'कृपया इंग्रजी वर्णन enter करा';
+
+  @override
+  String get adminVaariDescMrRequired => 'कृपया मराठी वर्णन enter करा';
+
+  @override
+  String get adminVaariTargetDistanceRequired => 'कृपया लक्ष्य अंतर enter करा';
+
+  @override
+  String get vaariSignUpError =>
+      'नोंदणी करण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get vaariAddStepsError =>
+      'steps add करण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get distanceUnitKilometers => 'किलोमीटर (कि.मी.)';
+
+  @override
+  String get distanceUnitMiles => 'मैल (mi)';
+
+  @override
+  String get is4DayParayanLabel => '४ दिवसांचे पारायण?';
+
+  @override
+  String get is4DayParayanSubtitle =>
+      'जर तिथी (दशमी/एकादशी/द्वादशी) २ दिवस असेल तर निवडा';
+
+  @override
+  String get extraDayTithiLabel => '२ दिवस असणारी तिथी';
+
+  @override
+  String get dashamiOptionLabel => 'दशमी (दिवस १)';
+
+  @override
+  String get ekadashiOptionLabel => 'एकादशी (दिवस २)';
+
+  @override
+  String get dwadashiOptionLabel => 'द्वादशी (दिवस ३)';
+
+  @override
+  String get andSeparator => ' आणि ';
+
+  @override
+  String get adminCreateSignupTitle => 'sign up तयार करा';
+
+  @override
+  String get signupTitleEnLabel => 'title (इंग्रजी)';
+
+  @override
+  String get signupTitleEnRequired => 'कृपया इंग्रजी title enter करा';
+
+  @override
+  String get signupTitleMrLabel => 'title (मराठी, ऐच्छिक)';
+
+  @override
+  String get signupDescEnLabel => 'वर्णन (इंग्रजी)';
+
+  @override
+  String get signupDescMrLabel => 'वर्णन (मराठी, ऐच्छिक)';
+
+  @override
+  String get signupRequiresJoinCodeLabel =>
+      'sign up करण्यासाठी join code आवश्यक करा';
+
+  @override
+  String get signupSlotsHeading => 'slots';
+
+  @override
+  String get signupAddSlotButton => 'slot   add करा';
+
+  @override
+  String get signupNoSlotsMessage =>
+      'अजून slots नाहीत. एक तयार करण्यासाठी \"slot add करा\" दाबा.';
+
+  @override
+  String get signupSlotsRequiredError => 'कृपया किमान एक slot add करा';
+
+  @override
+  String get signupSlotHeading => 'slot';
+
+  @override
+  String get signupSlotLabelEnLabel => 'slot label (इंग्रजी)';
+
+  @override
+  String get signupSlotLabelEnRequired => 'कृपया इंग्रजी label enter करा';
+
+  @override
+  String get signupSlotLabelMrLabel => 'slot label (मराठी, ऐच्छिक)';
+
+  @override
+  String get signupSlotCapacityLabel => 'क्षमता';
+
+  @override
+  String get signupSlotCapacityRequired => 'कृपया क्षमता enter करा';
+
+  @override
+  String get signupSlotCapacityInvalid => 'क्षमता ही positive संख्या असावी';
+
+  @override
+  String get signupSlotSuggestedAmountLabel => 'सुचवलेली रक्कम (ऐच्छिक)';
+
+  @override
+  String get signupSlotSuggestedAmountInvalid => 'कृपया valid रक्कम enter करा';
+
+  @override
+  String get signupSlotSetDateLabel => 'तारीख set करा';
+
+  @override
+  String get signupSlotNoDateLabel => 'तारीख set केलेली नाही';
+
+  @override
+  String get signupRemoveSlotTooltip => 'slot remove करा';
+
+  @override
+  String get signupMoveSlotUpTooltip => 'slot वर हलवा';
+
+  @override
+  String get signupMoveSlotDownTooltip => 'slot खाली हलवा';
+
+  @override
+  String get signupSaveButton => 'save करा';
+
+  @override
+  String get signupHeaderImageLabel => 'header image';
+
+  @override
+  String get signupAddImageButton => 'image add करा';
+
+  @override
+  String get signupReplaceImageButton => 'image बदला';
+
+  @override
+  String get signupRemoveImageButton => 'image remove करा';
+
+  @override
+  String get signupImageTooLargeError => 'image 2 MB पेक्षा लहान असावी';
+
+  @override
+  String get signupImageUploadError =>
+      'image upload करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get signupUploadingImage => 'कृपया थांबा...';
+
+  @override
+  String get signupImageRemoveError =>
+      'image काढण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get signupRemoveImageConfirmTitle => 'image remove करायची आहे का?';
+
+  @override
+  String get signupRemoveImageConfirmMessage =>
+      'तुम्हाला खात्री आहे की तुम्ही header image remove करू इच्छिता?';
+
+  @override
+  String get signupExportTagline =>
+      '॥ अनंत कोटी ब्रह्मांडनायक गजानन महाराज की जय ॥';
+
+  @override
+  String get signupCreateSuccess => 'sign up यशस्वीरित्या तयार झाले';
+
+  @override
+  String get signupCreateError =>
+      'sign up तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get adminSignupsDashboardTitle => 'sign ups';
+
+  @override
+  String get signupStatusLabel => 'status';
+
+  @override
+  String get signupStatusAll => 'सर्व';
+
+  @override
+  String get signupStatusDraft => 'draft';
+
+  @override
+  String get signupStatusPublished => 'published';
+
+  @override
+  String get signupStatusClosed => 'बंद';
+
+  @override
+  String get signupNoSignupsFound => 'कोणतेही sign up सापडले नाही';
+
+  @override
+  String get signupNoGroupAssigned =>
+      'admin साठी कोणताही group assign केलेला नाही';
+
+  @override
+  String get adminSignupsError =>
+      'sign ups load करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get signupCreateTooltip => 'sign up तयार करा';
+
+  @override
+  String get signupRequiresJoinCodeBadge => 'join code आवश्यक';
+
+  @override
+  String get signupJoinCodePrefix => 'join code: ';
+
+  @override
+  String get adminSignupDetailTitle => 'sign up details';
+
+  @override
+  String get signupDuplicateButton => 'duplicate करा';
+
+  @override
+  String get signupDuplicating => 'sign up duplicate करत आहे...';
+
+  @override
+  String get signupDuplicateSuccess => 'sign up duplicate यशस्वी झाले';
+
+  @override
+  String get signupDuplicateError => 'sign up duplicate करण्यात अयशस्वी';
+
+  @override
+  String get signupDeleteButton => 'delete करा';
+
+  @override
+  String get signupDeleteConfirmTitle => 'sign up delete करायचे आहे का?';
+
+  @override
+  String get signupDeleteConfirmMessage =>
+      'हे sign up, त्यातील सर्व slot, entry आणि header image कायमची delete होईल. हे पूर्ववत करता येणार नाही.';
+
+  @override
+  String get signupDeleteSuccess => 'sign up delete झाले';
+
+  @override
+  String get signupDeleteError =>
+      'sign up delete करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get signupShareButton => 'share';
+
+  @override
+  String get signupExportButton => 'summary export';
+
+  @override
+  String get signupExporting => 'summary तयार करत आहे...';
+
+  @override
+  String get signupSharePrefix => 'sign up';
+
+  @override
+  String get signupShareLinkPrefix => 'sign up link';
+
+  @override
+  String get signupStatusUpdateError => 'status update करण्यात अयशस्वी';
+
+  @override
+  String get signupCopyJoinCodeTooltip => 'join code copy करा';
+
+  @override
+  String get signupDateRange => 'तारीख range';
+
+  @override
+  String get signupSlotsSectionHeading => 'slots आणि entries';
+
+  @override
+  String get signupAddEntryButton => 'भाविक जोडा';
+
+  @override
+  String get signupEditEntryTitle => 'entry edit करा';
+
+  @override
+  String get signupAddEntryTitle => 'भाविकची entry जोडा';
+
+  @override
+  String get signupEntryNameLabel => 'नाव';
+
+  @override
+  String get signupEntryNameRequired => 'कृपया नाव enter करा';
+
+  @override
+  String get signupEntryPhoneLabel => 'phone';
+
+  @override
+  String get signupEntryEmailLabel => 'email';
+
+  @override
+  String get signupEntryNoteLabel => 'note';
+
+  @override
+  String get signupEntryPledgeLabel => 'संकल्पित रक्कम';
+
+  @override
+  String get signupRemoveEntryTitle => 'entry काढा';
+
+  @override
+  String get signupRemoveEntryConfirm =>
+      'तुम्हाला ही entry नक्की काढायची आहे का?';
+
+  @override
+  String get signupEntryRemoveSuccess => 'entry यशस्वीरित्या काढली';
+
+  @override
+  String get signupEntryRemoveError => 'entry काढण्यात अयशस्वी';
+
+  @override
+  String get signupEntryAddSuccess => 'भाविक add केले';
+
+  @override
+  String get signupEntryAddError => 'भाविक add करण्यात अयशस्वी';
+
+  @override
+  String get signupEntryEditSuccess => 'entry यशस्वीरित्या update केली';
+
+  @override
+  String get signupEntryEditError => 'entry update करण्यात अयशस्वी';
+
+  @override
+  String get signupSlotFullError => 'हा slot पूर्ण भरला आहे';
+
+  @override
+  String get signupSlotFullBadge => 'slot पूर्ण';
+
+  @override
+  String signupSlotClaimedCount(String claimed, String capacity) {
+    return '$capacity पैकी $claimed भरले';
+  }
+
+  @override
+  String signupSuggestedAmountFormat(String amount) {
+    return 'सुचवलेले: $amount';
+  }
+
+  @override
+  String get signupNoEntriesForSlot =>
+      'या slot साठी अद्याप कोणत्याही भाविकाने sign up केलेले नाही';
+
+  @override
+  String get signupExportSummaryTitle => 'sign up सारांश';
+
+  @override
+  String get signupTotalSlotsLabel => 'एकूण slots';
+
+  @override
+  String get signupTotalClaimsLabel => 'एकूण sign-ups';
+
+  @override
+  String get signupFillPercentageLabel => 'भरलेले';
+
+  @override
+  String get signupExportFailed => 'image export करण्यात अयशस्वी';
+
+  @override
+  String get signupNotFound => 'sign up सापडले नाही';
+
+  @override
+  String get signupsListTitle => 'sign ups';
+
+  @override
+  String get signupInvalidGroupError => 'अवैध group';
+
+  @override
+  String get signupNoActiveSignups => 'कोणतेही सक्रिय sign up नाही';
+
+  @override
+  String get signupMySignupsHeading => 'माझे sign-ups';
+
+  @override
+  String get signupNoMySignups => 'आपण अद्याप कशासाठीही sign up केलेले नाही';
+
+  @override
+  String get signupCancelSignupButton => 'रद्द करा';
+
+  @override
+  String get signupCancelSignupConfirmTitle => 'sign-up रद्द करायचे?';
+
+  @override
+  String get signupCancelSignupConfirmMessage =>
+      'आपल्याला हे sign-up रद्द करायचे आहे याची खात्री आहे का?';
+
+  @override
+  String get signupCancelSignupSuccess => 'sign-up रद्द केले';
+
+  @override
+  String get signupCancelSignupError =>
+      'sign-up रद्द करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get signupClaimSlotTitle => 'slot claim करा';
+
+  @override
+  String get signupClaimConfirmTitle => 'sign-up confirm करा';
+
+  @override
+  String get signupClaimConfirmQuestion => 'हे sign-up submit करायचे?';
+
+  @override
+  String get signupClaimSuccess => 'तुम्ही sign up केले आहे!';
+
+  @override
+  String get signupClaimError =>
+      'slot claim करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get signupDuplicateEntryError =>
+      'तुम्ही या email किंवा phone number ने या slot साठी आधीच sign up केले आहे.';
+
+  @override
+  String get signupUpcomingTab => 'आगामी';
+
+  @override
+  String get signupPastTab => 'मागील';
+
+  @override
+  String get signupEntriesHeading => 'entries';
+
+  @override
+  String get signupEntriesEmptyMessage => 'अद्याप कोणीही sign up केलेले नाही';
+
+  @override
+  String get signupEntriesTitleColumn => 'title';
+
+  @override
+  String get signupEntriesAvailableSlotsColumn => 'उपलब्ध slots';
+
+  @override
+  String get signupNoSlotsInTabMessage => 'इथे कोणतेही slots नाहीत';
 }
