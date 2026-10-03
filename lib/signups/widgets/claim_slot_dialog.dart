@@ -33,6 +33,7 @@ class ClaimSlotDialog extends StatefulWidget {
 
 class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
   final _formKey = GlobalKey<FormState>();
+  final _errorKey = GlobalKey();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
@@ -92,9 +93,58 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
     );
   }
 
+  /// Scrolls the first field that failed validation into view. The form
+  /// scrolls inside the dialog, so with the keyboard open (and the extra
+  /// join code field) an invalid field is often off-screen, which would
+  /// make Save look like it does nothing.
+  void _revealFirstInvalidField() {
+    Element? firstInvalid;
+    void visit(Element element) {
+      if (firstInvalid != null) return;
+      final widget = element.widget;
+      if (widget is FormField &&
+          element is StatefulElement &&
+          (element.state as FormFieldState).hasError) {
+        firstInvalid = element;
+        return;
+      }
+      element.visitChildren(visit);
+    }
+
+    _formKey.currentContext?.visitChildElements(visit);
+    final target = firstInvalid;
+    if (target == null) return;
+    // After the frame, so the error text the failed validation just added
+    // is already laid out and counted in the scrollable's extent.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!target.mounted) return;
+      Scrollable.ensureVisible(
+        target,
+        duration: const Duration(milliseconds: 200),
+        alignment: 0.1,
+      );
+    });
+  }
+
+  /// Brings the in-dialog error message into view after a failed submit.
+  void _revealError() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = _errorKey.currentContext;
+      if (context != null && context.mounted) {
+        Scrollable.ensureVisible(
+          context,
+          duration: const Duration(milliseconds: 200),
+        );
+      }
+    });
+  }
+
   Future<void> _handleSubmit() async {
     final l10n = AppLocalizations.of(context)!;
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      _revealFirstInvalidField();
+      return;
+    }
 
     final confirmed = await _showConfirmationDialog(l10n);
     if (confirmed != true || !mounted) return;
@@ -128,6 +178,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
         _isLoading = false;
         _errorText = l10n.signupClaimError;
       });
+      _revealError();
       return;
     }
 
@@ -147,6 +198,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
         _ => l10n.signupClaimError,
       };
     });
+    _revealError();
   }
 
   @override
@@ -283,6 +335,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 const SizedBox(height: 12),
                 Text(
                   _errorText!,
+                  key: _errorKey,
                   style: TextStyle(color: theme.appColors.error),
                 ),
               ],

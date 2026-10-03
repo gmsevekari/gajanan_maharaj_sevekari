@@ -658,4 +658,67 @@ void main() {
       },
     );
   });
+
+  group('ClaimSlotDialog on a small screen with the keyboard open', () {
+    void useSmallScreenWithKeyboard(WidgetTester tester) {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.viewInsets = const FakeViewPadding(bottom: 280);
+      addTearDown(tester.view.reset);
+    }
+
+    /// True when [finder]'s widget is inside the part of the screen the
+    /// keyboard leaves free.
+    bool isOnScreen(WidgetTester tester, Finder finder) {
+      final rect = tester.getRect(finder);
+      return rect.top >= 0 && rect.bottom <= 640 - 280;
+    }
+
+    testWidgets('scrolls to the join code error when it is left empty', (
+      tester,
+    ) async {
+      useSmallScreenWithKeyboard(tester);
+      await openDialog(
+        tester,
+        signupId: codeSignupId,
+        slotId: codeSlotId,
+        requiresJoinCode: true,
+      );
+      await fillRequiredFields(tester);
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Enter 6-character code'), findsWidgets);
+      expect(
+        isOnScreen(tester, find.byKey(const Key('claimJoinCodeField'))),
+        isTrue,
+      );
+    });
+
+    testWidgets('shows the invalid join code message where it can be seen', (
+      tester,
+    ) async {
+      useSmallScreenWithKeyboard(tester);
+      await openDialog(
+        tester,
+        signupId: codeSignupId,
+        slotId: codeSlotId,
+        requiresJoinCode: true,
+      );
+      await fillRequiredFields(tester);
+      await tester.enterText(
+        find.byKey(const Key('claimJoinCodeField')),
+        'WRONG1',
+      );
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Yes'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Invalid Join Code!'), findsOneWidget);
+      expect(isOnScreen(tester, find.text('Invalid Join Code!')), isTrue);
+    });
+  });
 }
