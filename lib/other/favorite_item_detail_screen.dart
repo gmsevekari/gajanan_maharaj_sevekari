@@ -94,7 +94,7 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
     final fontProvider = Provider.of<FontProvider>(context);
 
     final currentItem = widget.contentList[_currentIndex];
-    final currentTitle = locale.useMarathiContent
+    final currentTitle = locale.useMarathiDetailContent
         ? ((currentItem['title_mr']?.toString().isNotEmpty == true)
               ? currentItem['title_mr']!
               : '')
@@ -245,7 +245,7 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {
           final item = widget.contentList[index];
-          final title = locale.useMarathiContent
+          final title = locale.useMarathiDetailContent
               ? item['title_mr']
               : item['title_en'];
           final isPlaying = index == _currentIndex;
@@ -288,13 +288,15 @@ class _FavoriteItemDetailScreenState extends State<FavoriteItemDetailScreen> {
     }
 
     final theme = Theme.of(context);
-    final langCode = locale.languageCode;
+    final contentKey = locale.useMarathiDetailContent
+        ? 'content_mr'
+        : 'content_en';
     final text = (val) {
       if (val != null && val.toString().isNotEmpty) return val.toString();
       final enVal = _currentContentData!['content_en'];
       if (enVal != null && enVal.toString().isNotEmpty) return enVal.toString();
       return '';
-    }(_currentContentData!['content_$langCode']);
+    }(_currentContentData![contentKey]);
 
     return GestureDetector(
       onHorizontalDragEnd: (details) {
