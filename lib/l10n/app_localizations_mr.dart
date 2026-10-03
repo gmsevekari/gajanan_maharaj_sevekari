@@ -2301,6 +2301,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSlotNoDateLabel => 'तारीख सेट केलेली नाही';
 
   @override
+  String get signupSlotDateRequired => 'कृपया तारीख निवडा';
+
+  @override
   String get signupRemoveSlotTooltip => 'स्लॉट रिमूव्ह करा';
 
   @override
@@ -2609,9 +2612,6 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get signupEntriesTitleColumn => 'टायटल';
-
-  @override
-  String get signupEntriesAvailableSlotsColumn => 'उपलब्ध स्लॉट्स';
 
   @override
   String get signupNoSlotsInTabMessage => 'इथे कोणतेही स्लॉट्स नाहीत';

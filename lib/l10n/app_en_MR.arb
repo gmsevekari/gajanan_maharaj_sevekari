@@ -721,6 +721,7 @@
   "signupSlotSuggestedAmountInvalid": "कृपया valid रक्कम enter करा",
   "signupSlotSetDateLabel": "तारीख Set करा",
   "signupSlotNoDateLabel": "तारीख set केलेली नाही",
+  "signupSlotDateRequired": "कृपया तारीख निवडा",
   "signupRemoveSlotTooltip": "Slot Remove करा",
   "signupMoveSlotUpTooltip": "Slot वर हलवा",
   "signupMoveSlotDownTooltip": "Slot खाली हलवा",
@@ -818,6 +819,5 @@
   "signupEntriesHeading": "Entries",
   "signupEntriesEmptyMessage": "अद्याप कोणीही sign up केलेले नाही",
   "signupEntriesTitleColumn": "Title",
-  "signupEntriesAvailableSlotsColumn": "उपलब्ध Slots",
   "signupNoSlotsInTabMessage": "इथे कोणतेही slots नाहीत"
 }

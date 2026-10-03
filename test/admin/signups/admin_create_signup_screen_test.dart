@@ -147,6 +147,15 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// Picks today's date for slot [index] through the date picker (the date
+  /// is mandatory, so any test that saves successfully needs one).
+  Future<void> pickSlotDate(WidgetTester tester, [int index = 0]) async {
+    await tester.tap(find.text('Set Date').at(index));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+  }
+
   group('AdminCreateSignupScreen', () {
     testWidgets(
       'renders title/description fields, join code toggle, and empty slot state',
@@ -227,6 +236,7 @@ void main() {
 
       await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'Morning');
       await tester.enterText(find.byKey(const Key('slotCapacity_0')), '5');
+      await pickSlotDate(tester);
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
@@ -343,6 +353,7 @@ void main() {
       await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
       await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
       await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+      await pickSlotDate(tester);
       await tester.enterText(
         find.byKey(const Key('slotSuggestedAmount_0')),
         '50.5',
@@ -361,7 +372,7 @@ void main() {
       expect(slots.docs.first.data()['suggestedAmount'], 50.5);
     });
 
-    testWidgets('picking a date shows it on the row, and it can be cleared', (
+    testWidgets('picking a date shows it on the row, with no way to clear it', (
       tester,
     ) async {
       await pumpScreen(tester);
@@ -371,18 +382,102 @@ void main() {
 
       expect(find.text('No date set'), findsOneWidget);
 
-      await tester.tap(find.text('Set Date'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
+      await pickSlotDate(tester);
 
       expect(find.text('No date set'), findsNothing);
-      expect(find.byIcon(Icons.clear), findsOneWidget);
+      expect(find.byIcon(Icons.clear), findsNothing);
+    });
 
-      await tester.tap(find.byIcon(Icons.clear));
+    testWidgets('a slot without a date blocks saving and creates nothing', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+
+      await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+      await tester.tap(find.text('Add Slot'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
+      await tester.enterText(find.byKey(const Key('slotCapacity_0')), '2');
+
+      await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
-      expect(find.text('No date set'), findsOneWidget);
+      expect(find.text('Please select a date'), findsOneWidget);
+      expect((await firestore.collection('signups').get()).docs, isEmpty);
+    });
+
+    testWidgets('the date error clears once a date is picked', (tester) async {
+      await pumpScreen(tester);
+
+      await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+      await tester.tap(find.text('Add Slot'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
+      await tester.enterText(find.byKey(const Key('slotCapacity_0')), '2');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      expect(find.text('Please select a date'), findsOneWidget);
+
+      await pickSlotDate(tester);
+
+      expect(find.text('Please select a date'), findsNothing);
+    });
+
+    testWidgets('every slot needs its own date', (tester) async {
+      await pumpScreen(tester);
+
+      await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+      for (var i = 0; i < 2; i++) {
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(Key('slotLabelEn_$i')), 'L$i');
+        await tester.enterText(find.byKey(Key('slotCapacity_$i')), '2');
+      }
+      await pickSlotDate(tester); // only the first slot
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please select a date'), findsOneWidget);
+      expect((await firestore.collection('signups').get()).docs, isEmpty);
+    });
+
+    testWidgets('scrolls to a slot date error that is off screen', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(400, 700);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        createWidget(
+          AdminCreateSignupScreen(
+            adminUser: adminUser,
+            firestore: firestore,
+            storage: storage,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+      for (var i = 0; i < 3; i++) {
+        await tester.ensureVisible(find.text('Add Slot'));
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.byKey(Key('slotLabelEn_$i')));
+        await tester.enterText(find.byKey(Key('slotLabelEn_$i')), 'L$i');
+        await tester.enterText(find.byKey(Key('slotCapacity_$i')), '2');
+      }
+      await tester.ensureVisible(find.text('Save'));
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      final error = find.text('Please select a date').first;
+      expect(error, findsOneWidget);
+      final rect = tester.getRect(error);
+      expect(rect.top, greaterThanOrEqualTo(0));
+      expect(rect.bottom, lessThanOrEqualTo(700));
     });
 
     testWidgets(
@@ -401,6 +496,7 @@ void main() {
         await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
         await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
         await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+        await pickSlotDate(tester);
 
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
@@ -439,6 +535,7 @@ void main() {
           'आठवडा १',
         );
         await tester.enterText(find.byKey(const Key('slotCapacity_0')), '3');
+        await pickSlotDate(tester);
 
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
@@ -481,6 +578,7 @@ void main() {
       await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
       await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
       await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+      await pickSlotDate(tester);
 
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
@@ -569,6 +667,7 @@ void main() {
           await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
           await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
           await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+          await pickSlotDate(tester);
 
           await tester.tap(find.text('Save'));
           await tester.pumpAndSettle();
@@ -597,6 +696,7 @@ void main() {
         await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
         await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
         await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+        await pickSlotDate(tester);
 
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
@@ -648,6 +748,7 @@ void main() {
           await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
           await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
           await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+          await pickSlotDate(tester);
 
           await tester.tap(find.text('Save'));
           await tester.pumpAndSettle();
@@ -705,6 +806,7 @@ void main() {
         await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
         await tester.enterText(find.byKey(const Key('slotLabelMr_0')), 'L');
         await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+        await pickSlotDate(tester);
 
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();

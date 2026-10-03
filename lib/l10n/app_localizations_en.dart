@@ -2291,6 +2291,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSlotNoDateLabel => 'No date set';
 
   @override
+  String get signupSlotDateRequired => 'Please select a date';
+
+  @override
   String get signupRemoveSlotTooltip => 'Remove slot';
 
   @override
@@ -2594,9 +2597,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signupEntriesTitleColumn => 'Title';
-
-  @override
-  String get signupEntriesAvailableSlotsColumn => 'Available Slots';
 
   @override
   String get signupNoSlotsInTabMessage => 'No slots here';
@@ -4900,6 +4900,9 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get signupSlotNoDateLabel => 'तारीख set केलेली नाही';
 
   @override
+  String get signupSlotDateRequired => 'कृपया तारीख निवडा';
+
+  @override
   String get signupRemoveSlotTooltip => 'Slot Remove करा';
 
   @override
@@ -5208,9 +5211,6 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupEntriesTitleColumn => 'Title';
-
-  @override
-  String get signupEntriesAvailableSlotsColumn => 'उपलब्ध Slots';
 
   @override
   String get signupNoSlotsInTabMessage => 'इथे कोणतेही slots नाहीत';

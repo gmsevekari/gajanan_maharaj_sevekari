@@ -881,6 +881,7 @@
   "signupSlotSuggestedAmountInvalid": "Please enter a valid amount",
   "signupSlotSetDateLabel": "Set Date",
   "signupSlotNoDateLabel": "No date set",
+  "signupSlotDateRequired": "Please select a date",
   "signupRemoveSlotTooltip": "Remove slot",
   "signupMoveSlotUpTooltip": "Move slot up",
   "signupMoveSlotDownTooltip": "Move slot down",
@@ -995,6 +996,5 @@
   "signupEntriesHeading": "Entries",
   "signupEntriesEmptyMessage": "No one has signed up yet",
   "signupEntriesTitleColumn": "Title",
-  "signupEntriesAvailableSlotsColumn": "Available Slots",
   "signupNoSlotsInTabMessage": "No slots here"
 }

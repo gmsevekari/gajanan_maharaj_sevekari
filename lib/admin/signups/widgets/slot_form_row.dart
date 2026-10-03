@@ -13,7 +13,7 @@ class SlotFormRow extends StatelessWidget {
   final TextEditingController capacityController;
   final TextEditingController suggestedAmountController;
   final DateTime? date;
-  final ValueChanged<DateTime?> onDateChanged;
+  final ValueChanged<DateTime> onDateChanged;
   final VoidCallback onRemove;
   final VoidCallback? onMoveUp;
   final VoidCallback? onMoveDown;
@@ -37,7 +37,10 @@ class SlotFormRow extends StatelessWidget {
   /// bumping as real years pass.
   static const Duration _maxSlotDateHorizon = Duration(days: 365 * 5);
 
-  Future<void> _pickDate(BuildContext context) async {
+  Future<void> _pickDate(
+    BuildContext context,
+    FormFieldState<DateTime> field,
+  ) async {
     final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
@@ -46,6 +49,7 @@ class SlotFormRow extends StatelessWidget {
       lastDate: now.add(_maxSlotDateHorizon),
     );
     if (picked != null) {
+      field.didChange(picked);
       onDateChanged(picked);
     }
   }
@@ -152,25 +156,41 @@ class SlotFormRow extends StatelessWidget {
               },
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    date != null
-                        ? DateFormat('yyyy-MM-dd').format(date!)
-                        : localizations.signupSlotNoDateLabel,
+            FormField<DateTime>(
+              initialValue: date,
+              // Validates the field's own value, which _pickDate keeps in
+              // step with [date], so the error clears the moment a date is
+              // picked rather than at the next Save.
+              validator: (value) =>
+                  value == null ? localizations.signupSlotDateRequired : null,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              builder: (field) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          date != null
+                              ? DateFormat('yyyy-MM-dd').format(date!)
+                              : localizations.signupSlotNoDateLabel,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => _pickDate(context, field),
+                        child: Text(localizations.signupSlotSetDateLabel),
+                      ),
+                    ],
                   ),
-                ),
-                TextButton(
-                  onPressed: () => _pickDate(context),
-                  child: Text(localizations.signupSlotSetDateLabel),
-                ),
-                if (date != null)
-                  IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () => onDateChanged(null),
-                  ),
-              ],
+                  if (field.hasError)
+                    Text(
+                      field.errorText!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ],
         ),

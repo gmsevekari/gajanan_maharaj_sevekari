@@ -9,6 +9,7 @@ import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:gajanan_maharaj_sevekari/utils/form_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
@@ -163,6 +164,7 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
       _slotsError = hasSlots ? null : localizations.signupSlotsRequiredError;
     });
 
+    if (!formValid) revealFirstInvalidField(_formKey.currentContext);
     if (!formValid || !hasSlots) return;
 
     setState(() => _isLoading = true);

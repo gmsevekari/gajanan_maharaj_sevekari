@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:gajanan_maharaj_sevekari/utils/form_utils.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 /// Lets a devotee claim one [slot] on a sign-up signup. Reuses
@@ -93,39 +94,6 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
     );
   }
 
-  /// Scrolls the first field that failed validation into view. The form
-  /// scrolls inside the dialog, so with the keyboard open (and the extra
-  /// join code field) an invalid field is often off-screen, which would
-  /// make Save look like it does nothing.
-  void _revealFirstInvalidField() {
-    Element? firstInvalid;
-    void visit(Element element) {
-      if (firstInvalid != null) return;
-      final widget = element.widget;
-      if (widget is FormField &&
-          element is StatefulElement &&
-          (element.state as FormFieldState).hasError) {
-        firstInvalid = element;
-        return;
-      }
-      element.visitChildren(visit);
-    }
-
-    _formKey.currentContext?.visitChildElements(visit);
-    final target = firstInvalid;
-    if (target == null) return;
-    // After the frame, so the error text the failed validation just added
-    // is already laid out and counted in the scrollable's extent.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!target.mounted) return;
-      Scrollable.ensureVisible(
-        target,
-        duration: const Duration(milliseconds: 200),
-        alignment: 0.1,
-      );
-    });
-  }
-
   /// Brings the in-dialog error message into view after a failed submit.
   void _revealError() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -142,7 +110,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
   Future<void> _handleSubmit() async {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) {
-      _revealFirstInvalidField();
+      revealFirstInvalidField(_formKey.currentContext);
       return;
     }
 

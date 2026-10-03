@@ -4407,6 +4407,12 @@ abstract class AppLocalizations {
   /// **'No date set'**
   String get signupSlotNoDateLabel;
 
+  /// No description provided for @signupSlotDateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a date'**
+  String get signupSlotDateRequired;
+
   /// No description provided for @signupRemoveSlotTooltip.
   ///
   /// In en, this message translates to:
@@ -4988,12 +4994,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Title'**
   String get signupEntriesTitleColumn;
-
-  /// No description provided for @signupEntriesAvailableSlotsColumn.
-  ///
-  /// In en, this message translates to:
-  /// **'Available Slots'**
-  String get signupEntriesAvailableSlotsColumn;
 
   /// No description provided for @signupNoSlotsInTabMessage.
   ///
