@@ -201,6 +201,22 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
     _revealError();
   }
 
+  /// Compact field styling: dense, with the maxLength counter hidden (the
+  /// limit itself is still enforced) so the stacked form fits above the
+  /// keyboard on a phone.
+  InputDecoration _decoration(
+    String label, {
+    String? hint,
+    Widget? prefixIcon,
+  }) => InputDecoration(
+    labelText: label,
+    hintText: hint,
+    prefixIcon: prefixIcon,
+    isDense: true,
+    counterText: '',
+    border: const OutlineInputBorder(),
+  );
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -220,10 +236,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 key: const Key('claimNameField'),
                 controller: _nameController,
                 maxLength: 100,
-                decoration: InputDecoration(
-                  labelText: l10n.signupEntryNameLabel,
-                  border: const OutlineInputBorder(),
-                ),
+                decoration: _decoration(l10n.signupEntryNameLabel),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return l10n.signupEntryNameRequired;
@@ -231,16 +244,13 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                   return null;
                 },
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               TextFormField(
                 key: const Key('claimPhoneField'),
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 maxLength: 30,
-                decoration: InputDecoration(
-                  labelText: l10n.signupEntryPhoneLabel,
-                  border: const OutlineInputBorder(),
-                ),
+                decoration: _decoration(l10n.signupEntryPhoneLabel),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return l10n.phoneRequired;
@@ -255,16 +265,13 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                   return null;
                 },
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               TextFormField(
                 key: const Key('claimEmailField'),
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 maxLength: 200,
-                decoration: InputDecoration(
-                  labelText: l10n.signupEntryEmailLabel,
-                  border: const OutlineInputBorder(),
-                ),
+                decoration: _decoration(l10n.signupEntryEmailLabel),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return l10n.emailRequired;
@@ -279,17 +286,14 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 },
               ),
               if (showPledge) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 TextFormField(
                   key: const Key('claimPledgeField'),
                   controller: _pledgeController,
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
-                  decoration: InputDecoration(
-                    labelText: l10n.signupEntryPledgeLabel,
-                    border: const OutlineInputBorder(),
-                  ),
+                  decoration: _decoration(l10n.signupEntryPledgeLabel),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) return null;
                     final amount = double.tryParse(value.trim());
@@ -300,28 +304,24 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                   },
                 ),
               ],
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               TextFormField(
                 key: const Key('claimNoteField'),
                 controller: _noteController,
                 maxLines: 2,
                 maxLength: 500,
-                decoration: InputDecoration(
-                  labelText: l10n.signupEntryNoteLabel,
-                  border: const OutlineInputBorder(),
-                ),
+                decoration: _decoration(l10n.signupEntryNoteLabel),
               ),
               if (widget.requiresJoinCode) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 TextFormField(
                   key: const Key('claimJoinCodeField'),
                   controller: _joinCodeController,
                   textCapitalization: TextCapitalization.characters,
-                  decoration: InputDecoration(
-                    labelText: l10n.joinCodeLabel,
-                    hintText: l10n.joinCodeHint,
+                  decoration: _decoration(
+                    l10n.joinCodeLabel,
+                    hint: l10n.joinCodeHint,
                     prefixIcon: const Icon(Icons.vpn_key_outlined),
-                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -332,7 +332,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 ),
               ],
               if (_errorText != null) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Text(
                   _errorText!,
                   key: _errorKey,

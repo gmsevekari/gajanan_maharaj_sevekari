@@ -674,6 +674,59 @@ void main() {
       return rect.top >= 0 && rect.bottom <= 640 - 280;
     }
 
+    testWidgets('keeps the form compact: no character counters, dense fields', (
+      tester,
+    ) async {
+      useSmallScreenWithKeyboard(tester);
+      await openDialog(
+        tester,
+        signupId: codeSignupId,
+        slotId: codeSlotId,
+        requiresJoinCode: true,
+      );
+
+      final position = tester
+          .state<ScrollableState>(
+            find
+                .descendant(
+                  of: find.byType(SingleChildScrollView),
+                  matching: find.byType(Scrollable),
+                )
+                .first,
+          )
+          .position;
+      final contentHeight =
+          position.maxScrollExtent + position.viewportDimension;
+
+      // Name, phone, email, note and join code stacked: was ~450px with
+      // counters and loose spacing.
+      expect(contentHeight, lessThanOrEqualTo(330));
+      expect(find.text('0/100'), findsNothing);
+      expect(find.text('0/500'), findsNothing);
+    });
+
+    testWidgets('still limits the length of name and note', (tester) async {
+      await openDialog(
+        tester,
+        signupId: openSignupId,
+        slotId: plainSlotId,
+        requiresJoinCode: false,
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('claimNameField')),
+        'x' * 150,
+      );
+      await tester.enterText(
+        find.byKey(const Key('claimNoteField')),
+        'y' * 600,
+      );
+      await tester.pump();
+
+      expect(find.text('x' * 100), findsOneWidget);
+      expect(find.text('y' * 500), findsOneWidget);
+    });
+
     testWidgets('scrolls to the join code error when it is left empty', (
       tester,
     ) async {
