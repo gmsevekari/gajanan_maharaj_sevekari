@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
@@ -154,7 +155,7 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
             signupSnapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(l10n.signupsListTitle),
+              title: FittedAppBarTitle(l10n.signupsListTitle),
               actions: _buildAppBarActions(context),
             ),
             body: const Center(child: CircularProgressIndicator()),
@@ -165,7 +166,7 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
         if (signup == null) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(l10n.signupsListTitle),
+              title: FittedAppBarTitle(l10n.signupsListTitle),
               actions: _buildAppBarActions(context),
             ),
             body: Center(
@@ -192,7 +193,7 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(title),
+            title: FittedAppBarTitle(title),
             actions: _buildAppBarActions(context),
           ),
           body: ListView(

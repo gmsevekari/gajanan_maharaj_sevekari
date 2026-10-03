@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
@@ -59,7 +60,7 @@ class _SignupsListScreenState extends State<SignupsListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.groupName ?? l10n.signupsListTitle),
+        title: FittedAppBarTitle(widget.groupName ?? l10n.signupsListTitle),
         actions: [
           IconButton(
             icon: const ThemedIcon(LogicalIcon.home),

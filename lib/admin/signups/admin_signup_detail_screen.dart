@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_entry_edit_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_slot_entries_section.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_actions_row.dart';
@@ -511,7 +512,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.adminSignupDetailTitle),
+        title: FittedAppBarTitle(l10n.adminSignupDetailTitle),
         actions: [
           IconButton(
             icon: const ThemedIcon(LogicalIcon.home),

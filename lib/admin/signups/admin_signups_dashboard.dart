@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
@@ -70,7 +71,7 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.adminSignupsDashboardTitle),
+        title: FittedAppBarTitle(localizations.adminSignupsDashboardTitle),
         actions: [
           IconButton(
             icon: const ThemedIcon(LogicalIcon.home),

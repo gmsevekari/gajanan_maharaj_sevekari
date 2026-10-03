@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
@@ -83,6 +84,51 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Sign up not found'), findsOneWidget);
+    });
+
+    testWidgets('scales a long sign up title to fit the app bar', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      final now = DateTime.now();
+      const longTitle =
+          'Rakhumai Navaratri Saree Seva 2026 - Seattle Temple Community';
+      final signupId = await service.createSignup(
+        Signup(
+          titleEn: longTitle,
+          titleMr: longTitle,
+          groupId: 'group_1',
+          status: SignupStatus.published,
+          createdAt: now,
+          updatedAt: now,
+          createdBy: 'admin@test.com',
+        ),
+      );
+
+      await tester.pumpWidget(
+        wrap(
+          SignupDetailScreen(
+            signupId: signupId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final appBarTitle = find.descendant(
+        of: find.byType(AppBar),
+        matching: find.byType(FittedAppBarTitle),
+      );
+      expect(appBarTitle, findsOneWidget);
+      final title = tester.getRect(
+        find.descendant(of: appBarTitle, matching: find.text(longTitle)),
+      );
+      expect(title.width, lessThanOrEqualTo(tester.getRect(appBarTitle).width));
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('tapping home icon navigates to home', (tester) async {

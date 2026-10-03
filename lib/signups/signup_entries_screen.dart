@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
@@ -68,7 +69,7 @@ class _SignupEntriesScreenState extends State<SignupEntriesScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.signupEntriesHeading),
+        title: FittedAppBarTitle(l10n.signupEntriesHeading),
         bottom: TabBar(
           controller: _tabController,
           // The default label colour is the theme's primary, which is the
