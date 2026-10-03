@@ -510,52 +510,48 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
               : (group.nameEn.isNotEmpty ? group.nameEn : group.nameMr))
         : '';
 
-    return Scaffold(
-      appBar: AppBar(
-        title: FittedAppBarTitle(l10n.adminSignupDetailTitle),
-        actions: [
-          IconButton(
-            icon: const ThemedIcon(LogicalIcon.home),
-            onPressed: () =>
-                Navigator.of(context).popUntil((route) => route.isFirst),
-          ),
-          IconButton(
-            icon: const ThemedIcon(LogicalIcon.settings),
-            onPressed: () => Navigator.pushNamed(context, Routes.settings),
-          ),
-        ],
-      ),
-      body: StreamBuilder<Signup?>(
-        stream: _signupStream,
-        builder: (context, signupSnapshot) {
-          if (signupSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return StreamBuilder<Signup?>(
+      stream: _signupStream,
+      builder: (context, signupSnapshot) {
+        Scaffold page(String appBarTitle, Widget body) =>
+            Scaffold(appBar: _buildAppBar(context, appBarTitle), body: body);
 
-          final signup = signupSnapshot.data;
-          if (signup == null) {
-            return Center(
+        if (signupSnapshot.connectionState == ConnectionState.waiting) {
+          return page(
+            l10n.adminSignupDetailTitle,
+            const Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final signup = signupSnapshot.data;
+        if (signup == null) {
+          return page(
+            l10n.adminSignupDetailTitle,
+            Center(
               child: Text(
                 l10n.signupNotFound,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.appColors.secondaryText,
                 ),
               ),
-            );
-          }
+            ),
+          );
+        }
 
-          final title = isMarathi
-              ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
-              : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);
-          final desc = isMarathi
-              ? (signup.descriptionMr.isNotEmpty
-                    ? signup.descriptionMr
-                    : signup.descriptionEn)
-              : (signup.descriptionEn.isNotEmpty
-                    ? signup.descriptionEn
-                    : signup.descriptionMr);
+        final title = isMarathi
+            ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
+            : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);
+        final desc = isMarathi
+            ? (signup.descriptionMr.isNotEmpty
+                  ? signup.descriptionMr
+                  : signup.descriptionEn)
+            : (signup.descriptionEn.isNotEmpty
+                  ? signup.descriptionEn
+                  : signup.descriptionMr);
 
-          return StreamBuilder<List<SignupSlot>>(
+        return page(
+          title,
+          StreamBuilder<List<SignupSlot>>(
             stream: _slotsStream,
             builder: (context, slotsSnapshot) {
               final slots = slotsSnapshot.data ?? const [];
@@ -675,9 +671,24 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
                 },
               );
             },
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
+
+  AppBar _buildAppBar(BuildContext context, String title) => AppBar(
+    title: FittedAppBarTitle(title),
+    actions: [
+      IconButton(
+        icon: const ThemedIcon(LogicalIcon.home),
+        onPressed: () =>
+            Navigator.of(context).popUntil((route) => route.isFirst),
+      ),
+      IconButton(
+        icon: const ThemedIcon(LogicalIcon.settings),
+        onPressed: () => Navigator.pushNamed(context, Routes.settings),
+      ),
+    ],
+  );
 }

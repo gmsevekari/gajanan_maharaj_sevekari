@@ -178,6 +178,45 @@ void main() {
   }
 
   group('AdminSignupDetailScreen', () {
+    testWidgets('shows the sign up title in the app bar', (tester) async {
+      final now = DateTime.now();
+      final signupRef = await firestore.collection('signups').add({
+        'titleEn': 'Prasad Seva',
+        'titleMr': 'प्रसाद सेवा',
+        'groupId': 'gajanan_maharaj_seattle',
+        'status': SignupStatus.draft.name,
+        'requiresJoinCode': false,
+        'createdAt': Timestamp.fromDate(now),
+        'updatedAt': Timestamp.fromDate(now),
+        'createdBy': 'admin@test.com',
+      });
+
+      await pumpDetailScreen(tester, signupId: signupRef.id);
+
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.text('Prasad Seva'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Sign Up Details'), findsNothing);
+    });
+
+    testWidgets('falls back to "Sign Up Details" when the signup is missing', (
+      tester,
+    ) async {
+      await pumpDetailScreen(tester, signupId: 'missing_signup');
+
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.text('Sign Up Details'),
+        ),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('renders not found state when signup does not exist', (
       tester,
     ) async {
@@ -525,7 +564,13 @@ void main() {
         );
 
         // UI text stays English; admin-entered content follows the app locale.
-        expect(find.text('Sign Up Details'), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(AppBar),
+            matching: find.text('प्रसाद सेवा'),
+          ),
+          findsOneWidget,
+        );
         expect(find.text('प्रसाद सेवा').first, findsOneWidget);
         expect(find.text('मदत').first, findsOneWidget);
         expect(find.text('Duplicate'), findsOneWidget);
