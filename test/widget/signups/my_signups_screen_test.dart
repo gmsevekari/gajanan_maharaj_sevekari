@@ -17,13 +17,13 @@ class MockSignupService extends Mock implements SignupService {}
 void main() {
   late FakeFirebaseFirestore firestore;
   late SignupService service;
-  late String sheetId;
+  late String signupId;
 
   setUp(() async {
     firestore = FakeFirebaseFirestore();
     service = SignupService(firestore: firestore);
     final now = DateTime.now();
-    sheetId = await service.createSheet(
+    signupId = await service.createSignup(
       Signup(
         titleEn: 'Sunday Prasad Seva',
         titleMr: 'रविवार प्रसाद सेवा',
@@ -58,7 +58,7 @@ void main() {
 
   Future<String> addSlot({DateTime? date}) {
     return service.addSlot(
-      sheetId,
+      signupId,
       SignupSlot(
         labelEn: 'Week 1',
         labelMr: 'आठवडा १',
@@ -75,7 +75,7 @@ void main() {
     await tester.pumpWidget(
       wrap(
         MySignupsScreen(
-          sheetId: sheetId,
+          signupId: signupId,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -94,7 +94,7 @@ void main() {
       date: DateTime.now().add(const Duration(days: 3)),
     );
     await service.claimSlot(
-      sheetId: sheetId,
+      signupId: signupId,
       slotId: slotId,
       name: 'Jane',
       deviceId: 'device_1',
@@ -103,7 +103,7 @@ void main() {
     await tester.pumpWidget(
       wrap(
         MySignupsScreen(
-          sheetId: sheetId,
+          signupId: signupId,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -123,7 +123,7 @@ void main() {
       date: DateTime.now().subtract(const Duration(days: 3)),
     );
     await service.claimSlot(
-      sheetId: sheetId,
+      signupId: signupId,
       slotId: slotId,
       name: 'Jane',
       deviceId: 'device_1',
@@ -132,7 +132,7 @@ void main() {
     await tester.pumpWidget(
       wrap(
         MySignupsScreen(
-          sheetId: sheetId,
+          signupId: signupId,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -156,7 +156,7 @@ void main() {
   ) async {
     final slotId = await addSlot();
     await service.claimSlot(
-      sheetId: sheetId,
+      signupId: signupId,
       slotId: slotId,
       name: 'Jane',
       deviceId: 'device_1',
@@ -165,7 +165,7 @@ void main() {
     await tester.pumpWidget(
       wrap(
         MySignupsScreen(
-          sheetId: sheetId,
+          signupId: signupId,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -185,7 +185,7 @@ void main() {
       date: DateTime.now().add(const Duration(days: 3)),
     );
     await service.claimSlot(
-      sheetId: sheetId,
+      signupId: signupId,
       slotId: slotId,
       name: 'Jane',
       deviceId: 'device_1',
@@ -194,7 +194,7 @@ void main() {
     await tester.pumpWidget(
       wrap(
         MySignupsScreen(
-          sheetId: sheetId,
+          signupId: signupId,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -211,7 +211,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text("You haven't signed up for anything yet"), findsOneWidget);
-    final entries = await service.getAllEntries(sheetId).first;
+    final entries = await service.getAllEntries(signupId).first;
     expect(entries, isEmpty);
   });
 
@@ -222,7 +222,7 @@ void main() {
       date: DateTime.now().add(const Duration(days: 3)),
     );
     await service.claimSlot(
-      sheetId: sheetId,
+      signupId: signupId,
       slotId: slotId,
       name: 'Jane',
       deviceId: 'device_1',
@@ -231,7 +231,7 @@ void main() {
     await tester.pumpWidget(
       wrap(
         MySignupsScreen(
-          sheetId: sheetId,
+          signupId: signupId,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -246,7 +246,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Jane'), findsOneWidget);
-    final entries = await service.getAllEntries(sheetId).first;
+    final entries = await service.getAllEntries(signupId).first;
     expect(entries, hasLength(1));
   });
 
@@ -262,19 +262,19 @@ void main() {
     );
     final mockService = MockSignupService();
     when(
-      () => mockService.getSlots(sheetId),
+      () => mockService.getSlots(signupId),
     ).thenAnswer((_) => Stream.value(const []));
     when(
-      () => mockService.getEntriesByDevice(sheetId, 'device_1'),
+      () => mockService.getEntriesByDevice(signupId, 'device_1'),
     ).thenAnswer((_) => Stream.value([entry]));
     when(
-      () => mockService.cancelEntry(sheetId, 'entry_1'),
+      () => mockService.cancelEntry(signupId, 'entry_1'),
     ).thenThrow(Exception('network error'));
 
     await tester.pumpWidget(
       wrap(
         MySignupsScreen(
-          sheetId: sheetId,
+          signupId: signupId,
           deviceId: 'device_1',
           signupService: mockService,
         ),
@@ -297,7 +297,7 @@ void main() {
     await tester.pumpWidget(
       wrap(
         MySignupsScreen(
-          sheetId: sheetId,
+          signupId: signupId,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -320,7 +320,7 @@ void main() {
     await tester.pumpWidget(
       wrap(
         MySignupsScreen(
-          sheetId: sheetId,
+          signupId: signupId,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,

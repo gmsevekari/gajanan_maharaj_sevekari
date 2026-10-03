@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
-/// Add/replace/remove controls for a sheet's header/display image, shown
+/// Add/replace/remove controls for a signup's header/display image, shown
 /// on [AdminSignupDetailScreen] right under the overview card.
 class SignupHeaderImageCard extends StatelessWidget {
   final String? headerImageUrl;

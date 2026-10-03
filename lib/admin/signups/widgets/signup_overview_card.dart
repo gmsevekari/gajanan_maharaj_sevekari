@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
-/// A sign-up sheet's title, description, and group chip, shown at the top
+/// A sign-up signup's title, description, and group chip, shown at the top
 /// of [AdminSignupDetailScreen].
 class SignupOverviewCard extends StatelessWidget {
   final String title;

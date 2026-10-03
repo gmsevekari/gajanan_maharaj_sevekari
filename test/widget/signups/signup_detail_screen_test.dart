@@ -48,12 +48,12 @@ void main() {
     );
   }
 
-  Future<String> createOpenSheet({
+  Future<String> createOpenSignup({
     bool requiresJoinCode = false,
     String? headerImageUrl,
   }) async {
     final now = DateTime.now();
-    return service.createSheet(
+    return service.createSignup(
       Signup(
         titleEn: 'Sunday Prasad Seva',
         titleMr: 'रविवार प्रसाद सेवा',
@@ -72,13 +72,13 @@ void main() {
   }
 
   group('SignupDetailScreen', () {
-    testWidgets('shows not-found message when the sheet does not exist', (
+    testWidgets('shows not-found message when the signup does not exist', (
       tester,
     ) async {
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: 'missing',
+            signupId: 'missing',
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,
@@ -94,7 +94,7 @@ void main() {
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: 'missing',
+            signupId: 'missing',
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,
@@ -117,7 +117,7 @@ void main() {
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: 'missing',
+            signupId: 'missing',
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,
@@ -136,15 +136,15 @@ void main() {
       expect(find.text('Navigated to: /settings'), findsOneWidget);
     });
 
-    testWidgets('renders the sheet title, description, and nav cards', (
+    testWidgets('renders the signup title, description, and nav cards', (
       tester,
     ) async {
-      final sheetId = await createOpenSheet();
+      final signupId = await createOpenSignup();
 
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,
@@ -162,12 +162,12 @@ void main() {
     testWidgets('tapping the My Sign Ups card opens MySignupsScreen', (
       tester,
     ) async {
-      final sheetId = await createOpenSheet();
+      final signupId = await createOpenSignup();
 
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,
@@ -185,12 +185,12 @@ void main() {
     testWidgets('tapping the Slots card opens SignupSlotsScreen', (
       tester,
     ) async {
-      final sheetId = await createOpenSheet();
+      final signupId = await createOpenSignup();
 
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,
@@ -208,12 +208,12 @@ void main() {
     testWidgets('shows a message in the Entries table when there are none', (
       tester,
     ) async {
-      final sheetId = await createOpenSheet();
+      final signupId = await createOpenSignup();
 
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,
@@ -227,9 +227,9 @@ void main() {
     });
 
     testWidgets('lists every entry in the Entries table', (tester) async {
-      final sheetId = await createOpenSheet();
+      final signupId = await createOpenSignup();
       final slot1 = await service.addSlot(
-        sheetId,
+        signupId,
         SignupSlot(
           labelEn: 'Week 1',
           labelMr: 'आठवडा १',
@@ -240,7 +240,7 @@ void main() {
         ),
       );
       final slot2 = await service.addSlot(
-        sheetId,
+        signupId,
         SignupSlot(
           labelEn: 'Week 2',
           labelMr: 'आठवडा २',
@@ -251,7 +251,7 @@ void main() {
         ),
       );
       final slot3 = await service.addSlot(
-        sheetId,
+        signupId,
         SignupSlot(
           labelEn: 'Week 3',
           labelMr: 'आठवडा ३',
@@ -262,7 +262,7 @@ void main() {
       );
       // Same date as slot1, to exercise the sort's tie-break-by-name branch.
       final slot4 = await service.addSlot(
-        sheetId,
+        signupId,
         SignupSlot(
           labelEn: 'Week 4',
           labelMr: 'आठवडा ४',
@@ -272,15 +272,15 @@ void main() {
           createdAt: DateTime.now(),
         ),
       );
-      await service.claimSlot(sheetId: sheetId, slotId: slot1, name: 'Jane');
-      await service.claimSlot(sheetId: sheetId, slotId: slot2, name: 'Amit');
-      await service.claimSlot(sheetId: sheetId, slotId: slot3, name: 'Priya');
-      await service.claimSlot(sheetId: sheetId, slotId: slot4, name: 'Anil');
+      await service.claimSlot(signupId: signupId, slotId: slot1, name: 'Jane');
+      await service.claimSlot(signupId: signupId, slotId: slot2, name: 'Amit');
+      await service.claimSlot(signupId: signupId, slotId: slot3, name: 'Priya');
+      await service.claimSlot(signupId: signupId, slotId: slot4, name: 'Anil');
 
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,
@@ -310,9 +310,9 @@ void main() {
     testWidgets('shows the Marathi slot label in the Entries table', (
       tester,
     ) async {
-      final sheetId = await createOpenSheet();
+      final signupId = await createOpenSignup();
       final slotId = await service.addSlot(
-        sheetId,
+        signupId,
         SignupSlot(
           labelEn: 'Week 1',
           labelMr: 'आठवडा १',
@@ -321,12 +321,12 @@ void main() {
           createdAt: DateTime.now(),
         ),
       );
-      await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'Jane');
+      await service.claimSlot(signupId: signupId, slotId: slotId, name: 'Jane');
 
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,
@@ -342,9 +342,9 @@ void main() {
     testWidgets(
       'shows a blank title and dash for an entry whose slot was deleted',
       (tester) async {
-        final sheetId = await createOpenSheet();
+        final signupId = await createOpenSignup();
         final slotId = await service.addSlot(
-          sheetId,
+          signupId,
           SignupSlot(
             labelEn: 'Week 1',
             labelMr: 'आठवडा १',
@@ -354,7 +354,7 @@ void main() {
           ),
         );
         await service.claimSlot(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'Orphan',
         );
@@ -362,7 +362,7 @@ void main() {
         // an entry left behind after its slot is gone some other way.
         await firestore
             .collection('signups')
-            .doc(sheetId)
+            .doc(signupId)
             .collection('slots')
             .doc(slotId)
             .delete();
@@ -370,7 +370,7 @@ void main() {
         await tester.pumpWidget(
           wrap(
             SignupDetailScreen(
-              sheetId: sheetId,
+              signupId: signupId,
               deviceId: 'device_1',
               firestore: firestore,
               signupService: service,
@@ -390,12 +390,12 @@ void main() {
       SharedPreferences.setMockInitialValues({
         'unique_device_id': 'mock-device-id',
       });
-      final sheetId = await createOpenSheet();
+      final signupId = await createOpenSignup();
 
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             firestore: firestore,
             signupService: service,
           ),
@@ -407,10 +407,10 @@ void main() {
       expect(find.text('My Signups'), findsOneWidget);
     });
 
-    testWidgets('resolves the sheet id from ModalRoute arguments', (
+    testWidgets('resolves the signup id from ModalRoute arguments', (
       tester,
     ) async {
-      final sheetId = await createOpenSheet();
+      final signupId = await createOpenSignup();
 
       await tester.pumpWidget(
         MultiProvider(
@@ -434,7 +434,7 @@ void main() {
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    settings: RouteSettings(arguments: {'sheetId': sheetId}),
+                    settings: RouteSettings(arguments: {'signupId': signupId}),
                     builder: (_) => SignupDetailScreen(
                       deviceId: 'device_1',
                       firestore: firestore,
@@ -456,12 +456,12 @@ void main() {
     });
 
     testWidgets('renders the Marathi title when locale is mr', (tester) async {
-      final sheetId = await createOpenSheet();
+      final signupId = await createOpenSignup();
 
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,
@@ -478,7 +478,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetId = await service.createSheet(
+      final signupId = await service.createSignup(
         Signup(
           titleEn: 'Sunday Prasad Seva',
           titleMr: 'रविवार प्रसाद सेवा',
@@ -495,7 +495,7 @@ void main() {
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,
@@ -511,9 +511,9 @@ void main() {
     testWidgets('does not resubscribe to getAllEntries on every rebuild', (
       tester,
     ) async {
-      final sheet = Signup(
-        id: 'sheet_rebuild',
-        titleEn: 'Sheet',
+      final signup = Signup(
+        id: 'signup_rebuild',
+        titleEn: 'Signup',
         titleMr: 'शीट',
         groupId: 'group_1',
         status: SignupStatus.published,
@@ -525,19 +525,19 @@ void main() {
       addTearDown(slotsController.close);
       final mockService = MockSignupService();
       when(
-        () => mockService.getSheetById('sheet_rebuild'),
-      ).thenAnswer((_) => Stream.value(sheet));
+        () => mockService.getSignupById('signup_rebuild'),
+      ).thenAnswer((_) => Stream.value(signup));
       when(
-        () => mockService.getSlots('sheet_rebuild'),
+        () => mockService.getSlots('signup_rebuild'),
       ).thenAnswer((_) => slotsController.stream);
       when(
-        () => mockService.getAllEntries('sheet_rebuild'),
+        () => mockService.getAllEntries('signup_rebuild'),
       ).thenAnswer((_) => Stream.value(const []));
 
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: 'sheet_rebuild',
+            signupId: 'signup_rebuild',
             deviceId: 'device_1',
             signupService: mockService,
           ),
@@ -553,20 +553,20 @@ void main() {
       slotsController.add(const []);
       await tester.pumpAndSettle();
 
-      verify(() => mockService.getAllEntries('sheet_rebuild')).called(1);
+      verify(() => mockService.getAllEntries('signup_rebuild')).called(1);
     });
 
-    testWidgets('renders the header image when the sheet has one', (
+    testWidgets('renders the header image when the signup has one', (
       tester,
     ) async {
-      final sheetId = await createOpenSheet(
+      final signupId = await createOpenSignup(
         headerImageUrl: 'https://example.com/header.jpg',
       );
 
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,
@@ -582,13 +582,13 @@ void main() {
       expect(find.byType(Image), findsOneWidget);
     });
 
-    testWidgets('renders no image when the sheet has none', (tester) async {
-      final sheetId = await createOpenSheet();
+    testWidgets('renders no image when the signup has none', (tester) async {
+      final signupId = await createOpenSignup();
 
       await tester.pumpWidget(
         wrap(
           SignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             deviceId: 'device_1',
             firestore: firestore,
             signupService: service,

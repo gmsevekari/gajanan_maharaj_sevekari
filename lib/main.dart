@@ -275,7 +275,7 @@ class _MyAppState extends State<MyApp> {
         : isNamjap
         ? Routes.groupNamjapDetail
         : isSignup
-        ? Routes.signupSheetDetail
+        ? Routes.signupDetail
         : Routes.parayanDetail;
 
     if (id != null) {
@@ -655,7 +655,7 @@ class _MyAppState extends State<MyApp> {
                   }
                   return AdminVaariCreateScreen(adminUser: args);
                 },
-                Routes.signupSheetsList: (context) {
+                Routes.signupsList: (context) {
                   final args =
                       ModalRoute.of(context)?.settings.arguments as Map?;
                   return SignupsListScreen(
@@ -663,27 +663,25 @@ class _MyAppState extends State<MyApp> {
                     groupName: args?['groupName'],
                   );
                 },
-                Routes.signupSheetDetail: (context) {
+                Routes.signupDetail: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
-                  String? sheetId;
+                  String? signupId;
                   if (args is String) {
-                    sheetId = args;
+                    signupId = args;
                   } else if (args is Map) {
-                    sheetId =
-                        args['sheetId'] as String? ?? args['id'] as String?;
+                    signupId =
+                        args['signupId'] as String? ?? args['id'] as String?;
                   }
-                  if (sheetId == null) {
+                  if (signupId == null) {
                     return const Scaffold(
                       body: Center(
-                        child: Text(
-                          'Error: Missing SignupSheetDetail arguments',
-                        ),
+                        child: Text('Error: Missing SignupDetail arguments'),
                       ),
                     );
                   }
-                  return SignupDetailScreen(sheetId: sheetId);
+                  return SignupDetailScreen(signupId: signupId);
                 },
-                Routes.adminSignupSheetsDashboard: (context) {
+                Routes.adminSignupsDashboard: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
                   AdminUser? adminUser;
                   if (args is Map<String, dynamic>) {
@@ -708,7 +706,7 @@ class _MyAppState extends State<MyApp> {
                   }
                   return AdminSignupsDashboard(adminUser: adminUser);
                 },
-                Routes.adminCreateSignupSheet: (context) {
+                Routes.adminCreateSignup: (context) {
                   final args = ModalRoute.of(context)!.settings.arguments;
                   if (args is! AdminUser ||
                       !args.hasAnyRole(['signup_coordinator', 'group_admin'])) {
@@ -1002,7 +1000,7 @@ class _MyAppState extends State<MyApp> {
                         ),
                       ),
                     );
-                  case Routes.adminSignupSheetDetail:
+                  case Routes.adminSignupDetail:
                     final args = settings.arguments;
                     if (args is Map<String, dynamic>) {
                       final adminUser = args['adminUser'] as AdminUser?;
@@ -1019,7 +1017,7 @@ class _MyAppState extends State<MyApp> {
                       }
                       return MaterialPageRoute(
                         builder: (context) => AdminSignupDetailScreen(
-                          sheetId: args['sheetId'] as String?,
+                          signupId: args['signupId'] as String?,
                           adminUser: args['adminUser'] as AdminUser,
                         ),
                       );

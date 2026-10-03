@@ -94,11 +94,11 @@ void main() {
         Routes.adminCreateVaari,
         Routes.adminVaariDetail,
         Routes.adminVaariList,
-        Routes.adminCreateSignupSheet,
-        Routes.adminSignupSheetsDashboard,
-        Routes.adminSignupSheetDetail,
-        Routes.signupSheetsList,
-        Routes.signupSheetDetail,
+        Routes.adminCreateSignup,
+        Routes.adminSignupsDashboard,
+        Routes.adminSignupDetail,
+        Routes.signupsList,
+        Routes.signupDetail,
       ];
 
       for (final route in routes) {
@@ -171,11 +171,11 @@ void main() {
         Routes.adminCreateVaari,
         Routes.adminVaariDetail,
         Routes.adminVaariList,
-        Routes.adminCreateSignupSheet,
-        Routes.adminSignupSheetsDashboard,
-        Routes.adminSignupSheetDetail,
-        Routes.signupSheetsList,
-        Routes.signupSheetDetail,
+        Routes.adminCreateSignup,
+        Routes.adminSignupsDashboard,
+        Routes.adminSignupDetail,
+        Routes.signupsList,
+        Routes.signupDetail,
       ];
       expect(routes.toSet().length, equals(routes.length));
     });

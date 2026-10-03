@@ -32,7 +32,7 @@ class AdminSignupsDashboard extends StatefulWidget {
 
 class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
   late final SignupService _service;
-  late Stream<List<Signup>> _sheetsStream;
+  late Stream<List<Signup>> _signupsStream;
   SignupStatus? _selectedStatus;
 
   @override
@@ -46,9 +46,9 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
   void _initializeStream() {
     final groupId = widget.adminUser.groupId;
     if (groupId != null && groupId.isNotEmpty) {
-      _sheetsStream = _service.getAllSheets(groupId);
+      _signupsStream = _service.getAllSignups(groupId);
     } else {
-      _sheetsStream = Stream.value(const []);
+      _signupsStream = Stream.value(const []);
     }
   }
 
@@ -84,7 +84,7 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
         tooltip: localizations.signupCreateTooltip,
         onPressed: () => Navigator.pushNamed(
           context,
-          Routes.adminCreateSignupSheet,
+          Routes.adminCreateSignup,
           arguments: widget.adminUser,
         ),
         child: const Icon(Icons.add),
@@ -104,7 +104,7 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
               ),
             )
           : StreamBuilder<List<Signup>>(
-              stream: _sheetsStream,
+              stream: _signupsStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -134,18 +134,18 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
                   );
                 }
 
-                final allSheets = snapshot.data ?? const [];
-                final filteredSheets = _selectedStatus == null
-                    ? allSheets
-                    : allSheets
-                          .where((sheet) => sheet.status == _selectedStatus)
+                final allSignups = snapshot.data ?? const [];
+                final filteredSignups = _selectedStatus == null
+                    ? allSignups
+                    : allSignups
+                          .where((signup) => signup.status == _selectedStatus)
                           .toList();
 
                 return Column(
                   children: [
                     _buildFilterChips(localizations, theme),
                     Expanded(
-                      child: filteredSheets.isEmpty
+                      child: filteredSignups.isEmpty
                           ? Center(
                               child: Text(
                                 localizations.signupNoSignupsFound,
@@ -159,11 +159,11 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
                                 horizontal: 16,
                                 vertical: 12,
                               ),
-                              itemCount: filteredSheets.length,
+                              itemCount: filteredSignups.length,
                               itemBuilder: (context, index) {
-                                return _buildSheetCard(
+                                return _buildSignupCard(
                                   context,
-                                  filteredSheets[index],
+                                  filteredSignups[index],
                                   localizations,
                                   theme,
                                 );
@@ -225,23 +225,23 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
     );
   }
 
-  Widget _buildSheetCard(
+  Widget _buildSignupCard(
     BuildContext context,
-    Signup sheet,
+    Signup signup,
     AppLocalizations localizations,
     ThemeData theme,
   ) {
     final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
     final title = isMarathi
-        ? (sheet.titleMr.isNotEmpty ? sheet.titleMr : sheet.titleEn)
-        : (sheet.titleEn.isNotEmpty ? sheet.titleEn : sheet.titleMr);
+        ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
+        : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);
     final description = isMarathi
-        ? (sheet.descriptionMr.isNotEmpty
-              ? sheet.descriptionMr
-              : sheet.descriptionEn)
-        : (sheet.descriptionEn.isNotEmpty
-              ? sheet.descriptionEn
-              : sheet.descriptionMr);
+        ? (signup.descriptionMr.isNotEmpty
+              ? signup.descriptionMr
+              : signup.descriptionEn)
+        : (signup.descriptionEn.isNotEmpty
+              ? signup.descriptionEn
+              : signup.descriptionMr);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -249,8 +249,8 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
         borderRadius: BorderRadius.circular(12),
         onTap: () => Navigator.pushNamed(
           context,
-          Routes.adminSignupSheetDetail,
-          arguments: {'sheetId': sheet.id, 'adminUser': widget.adminUser},
+          Routes.adminSignupDetail,
+          arguments: {'signupId': signup.id, 'adminUser': widget.adminUser},
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -269,7 +269,7 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  _buildStatusBadge(sheet.status, localizations, theme),
+                  _buildStatusBadge(signup.status, localizations, theme),
                 ],
               ),
               if (description.isNotEmpty) ...[
@@ -283,7 +283,7 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
-              if (sheet.requiresJoinCode && sheet.joinCode != null) ...[
+              if (signup.requiresJoinCode && signup.joinCode != null) ...[
                 const SizedBox(height: 10),
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -295,7 +295,7 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${localizations.signupJoinCodePrefix}${sheet.joinCode}',
+                      '${localizations.signupJoinCodePrefix}${signup.joinCode}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.appColors.brandAccent,
                         fontWeight: FontWeight.w600,

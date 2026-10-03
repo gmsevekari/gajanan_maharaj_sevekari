@@ -352,10 +352,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Please enter a valid amount'), findsNothing);
-      final sheets = await firestore.collection('signups').get();
+      final signups = await firestore.collection('signups').get();
       final slots = await firestore
           .collection('signups')
-          .doc(sheets.docs.first.id)
+          .doc(signups.docs.first.id)
           .collection('slots')
           .get();
       expect(slots.docs.first.data()['suggestedAmount'], 50.5);
@@ -409,13 +409,13 @@ void main() {
           find.text('Failed to create sign up. Please try again.'),
           findsOneWidget,
         );
-        final sheets = await firestore.collection('signups').get();
-        expect(sheets.docs, isEmpty);
+        final signups = await firestore.collection('signups').get();
+        expect(signups.docs, isEmpty);
       },
     );
 
     testWidgets(
-      'submits and creates the sheet and slot together, without a join code',
+      'submits and creates the signup and slot together, without a join code',
       (tester) async {
         await pumpScreen(tester);
 
@@ -443,19 +443,19 @@ void main() {
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
 
-        final sheets = await firestore.collection('signups').get();
-        expect(sheets.docs.length, 1);
-        final sheetData = sheets.docs.first.data();
-        expect(sheetData['titleEn'], 'Sunday Prasad Seva');
-        expect(sheetData['titleMr'], 'रविवार प्रसाद सेवा');
-        expect(sheetData['groupId'], 'gajanan_maharaj_seattle');
-        expect(sheetData['status'], 'draft');
-        expect(sheetData['requiresJoinCode'], false);
-        expect(sheetData['joinCode'], isNull);
+        final signups = await firestore.collection('signups').get();
+        expect(signups.docs.length, 1);
+        final signupData = signups.docs.first.data();
+        expect(signupData['titleEn'], 'Sunday Prasad Seva');
+        expect(signupData['titleMr'], 'रविवार प्रसाद सेवा');
+        expect(signupData['groupId'], 'gajanan_maharaj_seattle');
+        expect(signupData['status'], 'draft');
+        expect(signupData['requiresJoinCode'], false);
+        expect(signupData['joinCode'], isNull);
 
         final slots = await firestore
             .collection('signups')
-            .doc(sheets.docs.first.id)
+            .doc(signups.docs.first.id)
             .collection('slots')
             .get();
         expect(slots.docs.length, 1);
@@ -485,8 +485,8 @@ void main() {
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
-      final sheets = await firestore.collection('signups').get();
-      final data = sheets.docs.first.data();
+      final signups = await firestore.collection('signups').get();
+      final data = signups.docs.first.data();
       expect(data['requiresJoinCode'], true);
       expect(data['joinCode'], isNotNull);
       expect((data['joinCode'] as String).length, 6);
@@ -573,12 +573,12 @@ void main() {
           await tester.tap(find.text('Save'));
           await tester.pumpAndSettle();
 
-          final sheets = await firestore.collection('signups').get();
-          final data = sheets.docs.first.data();
+          final signups = await firestore.collection('signups').get();
+          final data = signups.docs.first.data();
           expect(data['headerImageUrl'], isNotNull);
           expect(
             storage.storedDataMap.containsKey(
-              'signups/${sheets.docs.first.id}/header',
+              'signups/${signups.docs.first.id}/header',
             ),
             true,
           );
@@ -601,30 +601,30 @@ void main() {
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
 
-        final sheets = await firestore.collection('signups').get();
-        expect(sheets.docs.first.data()['headerImageUrl'], isNull);
+        final signups = await firestore.collection('signups').get();
+        expect(signups.docs.first.data()['headerImageUrl'], isNull);
       });
 
       testWidgets(
-        'cleans up the uploaded image if sheet creation fails afterward',
+        'cleans up the uploaded image if signup creation fails afterward',
         (tester) async {
           ImagePickerPlatform.instance = FakeImagePickerPlatform(
             imageBytes: _validPngBytes,
           );
           final mockService = MockSignupService();
-          when(() => mockService.newSheetId()).thenReturn('sheet_orphan');
+          when(() => mockService.newSignupId()).thenReturn('signup_orphan');
           when(
             () => mockService.uploadHeaderImage(
-              sheetId: any(named: 'sheetId'),
+              signupId: any(named: 'signupId'),
               bytes: any(named: 'bytes'),
               contentType: any(named: 'contentType'),
             ),
           ).thenAnswer((_) async => 'https://example.com/header.jpg');
           when(
-            () => mockService.createSheetWithSlots(any(), any()),
+            () => mockService.createSignupWithSlots(any(), any()),
           ).thenThrow(Exception('Firestore write failed'));
           when(
-            () => mockService.deleteHeaderImageFile('sheet_orphan'),
+            () => mockService.deleteHeaderImageFile('signup_orphan'),
           ).thenAnswer((_) async {});
 
           setLargeScreen(tester);
@@ -653,7 +653,7 @@ void main() {
           await tester.pumpAndSettle();
 
           verify(
-            () => mockService.deleteHeaderImageFile('sheet_orphan'),
+            () => mockService.deleteHeaderImageFile('signup_orphan'),
           ).called(1);
           expect(
             find.text('Failed to create sign up. Please try again.'),
@@ -669,19 +669,19 @@ void main() {
           imageBytes: _validPngBytes,
         );
         final mockService = MockSignupService();
-        when(() => mockService.newSheetId()).thenReturn('sheet_orphan2');
+        when(() => mockService.newSignupId()).thenReturn('signup_orphan2');
         when(
           () => mockService.uploadHeaderImage(
-            sheetId: any(named: 'sheetId'),
+            signupId: any(named: 'signupId'),
             bytes: any(named: 'bytes'),
             contentType: any(named: 'contentType'),
           ),
         ).thenAnswer((_) async => 'https://example.com/header.jpg');
         when(
-          () => mockService.createSheetWithSlots(any(), any()),
+          () => mockService.createSignupWithSlots(any(), any()),
         ).thenThrow(Exception('Firestore write failed'));
         when(
-          () => mockService.deleteHeaderImageFile('sheet_orphan2'),
+          () => mockService.deleteHeaderImageFile('signup_orphan2'),
         ).thenThrow(Exception('cleanup also failed'));
 
         setLargeScreen(tester);
@@ -710,7 +710,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // The cleanup's own failure must not surface or replace the
-        // original "failed to create sheet" message.
+        // original "failed to create signup" message.
         expect(
           find.text('Failed to create sign up. Please try again.'),
           findsOneWidget,

@@ -107,9 +107,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> seedSheets() async {
+  Future<void> seedSignups() async {
     final now = DateTime.now();
-    // Sheet 1: draft with join code
+    // Signup 1: draft with join code
     await firestore.collection('signups').add({
       'titleEn': 'Prasad Seva Draft',
       'titleMr': 'प्रसाद सेवा मसुदा',
@@ -124,7 +124,7 @@ void main() {
       'createdBy': 'admin@test.com',
     });
 
-    // Sheet 2: published without join code
+    // Signup 2: published without join code
     await firestore.collection('signups').add({
       'titleEn': 'Saree Seva Published',
       'titleMr': 'साडी सेवा प्रकाशित',
@@ -139,7 +139,7 @@ void main() {
       'createdBy': 'admin@test.com',
     });
 
-    // Sheet 3: closed
+    // Signup 3: closed
     await firestore.collection('signups').add({
       'titleEn': 'Annakut Closed',
       'titleMr': 'अन्नकूट बंद',
@@ -154,9 +154,9 @@ void main() {
       'createdBy': 'admin@test.com',
     });
 
-    // Sheet for different group (should not be listed)
+    // Signup for different group (should not be listed)
     await firestore.collection('signups').add({
-      'titleEn': 'Other Group Sheet',
+      'titleEn': 'Other Group Signup',
       'titleMr': 'दुसरा गट',
       'descriptionEn': 'Other group',
       'descriptionMr': 'दुसरा गट',
@@ -172,7 +172,7 @@ void main() {
 
   group('AdminSignupsDashboard', () {
     testWidgets(
-      'renders app bar, filter chips, and empty state when no sheets exist',
+      'renders app bar, filter chips, and empty state when no signups exist',
       (tester) async {
         await pumpDashboard(tester);
 
@@ -200,22 +200,22 @@ void main() {
     });
 
     testWidgets(
-      'lists scoped sheets with status badges and join code indicators',
+      'lists scoped signups with status badges and join code indicators',
       (tester) async {
-        await seedSheets();
+        await seedSignups();
         await pumpDashboard(tester);
 
         expect(find.text('Prasad Seva Draft'), findsOneWidget);
         expect(find.text('Saree Seva Published'), findsOneWidget);
         expect(find.text('Annakut Closed'), findsOneWidget);
-        expect(find.text('Other Group Sheet'), findsNothing);
+        expect(find.text('Other Group Signup'), findsNothing);
 
         // Status badges
         expect(find.text('Draft'), findsNWidgets(2)); // 1 chip + 1 badge
         expect(find.text('Published'), findsNWidgets(2)); // 1 chip + 1 badge
         expect(find.text('Closed'), findsNWidgets(2)); // 1 chip + 1 badge
 
-        // Join code badge on Sheet 1
+        // Join code badge on Signup 1
         expect(find.text('Join Code: ABC123'), findsOneWidget);
       },
     );
@@ -223,7 +223,7 @@ void main() {
     testWidgets('renders Marathi titles and badges when in Marathi locale', (
       tester,
     ) async {
-      await seedSheets();
+      await seedSignups();
       await pumpDashboard(tester, locale: const Locale('mr'));
 
       expect(find.text('साइन अप्स'), findsOneWidget);
@@ -280,8 +280,8 @@ void main() {
       expect(find.text('दिवाळी फराळ पॅक करण्यासाठी मदत'), findsOneWidget);
     });
 
-    testWidgets('filter chips filter sheets by status', (tester) async {
-      await seedSheets();
+    testWidgets('filter chips filter signups by status', (tester) async {
+      await seedSignups();
       await pumpDashboard(tester);
 
       // Filter by Draft
@@ -317,14 +317,14 @@ void main() {
       expect(find.text('Annakut Closed'), findsOneWidget);
     });
 
-    testWidgets('tapping FAB navigates to adminCreateSignupSheet route', (
+    testWidgets('tapping FAB navigates to adminCreateSignup route', (
       tester,
     ) async {
       var navigatedToCreate = false;
       await pumpDashboard(
         tester,
         routes: {
-          Routes.adminCreateSignupSheet: (context) {
+          Routes.adminCreateSignup: (context) {
             navigatedToCreate = true;
             return const Scaffold(body: Text('Create Screen Mock'));
           },
@@ -339,14 +339,14 @@ void main() {
     });
 
     testWidgets(
-      'tapping a sheet card navigates to adminSignupSheetDetail route with arguments',
+      'tapping a signup card navigates to adminSignupDetail route with arguments',
       (tester) async {
-        await seedSheets();
+        await seedSignups();
         Map<String, dynamic>? receivedArgs;
         await pumpDashboard(
           tester,
           routes: {
-            Routes.adminSignupSheetDetail: (context) {
+            Routes.adminSignupDetail: (context) {
               receivedArgs =
                   ModalRoute.of(context)?.settings.arguments
                       as Map<String, dynamic>?;
@@ -360,7 +360,7 @@ void main() {
 
         expect(find.text('Detail Screen Mock'), findsOneWidget);
         expect(receivedArgs, isNotNull);
-        expect(receivedArgs!['sheetId'], isNotNull);
+        expect(receivedArgs!['signupId'], isNotNull);
         expect(receivedArgs!['adminUser'], equals(adminUser));
       },
     );
@@ -403,7 +403,7 @@ void main() {
       expect(navigatedToSettings, isTrue);
     });
 
-    testWidgets('renders error view when sheets stream has error', (
+    testWidgets('renders error view when signups stream has error', (
       tester,
     ) async {
       setLargeScreen(tester);
@@ -411,7 +411,7 @@ void main() {
 
       final mockService = MockSignupService();
       when(
-        () => mockService.getAllSheets(any()),
+        () => mockService.getAllSignups(any()),
       ).thenAnswer((_) => Stream<List<Signup>>.error('Test error'));
 
       await tester.pumpWidget(

@@ -131,7 +131,7 @@ void main() {
     await tester.tap(find.text('Group 1'));
     await tester.pumpAndSettle();
 
-    expect(find.text(Routes.adminSignupSheetsDashboard), findsOneWidget);
+    expect(find.text(Routes.adminSignupsDashboard), findsOneWidget);
   });
 
   testWidgets('navigates to home when home button is pressed', (tester) async {

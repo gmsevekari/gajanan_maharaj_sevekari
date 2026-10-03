@@ -13,10 +13,10 @@ class MockSignupService extends Mock implements SignupService {}
 void main() {
   late FakeFirebaseFirestore firestore;
   late SignupService service;
-  late String openSheetId;
+  late String openSignupId;
   late String plainSlotId;
   late String donationSlotId;
-  late String codeSheetId;
+  late String codeSignupId;
   late String codeSlotId;
 
   setUp(() async {
@@ -24,7 +24,7 @@ void main() {
     service = SignupService(firestore: firestore);
     final now = DateTime.now();
 
-    openSheetId = await service.createSheet(
+    openSignupId = await service.createSignup(
       Signup(
         titleEn: 'Sunday Prasad Seva',
         titleMr: 'रविवार प्रसाद सेवा',
@@ -35,7 +35,7 @@ void main() {
       ),
     );
     plainSlotId = await service.addSlot(
-      openSheetId,
+      openSignupId,
       SignupSlot(
         labelEn: 'Week 1',
         labelMr: 'आठवडा १',
@@ -45,7 +45,7 @@ void main() {
       ),
     );
     donationSlotId = await service.addSlot(
-      openSheetId,
+      openSignupId,
       SignupSlot(
         labelEn: 'Donation Item',
         labelMr: 'देणगी वस्तू',
@@ -56,7 +56,7 @@ void main() {
       ),
     );
 
-    codeSheetId = await service.createSheet(
+    codeSignupId = await service.createSignup(
       Signup(
         titleEn: 'Members-Only Seva',
         titleMr: 'सदस्यांसाठी सेवा',
@@ -69,7 +69,7 @@ void main() {
       ),
     );
     codeSlotId = await service.addSlot(
-      codeSheetId,
+      codeSignupId,
       SignupSlot(
         labelEn: 'Week 1',
         labelMr: 'आठवडा १',
@@ -80,8 +80,8 @@ void main() {
     );
   });
 
-  Future<SignupSlot> slotById(String sheetId, String slotId) async {
-    return (await service.getSlots(sheetId).first).firstWhere(
+  Future<SignupSlot> slotById(String signupId, String slotId) async {
+    return (await service.getSlots(signupId).first).firstWhere(
       (s) => s.id == slotId,
     );
   }
@@ -96,11 +96,11 @@ void main() {
 
   Future<void> openDialog(
     WidgetTester tester, {
-    required String sheetId,
+    required String signupId,
     required String slotId,
     required bool requiresJoinCode,
   }) async {
-    final slot = await slotById(sheetId, slotId);
+    final slot = await slotById(signupId, slotId);
     await tester.pumpWidget(
       wrap(
         Builder(
@@ -108,7 +108,7 @@ void main() {
             onPressed: () => showDialog(
               context: context,
               builder: (_) => ClaimSlotDialog(
-                sheetId: sheetId,
+                signupId: signupId,
                 slot: slot,
                 requiresJoinCode: requiresJoinCode,
                 deviceId: 'device_1',
@@ -147,7 +147,7 @@ void main() {
       (tester) async {
         await openDialog(
           tester,
-          sheetId: openSheetId,
+          signupId: openSignupId,
           slotId: plainSlotId,
           requiresJoinCode: false,
         );
@@ -166,7 +166,7 @@ void main() {
     ) async {
       await openDialog(
         tester,
-        sheetId: openSheetId,
+        signupId: openSignupId,
         slotId: donationSlotId,
         requiresJoinCode: false,
       );
@@ -174,12 +174,12 @@ void main() {
       expect(find.text('Pledge Amount'), findsOneWidget);
     });
 
-    testWidgets('shows the join code field when the sheet requires one', (
+    testWidgets('shows the join code field when the signup requires one', (
       tester,
     ) async {
       await openDialog(
         tester,
-        sheetId: codeSheetId,
+        signupId: codeSignupId,
         slotId: codeSlotId,
         requiresJoinCode: true,
       );
@@ -190,7 +190,7 @@ void main() {
     testWidgets('validates that a name is required', (tester) async {
       await openDialog(
         tester,
-        sheetId: openSheetId,
+        signupId: openSignupId,
         slotId: plainSlotId,
         requiresJoinCode: false,
       );
@@ -204,7 +204,7 @@ void main() {
     testWidgets('validates that phone and email are required', (tester) async {
       await openDialog(
         tester,
-        sheetId: openSheetId,
+        signupId: openSignupId,
         slotId: plainSlotId,
         requiresJoinCode: false,
       );
@@ -220,7 +220,7 @@ void main() {
     testWidgets('validates phone and email format', (tester) async {
       await openDialog(
         tester,
-        sheetId: openSheetId,
+        signupId: openSignupId,
         slotId: plainSlotId,
         requiresJoinCode: false,
       );
@@ -243,7 +243,7 @@ void main() {
       (tester) async {
         await openDialog(
           tester,
-          sheetId: openSheetId,
+          signupId: openSignupId,
           slotId: plainSlotId,
           requiresJoinCode: false,
         );
@@ -258,7 +258,7 @@ void main() {
         await tester.tap(find.text('No'));
         await tester.pumpAndSettle();
 
-        final entries = await service.getAllEntries(openSheetId).first;
+        final entries = await service.getAllEntries(openSignupId).first;
         expect(entries, isEmpty);
       },
     );
@@ -268,7 +268,7 @@ void main() {
     ) async {
       await openDialog(
         tester,
-        sheetId: openSheetId,
+        signupId: openSignupId,
         slotId: plainSlotId,
         requiresJoinCode: false,
       );
@@ -280,9 +280,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(ClaimSlotDialog), findsNothing);
-      final entries = await service.getAllEntries(openSheetId).first;
+      final entries = await service.getAllEntries(openSignupId).first;
       expect(entries.single.name, 'Jane');
-      final slot = await slotById(openSheetId, plainSlotId);
+      final slot = await slotById(openSignupId, plainSlotId);
       expect(slot.claimedCount, 1);
     });
 
@@ -291,14 +291,14 @@ void main() {
     ) async {
       // Fill the only spot first.
       await service.claimSlot(
-        sheetId: openSheetId,
+        signupId: openSignupId,
         slotId: plainSlotId,
         name: 'First',
       );
 
       await openDialog(
         tester,
-        sheetId: openSheetId,
+        signupId: openSignupId,
         slotId: plainSlotId,
         requiresJoinCode: false,
       );
@@ -318,7 +318,7 @@ void main() {
     ) async {
       await openDialog(
         tester,
-        sheetId: codeSheetId,
+        signupId: codeSignupId,
         slotId: codeSlotId,
         requiresJoinCode: true,
       );
@@ -344,7 +344,7 @@ void main() {
         // check specifically rather than slot_full (which runs after it
         // but would otherwise also apply on a capacity-1 slot).
         await service.claimSlot(
-          sheetId: openSheetId,
+          signupId: openSignupId,
           slotId: donationSlotId,
           name: 'First',
           phone: '1234567890',
@@ -353,7 +353,7 @@ void main() {
 
         await openDialog(
           tester,
-          sheetId: openSheetId,
+          signupId: openSignupId,
           slotId: donationSlotId,
           requiresJoinCode: false,
         );
@@ -380,7 +380,7 @@ void main() {
     ) async {
       await openDialog(
         tester,
-        sheetId: openSheetId,
+        signupId: openSignupId,
         slotId: plainSlotId,
         requiresJoinCode: false,
       );
@@ -403,7 +403,7 @@ void main() {
       await tester.tap(find.text('Yes'));
       await tester.pumpAndSettle();
 
-      final entry = (await service.getAllEntries(openSheetId).first).single;
+      final entry = (await service.getAllEntries(openSignupId).first).single;
       expect(entry.phone, '1234567890');
       expect(entry.email, 'jane@example.com');
       expect(entry.note, 'Bringing sweets');
@@ -414,7 +414,7 @@ void main() {
       (tester) async {
         final now = DateTime.now();
         final noEnglishSlotId = await service.addSlot(
-          openSheetId,
+          openSignupId,
           SignupSlot(
             labelEn: '',
             labelMr: 'आठवडा २',
@@ -426,7 +426,7 @@ void main() {
 
         await openDialog(
           tester,
-          sheetId: openSheetId,
+          signupId: openSignupId,
           slotId: noEnglishSlotId,
           requiresJoinCode: false,
         );
@@ -444,7 +444,7 @@ void main() {
     ) async {
       await openDialog(
         tester,
-        sheetId: openSheetId,
+        signupId: openSignupId,
         slotId: donationSlotId,
         requiresJoinCode: false,
       );
@@ -456,14 +456,14 @@ void main() {
       await tester.tap(find.text('Yes'));
       await tester.pumpAndSettle();
 
-      final entry = (await service.getAllEntries(openSheetId).first).single;
+      final entry = (await service.getAllEntries(openSignupId).first).single;
       expect(entry.pledgeAmount, 25.5);
     });
 
     testWidgets('rejects a non-numeric pledge amount', (tester) async {
       await openDialog(
         tester,
-        sheetId: openSheetId,
+        signupId: openSignupId,
         slotId: donationSlotId,
         requiresJoinCode: false,
       );
@@ -477,37 +477,38 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Please enter a valid amount'), findsOneWidget);
-      final entries = await service.getAllEntries(openSheetId).first;
+      final entries = await service.getAllEntries(openSignupId).first;
       expect(entries, isEmpty);
     });
 
-    testWidgets('requires a join code to be entered when the sheet needs one', (
-      tester,
-    ) async {
-      await openDialog(
-        tester,
-        sheetId: codeSheetId,
-        slotId: codeSlotId,
-        requiresJoinCode: true,
-      );
+    testWidgets(
+      'requires a join code to be entered when the signup needs one',
+      (tester) async {
+        await openDialog(
+          tester,
+          signupId: codeSignupId,
+          slotId: codeSlotId,
+          requiresJoinCode: true,
+        );
 
-      await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
-      await tester.tap(find.text('Save'));
-      await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
 
-      // The hint text and the validator's error message are the same
-      // string ("Enter 6-character code"), so it now renders twice.
-      expect(find.text('Enter 6-character code'), findsNWidgets(2));
-      final entries = await service.getAllEntries(codeSheetId).first;
-      expect(entries, isEmpty);
-    });
+        // The hint text and the validator's error message are the same
+        // string ("Enter 6-character code"), so it now renders twice.
+        expect(find.text('Enter 6-character code'), findsNWidgets(2));
+        final entries = await service.getAllEntries(codeSignupId).first;
+        expect(entries, isEmpty);
+      },
+    );
 
     testWidgets(
       'accepts a lowercase join code by uppercasing it before submit',
       (tester) async {
         await openDialog(
           tester,
-          sheetId: codeSheetId,
+          signupId: codeSignupId,
           slotId: codeSlotId,
           requiresJoinCode: true,
         );
@@ -523,7 +524,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Invalid Join Code!'), findsNothing);
-        final entries = await service.getAllEntries(codeSheetId).first;
+        final entries = await service.getAllEntries(codeSignupId).first;
         expect(entries, hasLength(1));
       },
     );
@@ -531,7 +532,7 @@ void main() {
     testWidgets('bounds the length of free-text fields', (tester) async {
       await openDialog(
         tester,
-        sheetId: openSheetId,
+        signupId: openSignupId,
         slotId: plainSlotId,
         requiresJoinCode: false,
       );
@@ -573,7 +574,7 @@ void main() {
               onPressed: () => showDialog(
                 context: context,
                 builder: (_) => ClaimSlotDialog(
-                  sheetId: openSheetId,
+                  signupId: openSignupId,
                   slot: missingSlot,
                   requiresJoinCode: false,
                   deviceId: 'device_1',
@@ -606,7 +607,7 @@ void main() {
         final mockService = MockSignupService();
         when(
           () => mockService.claimSlot(
-            sheetId: any(named: 'sheetId'),
+            signupId: any(named: 'signupId'),
             slotId: any(named: 'slotId'),
             name: any(named: 'name'),
             phone: any(named: 'phone'),
@@ -618,7 +619,7 @@ void main() {
           ),
         ).thenThrow(Exception('network error'));
 
-        final slot = await slotById(openSheetId, plainSlotId);
+        final slot = await slotById(openSignupId, plainSlotId);
         await tester.pumpWidget(
           wrap(
             Builder(
@@ -626,7 +627,7 @@ void main() {
                 onPressed: () => showDialog(
                   context: context,
                   builder: (_) => ClaimSlotDialog(
-                    sheetId: openSheetId,
+                    signupId: openSignupId,
                     slot: slot,
                     requiresJoinCode: false,
                     deviceId: 'device_1',

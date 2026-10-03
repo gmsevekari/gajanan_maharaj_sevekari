@@ -7,7 +7,7 @@ import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
-/// Published sign-up sheets for a single group. Reached via the
+/// Published sign-up signups for a single group. Reached via the
 /// group-selection indirection described in the design doc - by the time
 /// this screen is shown, a group has already been chosen.
 class SignupsListScreen extends StatefulWidget {
@@ -36,7 +36,7 @@ class SignupsListScreen extends StatefulWidget {
 
 class _SignupsListScreenState extends State<SignupsListScreen> {
   late final SignupService _service;
-  Stream<List<Signup>>? _sheetsStream;
+  Stream<List<Signup>>? _signupsStream;
 
   @override
   void initState() {
@@ -45,7 +45,7 @@ class _SignupsListScreenState extends State<SignupsListScreen> {
         widget.signupService ?? SignupService(firestore: widget.firestore);
     final groupId = widget.groupId;
     if (groupId != null && groupId.isNotEmpty) {
-      _sheetsStream = _service.getActiveSheets(groupId);
+      _signupsStream = _service.getActiveSignups(groupId);
     }
   }
 
@@ -72,7 +72,7 @@ class _SignupsListScreenState extends State<SignupsListScreen> {
           ),
         ],
       ),
-      body: _sheetsStream == null
+      body: _signupsStream == null
           ? Center(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -86,14 +86,14 @@ class _SignupsListScreenState extends State<SignupsListScreen> {
               ),
             )
           : StreamBuilder<List<Signup>>(
-              stream: _sheetsStream,
+              stream: _signupsStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final sheets = snapshot.data ?? const [];
-                if (sheets.isEmpty) {
+                final signups = snapshot.data ?? const [];
+                if (signups.isEmpty) {
                   return Center(
                     child: Text(
                       l10n.signupNoActiveSignups,
@@ -106,9 +106,9 @@ class _SignupsListScreenState extends State<SignupsListScreen> {
 
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: sheets.length,
+                  itemCount: signups.length,
                   itemBuilder: (context, index) =>
-                      _SignupCard(sheet: sheets[index]),
+                      _SignupCard(signup: signups[index]),
                 );
               },
             ),
@@ -117,9 +117,9 @@ class _SignupsListScreenState extends State<SignupsListScreen> {
 }
 
 class _SignupCard extends StatelessWidget {
-  final Signup sheet;
+  final Signup signup;
 
-  const _SignupCard({required this.sheet});
+  const _SignupCard({required this.signup});
 
   @override
   Widget build(BuildContext context) {
@@ -127,15 +127,15 @@ class _SignupCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
     final title = isMarathi
-        ? (sheet.titleMr.isNotEmpty ? sheet.titleMr : sheet.titleEn)
-        : (sheet.titleEn.isNotEmpty ? sheet.titleEn : sheet.titleMr);
+        ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
+        : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);
     final description = isMarathi
-        ? (sheet.descriptionMr.isNotEmpty
-              ? sheet.descriptionMr
-              : sheet.descriptionEn)
-        : (sheet.descriptionEn.isNotEmpty
-              ? sheet.descriptionEn
-              : sheet.descriptionMr);
+        ? (signup.descriptionMr.isNotEmpty
+              ? signup.descriptionMr
+              : signup.descriptionEn)
+        : (signup.descriptionEn.isNotEmpty
+              ? signup.descriptionEn
+              : signup.descriptionMr);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -143,8 +143,8 @@ class _SignupCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         onTap: () => Navigator.pushNamed(
           context,
-          Routes.signupSheetDetail,
-          arguments: {'sheetId': sheet.id},
+          Routes.signupDetail,
+          arguments: {'signupId': signup.id},
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -168,7 +168,7 @@ class _SignupCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
-              if (sheet.requiresJoinCode) ...[
+              if (signup.requiresJoinCode) ...[
                 const SizedBox(height: 10),
                 Row(
                   mainAxisSize: MainAxisSize.min,

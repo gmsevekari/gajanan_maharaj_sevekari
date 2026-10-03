@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// A devotee's claim on one [SignupSlot], stored in the sheet's flat
+/// A devotee's claim on one [SignupSlot], stored in the signup's flat
 /// `entries` subcollection.
 class SignupEntry {
   final String? id;

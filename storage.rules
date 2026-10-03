@@ -13,9 +13,9 @@ service firebase.storage {
              firestore.exists(/databases/(default)/documents/admin_allowlist/$(request.auth.token.email));
     }
 
-    // Sign-Up Sheets header/display image: one object per sheet at a
-    // fixed path (signups/{sheetId}/header), publicly readable
-    // like the sheet itself, admin-only to write or delete. The size and
+    // Sign-Up Signups header/display image: one object per signup at a
+    // fixed path (signups/{signupId}/header), publicly readable
+    // like the signup itself, admin-only to write or delete. The size and
     // content-type bounds are the real security boundary here - the app
     // also checks file size client-side before even attempting an
     // upload, but that's just a fast-fail UX nicety, not something a
@@ -29,7 +29,7 @@ service firebase.storage {
     // object's public URL and could execute script if ever opened
     // directly in a browser outside this app. None of these raster
     // formats can carry executable script the same way.
-    match /signups/{sheetId}/{fileName} {
+    match /signups/{signupId}/{fileName} {
       allow read: if true;
       allow write: if isAdmin()
         && request.resource.size <= 2 * 1024 * 1024

@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
-/// A sign-up sheet's join code, with a copy-to-clipboard action. Shown in
-/// [AdminSignupDetailScreen] only when the sheet requires a join code.
+/// A sign-up signup's join code, with a copy-to-clipboard action. Shown in
+/// [AdminSignupDetailScreen] only when the signup requires a join code.
 class SignupJoinCodeCard extends StatelessWidget {
   final String joinCode;
 

@@ -166,28 +166,28 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
     setState(() => _isLoading = true);
 
     // Hoisted above the try so the catch block can clean up an uploaded
-    // image if the sheet itself fails to save afterward - otherwise that
+    // image if the signup itself fails to save afterward - otherwise that
     // upload would be orphaned in Storage with nothing ever referencing it.
-    String? sheetId;
+    String? signupId;
     try {
       final groupId = widget.adminUser.groupId;
       if (groupId == null) {
-        throw Exception('Group ID is required to create a sign-up sheet');
+        throw Exception('Group ID is required to create a sign-up signup');
       }
 
       String? headerImageUrl;
       if (_headerImageBytes != null) {
-        sheetId = _service.newSheetId();
+        signupId = _service.newSignupId();
         headerImageUrl = await _service.uploadHeaderImage(
-          sheetId: sheetId,
+          signupId: signupId,
           bytes: _headerImageBytes!,
           contentType: _headerImageContentType!,
         );
       }
 
       final now = DateTime.now();
-      final sheet = Signup(
-        id: sheetId,
+      final signup = Signup(
+        id: signupId,
         titleEn: _titleEnController.text.trim(),
         titleMr: _titleMrController.text.trim(),
         descriptionEn: _descEnController.text.trim(),
@@ -216,7 +216,7 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
           ),
       ];
 
-      await _service.createSheetWithSlots(sheet, slots);
+      await _service.createSignupWithSlots(signup, slots);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -231,13 +231,13 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
       if (kDebugMode) {
         debugPrint('AdminCreateSignupScreen._submit error: $e');
       }
-      if (sheetId != null) {
-        // Best-effort: an uploaded image whose sheet never got created
+      if (signupId != null) {
+        // Best-effort: an uploaded image whose signup never got created
         // would otherwise sit in Storage unreferenced forever. A cleanup
         // failure here doesn't change the user-facing outcome - the
         // original error below is what matters either way.
         try {
-          await _service.deleteHeaderImageFile(sheetId);
+          await _service.deleteHeaderImageFile(signupId);
         } on Exception catch (_) {}
       }
       if (mounted) {

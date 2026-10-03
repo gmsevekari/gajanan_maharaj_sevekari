@@ -4,7 +4,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 
 /// A lock-guarded status segmented button for [AdminSignupDetailScreen]
-/// - starts locked so a stray tap can't change a published sheet's status,
+/// - starts locked so a stray tap can't change a published signup's status,
 /// and owns its own lock state since nothing outside this widget needs it.
 class SignupStatusSection extends StatefulWidget {
   final SignupStatus currentStatus;

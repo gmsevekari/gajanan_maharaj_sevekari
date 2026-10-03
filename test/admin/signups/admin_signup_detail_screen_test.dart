@@ -30,7 +30,7 @@ class MockAppConfigProvider extends Mock implements AppConfigProvider {}
 class MockSignupService extends Mock implements SignupService {}
 
 /// Mirrors the FakeImagePickerPlatform used in
-/// admin_create_signup_sheet_screen_test.dart.
+/// admin_create_signup_screen_test.dart.
 class FakeImagePickerPlatform extends ImagePickerPlatform {
   final Uint8List? imageBytes;
   final String mimeType;
@@ -156,7 +156,7 @@ void main() {
 
   Future<void> pumpDetailScreen(
     WidgetTester tester, {
-    required String sheetId,
+    required String signupId,
     Map<String, WidgetBuilder>? routes,
     Locale locale = const Locale('en'),
   }) async {
@@ -165,7 +165,7 @@ void main() {
     await tester.pumpWidget(
       createWidget(
         child: AdminSignupDetailScreen(
-          sheetId: sheetId,
+          signupId: signupId,
           adminUser: adminUser,
           firestore: firestore,
           storage: storage,
@@ -178,15 +178,15 @@ void main() {
   }
 
   group('AdminSignupDetailScreen', () {
-    testWidgets('renders not found state when sheet does not exist', (
+    testWidgets('renders not found state when signup does not exist', (
       tester,
     ) async {
-      await pumpDetailScreen(tester, sheetId: 'missing_sheet');
+      await pumpDetailScreen(tester, signupId: 'missing_signup');
       expect(find.text('Sign up not found'), findsOneWidget);
     });
 
     testWidgets('tapping home icon pops until first route', (tester) async {
-      await pumpDetailScreen(tester, sheetId: 'missing_sheet');
+      await pumpDetailScreen(tester, signupId: 'missing_signup');
 
       expect(find.byType(IconButton), findsWidgets);
       await tester.tap(
@@ -203,7 +203,7 @@ void main() {
       var navigatedToSettings = false;
       await pumpDetailScreen(
         tester,
-        sheetId: 'missing_sheet',
+        signupId: 'missing_signup',
         routes: {
           Routes.settings: (context) {
             navigatedToSettings = true;
@@ -223,11 +223,11 @@ void main() {
       expect(find.text('Settings Mock'), findsOneWidget);
     });
 
-    testWidgets('renders sheet info, join code, and duplicate button', (
+    testWidgets('renders signup info, join code, and duplicate button', (
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
+      final signupRef = await firestore.collection('signups').add({
         'titleEn': 'Prasad Seva',
         'titleMr': 'प्रसाद सेवा',
         'descriptionEn': 'Help prepare prasad',
@@ -241,7 +241,7 @@ void main() {
         'createdBy': 'admin@test.com',
       });
 
-      await pumpDetailScreen(tester, sheetId: sheetRef.id);
+      await pumpDetailScreen(tester, signupId: signupRef.id);
 
       expect(find.text('Prasad Seva').first, findsOneWidget);
       expect(find.text('Help prepare prasad').first, findsOneWidget);
@@ -253,7 +253,7 @@ void main() {
 
     testWidgets('copies join code to clipboard', (tester) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
+      final signupRef = await firestore.collection('signups').add({
         'titleEn': 'Prasad Seva',
         'titleMr': 'प्रसाद सेवा',
         'descriptionEn': 'Description',
@@ -267,7 +267,7 @@ void main() {
         'createdBy': 'admin@test.com',
       });
 
-      await pumpDetailScreen(tester, sheetId: sheetRef.id);
+      await pumpDetailScreen(tester, signupId: signupRef.id);
 
       await tester.tap(find.byTooltip('Copy Join Code'));
       await tester.pumpAndSettle();
@@ -277,8 +277,8 @@ void main() {
 
     testWidgets('unlocks and updates status to published', (tester) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
-        'titleEn': 'Draft Sheet',
+      final signupRef = await firestore.collection('signups').add({
+        'titleEn': 'Draft Signup',
         'titleMr': 'मसुदा',
         'descriptionEn': 'Draft',
         'descriptionMr': 'मसुदा',
@@ -290,7 +290,7 @@ void main() {
         'createdBy': 'admin@test.com',
       });
 
-      await pumpDetailScreen(tester, sheetId: sheetRef.id);
+      await pumpDetailScreen(tester, signupId: signupRef.id);
 
       // Initially locked
       expect(find.byIcon(Icons.lock_outline), findsOneWidget);
@@ -308,18 +308,18 @@ void main() {
       // Verify Firestore status updated
       final updated = await firestore
           .collection('signups')
-          .doc(sheetRef.id)
+          .doc(signupRef.id)
           .get();
       expect(updated.data()?['status'], 'published');
       expect(find.text('Status updated successfully'), findsOneWidget);
     });
 
-    testWidgets('duplicate button copies sheet and navigates to new draft', (
+    testWidgets('duplicate button copies signup and navigates to new draft', (
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
-        'titleEn': 'Original Sheet',
+      final signupRef = await firestore.collection('signups').add({
+        'titleEn': 'Original Signup',
         'titleMr': 'मूळ शीट',
         'descriptionEn': 'Desc',
         'descriptionMr': 'वर्णन',
@@ -332,7 +332,7 @@ void main() {
         'createdBy': 'admin@test.com',
       });
 
-      await sheetRef.collection('slots').add({
+      await signupRef.collection('slots').add({
         'labelEn': 'Slot 1',
         'labelMr': 'स्लॉट १',
         'capacity': 3,
@@ -341,16 +341,16 @@ void main() {
         'createdAt': Timestamp.fromDate(now),
       });
 
-      String? navSheetId;
+      String? navSignupId;
       await pumpDetailScreen(
         tester,
-        sheetId: sheetRef.id,
+        signupId: signupRef.id,
         routes: {
-          Routes.adminSignupSheetDetail: (context) {
+          Routes.adminSignupDetail: (context) {
             final args =
                 ModalRoute.of(context)?.settings.arguments
                     as Map<String, dynamic>?;
-            navSheetId = args?['sheetId'] as String?;
+            navSignupId = args?['signupId'] as String?;
             return const Scaffold(body: Text('Duplicated Screen Mock'));
           },
         },
@@ -359,21 +359,21 @@ void main() {
       await tester.tap(find.text('Duplicate'));
       await tester.pumpAndSettle();
 
-      expect(navSheetId, isNotNull);
-      expect(navSheetId, isNot(equals(sheetRef.id)));
+      expect(navSignupId, isNotNull);
+      expect(navSignupId, isNot(equals(signupRef.id)));
       expect(find.text('Duplicated Screen Mock'), findsOneWidget);
 
       // Verify duplicate exists in Firestore as draft with 0 claimedCount
       final duplicateDoc = await firestore
           .collection('signups')
-          .doc(navSheetId)
+          .doc(navSignupId)
           .get();
       expect(duplicateDoc.data()?['status'], 'draft');
-      expect(duplicateDoc.data()?['titleEn'], 'Original Sheet');
+      expect(duplicateDoc.data()?['titleEn'], 'Original Signup');
 
       final duplicateSlots = await firestore
           .collection('signups')
-          .doc(navSheetId)
+          .doc(navSignupId)
           .collection('slots')
           .get();
       expect(duplicateSlots.docs.length, 1);
@@ -382,8 +382,8 @@ void main() {
 
     testWidgets('manually adds an entry to a slot via dialog', (tester) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
-        'titleEn': 'Sheet 1',
+      final signupRef = await firestore.collection('signups').add({
+        'titleEn': 'Signup 1',
         'titleMr': 'शीट १',
         'descriptionEn': '',
         'descriptionMr': '',
@@ -395,7 +395,7 @@ void main() {
         'createdBy': 'admin@test.com',
       });
 
-      final slotRef = await sheetRef.collection('slots').add({
+      final slotRef = await signupRef.collection('slots').add({
         'labelEn': 'Morning Seva',
         'labelMr': 'सकाळची सेवा',
         'capacity': 3,
@@ -404,7 +404,7 @@ void main() {
         'createdAt': Timestamp.fromDate(now),
       });
 
-      await pumpDetailScreen(tester, sheetId: sheetRef.id);
+      await pumpDetailScreen(tester, signupId: signupRef.id);
 
       expect(find.text('Morning Seva').first, findsOneWidget);
       expect(find.text('Add Devotee'), findsOneWidget);
@@ -435,8 +435,8 @@ void main() {
 
     testWidgets('edits and removes an entry', (tester) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
-        'titleEn': 'Sheet 1',
+      final signupRef = await firestore.collection('signups').add({
+        'titleEn': 'Signup 1',
         'titleMr': 'शीट १',
         'descriptionEn': '',
         'descriptionMr': '',
@@ -448,7 +448,7 @@ void main() {
         'createdBy': 'admin@test.com',
       });
 
-      final slotRef = await sheetRef.collection('slots').add({
+      final slotRef = await signupRef.collection('slots').add({
         'labelEn': 'Morning Seva',
         'labelMr': 'सकाळची सेवा',
         'capacity': 3,
@@ -457,14 +457,14 @@ void main() {
         'createdAt': Timestamp.fromDate(now),
       });
 
-      await sheetRef.collection('entries').add({
+      await signupRef.collection('entries').add({
         'slotId': slotRef.id,
         'name': 'Old Name',
         'phone': '1112223333',
         'joinedAt': Timestamp.fromDate(now),
       });
 
-      await pumpDetailScreen(tester, sheetId: sheetRef.id);
+      await pumpDetailScreen(tester, signupId: signupRef.id);
 
       expect(find.text('Old Name'), findsOneWidget);
 
@@ -505,7 +505,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
+      final signupRef = await firestore.collection('signups').add({
         'titleEn': 'Prasad Seva',
         'titleMr': 'प्रसाद सेवा',
         'descriptionEn': 'Help',
@@ -520,7 +520,7 @@ void main() {
 
       await pumpDetailScreen(
         tester,
-        sheetId: sheetRef.id,
+        signupId: signupRef.id,
         locale: const Locale('mr'),
       );
 
@@ -538,7 +538,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
+      final signupRef = await firestore.collection('signups').add({
         'titleEn': 'Prasad Seva',
         'titleMr': 'प्रसाद सेवा',
         'descriptionEn': 'Help cook prasad',
@@ -553,7 +553,7 @@ void main() {
 
       await pumpDetailScreen(
         tester,
-        sheetId: sheetRef.id,
+        signupId: signupRef.id,
         locale: const Locale('mr'),
       );
 
@@ -564,8 +564,8 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
-        'titleEn': 'Full Sheet',
+      final signupRef = await firestore.collection('signups').add({
+        'titleEn': 'Full Signup',
         'titleMr': 'शीट',
         'descriptionEn': '',
         'descriptionMr': '',
@@ -577,7 +577,7 @@ void main() {
         'createdBy': 'admin@test.com',
       });
 
-      await sheetRef.collection('slots').add({
+      await signupRef.collection('slots').add({
         'labelEn': 'Slot 1',
         'labelMr': 'स्लॉट १',
         'capacity': 1,
@@ -586,7 +586,7 @@ void main() {
         'createdAt': Timestamp.fromDate(now),
       });
 
-      await pumpDetailScreen(tester, sheetId: sheetRef.id);
+      await pumpDetailScreen(tester, signupId: signupRef.id);
 
       await tester.tap(find.text('Add Devotee'));
       await tester.pumpAndSettle();
@@ -601,13 +601,13 @@ void main() {
       expect(find.text('This slot is already full'), findsOneWidget);
     });
 
-    testWidgets('shows error snackbar when duplicateSheet throws', (
+    testWidgets('shows error snackbar when duplicateSignup throws', (
       tester,
     ) async {
       final now = DateTime.now();
-      final sheet = Signup(
-        id: 'sheet_err',
-        titleEn: 'Error Sheet',
+      final signup = Signup(
+        id: 'signup_err',
+        titleEn: 'Error Signup',
         titleMr: 'त्रुटी शीट',
         groupId: 'gajanan_maharaj_seattle',
         status: SignupStatus.draft,
@@ -619,16 +619,16 @@ void main() {
 
       final mockService = MockSignupService();
       when(
-        () => mockService.getSheetById('sheet_err'),
-      ).thenAnswer((_) => Stream.value(sheet));
+        () => mockService.getSignupById('signup_err'),
+      ).thenAnswer((_) => Stream.value(signup));
       when(
-        () => mockService.getSlots('sheet_err'),
+        () => mockService.getSlots('signup_err'),
       ).thenAnswer((_) => Stream.value(const []));
       when(
-        () => mockService.getAllEntries('sheet_err'),
+        () => mockService.getAllEntries('signup_err'),
       ).thenAnswer((_) => Stream.value(const []));
       when(
-        () => mockService.duplicateSheet('sheet_err'),
+        () => mockService.duplicateSignup('signup_err'),
       ).thenThrow(Exception('Firestore error'));
 
       setLargeScreen(tester);
@@ -637,7 +637,7 @@ void main() {
       await tester.pumpWidget(
         createWidget(
           child: AdminSignupDetailScreen(
-            sheetId: 'sheet_err',
+            signupId: 'signup_err',
             adminUser: adminUser,
             signupService: mockService,
           ),
@@ -651,13 +651,13 @@ void main() {
       expect(find.text('Failed to duplicate sign up'), findsOneWidget);
     });
 
-    testWidgets('shows error snackbar when updateSheetStatus throws', (
+    testWidgets('shows error snackbar when updateSignupStatus throws', (
       tester,
     ) async {
       final now = DateTime.now();
-      final sheet = Signup(
-        id: 'sheet_status_err',
-        titleEn: 'Status Error Sheet',
+      final signup = Signup(
+        id: 'signup_status_err',
+        titleEn: 'Status Error Signup',
         titleMr: 'शीट',
         groupId: 'gajanan_maharaj_seattle',
         status: SignupStatus.draft,
@@ -669,16 +669,16 @@ void main() {
 
       final mockService = MockSignupService();
       when(
-        () => mockService.getSheetById('sheet_status_err'),
-      ).thenAnswer((_) => Stream.value(sheet));
+        () => mockService.getSignupById('signup_status_err'),
+      ).thenAnswer((_) => Stream.value(signup));
       when(
-        () => mockService.getSlots('sheet_status_err'),
+        () => mockService.getSlots('signup_status_err'),
       ).thenAnswer((_) => Stream.value(const []));
       when(
-        () => mockService.getAllEntries('sheet_status_err'),
+        () => mockService.getAllEntries('signup_status_err'),
       ).thenAnswer((_) => Stream.value(const []));
       when(
-        () => mockService.updateSheetStatus('sheet_status_err', any()),
+        () => mockService.updateSignupStatus('signup_status_err', any()),
       ).thenThrow(Exception('Network error'));
 
       setLargeScreen(tester);
@@ -687,7 +687,7 @@ void main() {
       await tester.pumpWidget(
         createWidget(
           child: AdminSignupDetailScreen(
-            sheetId: 'sheet_status_err',
+            signupId: 'signup_status_err',
             adminUser: adminUser,
             signupService: mockService,
           ),
@@ -708,8 +708,8 @@ void main() {
       'resolves arguments from ModalRoute settings when not in constructor',
       (tester) async {
         final now = DateTime.now();
-        final sheetRef = await firestore.collection('signups').add({
-          'titleEn': 'Route Args Sheet',
+        final signupRef = await firestore.collection('signups').add({
+          'titleEn': 'Route Args Signup',
           'titleMr': 'शीट',
           'descriptionEn': '',
           'descriptionMr': '',
@@ -734,9 +734,9 @@ void main() {
                       context,
                       MaterialPageRoute(
                         settings: RouteSettings(
-                          name: Routes.adminSignupSheetDetail,
+                          name: Routes.adminSignupDetail,
                           arguments: {
-                            'sheetId': sheetRef.id,
+                            'signupId': signupRef.id,
                             'adminUser': adminUser,
                           },
                         ),
@@ -756,7 +756,7 @@ void main() {
         await tester.tap(find.text('Go To Detail'));
         await tester.pumpAndSettle();
 
-        expect(find.text('Route Args Sheet').first, findsOneWidget);
+        expect(find.text('Route Args Signup').first, findsOneWidget);
       },
     );
 
@@ -764,8 +764,8 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
-        'titleEn': 'Cancel Remove Sheet',
+      final signupRef = await firestore.collection('signups').add({
+        'titleEn': 'Cancel Remove Signup',
         'titleMr': '',
         'groupId': 'gajanan_maharaj_seattle',
         'status': SignupStatus.published.name,
@@ -775,14 +775,14 @@ void main() {
         'createdBy': 'admin@test.com',
       });
 
-      final slotRef = await sheetRef.collection('slots').add({
+      final slotRef = await signupRef.collection('slots').add({
         'titleEn': 'Slot 1',
         'titleMr': '',
         'maxCapacity': 5,
         'order': 0,
       });
 
-      await sheetRef.collection('entries').add({
+      await signupRef.collection('entries').add({
         'slotId': slotRef.id,
         'name': 'Stay Put User',
         'phone': '1112223333',
@@ -796,7 +796,7 @@ void main() {
       await tester.pumpWidget(
         createWidget(
           child: AdminSignupDetailScreen(
-            sheetId: sheetRef.id,
+            signupId: signupRef.id,
             adminUser: adminUser,
             firestore: firestore,
           ),
@@ -828,12 +828,12 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      const sheetId = 'fail_remove_sheet';
+      const signupId = 'fail_remove_signup';
       const slotId = 'slot_1';
       const entryId = 'entry_1';
-      final sheet = Signup(
-        id: sheetId,
-        titleEn: 'Fail Remove Sheet',
+      final signup = Signup(
+        id: signupId,
+        titleEn: 'Fail Remove Signup',
         titleMr: '',
         groupId: 'gajanan_maharaj_seattle',
         status: SignupStatus.published,
@@ -860,16 +860,16 @@ void main() {
 
       final mockService = MockSignupService();
       when(
-        () => mockService.getSheetById(sheetId),
-      ).thenAnswer((_) => Stream.value(sheet));
+        () => mockService.getSignupById(signupId),
+      ).thenAnswer((_) => Stream.value(signup));
       when(
-        () => mockService.getSlots(sheetId),
+        () => mockService.getSlots(signupId),
       ).thenAnswer((_) => Stream.value([slot]));
       when(
-        () => mockService.getAllEntries(sheetId),
+        () => mockService.getAllEntries(signupId),
       ).thenAnswer((_) => Stream.value([entry]));
       when(
-        () => mockService.adminRemoveEntry(sheetId, entryId),
+        () => mockService.adminRemoveEntry(signupId, entryId),
       ).thenThrow(Exception('Delete failed'));
 
       setLargeScreen(tester);
@@ -878,7 +878,7 @@ void main() {
       await tester.pumpWidget(
         createWidget(
           child: AdminSignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             adminUser: adminUser,
             signupService: mockService,
           ),
@@ -897,12 +897,12 @@ void main() {
 
     testWidgets('shows error snackbar when updateEntry fails', (tester) async {
       final now = DateTime.now();
-      const sheetId = 'fail_update_sheet';
+      const signupId = 'fail_update_signup';
       const slotId = 'slot_1';
       const entryId = 'entry_1';
-      final sheet = Signup(
-        id: sheetId,
-        titleEn: 'Fail Update Sheet',
+      final signup = Signup(
+        id: signupId,
+        titleEn: 'Fail Update Signup',
         titleMr: '',
         groupId: 'gajanan_maharaj_seattle',
         status: SignupStatus.published,
@@ -929,16 +929,16 @@ void main() {
 
       final mockService = MockSignupService();
       when(
-        () => mockService.getSheetById(sheetId),
-      ).thenAnswer((_) => Stream.value(sheet));
+        () => mockService.getSignupById(signupId),
+      ).thenAnswer((_) => Stream.value(signup));
       when(
-        () => mockService.getSlots(sheetId),
+        () => mockService.getSlots(signupId),
       ).thenAnswer((_) => Stream.value([slot]));
       when(
-        () => mockService.getAllEntries(sheetId),
+        () => mockService.getAllEntries(signupId),
       ).thenAnswer((_) => Stream.value([entry]));
       when(
-        () => mockService.updateEntry(sheetId, any()),
+        () => mockService.updateEntry(signupId, any()),
       ).thenThrow(Exception('Update failed'));
 
       setLargeScreen(tester);
@@ -947,7 +947,7 @@ void main() {
       await tester.pumpWidget(
         createWidget(
           child: AdminSignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             adminUser: adminUser,
             signupService: mockService,
           ),
@@ -968,11 +968,11 @@ void main() {
       'shows error snackbar when adminAddEntry throws generic error',
       (tester) async {
         final now = DateTime.now();
-        const sheetId = 'fail_add_sheet';
+        const signupId = 'fail_add_signup';
         const slotId = 'slot_1';
-        final sheet = Signup(
-          id: sheetId,
-          titleEn: 'Fail Add Sheet',
+        final signup = Signup(
+          id: signupId,
+          titleEn: 'Fail Add Signup',
           titleMr: '',
           groupId: 'gajanan_maharaj_seattle',
           status: SignupStatus.published,
@@ -992,17 +992,17 @@ void main() {
 
         final mockService = MockSignupService();
         when(
-          () => mockService.getSheetById(sheetId),
-        ).thenAnswer((_) => Stream.value(sheet));
+          () => mockService.getSignupById(signupId),
+        ).thenAnswer((_) => Stream.value(signup));
         when(
-          () => mockService.getSlots(sheetId),
+          () => mockService.getSlots(signupId),
         ).thenAnswer((_) => Stream.value([slot]));
         when(
-          () => mockService.getAllEntries(sheetId),
+          () => mockService.getAllEntries(signupId),
         ).thenAnswer((_) => Stream.value(const []));
         when(
           () => mockService.adminAddEntry(
-            sheetId: any(named: 'sheetId'),
+            signupId: any(named: 'signupId'),
             slotId: any(named: 'slotId'),
             name: any(named: 'name'),
             phone: null,
@@ -1018,7 +1018,7 @@ void main() {
         await tester.pumpWidget(
           createWidget(
             child: AdminSignupDetailScreen(
-              sheetId: sheetId,
+              signupId: signupId,
               adminUser: adminUser,
               signupService: mockService,
             ),
@@ -1044,8 +1044,8 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
-        'titleEn': 'Shareable Sheet',
+      final signupRef = await firestore.collection('signups').add({
+        'titleEn': 'Shareable Signup',
         'titleMr': '',
         'groupId': 'gajanan_maharaj_seattle',
         'status': SignupStatus.published.name,
@@ -1062,7 +1062,7 @@ void main() {
       await tester.pumpWidget(
         createWidget(
           child: AdminSignupDetailScreen(
-            sheetId: sheetRef.id,
+            signupId: signupRef.id,
             adminUser: adminUser,
             firestore: firestore,
           ),
@@ -1078,8 +1078,8 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
-        'titleEn': 'Exportable Sheet',
+      final signupRef = await firestore.collection('signups').add({
+        'titleEn': 'Exportable Signup',
         'titleMr': '',
         'groupId': 'gajanan_maharaj_seattle',
         'status': SignupStatus.published.name,
@@ -1095,7 +1095,7 @@ void main() {
       await tester.pumpWidget(
         createWidget(
           child: AdminSignupDetailScreen(
-            sheetId: sheetRef.id,
+            signupId: signupRef.id,
             adminUser: adminUser,
             firestore: firestore,
           ),
@@ -1125,8 +1125,8 @@ void main() {
         });
 
         final now = DateTime.now();
-        final sheetRef = await firestore.collection('signups').add({
-          'titleEn': 'Exportable Sheet',
+        final signupRef = await firestore.collection('signups').add({
+          'titleEn': 'Exportable Signup',
           'titleMr': '',
           'groupId': 'gajanan_maharaj_seattle',
           'status': SignupStatus.published.name,
@@ -1142,7 +1142,7 @@ void main() {
         await tester.pumpWidget(
           createWidget(
             child: AdminSignupDetailScreen(
-              sheetId: sheetRef.id,
+              signupId: signupRef.id,
               adminUser: adminUser,
               firestore: firestore,
               exportCapture: () async => Uint8List.fromList([1, 2, 3]),
@@ -1162,10 +1162,10 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      const sheetId = 'processing_sheet';
-      final sheet = Signup(
-        id: sheetId,
-        titleEn: 'Processing Sheet',
+      const signupId = 'processing_signup';
+      final signup = Signup(
+        id: signupId,
+        titleEn: 'Processing Signup',
         titleMr: '',
         groupId: 'gajanan_maharaj_seattle',
         status: SignupStatus.draft,
@@ -1177,16 +1177,16 @@ void main() {
       final completer = Completer<String>();
       final mockService = MockSignupService();
       when(
-        () => mockService.getSheetById(sheetId),
-      ).thenAnswer((_) => Stream.value(sheet));
+        () => mockService.getSignupById(signupId),
+      ).thenAnswer((_) => Stream.value(signup));
       when(
-        () => mockService.getSlots(sheetId),
+        () => mockService.getSlots(signupId),
       ).thenAnswer((_) => Stream.value(const []));
       when(
-        () => mockService.getAllEntries(sheetId),
+        () => mockService.getAllEntries(signupId),
       ).thenAnswer((_) => Stream.value(const []));
       when(
-        () => mockService.duplicateSheet(sheetId),
+        () => mockService.duplicateSignup(signupId),
       ).thenAnswer((_) => completer.future);
 
       setLargeScreen(tester);
@@ -1195,7 +1195,7 @@ void main() {
       await tester.pumpWidget(
         createWidget(
           child: AdminSignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             adminUser: adminUser,
             signupService: mockService,
           ),
@@ -1216,8 +1216,8 @@ void main() {
       'deleting from within edit dialog triggers confirm remove dialog',
       (tester) async {
         final now = DateTime.now();
-        final sheetRef = await firestore.collection('signups').add({
-          'titleEn': 'Dialog Delete Sheet',
+        final signupRef = await firestore.collection('signups').add({
+          'titleEn': 'Dialog Delete Signup',
           'titleMr': '',
           'groupId': 'gajanan_maharaj_seattle',
           'status': SignupStatus.published.name,
@@ -1227,7 +1227,7 @@ void main() {
           'createdBy': 'admin@test.com',
         });
 
-        final slotRef = await sheetRef.collection('slots').add({
+        final slotRef = await signupRef.collection('slots').add({
           'labelEn': 'Slot 1',
           'labelMr': '',
           'capacity': 5,
@@ -1235,14 +1235,14 @@ void main() {
           'createdAt': Timestamp.fromDate(now),
         });
 
-        await sheetRef.collection('entries').add({
+        await signupRef.collection('entries').add({
           'slotId': slotRef.id,
           'name': 'Dialog Delete User',
           'phone': '1112223333',
           'joinedAt': Timestamp.fromDate(now),
         });
 
-        await pumpDetailScreen(tester, sheetId: sheetRef.id);
+        await pumpDetailScreen(tester, signupId: signupRef.id);
 
         await tester.tap(find.byTooltip('Edit Entry'));
         await tester.pumpAndSettle();
@@ -1264,11 +1264,11 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      const sheetId = 'fail_add_exc_sheet';
+      const signupId = 'fail_add_exc_signup';
       const slotId = 'slot_1';
-      final sheet = Signup(
-        id: sheetId,
-        titleEn: 'Fail Add Sheet',
+      final signup = Signup(
+        id: signupId,
+        titleEn: 'Fail Add Signup',
         titleMr: '',
         groupId: 'gajanan_maharaj_seattle',
         status: SignupStatus.published,
@@ -1288,17 +1288,17 @@ void main() {
 
       final mockService = MockSignupService();
       when(
-        () => mockService.getSheetById(sheetId),
-      ).thenAnswer((_) => Stream.value(sheet));
+        () => mockService.getSignupById(signupId),
+      ).thenAnswer((_) => Stream.value(signup));
       when(
-        () => mockService.getSlots(sheetId),
+        () => mockService.getSlots(signupId),
       ).thenAnswer((_) => Stream.value([slot]));
       when(
-        () => mockService.getAllEntries(sheetId),
+        () => mockService.getAllEntries(signupId),
       ).thenAnswer((_) => Stream.value(const []));
       when(
         () => mockService.adminAddEntry(
-          sheetId: any(named: 'sheetId'),
+          signupId: any(named: 'signupId'),
           slotId: any(named: 'slotId'),
           name: any(named: 'name'),
           phone: null,
@@ -1314,7 +1314,7 @@ void main() {
       await tester.pumpWidget(
         createWidget(
           child: AdminSignupDetailScreen(
-            sheetId: sheetId,
+            signupId: signupId,
             adminUser: adminUser,
             signupService: mockService,
           ),
@@ -1349,9 +1349,9 @@ void main() {
       }
     }
 
-    Future<String> seedSheet({String? headerImageUrl}) async {
+    Future<String> seedSignup({String? headerImageUrl}) async {
       final now = DateTime.now();
-      final sheetRef = await firestore.collection('signups').add({
+      final signupRef = await firestore.collection('signups').add({
         'titleEn': 'Prasad Seva',
         'titleMr': 'प्रसाद सेवा',
         'descriptionEn': 'Description',
@@ -1364,13 +1364,13 @@ void main() {
         'createdBy': 'admin@test.com',
         'headerImageUrl': headerImageUrl,
       });
-      return sheetRef.id;
+      return signupRef.id;
     }
 
-    testWidgets('shows Add Image when the sheet has no image', (tester) async {
-      final sheetId = await seedSheet();
+    testWidgets('shows Add Image when the signup has no image', (tester) async {
+      final signupId = await seedSignup();
 
-      await pumpDetailScreen(tester, sheetId: sheetId);
+      await pumpDetailScreen(tester, signupId: signupId);
 
       expect(find.text('Add Image'), findsOneWidget);
       expect(find.text('Replace Image'), findsNothing);
@@ -1378,13 +1378,13 @@ void main() {
     });
 
     testWidgets(
-      'shows a preview and Replace/Remove when the sheet has an image',
+      'shows a preview and Replace/Remove when the signup has an image',
       (tester) async {
-        final sheetId = await seedSheet(
+        final signupId = await seedSignup(
           headerImageUrl: 'https://example.com/header.jpg',
         );
 
-        await pumpDetailScreen(tester, sheetId: sheetId);
+        await pumpDetailScreen(tester, signupId: signupId);
         drainNetworkImageErrors(tester);
 
         expect(find.text('Replace Image'), findsOneWidget);
@@ -1399,17 +1399,17 @@ void main() {
       ImagePickerPlatform.instance = FakeImagePickerPlatform(
         imageBytes: _validPngBytes,
       );
-      final sheetId = await seedSheet();
+      final signupId = await seedSignup();
 
-      await pumpDetailScreen(tester, sheetId: sheetId);
+      await pumpDetailScreen(tester, signupId: signupId);
       await tester.tap(find.byKey(const Key('addOrReplaceHeaderImageButton')));
       await tester.pumpAndSettle();
       drainNetworkImageErrors(tester);
 
-      final doc = await firestore.collection('signups').doc(sheetId).get();
+      final doc = await firestore.collection('signups').doc(signupId).get();
       expect(doc.data()?['headerImageUrl'], isNotNull);
       expect(
-        storage.storedDataMap.containsKey('signups/$sheetId/header'),
+        storage.storedDataMap.containsKey('signups/$signupId/header'),
         true,
       );
       expect(find.text('Replace Image'), findsOneWidget);
@@ -1421,9 +1421,9 @@ void main() {
       ImagePickerPlatform.instance = FakeImagePickerPlatform(
         imageBytes: Uint8List(3 * 1024 * 1024),
       );
-      final sheetId = await seedSheet();
+      final signupId = await seedSignup();
 
-      await pumpDetailScreen(tester, sheetId: sheetId);
+      await pumpDetailScreen(tester, signupId: signupId);
       await tester.tap(find.byKey(const Key('addOrReplaceHeaderImageButton')));
       await tester.pumpAndSettle();
 
@@ -1435,9 +1435,9 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheet = Signup(
-        id: 'sheet_img_err',
-        titleEn: 'Error Sheet',
+      final signup = Signup(
+        id: 'signup_img_err',
+        titleEn: 'Error Signup',
         titleMr: 'त्रुटी शीट',
         groupId: 'gajanan_maharaj_seattle',
         createdAt: now,
@@ -1446,17 +1446,17 @@ void main() {
       );
       final mockService = MockSignupService();
       when(
-        () => mockService.getSheetById('sheet_img_err'),
-      ).thenAnswer((_) => Stream.value(sheet));
+        () => mockService.getSignupById('signup_img_err'),
+      ).thenAnswer((_) => Stream.value(signup));
       when(
-        () => mockService.getSlots('sheet_img_err'),
+        () => mockService.getSlots('signup_img_err'),
       ).thenAnswer((_) => Stream.value(const []));
       when(
-        () => mockService.getAllEntries('sheet_img_err'),
+        () => mockService.getAllEntries('signup_img_err'),
       ).thenAnswer((_) => Stream.value(const []));
       when(
         () => mockService.uploadHeaderImage(
-          sheetId: any(named: 'sheetId'),
+          signupId: any(named: 'signupId'),
           bytes: any(named: 'bytes'),
           contentType: any(named: 'contentType'),
         ),
@@ -1471,7 +1471,7 @@ void main() {
       await tester.pumpWidget(
         createWidget(
           child: AdminSignupDetailScreen(
-            sheetId: 'sheet_img_err',
+            signupId: 'signup_img_err',
             adminUser: adminUser,
             signupService: mockService,
           ),
@@ -1491,11 +1491,11 @@ void main() {
     testWidgets('cancelling the remove-image dialog keeps the image', (
       tester,
     ) async {
-      final sheetId = await seedSheet(
+      final signupId = await seedSignup(
         headerImageUrl: 'https://example.com/header.jpg',
       );
 
-      await pumpDetailScreen(tester, sheetId: sheetId);
+      await pumpDetailScreen(tester, signupId: signupId);
       drainNetworkImageErrors(tester);
       await tester.tap(find.byKey(const Key('removeHeaderImageButton')));
       await tester.pumpAndSettle();
@@ -1505,23 +1505,23 @@ void main() {
       await tester.pumpAndSettle();
       drainNetworkImageErrors(tester);
 
-      final doc = await firestore.collection('signups').doc(sheetId).get();
+      final doc = await firestore.collection('signups').doc(signupId).get();
       expect(doc.data()?['headerImageUrl'], 'https://example.com/header.jpg');
     });
 
     testWidgets('confirming removal clears headerImageUrl', (tester) async {
-      final sheetId = await seedSheet(
+      final signupId = await seedSignup(
         headerImageUrl: 'https://example.com/header.jpg',
       );
 
-      await pumpDetailScreen(tester, sheetId: sheetId);
+      await pumpDetailScreen(tester, signupId: signupId);
       drainNetworkImageErrors(tester);
       await tester.tap(find.byKey(const Key('removeHeaderImageButton')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Yes'));
       await tester.pumpAndSettle();
 
-      final doc = await firestore.collection('signups').doc(sheetId).get();
+      final doc = await firestore.collection('signups').doc(signupId).get();
       expect(doc.data()?['headerImageUrl'], isNull);
       expect(find.text('Add Image'), findsOneWidget);
     });
@@ -1530,9 +1530,9 @@ void main() {
       'hides add/replace/remove buttons while a removal is in flight',
       (tester) async {
         final now = DateTime.now();
-        final sheet = Signup(
-          id: 'sheet_removing',
-          titleEn: 'Removing Sheet',
+        final signup = Signup(
+          id: 'signup_removing',
+          titleEn: 'Removing Signup',
           titleMr: 'काढत आहे',
           groupId: 'gajanan_maharaj_seattle',
           createdAt: now,
@@ -1542,17 +1542,17 @@ void main() {
         );
         final mockService = MockSignupService();
         when(
-          () => mockService.getSheetById('sheet_removing'),
-        ).thenAnswer((_) => Stream.value(sheet));
+          () => mockService.getSignupById('signup_removing'),
+        ).thenAnswer((_) => Stream.value(signup));
         when(
-          () => mockService.getSlots('sheet_removing'),
+          () => mockService.getSlots('signup_removing'),
         ).thenAnswer((_) => Stream.value(const []));
         when(
-          () => mockService.getAllEntries('sheet_removing'),
+          () => mockService.getAllEntries('signup_removing'),
         ).thenAnswer((_) => Stream.value(const []));
         final removeCompleter = Completer<void>();
         when(
-          () => mockService.removeHeaderImage('sheet_removing'),
+          () => mockService.removeHeaderImage('signup_removing'),
         ).thenAnswer((_) => removeCompleter.future);
 
         setLargeScreen(tester);
@@ -1560,7 +1560,7 @@ void main() {
         await tester.pumpWidget(
           createWidget(
             child: AdminSignupDetailScreen(
-              sheetId: 'sheet_removing',
+              signupId: 'signup_removing',
               adminUser: adminUser,
               signupService: mockService,
             ),
@@ -1590,9 +1590,9 @@ void main() {
 
     testWidgets('shows an error snackbar when removal fails', (tester) async {
       final now = DateTime.now();
-      final sheet = Signup(
-        id: 'sheet_remove_err',
-        titleEn: 'Error Sheet',
+      final signup = Signup(
+        id: 'signup_remove_err',
+        titleEn: 'Error Signup',
         titleMr: 'त्रुटी शीट',
         groupId: 'gajanan_maharaj_seattle',
         createdAt: now,
@@ -1602,16 +1602,16 @@ void main() {
       );
       final mockService = MockSignupService();
       when(
-        () => mockService.getSheetById('sheet_remove_err'),
-      ).thenAnswer((_) => Stream.value(sheet));
+        () => mockService.getSignupById('signup_remove_err'),
+      ).thenAnswer((_) => Stream.value(signup));
       when(
-        () => mockService.getSlots('sheet_remove_err'),
+        () => mockService.getSlots('signup_remove_err'),
       ).thenAnswer((_) => Stream.value(const []));
       when(
-        () => mockService.getAllEntries('sheet_remove_err'),
+        () => mockService.getAllEntries('signup_remove_err'),
       ).thenAnswer((_) => Stream.value(const []));
       when(
-        () => mockService.removeHeaderImage('sheet_remove_err'),
+        () => mockService.removeHeaderImage('signup_remove_err'),
       ).thenThrow(Exception('remove failed'));
 
       setLargeScreen(tester);
@@ -1619,7 +1619,7 @@ void main() {
       await tester.pumpWidget(
         createWidget(
           child: AdminSignupDetailScreen(
-            sheetId: 'sheet_remove_err',
+            signupId: 'signup_remove_err',
             adminUser: adminUser,
             signupService: mockService,
           ),

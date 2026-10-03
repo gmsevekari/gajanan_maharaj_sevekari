@@ -153,10 +153,10 @@ void main() {
               ),
             );
           }
-          if (settings.name == Routes.signupSheetsList) {
+          if (settings.name == Routes.signupsList) {
             return MaterialPageRoute(
               builder: (_) => Scaffold(
-                appBar: AppBar(title: const Text('Signup Sheets List')),
+                appBar: AppBar(title: const Text('Signup Signups List')),
                 body: Text('Group: ${(settings.arguments as Map)['groupId']}'),
               ),
             );
@@ -338,7 +338,7 @@ void main() {
     );
   });
 
-  group('HomeScreen Signup Sheets Card Navigation Tests', () {
+  group('HomeScreen Signup Signups Card Navigation Tests', () {
     testWidgets('navigates to SignupsListScreen when single group selected', (
       tester,
     ) async {
@@ -352,7 +352,7 @@ void main() {
       await tester.pumpWidget(createHomeScreen());
       await tester.pumpAndSettle();
 
-      final signupCard = find.byKey(const Key('signup_sheets_card'));
+      final signupCard = find.byKey(const Key('signups_card'));
       expect(signupCard, findsOneWidget);
 
       await tester.ensureVisible(signupCard);
@@ -360,7 +360,7 @@ void main() {
       await tester.tap(signupCard);
       await tester.pumpAndSettle();
 
-      expect(find.text('Signup Sheets List'), findsOneWidget);
+      expect(find.text('Signup Signups List'), findsOneWidget);
       expect(find.text('Group: g1'), findsOneWidget);
     });
 
@@ -377,7 +377,7 @@ void main() {
         await tester.pumpWidget(createHomeScreen());
         await tester.pumpAndSettle();
 
-        final signupCard = find.byKey(const Key('signup_sheets_card'));
+        final signupCard = find.byKey(const Key('signups_card'));
         expect(signupCard, findsOneWidget);
 
         await tester.ensureVisible(signupCard);

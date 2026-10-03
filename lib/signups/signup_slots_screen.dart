@@ -9,14 +9,14 @@ import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_slot_tile.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
-/// Every slot on a sign-up sheet, reached from
+/// Every slot on a sign-up signup, reached from
 /// [SignupDetailScreen]'s "Slots" card. Splits slots into
 /// Upcoming/Past by their own date - a slot with no date is treated as
-/// upcoming, since there's no basis to call it past. Unlike the sheet's
+/// upcoming, since there's no basis to call it past. Unlike the signup's
 /// Entries table, this screen never shows who's signed up for a slot.
 class SignupSlotsScreen extends StatefulWidget {
-  final String sheetId;
-  final Signup sheet;
+  final String signupId;
+  final Signup signup;
   final String? deviceId;
 
   /// Injected for testing; defaults to [FirebaseFirestore.instance].
@@ -29,8 +29,8 @@ class SignupSlotsScreen extends StatefulWidget {
 
   const SignupSlotsScreen({
     super.key,
-    required this.sheetId,
-    required this.sheet,
+    required this.signupId,
+    required this.signup,
     required this.deviceId,
     this.firestore,
     this.signupService,
@@ -52,7 +52,7 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
     _service =
         widget.signupService ?? SignupService(firestore: widget.firestore);
     _tabController = TabController(length: 2, vsync: this);
-    _slotsStream = _service.getSlots(widget.sheetId);
+    _slotsStream = _service.getSlots(widget.signupId);
   }
 
   @override
@@ -65,9 +65,9 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
     final claimed = await showDialog<bool>(
       context: context,
       builder: (_) => ClaimSlotDialog(
-        sheetId: widget.sheetId,
+        signupId: widget.signupId,
         slot: slot,
-        requiresJoinCode: widget.sheet.requiresJoinCode,
+        requiresJoinCode: widget.signup.requiresJoinCode,
         deviceId: widget.deviceId,
         signupService: _service,
       ),

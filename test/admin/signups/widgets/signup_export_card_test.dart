@@ -11,8 +11,8 @@ void main() {
     tester,
   ) async {
     final now = DateTime.now();
-    final sheet = Signup(
-      id: 'sheet_1',
+    final signup = Signup(
+      id: 'signup_1',
       titleEn: 'Sunday Prasad Seva',
       titleMr: 'रविवार प्रसाद सेवा',
       descriptionEn: 'Cook and serve prasad',
@@ -57,7 +57,7 @@ void main() {
               final l10n = AppLocalizations.of(context)!;
               final theme = Theme.of(context);
               return SignupExportCard(
-                sheet: sheet,
+                signup: signup,
                 slots: slots,
                 totalClaims: 9,
                 totalCapacity: 10,
@@ -90,8 +90,8 @@ void main() {
     'and langCode is mr',
     (tester) async {
       final now = DateTime.now();
-      final sheet = Signup(
-        id: 'sheet_1',
+      final signup = Signup(
+        id: 'signup_1',
         titleEn: 'Sunday Prasad Seva',
         titleMr: 'रविवार प्रसाद सेवा',
         descriptionEn: 'Cook and serve prasad',
@@ -127,7 +127,7 @@ void main() {
                 final l10n = AppLocalizations.of(context)!;
                 final theme = Theme.of(context);
                 return SignupExportCard(
-                  sheet: sheet,
+                  signup: signup,
                   slots: slots,
                   totalClaims: 4,
                   totalCapacity: 5,

@@ -39,7 +39,7 @@ void main() {
     );
   }
 
-  Future<String> createSheet({
+  Future<String> createSignup({
     String titleEn = 'Sunday Prasad Seva',
     String descriptionEn = '',
     SignupStatus status = SignupStatus.published,
@@ -47,7 +47,7 @@ void main() {
     bool requiresJoinCode = false,
   }) {
     final now = DateTime.now();
-    return service.createSheet(
+    return service.createSignup(
       Signup(
         titleEn: titleEn,
         titleMr: '',
@@ -120,7 +120,7 @@ void main() {
       expect(find.text('Navigated to: /settings'), findsOneWidget);
     });
 
-    testWidgets('shows an empty state when there are no active sheets', (
+    testWidgets('shows an empty state when there are no active signups', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -138,9 +138,9 @@ void main() {
     });
 
     testWidgets(
-      'lists published sheets for the group, with title and description',
+      'lists published signups for the group, with title and description',
       (tester) async {
-        await createSheet(
+        await createSignup(
           titleEn: 'Sunday Prasad Seva',
           descriptionEn: 'Cook and serve prasad',
         );
@@ -161,10 +161,10 @@ void main() {
       },
     );
 
-    testWidgets('does not show draft or closed sheets', (tester) async {
-      await createSheet(titleEn: 'Draft Sheet', status: SignupStatus.draft);
-      await createSheet(titleEn: 'Closed Sheet', status: SignupStatus.closed);
-      await createSheet(titleEn: 'Published Sheet');
+    testWidgets('does not show draft or closed signups', (tester) async {
+      await createSignup(titleEn: 'Draft Signup', status: SignupStatus.draft);
+      await createSignup(titleEn: 'Closed Signup', status: SignupStatus.closed);
+      await createSignup(titleEn: 'Published Signup');
 
       await tester.pumpWidget(
         wrap(
@@ -177,15 +177,15 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Draft Sheet'), findsNothing);
-      expect(find.text('Closed Sheet'), findsNothing);
-      expect(find.text('Published Sheet'), findsOneWidget);
+      expect(find.text('Draft Signup'), findsNothing);
+      expect(find.text('Closed Signup'), findsNothing);
+      expect(find.text('Published Signup'), findsOneWidget);
     });
 
     testWidgets('shows a join-code-required badge without revealing the code', (
       tester,
     ) async {
-      await createSheet(titleEn: 'Members Sheet', requiresJoinCode: true);
+      await createSignup(titleEn: 'Members Signup', requiresJoinCode: true);
 
       await tester.pumpWidget(
         wrap(
@@ -202,10 +202,10 @@ void main() {
       expect(find.text('ABC123'), findsNothing);
     });
 
-    testWidgets('tapping a sheet navigates to its detail route', (
+    testWidgets('tapping a signup navigates to its detail route', (
       tester,
     ) async {
-      await createSheet(titleEn: 'Sunday Prasad Seva');
+      await createSignup(titleEn: 'Sunday Prasad Seva');
 
       await tester.pumpWidget(
         wrap(
@@ -221,12 +221,12 @@ void main() {
       await tester.tap(find.text('Sunday Prasad Seva'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Navigated to: /signup_sheet_detail'), findsOneWidget);
+      expect(find.text('Navigated to: /signup_detail'), findsOneWidget);
     });
 
     testWidgets('renders the Marathi title when locale is mr', (tester) async {
       final now = DateTime.now();
-      await service.createSheet(
+      await service.createSignup(
         Signup(
           titleEn: 'Sunday Prasad Seva',
           titleMr: 'रविवार प्रसाद सेवा',
@@ -260,7 +260,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      await service.createSheet(
+      await service.createSignup(
         Signup(
           titleEn: 'Sunday Prasad Seva',
           titleMr: 'रविवार प्रसाद सेवा',

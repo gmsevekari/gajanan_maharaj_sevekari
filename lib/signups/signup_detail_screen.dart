@@ -14,7 +14,7 @@ import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class SignupDetailScreen extends StatefulWidget {
-  final String? sheetId;
+  final String? signupId;
 
   /// Injected for testing; defaults to fetching the real device ID.
   @visibleForTesting
@@ -30,7 +30,7 @@ class SignupDetailScreen extends StatefulWidget {
 
   const SignupDetailScreen({
     super.key,
-    this.sheetId,
+    this.signupId,
     this.deviceId,
     this.firestore,
     this.signupService,
@@ -43,8 +43,8 @@ class SignupDetailScreen extends StatefulWidget {
 class _SignupDetailScreenState extends State<SignupDetailScreen> {
   late final SignupService _service;
   String? _deviceId;
-  String _sheetId = '';
-  Stream<Signup?>? _sheetStream;
+  String _signupId = '';
+  Stream<Signup?>? _signupStream;
   Stream<List<SignupSlot>>? _slotsStream;
   Stream<List<SignupEntry>>? _entriesStream;
 
@@ -62,14 +62,14 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final newId = _getEffectiveSheetId(context);
-    if (newId != _sheetId) {
-      _sheetId = newId;
-      _sheetStream = _service.getSheetById(_sheetId);
-      _slotsStream = _service.getSlots(_sheetId);
+    final newId = _getEffectiveSignupId(context);
+    if (newId != _signupId) {
+      _signupId = newId;
+      _signupStream = _service.getSignupById(_signupId);
+      _slotsStream = _service.getSlots(_signupId);
       // The Entries table below needs every devotee's entry, not just this
       // device's own.
-      _entriesStream = _service.getAllEntries(_sheetId);
+      _entriesStream = _service.getAllEntries(_signupId);
     }
   }
 
@@ -80,13 +80,13 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
     }
   }
 
-  String _getEffectiveSheetId(BuildContext context) {
-    if (widget.sheetId != null && widget.sheetId!.isNotEmpty) {
-      return widget.sheetId!;
+  String _getEffectiveSignupId(BuildContext context) {
+    if (widget.signupId != null && widget.signupId!.isNotEmpty) {
+      return widget.signupId!;
     }
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    return args?['sheetId'] as String? ?? '';
+    return args?['signupId'] as String? ?? '';
   }
 
   List<Widget> _buildAppBarActions(BuildContext context) => [
@@ -109,7 +109,7 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => MySignupsScreen(
-          sheetId: _sheetId,
+          signupId: _signupId,
           deviceId: _deviceId!,
           firestore: widget.firestore,
           signupService: _service,
@@ -118,13 +118,13 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
     );
   }
 
-  void _openSlots(Signup sheet) {
+  void _openSlots(Signup signup) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => SignupSlotsScreen(
-          sheetId: _sheetId,
-          sheet: sheet,
+          signupId: _signupId,
+          signup: signup,
           deviceId: _deviceId,
           firestore: widget.firestore,
           signupService: _service,
@@ -140,10 +140,10 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
     final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
 
     return StreamBuilder<Signup?>(
-      stream: _sheetStream,
-      builder: (context, sheetSnapshot) {
+      stream: _signupStream,
+      builder: (context, signupSnapshot) {
         if (_deviceId == null ||
-            sheetSnapshot.connectionState == ConnectionState.waiting) {
+            signupSnapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
             appBar: AppBar(
               title: Text(l10n.signupsListTitle),
@@ -153,8 +153,8 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
           );
         }
 
-        final sheet = sheetSnapshot.data;
-        if (sheet == null) {
+        final signup = signupSnapshot.data;
+        if (signup == null) {
           return Scaffold(
             appBar: AppBar(
               title: Text(l10n.signupsListTitle),
@@ -172,15 +172,15 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
         }
 
         final title = isMarathi
-            ? (sheet.titleMr.isNotEmpty ? sheet.titleMr : sheet.titleEn)
-            : (sheet.titleEn.isNotEmpty ? sheet.titleEn : sheet.titleMr);
+            ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
+            : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);
         final desc = isMarathi
-            ? (sheet.descriptionMr.isNotEmpty
-                  ? sheet.descriptionMr
-                  : sheet.descriptionEn)
-            : (sheet.descriptionEn.isNotEmpty
-                  ? sheet.descriptionEn
-                  : sheet.descriptionMr);
+            ? (signup.descriptionMr.isNotEmpty
+                  ? signup.descriptionMr
+                  : signup.descriptionEn)
+            : (signup.descriptionEn.isNotEmpty
+                  ? signup.descriptionEn
+                  : signup.descriptionMr);
 
         return Scaffold(
           appBar: AppBar(
@@ -200,7 +200,7 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
                   return ListView(
                     padding: const EdgeInsets.all(16),
                     children: [
-                      if (sheet.headerImageUrl != null) ...[
+                      if (signup.headerImageUrl != null) ...[
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: ConstrainedBox(
@@ -211,7 +211,7 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
                             // a stable placeholder while loading.
                             constraints: const BoxConstraints(minHeight: 180),
                             child: Image.network(
-                              sheet.headerImageUrl!,
+                              signup.headerImageUrl!,
                               width: double.infinity,
                               fit: BoxFit.fitWidth,
                               semanticLabel: l10n.signupHeaderImageLabel,
@@ -263,7 +263,7 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
                       _NavCard(
                         icon: Icons.event_seat_outlined,
                         label: l10n.signupSlotsHeading,
-                        onTap: () => _openSlots(sheet),
+                        onTap: () => _openSlots(signup),
                       ),
                       const SizedBox(height: 24),
                       Text(

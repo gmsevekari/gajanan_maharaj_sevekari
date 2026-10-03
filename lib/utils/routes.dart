@@ -60,11 +60,10 @@ class Routes {
   static const String adminVaariDetail = '/admin_vaari_detail';
   static const String adminVaariList = '/admin_vaari_list';
 
-  static const String adminSignupSheetsDashboard =
-      '/admin_signup_sheets_dashboard';
-  static const String adminCreateSignupSheet = '/admin_create_signup_sheet';
-  static const String adminSignupSheetDetail = '/admin_signup_sheet_detail';
+  static const String adminSignupsDashboard = '/admin_signups_dashboard';
+  static const String adminCreateSignup = '/admin_create_signup';
+  static const String adminSignupDetail = '/admin_signup_detail';
 
-  static const String signupSheetsList = '/signup_sheets_list';
-  static const String signupSheetDetail = '/signup_sheet_detail';
+  static const String signupsList = '/signups_list';
+  static const String signupDetail = '/signup_detail';
 }

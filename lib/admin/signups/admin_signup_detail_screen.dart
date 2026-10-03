@@ -28,7 +28,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 class AdminSignupDetailScreen extends StatefulWidget {
-  final String? sheetId;
+  final String? signupId;
   final AdminUser? adminUser;
 
   /// Injected for testing; defaults to [FirebaseFirestore.instance].
@@ -54,7 +54,7 @@ class AdminSignupDetailScreen extends StatefulWidget {
 
   const AdminSignupDetailScreen({
     super.key,
-    this.sheetId,
+    this.signupId,
     this.adminUser,
     this.firestore,
     this.signupService,
@@ -74,8 +74,8 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
   final ScreenshotController _exportController = ScreenshotController();
   bool _isProcessing = false;
   bool _isProcessingImage = false;
-  String _sheetId = '';
-  Stream<Signup?>? _sheetStream;
+  String _signupId = '';
+  Stream<Signup?>? _signupStream;
   Stream<List<SignupSlot>>? _slotsStream;
   Stream<List<SignupEntry>>? _entriesStream;
 
@@ -90,22 +90,22 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final newId = _getEffectiveSheetId(context);
-    if (newId != _sheetId) {
-      _sheetId = newId;
-      _sheetStream = _service.getSheetById(_sheetId);
-      _slotsStream = _service.getSlots(_sheetId);
-      _entriesStream = _service.getAllEntries(_sheetId);
+    final newId = _getEffectiveSignupId(context);
+    if (newId != _signupId) {
+      _signupId = newId;
+      _signupStream = _service.getSignupById(_signupId);
+      _slotsStream = _service.getSlots(_signupId);
+      _entriesStream = _service.getAllEntries(_signupId);
     }
   }
 
-  String _getEffectiveSheetId(BuildContext context) {
-    if (widget.sheetId != null && widget.sheetId!.isNotEmpty) {
-      return widget.sheetId!;
+  String _getEffectiveSignupId(BuildContext context) {
+    if (widget.signupId != null && widget.signupId!.isNotEmpty) {
+      return widget.signupId!;
     }
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    return args?['sheetId'] as String? ?? '';
+    return args?['signupId'] as String? ?? '';
   }
 
   AdminUser _getEffectiveAdminUser(BuildContext context) {
@@ -119,21 +119,21 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
   }
 
   Future<void> _shareDeepLink(
-    Signup sheet,
+    Signup signup,
     AppLocalizations l10n,
     bool isMarathi,
   ) async {
     final title = isMarathi
-        ? (sheet.titleMr.isNotEmpty ? sheet.titleMr : sheet.titleEn)
-        : (sheet.titleEn.isNotEmpty ? sheet.titleEn : sheet.titleMr);
-    final joinCodePart = sheet.requiresJoinCode && sheet.joinCode != null
-        ? '\n${l10n.signupJoinCodePrefix}${sheet.joinCode}'
+        ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
+        : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);
+    final joinCodePart = signup.requiresJoinCode && signup.joinCode != null
+        ? '\n${l10n.signupJoinCodePrefix}${signup.joinCode}'
         : '';
-    final codeQuery = sheet.requiresJoinCode && sheet.joinCode != null
-        ? '?joinCode=${sheet.joinCode}'
+    final codeQuery = signup.requiresJoinCode && signup.joinCode != null
+        ? '?joinCode=${signup.joinCode}'
         : '';
     final url =
-        'https://gajananmaharajsevekari.org/signup/${sheet.id}$codeQuery';
+        'https://gajananmaharajsevekari.org/signup/${signup.id}$codeQuery';
 
     final text =
         '${l10n.signupSharePrefix}: $title$joinCodePart\n\n${l10n.signupShareLinkPrefix}: $url';
@@ -141,23 +141,23 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
     await SharePlus.instance.share(ShareParams(text: text));
   }
 
-  Future<void> _duplicateSheet(
-    Signup sheet,
+  Future<void> _duplicateSignup(
+    Signup signup,
     AdminUser adminUser,
     AppLocalizations l10n,
   ) async {
     if (_isProcessing) return;
     setState(() => _isProcessing = true);
     try {
-      final newSheetId = await _service.duplicateSheet(sheet.id!);
+      final newSignupId = await _service.duplicateSignup(signup.id!);
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text(l10n.signupDuplicateSuccess)));
       Navigator.pushReplacementNamed(
         context,
-        Routes.adminSignupSheetDetail,
-        arguments: {'sheetId': newSheetId, 'adminUser': adminUser},
+        Routes.adminSignupDetail,
+        arguments: {'signupId': newSignupId, 'adminUser': adminUser},
       );
     } catch (_) {
       if (!mounted) return;
@@ -170,12 +170,12 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
   }
 
   Future<void> _updateStatus(
-    Signup sheet,
+    Signup signup,
     SignupStatus newStatus,
     AppLocalizations l10n,
   ) async {
     try {
-      await _service.updateSheetStatus(sheet.id!, newStatus);
+      await _service.updateSignupStatus(signup.id!, newStatus);
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
@@ -189,7 +189,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
   }
 
   Future<void> _exportSummaryImage(
-    Signup sheet,
+    Signup signup,
     List<SignupSlot> slots,
     List<SignupEntry> entries,
     AppLocalizations l10n,
@@ -201,7 +201,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
 
       final tempDir = await getTemporaryDirectory();
       final file = await File(
-        '${tempDir.path}/signup_sheet_${sheet.id ?? "summary"}.png',
+        '${tempDir.path}/signup_${signup.id ?? "summary"}.png',
       ).writeAsBytes(imageBytes);
 
       await SharePlus.instance.share(
@@ -219,7 +219,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
   }
 
   void _showAddEntryDialog(
-    Signup sheet,
+    Signup signup,
     SignupSlot slot,
     AppLocalizations l10n,
   ) {
@@ -229,7 +229,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
         onSave: (name, phone, email, pledge, note) async {
           try {
             final res = await _service.adminAddEntry(
-              sheetId: sheet.id!,
+              signupId: signup.id!,
               slotId: slot.id!,
               name: name,
               phone: phone,
@@ -269,7 +269,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
   }
 
   void _showEditEntryDialog(
-    Signup sheet,
+    Signup signup,
     SignupEntry entry,
     AppLocalizations l10n,
   ) {
@@ -280,7 +280,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
         onSave: (name, phone, email, pledge, note) async {
           try {
             await _service.updateEntry(
-              sheet.id!,
+              signup.id!,
               entry.copyWith(
                 name: name,
                 phone: phone,
@@ -304,18 +304,18 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
               );
           }
         },
-        onDelete: () => _removeEntry(sheet, entry, l10n),
+        onDelete: () => _removeEntry(signup, entry, l10n),
       ),
     );
   }
 
   Future<void> _removeEntry(
-    Signup sheet,
+    Signup signup,
     SignupEntry entry,
     AppLocalizations l10n,
   ) async {
     try {
-      await _service.adminRemoveEntry(sheet.id!, entry.id!);
+      await _service.adminRemoveEntry(signup.id!, entry.id!);
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
@@ -329,7 +329,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
   }
 
   void _confirmRemoveEntry(
-    Signup sheet,
+    Signup signup,
     SignupEntry entry,
     AppLocalizations l10n,
   ) {
@@ -346,7 +346,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(dialogCtx).pop();
-              _removeEntry(sheet, entry, l10n);
+              _removeEntry(signup, entry, l10n);
             },
             child: Text(
               l10n.yes,
@@ -358,7 +358,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
     );
   }
 
-  Future<void> _pickAndUploadImage(Signup sheet, AppLocalizations l10n) async {
+  Future<void> _pickAndUploadImage(Signup signup, AppLocalizations l10n) async {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked == null) return;
 
@@ -375,11 +375,11 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
     setState(() => _isProcessingImage = true);
     try {
       final url = await _service.uploadHeaderImage(
-        sheetId: sheet.id!,
+        signupId: signup.id!,
         bytes: bytes,
         contentType: picked.mimeType ?? 'image/jpeg',
       );
-      await _service.updateHeaderImageUrl(sheet.id!, url);
+      await _service.updateHeaderImageUrl(signup.id!, url);
     } on Exception catch (_) {
       // Deliberately catches Exception, not Error: an Error subtype here
       // (e.g. a null-check failure from a future bug) should crash
@@ -397,10 +397,10 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
     }
   }
 
-  Future<void> _removeImage(Signup sheet, AppLocalizations l10n) async {
+  Future<void> _removeImage(Signup signup, AppLocalizations l10n) async {
     setState(() => _isProcessingImage = true);
     try {
-      await _service.removeHeaderImage(sheet.id!);
+      await _service.removeHeaderImage(signup.id!);
     } on Exception catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -414,7 +414,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
     }
   }
 
-  void _confirmRemoveImage(Signup sheet, AppLocalizations l10n) {
+  void _confirmRemoveImage(Signup signup, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
@@ -428,7 +428,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(dialogCtx).pop();
-              _removeImage(sheet, l10n);
+              _removeImage(signup, l10n);
             },
             child: Text(
               l10n.yes,
@@ -473,14 +473,14 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
         ],
       ),
       body: StreamBuilder<Signup?>(
-        stream: _sheetStream,
-        builder: (context, sheetSnapshot) {
-          if (sheetSnapshot.connectionState == ConnectionState.waiting) {
+        stream: _signupStream,
+        builder: (context, signupSnapshot) {
+          if (signupSnapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final sheet = sheetSnapshot.data;
-          if (sheet == null) {
+          final signup = signupSnapshot.data;
+          if (signup == null) {
             return Center(
               child: Text(
                 l10n.signupNotFound,
@@ -492,15 +492,15 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
           }
 
           final title = isMarathi
-              ? (sheet.titleMr.isNotEmpty ? sheet.titleMr : sheet.titleEn)
-              : (sheet.titleEn.isNotEmpty ? sheet.titleEn : sheet.titleMr);
+              ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
+              : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);
           final desc = isMarathi
-              ? (sheet.descriptionMr.isNotEmpty
-                    ? sheet.descriptionMr
-                    : sheet.descriptionEn)
-              : (sheet.descriptionEn.isNotEmpty
-                    ? sheet.descriptionEn
-                    : sheet.descriptionMr);
+              ? (signup.descriptionMr.isNotEmpty
+                    ? signup.descriptionMr
+                    : signup.descriptionEn)
+              : (signup.descriptionEn.isNotEmpty
+                    ? signup.descriptionEn
+                    : signup.descriptionMr);
 
           return StreamBuilder<List<SignupSlot>>(
             stream: _slotsStream,
@@ -525,7 +525,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
                         child: Screenshot(
                           controller: _exportController,
                           child: SignupExportCard(
-                            sheet: sheet,
+                            signup: signup,
                             slots: slots,
                             totalClaims: entries.length,
                             totalCapacity: totalCapacity,
@@ -546,36 +546,37 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
                           ),
                           const SizedBox(height: 12),
                           SignupHeaderImageCard(
-                            headerImageUrl: sheet.headerImageUrl,
+                            headerImageUrl: signup.headerImageUrl,
                             // Covers both the upload and remove flows: the
                             // card hides its buttons whenever this is true,
                             // so a remove-confirm tap can't race a replace
                             // tap (or vice versa) against the same object.
                             isUploading: _isProcessingImage,
-                            onPickImage: () => _pickAndUploadImage(sheet, l10n),
-                            onRemoveImage: sheet.headerImageUrl == null
+                            onPickImage: () =>
+                                _pickAndUploadImage(signup, l10n),
+                            onRemoveImage: signup.headerImageUrl == null
                                 ? null
-                                : () => _confirmRemoveImage(sheet, l10n),
+                                : () => _confirmRemoveImage(signup, l10n),
                           ),
-                          if (sheet.requiresJoinCode &&
-                              sheet.joinCode != null) ...[
+                          if (signup.requiresJoinCode &&
+                              signup.joinCode != null) ...[
                             const SizedBox(height: 12),
-                            SignupJoinCodeCard(joinCode: sheet.joinCode!),
+                            SignupJoinCodeCard(joinCode: signup.joinCode!),
                           ],
                           const SizedBox(height: 12),
                           SignupStatusSection(
-                            currentStatus: sheet.status,
+                            currentStatus: signup.status,
                             onStatusChanged: (newStatus) =>
-                                _updateStatus(sheet, newStatus, l10n),
+                                _updateStatus(signup, newStatus, l10n),
                           ),
                           const SizedBox(height: 12),
                           SignupActionsRow(
                             onDuplicate: () =>
-                                _duplicateSheet(sheet, adminUser, l10n),
+                                _duplicateSignup(signup, adminUser, l10n),
                             onShare: () =>
-                                _shareDeepLink(sheet, l10n, isMarathi),
+                                _shareDeepLink(signup, l10n, isMarathi),
                             onExport: () => _exportSummaryImage(
-                              sheet,
+                              signup,
                               slots,
                               entries,
                               l10n,
@@ -597,11 +598,11 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
                               slot: slot,
                               entries: slotEntries,
                               onAddEntry: (s) =>
-                                  _showAddEntryDialog(sheet, s, l10n),
+                                  _showAddEntryDialog(signup, s, l10n),
                               onEditEntry: (e, _) =>
-                                  _showEditEntryDialog(sheet, e, l10n),
+                                  _showEditEntryDialog(signup, e, l10n),
                               onRemoveEntry: (e) =>
-                                  _confirmRemoveEntry(sheet, e, l10n),
+                                  _confirmRemoveEntry(signup, e, l10n),
                             );
                           }),
                         ],

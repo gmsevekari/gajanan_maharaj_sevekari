@@ -120,7 +120,7 @@ class AdminGajananMaharajGroupScreen extends StatelessWidget {
                             } else if (mode == 'vaari') {
                               targetRoute = Routes.adminVaariDashboard;
                             } else if (mode == 'signup') {
-                              targetRoute = Routes.adminSignupSheetsDashboard;
+                              targetRoute = Routes.adminSignupsDashboard;
                             } else {
                               targetRoute = Routes.adminParayanCoordination;
                             }

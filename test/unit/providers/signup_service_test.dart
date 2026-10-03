@@ -49,7 +49,7 @@ void main() {
     service = SignupService(firestore: fakeFirestore, storage: mockStorage);
   });
 
-  Signup buildSheet({
+  Signup buildSignup({
     String? id,
     String titleEn = 'Sunday Prasad Seva',
     String titleMr = 'रविवार प्रसाद सेवा',
@@ -88,22 +88,25 @@ void main() {
     );
   }
 
-  group('SignupService sheet CRUD', () {
-    test('createSheet writes a new document and returns its auto-id', () async {
-      final id = await service.createSheet(buildSheet());
+  group('SignupService signup CRUD', () {
+    test(
+      'createSignup writes a new document and returns its auto-id',
+      () async {
+        final id = await service.createSignup(buildSignup());
 
-      expect(id, isNotEmpty);
-      final doc = await fakeFirestore.collection('signups').doc(id).get();
-      expect(doc.exists, true);
-      expect(doc.data()?['titleEn'], 'Sunday Prasad Seva');
-    });
+        expect(id, isNotEmpty);
+        final doc = await fakeFirestore.collection('signups').doc(id).get();
+        expect(doc.exists, true);
+        expect(doc.data()?['titleEn'], 'Sunday Prasad Seva');
+      },
+    );
 
     test(
-      'createSheet writes to a pre-set id instead of auto-generating one',
+      'createSignup writes to a pre-set id instead of auto-generating one',
       () async {
-        final preGeneratedId = service.newSheetId();
+        final preGeneratedId = service.newSignupId();
 
-        final id = await service.createSheet(buildSheet(id: preGeneratedId));
+        final id = await service.createSignup(buildSignup(id: preGeneratedId));
 
         expect(id, preGeneratedId);
         final doc = await fakeFirestore
@@ -114,83 +117,83 @@ void main() {
       },
     );
 
-    test('getSheetById streams the created sheet', () async {
-      final id = await service.createSheet(buildSheet());
+    test('getSignupById streams the created signup', () async {
+      final id = await service.createSignup(buildSignup());
 
-      final sheet = await service.getSheetById(id).first;
+      final signup = await service.getSignupById(id).first;
 
-      expect(sheet, isNotNull);
-      expect(sheet!.id, id);
-      expect(sheet.titleEn, 'Sunday Prasad Seva');
+      expect(signup, isNotNull);
+      expect(signup!.id, id);
+      expect(signup.titleEn, 'Sunday Prasad Seva');
     });
 
-    test('getSheetById emits null when the sheet does not exist', () async {
-      final sheet = await service.getSheetById('missing').first;
+    test('getSignupById emits null when the signup does not exist', () async {
+      final signup = await service.getSignupById('missing').first;
 
-      expect(sheet, isNull);
+      expect(signup, isNull);
     });
 
     test(
-      'getActiveSheets returns only published sheets for the group',
+      'getActiveSignups returns only published signups for the group',
       () async {
-        final publishedId = await service.createSheet(
-          buildSheet(status: SignupStatus.published),
+        final publishedId = await service.createSignup(
+          buildSignup(status: SignupStatus.published),
         );
-        await service.createSheet(buildSheet(status: SignupStatus.draft));
-        await service.createSheet(
-          buildSheet(status: SignupStatus.published, groupId: 'group_2'),
+        await service.createSignup(buildSignup(status: SignupStatus.draft));
+        await service.createSignup(
+          buildSignup(status: SignupStatus.published, groupId: 'group_2'),
         );
 
-        final sheets = await service.getActiveSheets('group_1').first;
+        final signups = await service.getActiveSignups('group_1').first;
 
-        expect(sheets.length, 1);
-        expect(sheets.single.id, publishedId);
+        expect(signups.length, 1);
+        expect(signups.single.id, publishedId);
       },
     );
 
-    test('getAllSheets returns every status for the group', () async {
-      await service.createSheet(buildSheet(status: SignupStatus.draft));
-      await service.createSheet(buildSheet(status: SignupStatus.published));
-      await service.createSheet(buildSheet(status: SignupStatus.closed));
-      await service.createSheet(buildSheet(groupId: 'group_2'));
+    test('getAllSignups returns every status for the group', () async {
+      await service.createSignup(buildSignup(status: SignupStatus.draft));
+      await service.createSignup(buildSignup(status: SignupStatus.published));
+      await service.createSignup(buildSignup(status: SignupStatus.closed));
+      await service.createSignup(buildSignup(groupId: 'group_2'));
 
-      final sheets = await service.getAllSheets('group_1').first;
+      final signups = await service.getAllSignups('group_1').first;
 
-      expect(sheets.length, 3);
+      expect(signups.length, 3);
     });
 
-    test('updateSheet overwrites the stored fields', () async {
-      final id = await service.createSheet(buildSheet());
-      final updated = (await service.getSheetById(id).first)!.copyWith(
+    test('updateSignup overwrites the stored fields', () async {
+      final id = await service.createSignup(buildSignup());
+      final updated = (await service.getSignupById(id).first)!.copyWith(
         titleEn: 'Updated Title',
       );
 
-      await service.updateSheet(updated);
+      await service.updateSignup(updated);
 
-      final sheet = await service.getSheetById(id).first;
-      expect(sheet!.titleEn, 'Updated Title');
+      final signup = await service.getSignupById(id).first;
+      expect(signup!.titleEn, 'Updated Title');
     });
 
     test(
-      'updateSheet throws when sheet.id is null instead of writing a stray doc',
+      'updateSignup throws when signup.id is null instead of writing a stray doc',
       () async {
         await expectLater(
-          service.updateSheet(buildSheet()),
+          service.updateSignup(buildSignup()),
           throwsArgumentError,
         );
 
-        final sheets = await service.getAllSheets('group_1').first;
-        expect(sheets, isEmpty);
+        final signups = await service.getAllSignups('group_1').first;
+        expect(signups, isEmpty);
       },
     );
 
-    test('updateSheetStatus changes only the status and updatedAt', () async {
-      final id = await service.createSheet(buildSheet());
-      final before = (await service.getSheetById(id).first)!;
+    test('updateSignupStatus changes only the status and updatedAt', () async {
+      final id = await service.createSignup(buildSignup());
+      final before = (await service.getSignupById(id).first)!;
 
-      await service.updateSheetStatus(id, SignupStatus.published);
+      await service.updateSignupStatus(id, SignupStatus.published);
 
-      final after = await service.getSheetById(id).first;
+      final after = await service.getSignupById(id).first;
       expect(after!.status, SignupStatus.published);
       expect(after.titleEn, before.titleEn);
       expect(
@@ -205,14 +208,14 @@ void main() {
     test(
       'addSlot writes a new slot document and returns its auto-id',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
+        final signupId = await service.createSignup(buildSignup());
 
-        final slotId = await service.addSlot(sheetId, buildSlot());
+        final slotId = await service.addSlot(signupId, buildSlot());
 
         expect(slotId, isNotEmpty);
         final doc = await fakeFirestore
             .collection('signups')
-            .doc(sheetId)
+            .doc(signupId)
             .collection('slots')
             .doc(slotId)
             .get();
@@ -222,15 +225,21 @@ void main() {
     );
 
     test('getSlots streams slots ordered by sortOrder ascending', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      await service.addSlot(sheetId, buildSlot(labelEn: 'Third', sortOrder: 2));
-      await service.addSlot(sheetId, buildSlot(labelEn: 'First', sortOrder: 0));
+      final signupId = await service.createSignup(buildSignup());
       await service.addSlot(
-        sheetId,
+        signupId,
+        buildSlot(labelEn: 'Third', sortOrder: 2),
+      );
+      await service.addSlot(
+        signupId,
+        buildSlot(labelEn: 'First', sortOrder: 0),
+      );
+      await service.addSlot(
+        signupId,
         buildSlot(labelEn: 'Second', sortOrder: 1),
       );
 
-      final slots = await service.getSlots(sheetId).first;
+      final slots = await service.getSlots(signupId).first;
 
       expect(slots.map((s) => s.labelEn).toList(), [
         'First',
@@ -240,13 +249,13 @@ void main() {
     });
 
     test('updateSlot overwrites the stored fields', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slotId = await service.addSlot(sheetId, buildSlot());
-      final slot = (await service.getSlots(sheetId).first).single;
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot());
+      final slot = (await service.getSlots(signupId).first).single;
 
-      await service.updateSlot(sheetId, slot.copyWith(capacity: 10));
+      await service.updateSlot(signupId, slot.copyWith(capacity: 10));
 
-      final updated = (await service.getSlots(sheetId).first).single;
+      final updated = (await service.getSlots(signupId).first).single;
       expect(updated.id, slotId);
       expect(updated.capacity, 10);
     });
@@ -254,93 +263,93 @@ void main() {
     test(
       'updateSlot throws when slot.id is null instead of writing a stray doc',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
+        final signupId = await service.createSignup(buildSignup());
 
         await expectLater(
-          service.updateSlot(sheetId, buildSlot()),
+          service.updateSlot(signupId, buildSlot()),
           throwsArgumentError,
         );
 
-        final slots = await service.getSlots(sheetId).first;
+        final slots = await service.getSlots(signupId).first;
         expect(slots, isEmpty);
       },
     );
 
     test('deleteSlot removes the slot document', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slotId = await service.addSlot(sheetId, buildSlot());
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot());
 
-      await service.deleteSlot(sheetId, slotId);
+      await service.deleteSlot(signupId, slotId);
 
-      final slots = await service.getSlots(sheetId).first;
+      final slots = await service.getSlots(signupId).first;
       expect(slots, isEmpty);
     });
 
     test('reorderSlots rewrites sortOrder to match the given order', () async {
-      final sheetId = await service.createSheet(buildSheet());
+      final signupId = await service.createSignup(buildSignup());
       final firstId = await service.addSlot(
-        sheetId,
+        signupId,
         buildSlot(labelEn: 'A', sortOrder: 0),
       );
       final secondId = await service.addSlot(
-        sheetId,
+        signupId,
         buildSlot(labelEn: 'B', sortOrder: 1),
       );
 
-      await service.reorderSlots(sheetId, [secondId, firstId]);
+      await service.reorderSlots(signupId, [secondId, firstId]);
 
-      final slots = await service.getSlots(sheetId).first;
+      final slots = await service.getSlots(signupId).first;
       expect(slots.map((s) => s.id).toList(), [secondId, firstId]);
       expect(slots[0].sortOrder, 0);
       expect(slots[1].sortOrder, 1);
     });
   });
 
-  group('SignupService createSheetWithSlots', () {
-    test('creates the sheet and every slot in one batch', () async {
-      final sheetId = await service.createSheetWithSlots(buildSheet(), [
+  group('SignupService createSignupWithSlots', () {
+    test('creates the signup and every slot in one batch', () async {
+      final signupId = await service.createSignupWithSlots(buildSignup(), [
         buildSlot(labelEn: 'Week 1', sortOrder: 0),
         buildSlot(labelEn: 'Week 2', sortOrder: 1),
       ]);
 
-      final sheet = await service.getSheetById(sheetId).first;
-      expect(sheet, isNotNull);
+      final signup = await service.getSignupById(signupId).first;
+      expect(signup, isNotNull);
 
-      final slots = await service.getSlots(sheetId).first;
+      final slots = await service.getSlots(signupId).first;
       expect(slots.map((s) => s.labelEn).toList(), ['Week 1', 'Week 2']);
     });
 
-    test('rejects an empty slot list without writing a sheet', () async {
+    test('rejects an empty slot list without writing a signup', () async {
       await expectLater(
-        service.createSheetWithSlots(buildSheet(), []),
+        service.createSignupWithSlots(buildSignup(), []),
         throwsArgumentError,
       );
 
-      final sheets = await service.getAllSheets('group_1').first;
-      expect(sheets, isEmpty);
+      final signups = await service.getAllSignups('group_1').first;
+      expect(signups, isEmpty);
     });
 
     test('writes to a pre-set id instead of auto-generating one', () async {
-      final preGeneratedId = service.newSheetId();
+      final preGeneratedId = service.newSignupId();
 
-      final sheetId = await service.createSheetWithSlots(
-        buildSheet(id: preGeneratedId),
+      final signupId = await service.createSignupWithSlots(
+        buildSignup(id: preGeneratedId),
         [buildSlot()],
       );
 
-      expect(sheetId, preGeneratedId);
-      final sheet = await service.getSheetById(preGeneratedId).first;
-      expect(sheet, isNotNull);
+      expect(signupId, preGeneratedId);
+      final signup = await service.getSignupById(preGeneratedId).first;
+      expect(signup, isNotNull);
     });
   });
 
   group('SignupService claimSlot', () {
     test('happy path creates an entry and increments claimedCount', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
 
       final result = await service.claimSlot(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: slotId,
         name: 'Jane Doe',
         phone: '+911234567890',
@@ -349,36 +358,36 @@ void main() {
       expect(result['success'], true);
       expect(result['entryId'], isNotEmpty);
 
-      final entries = await service.getAllEntries(sheetId).first;
+      final entries = await service.getAllEntries(signupId).first;
       expect(entries.single.name, 'Jane Doe');
 
       final myEntries = await service
-          .getEntriesByDevice(sheetId, 'no_such_device')
+          .getEntriesByDevice(signupId, 'no_such_device')
           .first;
       expect(myEntries, isEmpty);
 
-      final slot = (await service.getSlots(sheetId).first).single;
+      final slot = (await service.getSlots(signupId).first).single;
       expect(slot.claimedCount, 1);
     });
 
     test('getEntriesByDevice returns only that device\'s entries', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 5));
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
       await service.claimSlot(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: slotId,
         name: 'Jane',
         deviceId: 'device_1',
       );
       await service.claimSlot(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: slotId,
         name: 'John',
         deviceId: 'device_2',
       );
 
       final myEntries = await service
-          .getEntriesByDevice(sheetId, 'device_1')
+          .getEntriesByDevice(signupId, 'device_1')
           .first;
 
       expect(myEntries.map((e) => e.name).toList(), ['Jane']);
@@ -387,43 +396,43 @@ void main() {
     test(
       'rejects with slot_full when capacity is reached, without creating an entry',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
-        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 1));
+        final signupId = await service.createSignup(buildSignup());
+        final slotId = await service.addSlot(signupId, buildSlot(capacity: 1));
         await service.claimSlot(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'First',
         );
 
         final result = await service.claimSlot(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'Second',
         );
 
         expect(result, {'success': false, 'error': 'slot_full'});
-        final entries = await service.getAllEntries(sheetId).first;
+        final entries = await service.getAllEntries(signupId).first;
         expect(entries.length, 1);
-        final slot = (await service.getSlots(sheetId).first).single;
+        final slot = (await service.getSlots(signupId).first).single;
         expect(slot.claimedCount, 1);
       },
     );
 
     test(
-      'rejects a missing/wrong join code when the sheet requires one',
+      'rejects a missing/wrong join code when the signup requires one',
       () async {
-        final sheetId = await service.createSheet(
-          buildSheet(requiresJoinCode: true, joinCode: 'ABC123'),
+        final signupId = await service.createSignup(
+          buildSignup(requiresJoinCode: true, joinCode: 'ABC123'),
         );
-        final slotId = await service.addSlot(sheetId, buildSlot());
+        final slotId = await service.addSlot(signupId, buildSlot());
 
         final missing = await service.claimSlot(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'Jane',
         );
         final wrong = await service.claimSlot(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'Jane',
           joinCode: 'WRONG',
@@ -431,21 +440,21 @@ void main() {
 
         expect(missing, {'success': false, 'error': 'invalid_join_code'});
         expect(wrong, {'success': false, 'error': 'invalid_join_code'});
-        final slot = (await service.getSlots(sheetId).first).single;
+        final slot = (await service.getSlots(signupId).first).single;
         expect(slot.claimedCount, 0);
       },
     );
 
     test(
-      'succeeds without a join code when the sheet does not require one',
+      'succeeds without a join code when the signup does not require one',
       () async {
-        final sheetId = await service.createSheet(
-          buildSheet(requiresJoinCode: false),
+        final signupId = await service.createSignup(
+          buildSignup(requiresJoinCode: false),
         );
-        final slotId = await service.addSlot(sheetId, buildSlot());
+        final slotId = await service.addSlot(signupId, buildSlot());
 
         final result = await service.claimSlot(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'Jane',
         );
@@ -455,10 +464,10 @@ void main() {
     );
 
     test('returns not_found when the slot does not exist', () async {
-      final sheetId = await service.createSheet(buildSheet());
+      final signupId = await service.createSignup(buildSignup());
 
       final result = await service.claimSlot(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: 'missing',
         name: 'Jane',
       );
@@ -466,9 +475,9 @@ void main() {
       expect(result, {'success': false, 'error': 'not_found'});
     });
 
-    test('returns not_found when the sheet does not exist', () async {
+    test('returns not_found when the signup does not exist', () async {
       final result = await service.claimSlot(
-        sheetId: 'missing',
+        signupId: 'missing',
         slotId: 'also_missing',
         name: 'Jane',
       );
@@ -478,57 +487,57 @@ void main() {
 
     test('rejects a second claim on the same slot with the same email, '
         'without creating an entry', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 5));
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
       await service.claimSlot(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: slotId,
         name: 'Jane',
         email: 'jane@example.com',
       );
 
       final result = await service.claimSlot(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: slotId,
         name: 'Jane Again',
         email: 'JANE@EXAMPLE.COM', // case-insensitive match
       );
 
       expect(result, {'success': false, 'error': 'duplicate_entry'});
-      final entries = await service.getAllEntries(sheetId).first;
+      final entries = await service.getAllEntries(signupId).first;
       expect(entries, hasLength(1));
     });
 
     test('rejects a second claim on the same slot with the same phone '
         'regardless of formatting, without creating an entry', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 5));
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
       await service.claimSlot(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: slotId,
         name: 'Jane',
         phone: '(123) 456-7890',
       );
 
       final result = await service.claimSlot(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: slotId,
         name: 'Jane Again',
         phone: '123-456-7890',
       );
 
       expect(result, {'success': false, 'error': 'duplicate_entry'});
-      final entries = await service.getAllEntries(sheetId).first;
+      final entries = await service.getAllEntries(signupId).first;
       expect(entries, hasLength(1));
     });
 
     test('allows the same email/phone to claim a different slot on the same '
-        'sheet', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slot1 = await service.addSlot(sheetId, buildSlot(capacity: 5));
-      final slot2 = await service.addSlot(sheetId, buildSlot(capacity: 5));
+        'signup', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slot1 = await service.addSlot(signupId, buildSlot(capacity: 5));
+      final slot2 = await service.addSlot(signupId, buildSlot(capacity: 5));
       await service.claimSlot(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: slot1,
         name: 'Jane',
         email: 'jane@example.com',
@@ -536,7 +545,7 @@ void main() {
       );
 
       final result = await service.claimSlot(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: slot2,
         name: 'Jane',
         email: 'jane@example.com',
@@ -544,24 +553,24 @@ void main() {
       );
 
       expect(result['success'], true);
-      final entries = await service.getAllEntries(sheetId).first;
+      final entries = await service.getAllEntries(signupId).first;
       expect(entries, hasLength(2));
     });
 
     test('allows two claims on the same slot when neither has an email or '
         'phone to match on', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 5));
-      await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'A');
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
+      await service.claimSlot(signupId: signupId, slotId: slotId, name: 'A');
 
       final result = await service.claimSlot(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: slotId,
         name: 'B',
       );
 
       expect(result['success'], true);
-      final entries = await service.getAllEntries(sheetId).first;
+      final entries = await service.getAllEntries(signupId).first;
       expect(entries, hasLength(2));
     });
 
@@ -576,16 +585,16 @@ void main() {
       // ships.
       'exactly one of two claims against a capacity-1 slot succeeds',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
-        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 1));
+        final signupId = await service.createSignup(buildSignup());
+        final slotId = await service.addSlot(signupId, buildSlot(capacity: 1));
 
         final first = await service.claimSlot(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'First',
         );
         final second = await service.claimSlot(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'Second',
         );
@@ -593,7 +602,7 @@ void main() {
         final results = [first, second];
         expect(results.where((r) => r['success'] == true).length, 1);
         expect(results.where((r) => r['error'] == 'slot_full').length, 1);
-        final slot = (await service.getSlots(sheetId).first).single;
+        final slot = (await service.getSlots(signupId).first).single;
         expect(slot.claimedCount, 1);
       },
     );
@@ -601,38 +610,38 @@ void main() {
 
   group('SignupService cancelEntry / adminRemoveEntry', () {
     test('cancelEntry deletes the entry and decrements claimedCount', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
       final claim = await service.claimSlot(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: slotId,
         name: 'Jane',
       );
 
-      await service.cancelEntry(sheetId, claim['entryId'] as String);
+      await service.cancelEntry(signupId, claim['entryId'] as String);
 
-      final entries = await service.getAllEntries(sheetId).first;
+      final entries = await service.getAllEntries(signupId).first;
       expect(entries, isEmpty);
-      final slot = (await service.getSlots(sheetId).first).single;
+      final slot = (await service.getSlots(signupId).first).single;
       expect(slot.claimedCount, 0);
     });
 
     test(
       'cancelEntry is a no-op if called twice (never goes below 0)',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
-        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+        final signupId = await service.createSignup(buildSignup());
+        final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
         final claim = await service.claimSlot(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'Jane',
         );
         final entryId = claim['entryId'] as String;
 
-        await service.cancelEntry(sheetId, entryId);
-        await service.cancelEntry(sheetId, entryId);
+        await service.cancelEntry(signupId, entryId);
+        await service.cancelEntry(signupId, entryId);
 
-        final slot = (await service.getSlots(sheetId).first).single;
+        final slot = (await service.getSlots(signupId).first).single;
         expect(slot.claimedCount, 0);
       },
     );
@@ -640,19 +649,19 @@ void main() {
     test(
       'adminRemoveEntry deletes the entry and decrements claimedCount',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
-        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+        final signupId = await service.createSignup(buildSignup());
+        final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
         final claim = await service.claimSlot(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'Jane',
         );
 
-        await service.adminRemoveEntry(sheetId, claim['entryId'] as String);
+        await service.adminRemoveEntry(signupId, claim['entryId'] as String);
 
-        final entries = await service.getAllEntries(sheetId).first;
+        final entries = await service.getAllEntries(signupId).first;
         expect(entries, isEmpty);
-        final slot = (await service.getSlots(sheetId).first).single;
+        final slot = (await service.getSlots(signupId).first).single;
         expect(slot.claimedCount, 0);
       },
     );
@@ -660,10 +669,10 @@ void main() {
     test(
       'cancelEntry deletes the entry without error when its slot is already gone',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
-        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+        final signupId = await service.createSignup(buildSignup());
+        final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
         final claim = await service.claimSlot(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'Jane',
         );
@@ -671,34 +680,34 @@ void main() {
         // manual console edit) while an entry still references it.
         await fakeFirestore
             .collection('signups')
-            .doc(sheetId)
+            .doc(signupId)
             .collection('slots')
             .doc(slotId)
             .delete();
 
-        await service.cancelEntry(sheetId, claim['entryId'] as String);
+        await service.cancelEntry(signupId, claim['entryId'] as String);
 
-        final entries = await service.getAllEntries(sheetId).first;
+        final entries = await service.getAllEntries(signupId).first;
         expect(entries, isEmpty);
       },
     );
   });
 
-  group('SignupService duplicateSheet', () {
+  group('SignupService duplicateSignup', () {
     test(
       'copies title/description/requiresJoinCode and resets status to draft',
       () async {
-        final sheetId = await service.createSheet(
-          buildSheet(
+        final signupId = await service.createSignup(
+          buildSignup(
             titleEn: 'Original Title',
             requiresJoinCode: false,
             status: SignupStatus.closed,
           ),
         );
 
-        final newId = await service.duplicateSheet(sheetId);
+        final newId = await service.duplicateSignup(signupId);
 
-        final copy = await service.getSheetById(newId).first;
+        final copy = await service.getSignupById(newId).first;
         expect(copy!.titleEn, 'Original Title');
         expect(copy.requiresJoinCode, false);
         expect(copy.joinCode, isNull);
@@ -707,24 +716,24 @@ void main() {
     );
 
     test('generates a fresh join code when requiresJoinCode is true', () async {
-      final sheetId = await service.createSheet(
-        buildSheet(requiresJoinCode: true, joinCode: 'ORIGINAL'),
+      final signupId = await service.createSignup(
+        buildSignup(requiresJoinCode: true, joinCode: 'ORIGINAL'),
       );
 
-      final newId = await service.duplicateSheet(sheetId);
+      final newId = await service.duplicateSignup(signupId);
 
-      final copy = await service.getSheetById(newId).first;
+      final copy = await service.getSignupById(newId).first;
       expect(copy!.requiresJoinCode, true);
       expect(copy.joinCode, isNotNull);
       expect(copy.joinCode, isNot('ORIGINAL'));
     });
 
     test('copies every slot with claimedCount reset to 0', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
-      await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'Jane');
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
+      await service.claimSlot(signupId: signupId, slotId: slotId, name: 'Jane');
 
-      final newId = await service.duplicateSheet(sheetId);
+      final newId = await service.duplicateSignup(signupId);
 
       final newSlots = await service.getSlots(newId).first;
       expect(newSlots.single.labelEn, 'Week 1');
@@ -732,18 +741,21 @@ void main() {
     });
 
     test('does not copy entries', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
-      await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'Jane');
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
+      await service.claimSlot(signupId: signupId, slotId: slotId, name: 'Jane');
 
-      final newId = await service.duplicateSheet(sheetId);
+      final newId = await service.duplicateSignup(signupId);
 
       final newEntries = await service.getAllEntries(newId).first;
       expect(newEntries, isEmpty);
     });
 
-    test('throws when the source sheet does not exist', () async {
-      await expectLater(service.duplicateSheet('missing'), throwsArgumentError);
+    test('throws when the source signup does not exist', () async {
+      await expectLater(
+        service.duplicateSignup('missing'),
+        throwsArgumentError,
+      );
     });
   });
 
@@ -751,13 +763,13 @@ void main() {
     test(
       'creates an entry and increments claimedCount, bypassing the join code',
       () async {
-        final sheetId = await service.createSheet(
-          buildSheet(requiresJoinCode: true, joinCode: 'ABC123'),
+        final signupId = await service.createSignup(
+          buildSignup(requiresJoinCode: true, joinCode: 'ABC123'),
         );
-        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+        final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
 
         final result = await service.adminAddEntry(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'Phoned-in Devotee',
           phone: '+911234567890',
@@ -765,9 +777,9 @@ void main() {
 
         expect(result['success'], true);
         expect(result['entryId'], isNotEmpty);
-        final entries = await service.getAllEntries(sheetId).first;
+        final entries = await service.getAllEntries(signupId).first;
         expect(entries.single.name, 'Phoned-in Devotee');
-        final slot = (await service.getSlots(sheetId).first).single;
+        final slot = (await service.getSlots(signupId).first).single;
         expect(slot.claimedCount, 1);
       },
     );
@@ -775,31 +787,31 @@ void main() {
     test(
       'rejects with slot_full when capacity is reached, without creating an entry',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
-        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 1));
+        final signupId = await service.createSignup(buildSignup());
+        final slotId = await service.addSlot(signupId, buildSlot(capacity: 1));
         await service.adminAddEntry(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'First',
         );
 
         final result = await service.adminAddEntry(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotId,
           name: 'Second',
         );
 
         expect(result, {'success': false, 'error': 'slot_full'});
-        final entries = await service.getAllEntries(sheetId).first;
+        final entries = await service.getAllEntries(signupId).first;
         expect(entries.length, 1);
       },
     );
 
     test('returns not_found when the slot does not exist', () async {
-      final sheetId = await service.createSheet(buildSheet());
+      final signupId = await service.createSignup(buildSignup());
 
       final result = await service.adminAddEntry(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: 'missing',
         name: 'Jane',
       );
@@ -812,17 +824,21 @@ void main() {
     test(
       'does not revert a claim made after the slot was loaded for editing',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
-        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
-        final staleSlot = (await service.getSlots(sheetId).first).single;
+        final signupId = await service.createSignup(buildSignup());
+        final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
+        final staleSlot = (await service.getSlots(signupId).first).single;
 
         // A devotee claims the slot after the admin loaded it for editing.
-        await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'Jane');
+        await service.claimSlot(
+          signupId: signupId,
+          slotId: slotId,
+          name: 'Jane',
+        );
 
         // Admin saves an edit built from the stale (pre-claim) slot object.
-        await service.updateSlot(sheetId, staleSlot.copyWith(capacity: 10));
+        await service.updateSlot(signupId, staleSlot.copyWith(capacity: 10));
 
-        final updated = (await service.getSlots(sheetId).first).single;
+        final updated = (await service.getSlots(signupId).first).single;
         expect(updated.capacity, 10);
         expect(updated.claimedCount, 1);
       },
@@ -833,51 +849,55 @@ void main() {
     test(
       'throws and does not delete when the slot has claimed entries',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
-        final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
-        await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'Jane');
+        final signupId = await service.createSignup(buildSignup());
+        final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
+        await service.claimSlot(
+          signupId: signupId,
+          slotId: slotId,
+          name: 'Jane',
+        );
 
         await expectLater(
-          service.deleteSlot(sheetId, slotId),
+          service.deleteSlot(signupId, slotId),
           throwsStateError,
         );
 
-        final slots = await service.getSlots(sheetId).first;
+        final slots = await service.getSlots(signupId).first;
         expect(slots, isNotEmpty);
       },
     );
 
     test('succeeds when the slot has no claims', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
 
-      await service.deleteSlot(sheetId, slotId);
+      await service.deleteSlot(signupId, slotId);
 
-      final slots = await service.getSlots(sheetId).first;
+      final slots = await service.getSlots(signupId).first;
       expect(slots, isEmpty);
     });
   });
 
   group('SignupService updateEntry', () {
     test('updates an existing entry fields', () async {
-      final sheetId = await service.createSheet(buildSheet());
-      final slotId = await service.addSlot(sheetId, buildSlot(capacity: 3));
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
       final addResult = await service.adminAddEntry(
-        sheetId: sheetId,
+        signupId: signupId,
         slotId: slotId,
         name: 'Jane Doe',
         phone: '1234567890',
       );
       final entryId = addResult['entryId'] as String;
-      final original = (await service.getAllEntries(sheetId).first).single;
+      final original = (await service.getAllEntries(signupId).first).single;
 
       final updatedEntry = original.copyWith(
         name: 'Jane Smith',
         note: 'Updated note',
       );
-      await service.updateEntry(sheetId, updatedEntry);
+      await service.updateEntry(signupId, updatedEntry);
 
-      final fetched = (await service.getAllEntries(sheetId).first).single;
+      final fetched = (await service.getAllEntries(signupId).first).single;
       expect(fetched.id, entryId);
       expect(fetched.name, 'Jane Smith');
       expect(fetched.note, 'Updated note');
@@ -890,43 +910,43 @@ void main() {
         name: 'Jane',
         joinedAt: DateTime.now(),
       );
-      expect(() => service.updateEntry('sheet_1', entry), throwsArgumentError);
+      expect(() => service.updateEntry('signup_1', entry), throwsArgumentError);
     });
 
     test(
       'ignores a changed slotId, preserving the original slot and claimedCount',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
+        final signupId = await service.createSignup(buildSignup());
         final slotAId = await service.addSlot(
-          sheetId,
+          signupId,
           buildSlot(labelEn: 'Slot A', capacity: 3),
         );
         final slotBId = await service.addSlot(
-          sheetId,
+          signupId,
           buildSlot(labelEn: 'Slot B', capacity: 3),
         );
         final addResult = await service.adminAddEntry(
-          sheetId: sheetId,
+          signupId: signupId,
           slotId: slotAId,
           name: 'Jane Doe',
         );
-        final original = (await service.getAllEntries(sheetId).first).single;
+        final original = (await service.getAllEntries(signupId).first).single;
 
         // A caller attempts to move the entry to a different slot via
         // updateEntry, which is not transactional and has no capacity
         // check — this must be a no-op on slotId/claimedCount, not a
         // silent desync.
         await service.updateEntry(
-          sheetId,
+          signupId,
           original.copyWith(slotId: slotBId, name: 'Jane Smith'),
         );
 
-        final fetched = (await service.getAllEntries(sheetId).first).single;
+        final fetched = (await service.getAllEntries(signupId).first).single;
         expect(fetched.id, addResult['entryId']);
         expect(fetched.name, 'Jane Smith');
         expect(fetched.slotId, slotAId);
 
-        final slots = await service.getSlots(sheetId).first;
+        final slots = await service.getSlots(signupId).first;
         final slotA = slots.firstWhere((s) => s.id == slotAId);
         final slotB = slots.firstWhere((s) => s.id == slotBId);
         expect(slotA.claimedCount, 1);
@@ -939,17 +959,17 @@ void main() {
     test(
       'uploadHeaderImage stores the bytes and returns a download URL',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
+        final signupId = await service.createSignup(buildSignup());
 
         final url = await service.uploadHeaderImage(
-          sheetId: sheetId,
+          signupId: signupId,
           bytes: Uint8List.fromList(List.filled(1024, 1)),
           contentType: 'image/jpeg',
         );
 
         expect(url, isNotEmpty);
         expect(
-          mockStorage.storedDataMap.containsKey('signups/$sheetId/header'),
+          mockStorage.storedDataMap.containsKey('signups/$signupId/header'),
           true,
         );
       },
@@ -958,69 +978,69 @@ void main() {
     test(
       'uploadHeaderImage rejects a file larger than maxHeaderImageBytes',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
+        final signupId = await service.createSignup(buildSignup());
         final oversized = Uint8List(SignupService.maxHeaderImageBytes + 1);
 
         expect(
           () => service.uploadHeaderImage(
-            sheetId: sheetId,
+            signupId: signupId,
             bytes: oversized,
             contentType: 'image/jpeg',
           ),
           throwsArgumentError,
         );
         expect(
-          mockStorage.storedDataMap.containsKey('signups/$sheetId/header'),
+          mockStorage.storedDataMap.containsKey('signups/$signupId/header'),
           false,
         );
       },
     );
 
-    test('updateHeaderImageUrl sets the field on the sheet', () async {
-      final sheetId = await service.createSheet(buildSheet());
+    test('updateHeaderImageUrl sets the field on the signup', () async {
+      final signupId = await service.createSignup(buildSignup());
 
       await service.updateHeaderImageUrl(
-        sheetId,
+        signupId,
         'https://example.com/header.jpg',
       );
 
-      final sheet = await service.getSheetById(sheetId).first;
-      expect(sheet!.headerImageUrl, 'https://example.com/header.jpg');
+      final signup = await service.getSignupById(signupId).first;
+      expect(signup!.headerImageUrl, 'https://example.com/header.jpg');
     });
 
     test('updateHeaderImageUrl clears the field when passed null', () async {
-      final sheetId = await service.createSheet(buildSheet());
+      final signupId = await service.createSignup(buildSignup());
       await service.updateHeaderImageUrl(
-        sheetId,
+        signupId,
         'https://example.com/header.jpg',
       );
 
-      await service.updateHeaderImageUrl(sheetId, null);
+      await service.updateHeaderImageUrl(signupId, null);
 
-      final sheet = await service.getSheetById(sheetId).first;
-      expect(sheet!.headerImageUrl, isNull);
+      final signup = await service.getSignupById(signupId).first;
+      expect(signup!.headerImageUrl, isNull);
     });
 
     test(
       'removeHeaderImage deletes the Storage object and clears the field',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
+        final signupId = await service.createSignup(buildSignup());
         await service.uploadHeaderImage(
-          sheetId: sheetId,
+          signupId: signupId,
           bytes: Uint8List.fromList([1, 2, 3]),
           contentType: 'image/jpeg',
         );
         await service.updateHeaderImageUrl(
-          sheetId,
+          signupId,
           'https://example.com/header.jpg',
         );
 
-        await service.removeHeaderImage(sheetId);
+        await service.removeHeaderImage(signupId);
 
-        final sheet = await service.getSheetById(sheetId).first;
-        expect(sheet!.headerImageUrl, isNull);
+        final signup = await service.getSignupById(signupId).first;
+        expect(signup!.headerImageUrl, isNull);
         expect(
-          mockStorage.storedDataMap.containsKey('signups/$sheetId/header'),
+          mockStorage.storedDataMap.containsKey('signups/$signupId/header'),
           false,
         );
       },
@@ -1029,12 +1049,12 @@ void main() {
     test(
       'removeHeaderImage does not throw when no image was ever uploaded',
       () async {
-        final sheetId = await service.createSheet(buildSheet());
+        final signupId = await service.createSignup(buildSignup());
 
-        await service.removeHeaderImage(sheetId);
+        await service.removeHeaderImage(signupId);
 
-        final sheet = await service.getSheetById(sheetId).first;
-        expect(sheet!.headerImageUrl, isNull);
+        final signup = await service.getSignupById(signupId).first;
+        expect(signup!.headerImageUrl, isNull);
       },
     );
 
@@ -1045,10 +1065,10 @@ void main() {
           firestore: fakeFirestore,
           storage: _ThrowingHeaderImageStorage(),
         );
-        final sheetId = await service.createSheet(buildSheet());
+        final signupId = await service.createSignup(buildSignup());
 
         expect(
-          () => throwingService.removeHeaderImage(sheetId),
+          () => throwingService.removeHeaderImage(signupId),
           throwsA(isA<FirebaseException>()),
         );
       },
@@ -1061,10 +1081,10 @@ void main() {
           firestore: fakeFirestore,
           storage: _ThrowingHeaderImageStorage(code: 'object-not-found'),
         );
-        final sheetId = await service.createSheet(buildSheet());
+        final signupId = await service.createSignup(buildSignup());
 
         await expectLater(
-          throwingService.deleteHeaderImageFile(sheetId),
+          throwingService.deleteHeaderImageFile(signupId),
           completes,
         );
       },
@@ -1077,10 +1097,10 @@ void main() {
           firestore: fakeFirestore,
           storage: _ThrowingHeaderImageStorage(code: 'unauthorized'),
         );
-        final sheetId = await service.createSheet(buildSheet());
+        final signupId = await service.createSignup(buildSignup());
 
         expect(
-          () => throwingService.deleteHeaderImageFile(sheetId),
+          () => throwingService.deleteHeaderImageFile(signupId),
           throwsA(isA<FirebaseException>()),
         );
       },

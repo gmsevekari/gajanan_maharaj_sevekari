@@ -9,7 +9,7 @@ class SignupExportCard extends StatelessWidget {
   /// Fixed width of the exported PNG card in logical pixels.
   static const double _cardWidth = 380;
 
-  final Signup sheet;
+  final Signup signup;
   final List<SignupSlot> slots;
   final int totalClaims;
   final int totalCapacity;
@@ -20,7 +20,7 @@ class SignupExportCard extends StatelessWidget {
 
   const SignupExportCard({
     super.key,
-    required this.sheet,
+    required this.signup,
     required this.slots,
     required this.totalClaims,
     required this.totalCapacity,
@@ -34,15 +34,15 @@ class SignupExportCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMarathi = langCode == 'mr';
     final title = isMarathi
-        ? (sheet.titleMr.isNotEmpty ? sheet.titleMr : sheet.titleEn)
-        : (sheet.titleEn.isNotEmpty ? sheet.titleEn : sheet.titleMr);
+        ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
+        : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);
     final desc = isMarathi
-        ? (sheet.descriptionMr.isNotEmpty
-              ? sheet.descriptionMr
-              : sheet.descriptionEn)
-        : (sheet.descriptionEn.isNotEmpty
-              ? sheet.descriptionEn
-              : sheet.descriptionMr);
+        ? (signup.descriptionMr.isNotEmpty
+              ? signup.descriptionMr
+              : signup.descriptionEn)
+        : (signup.descriptionEn.isNotEmpty
+              ? signup.descriptionEn
+              : signup.descriptionMr);
 
     final percentFilled = totalCapacity > 0
         ? ((totalClaims / totalCapacity) * 100).round()

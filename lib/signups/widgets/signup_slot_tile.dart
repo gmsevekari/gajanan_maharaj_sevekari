@@ -7,7 +7,7 @@ import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 
 /// A single claimable slot card on [SignupSlotsScreen]: its date and live
 /// fill status, and a Sign Up action (hidden once full). Who's already
-/// signed up is shown separately, in the sheet's Entries table - not here.
+/// signed up is shown separately, in the signup's Entries table - not here.
 class SignupSlotTile extends StatelessWidget {
   final SignupSlot slot;
   final VoidCallback? onTap;

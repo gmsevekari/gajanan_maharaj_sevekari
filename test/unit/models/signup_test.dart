@@ -8,8 +8,8 @@ void main() {
       final updatedAt = DateTime(2026, 1, 2, 8, 0);
       final startDate = DateTime(2026, 3, 1);
       final endDate = DateTime(2026, 3, 31);
-      final sheet = Signup(
-        id: 'sheet1',
+      final signup = Signup(
+        id: 'signup1',
         titleEn: 'Sunday Prasad Seva',
         titleMr: 'रविवार प्रसाद सेवा',
         descriptionEn: 'Cook and serve prasad',
@@ -26,10 +26,10 @@ void main() {
         headerImageUrl: 'https://example.com/header.jpg',
       );
 
-      final map = sheet.toMap();
-      final roundTripped = Signup.fromMap('sheet1', map);
+      final map = signup.toMap();
+      final roundTripped = Signup.fromMap('signup1', map);
 
-      expect(roundTripped.id, 'sheet1');
+      expect(roundTripped.id, 'signup1');
       expect(roundTripped.titleEn, 'Sunday Prasad Seva');
       expect(roundTripped.titleMr, 'रविवार प्रसाद सेवा');
       expect(roundTripped.descriptionEn, 'Cook and serve prasad');
@@ -47,7 +47,7 @@ void main() {
     });
 
     test('headerImageUrl defaults to null when not specified', () {
-      final sheet = Signup(
+      final signup = Signup(
         titleEn: 'No Image',
         titleMr: 'प्रतिमा नाही',
         groupId: 'group1',
@@ -56,13 +56,13 @@ void main() {
         createdBy: 'admin@example.com',
       );
 
-      expect(sheet.headerImageUrl, isNull);
-      expect(sheet.toMap()['headerImageUrl'], isNull);
+      expect(signup.headerImageUrl, isNull);
+      expect(signup.toMap()['headerImageUrl'], isNull);
     });
 
     test('defaults to status draft when not specified', () {
-      final sheet = Signup(
-        titleEn: 'Draft Sheet',
+      final signup = Signup(
+        titleEn: 'Draft Signup',
         titleMr: 'मसुदा',
         groupId: 'group1',
         createdAt: DateTime(2026, 1, 1),
@@ -70,12 +70,12 @@ void main() {
         createdBy: 'admin@example.com',
       );
 
-      expect(sheet.status, SignupStatus.draft);
+      expect(signup.status, SignupStatus.draft);
     });
 
     test('joinCode is null when requiresJoinCode is false', () {
-      final sheet = Signup(
-        titleEn: 'Open Sheet',
+      final signup = Signup(
+        titleEn: 'Open Signup',
         titleMr: 'खुली शीट',
         groupId: 'group1',
         requiresJoinCode: false,
@@ -84,16 +84,16 @@ void main() {
         createdBy: 'admin@example.com',
       );
 
-      final map = sheet.toMap();
+      final map = signup.toMap();
       expect(map['joinCode'], isNull);
 
-      final roundTripped = Signup.fromMap('sheet2', map);
+      final roundTripped = Signup.fromMap('signup2', map);
       expect(roundTripped.requiresJoinCode, false);
       expect(roundTripped.joinCode, isNull);
     });
 
     test('startDate and endDate are null when absent', () {
-      final sheet = Signup(
+      final signup = Signup(
         titleEn: 'No Date Range',
         titleMr: 'तारीख नाही',
         groupId: 'group1',
@@ -102,11 +102,11 @@ void main() {
         createdBy: 'admin@example.com',
       );
 
-      final map = sheet.toMap();
+      final map = signup.toMap();
       expect(map['startDate'], isNull);
       expect(map['endDate'], isNull);
 
-      final roundTripped = Signup.fromMap('sheet3', map);
+      final roundTripped = Signup.fromMap('signup3', map);
       expect(roundTripped.startDate, isNull);
       expect(roundTripped.endDate, isNull);
     });
@@ -114,35 +114,35 @@ void main() {
     test(
       'fromMap defaults missing required string fields to empty rather than throwing',
       () {
-        final sheet = Signup.fromMap('sheet4', {});
+        final signup = Signup.fromMap('signup4', {});
 
-        expect(sheet.titleEn, '');
-        expect(sheet.titleMr, '');
-        expect(sheet.groupId, '');
-        expect(sheet.status, SignupStatus.draft);
-        expect(sheet.requiresJoinCode, false);
+        expect(signup.titleEn, '');
+        expect(signup.titleMr, '');
+        expect(signup.groupId, '');
+        expect(signup.status, SignupStatus.draft);
+        expect(signup.requiresJoinCode, false);
       },
     );
 
     test('fromMap defaults createdAt/updatedAt to now when absent', () {
       final before = DateTime.now();
-      final sheet = Signup.fromMap('sheet5', {});
+      final signup = Signup.fromMap('signup5', {});
       final after = DateTime.now();
 
       expect(
-        sheet.createdAt.isAfter(before.subtract(const Duration(seconds: 1))),
+        signup.createdAt.isAfter(before.subtract(const Duration(seconds: 1))),
         isTrue,
       );
       expect(
-        sheet.createdAt.isBefore(after.add(const Duration(seconds: 1))),
+        signup.createdAt.isBefore(after.add(const Duration(seconds: 1))),
         isTrue,
       );
       expect(
-        sheet.updatedAt.isAfter(before.subtract(const Duration(seconds: 1))),
+        signup.updatedAt.isAfter(before.subtract(const Duration(seconds: 1))),
         isTrue,
       );
       expect(
-        sheet.updatedAt.isBefore(after.add(const Duration(seconds: 1))),
+        signup.updatedAt.isBefore(after.add(const Duration(seconds: 1))),
         isTrue,
       );
     });
@@ -157,19 +157,19 @@ void main() {
       });
 
       test('fromMap defaults an unrecognized status string to draft', () {
-        final sheet = Signup.fromMap('s3', {'status': 'not-a-status'});
+        final signup = Signup.fromMap('s3', {'status': 'not-a-status'});
 
-        expect(sheet.status, SignupStatus.draft);
+        expect(signup.status, SignupStatus.draft);
       });
 
       test('fromMap defaults a wrong-typed status field to draft', () {
-        final sheet = Signup.fromMap('s4', {'status': 42});
+        final signup = Signup.fromMap('s4', {'status': 42});
 
-        expect(sheet.status, SignupStatus.draft);
+        expect(signup.status, SignupStatus.draft);
       });
 
       test('toMap writes the enum name as a plain string', () {
-        final sheet = Signup(
+        final signup = Signup(
           titleEn: 'T',
           titleMr: 'T',
           groupId: 'g',
@@ -179,7 +179,7 @@ void main() {
           createdBy: 'admin@example.com',
         );
 
-        expect(sheet.toMap()['status'], 'closed');
+        expect(signup.toMap()['status'], 'closed');
       });
     });
 
@@ -204,7 +204,7 @@ void main() {
       );
 
       test('constructor allows joinCode when requiresJoinCode is true', () {
-        final sheet = Signup(
+        final signup = Signup(
           titleEn: 'T',
           titleMr: 'T',
           groupId: 'g',
@@ -215,13 +215,13 @@ void main() {
           createdBy: 'admin@example.com',
         );
 
-        expect(sheet.joinCode, 'ABC123');
+        expect(signup.joinCode, 'ABC123');
       });
     });
 
     group('copyWith', () {
       final base = Signup(
-        id: 'sheet1',
+        id: 'signup1',
         titleEn: 'Original',
         titleMr: 'मूळ',
         groupId: 'group1',
@@ -285,12 +285,12 @@ void main() {
 
     group('equality', () {
       test(
-        'two sheets with identical fields are equal and share a hashCode',
+        'two signups with identical fields are equal and share a hashCode',
         () {
           final createdAt = DateTime(2026, 1, 1);
           final updatedAt = DateTime(2026, 1, 2);
           final a = Signup(
-            id: 'sheet1',
+            id: 'signup1',
             titleEn: 'T',
             titleMr: 'T',
             groupId: 'g',
@@ -299,7 +299,7 @@ void main() {
             createdBy: 'admin@example.com',
           );
           final b = Signup(
-            id: 'sheet1',
+            id: 'signup1',
             titleEn: 'T',
             titleMr: 'T',
             groupId: 'g',
@@ -313,10 +313,10 @@ void main() {
         },
       );
 
-      test('sheets differing by one field are not equal', () {
+      test('signups differing by one field are not equal', () {
         final createdAt = DateTime(2026, 1, 1);
         final a = Signup(
-          id: 'sheet1',
+          id: 'signup1',
           titleEn: 'T',
           titleMr: 'T',
           groupId: 'g',
@@ -329,10 +329,10 @@ void main() {
         expect(a == b, isFalse);
       });
 
-      test('sheets differing only by headerImageUrl are not equal', () {
+      test('signups differing only by headerImageUrl are not equal', () {
         final createdAt = DateTime(2026, 1, 1);
         final a = Signup(
-          id: 'sheet1',
+          id: 'signup1',
           titleEn: 'T',
           titleMr: 'T',
           groupId: 'g',
@@ -349,7 +349,7 @@ void main() {
 
     group('fromMap type guards', () {
       test('falls back to defaults when fields have the wrong type', () {
-        final sheet = Signup.fromMap('sheet6', {
+        final signup = Signup.fromMap('signup6', {
           'titleEn': 123,
           'titleMr': true,
           'descriptionEn': 1.5,
@@ -363,17 +363,17 @@ void main() {
           'headerImageUrl': 7,
         });
 
-        expect(sheet.titleEn, '');
-        expect(sheet.titleMr, '');
-        expect(sheet.descriptionEn, '');
-        expect(sheet.descriptionMr, '');
-        expect(sheet.groupId, '');
-        expect(sheet.requiresJoinCode, false);
-        expect(sheet.joinCode, isNull);
-        expect(sheet.startDate, isNull);
-        expect(sheet.endDate, isNull);
-        expect(sheet.createdBy, '');
-        expect(sheet.headerImageUrl, isNull);
+        expect(signup.titleEn, '');
+        expect(signup.titleMr, '');
+        expect(signup.descriptionEn, '');
+        expect(signup.descriptionMr, '');
+        expect(signup.groupId, '');
+        expect(signup.requiresJoinCode, false);
+        expect(signup.joinCode, isNull);
+        expect(signup.startDate, isNull);
+        expect(signup.endDate, isNull);
+        expect(signup.createdBy, '');
+        expect(signup.headerImageUrl, isNull);
       });
     });
   });

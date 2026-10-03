@@ -8,13 +8,13 @@ import 'package:gajanan_maharaj_sevekari/signups/widgets/my_signups_section.dart
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
-/// The devotee's own claimed entries on a sign-up sheet, reached from
+/// The devotee's own claimed entries on a sign-up signup, reached from
 /// [SignupDetailScreen]'s "My Sign Ups" card. Splits entries into
 /// Upcoming/Past by their slot's date, matching [SignupSlotsScreen]'s own
 /// split - an entry whose slot has no date is treated as upcoming, since
 /// there's no basis to call it past.
 class MySignupsScreen extends StatefulWidget {
-  final String sheetId;
+  final String signupId;
   final String deviceId;
 
   /// Injected for testing; defaults to [FirebaseFirestore.instance].
@@ -27,7 +27,7 @@ class MySignupsScreen extends StatefulWidget {
 
   const MySignupsScreen({
     super.key,
-    required this.sheetId,
+    required this.signupId,
     required this.deviceId,
     this.firestore,
     this.signupService,
@@ -51,10 +51,10 @@ class _MySignupsScreenState extends State<MySignupsScreen>
         widget.signupService ?? SignupService(firestore: widget.firestore);
     _tabController = TabController(length: 2, vsync: this);
     _entriesStream = _service.getEntriesByDevice(
-      widget.sheetId,
+      widget.signupId,
       widget.deviceId,
     );
-    _slotsStream = _service.getSlots(widget.sheetId);
+    _slotsStream = _service.getSlots(widget.signupId);
   }
 
   @override
@@ -91,7 +91,7 @@ class _MySignupsScreenState extends State<MySignupsScreen>
 
   Future<void> _cancelEntry(SignupEntry entry, AppLocalizations l10n) async {
     try {
-      await _service.cancelEntry(widget.sheetId, entry.id!);
+      await _service.cancelEntry(widget.signupId, entry.id!);
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()

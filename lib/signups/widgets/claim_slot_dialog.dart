@@ -4,14 +4,14 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 
-/// Lets a devotee claim one [slot] on a sign-up sheet. Reuses
+/// Lets a devotee claim one [slot] on a sign-up signup. Reuses
 /// AddStepsDialog's confirm-before-submit pattern: validate, show what was
 /// entered, require an explicit Yes, then submit. slot_full and
 /// invalid-join-code are shown as a visible in-dialog message rather than a
 /// silent failure - unlike a launch failure elsewhere in this app, this is
 /// a user-initiated action with real stakes.
 class ClaimSlotDialog extends StatefulWidget {
-  final String sheetId;
+  final String signupId;
   final SignupSlot slot;
   final bool requiresJoinCode;
   final String? deviceId;
@@ -19,7 +19,7 @@ class ClaimSlotDialog extends StatefulWidget {
 
   const ClaimSlotDialog({
     super.key,
-    required this.sheetId,
+    required this.signupId,
     required this.slot,
     required this.requiresJoinCode,
     required this.deviceId,
@@ -107,7 +107,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
     Map<String, dynamic> result;
     try {
       result = await widget.signupService.claimSlot(
-        sheetId: widget.sheetId,
+        signupId: widget.signupId,
         slotId: widget.slot.id!,
         name: _nameController.text.trim(),
         phone: _phoneController.text.trim(),

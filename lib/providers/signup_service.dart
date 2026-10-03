@@ -26,35 +26,35 @@ class SignupService {
   /// just to construct a SignupService.
   FirebaseStorage get _storage => _storageOverride ?? FirebaseStorage.instance;
 
-  CollectionReference<Map<String, dynamic>> get _sheetsRef =>
+  CollectionReference<Map<String, dynamic>> get _signupsRef =>
       _db.collection('signups');
 
   /// A fresh Firestore document id, generated without writing anything -
-  /// lets the caller know a sheet's id (for its Storage header-image path)
-  /// before the sheet document itself exists.
-  String newSheetId() => _sheetsRef.doc().id;
+  /// lets the caller know a signup's id (for its Storage header-image path)
+  /// before the signup document itself exists.
+  String newSignupId() => _signupsRef.doc().id;
 
-  /// Creates a new sheet. Writes to [sheet.id] when already set (paired
-  /// with [newSheetId], so a header image can be uploaded to a known path
-  /// before the sheet document exists); otherwise auto-generates one via
+  /// Creates a new signup. Writes to [signup.id] when already set (paired
+  /// with [newSignupId], so a header image can be uploaded to a known path
+  /// before the signup document exists); otherwise auto-generates one via
   /// Firestore, matching this method's original behavior.
-  Future<String> createSheet(Signup sheet) async {
-    if (sheet.id != null) {
-      await _sheetsRef.doc(sheet.id).set(sheet.toMap());
-      return sheet.id!;
+  Future<String> createSignup(Signup signup) async {
+    if (signup.id != null) {
+      await _signupsRef.doc(signup.id).set(signup.toMap());
+      return signup.id!;
     }
-    final docRef = await _sheetsRef.add(sheet.toMap());
+    final docRef = await _signupsRef.add(signup.toMap());
     return docRef.id;
   }
 
-  Reference _headerImageRef(String sheetId) =>
-      _storage.ref('signups/$sheetId/header');
+  Reference _headerImageRef(String signupId) =>
+      _storage.ref('signups/$signupId/header');
 
-  /// Uploads a sheet's header/display image and returns its download URL.
+  /// Uploads a signup's header/display image and returns its download URL.
   /// Throws [ArgumentError] without attempting an upload when [bytes]
   /// exceeds [maxHeaderImageBytes].
   Future<String> uploadHeaderImage({
-    required String sheetId,
+    required String signupId,
     required Uint8List bytes,
     required String contentType,
   }) async {
@@ -69,7 +69,7 @@ class SignupService {
         contentType.toLowerCase().trim() == 'image/jpg'
         ? 'image/jpeg'
         : contentType.trim();
-    final ref = _headerImageRef(sheetId);
+    final ref = _headerImageRef(signupId);
     await ref.putData(
       bytes,
       SettableMetadata(contentType: normalizedContentType),
@@ -78,95 +78,98 @@ class SignupService {
   }
 
   /// Narrow update of just the header image URL field.
-  Future<void> updateHeaderImageUrl(String sheetId, String? url) async {
-    await _sheetsRef.doc(sheetId).update({
+  Future<void> updateHeaderImageUrl(String signupId, String? url) async {
+    await _signupsRef.doc(signupId).update({
       'headerImageUrl': url,
       'updatedAt': Timestamp.now(),
     });
   }
 
-  /// Deletes a sheet's header image object from Storage, tolerating one
-  /// that was never uploaded. Does not touch the sheet document - used
+  /// Deletes a signup's header image object from Storage, tolerating one
+  /// that was never uploaded. Does not touch the signup document - used
   /// both by [removeHeaderImage] and to clean up an upload that was never
-  /// attached to a sheet (e.g. the sheet's own creation failed after the
+  /// attached to a signup (e.g. the signup's own creation failed after the
   /// image upload succeeded).
-  Future<void> deleteHeaderImageFile(String sheetId) async {
+  Future<void> deleteHeaderImageFile(String signupId) async {
     try {
-      await _headerImageRef(sheetId).delete();
+      await _headerImageRef(signupId).delete();
     } on FirebaseException catch (e) {
       if (e.code != 'object-not-found') rethrow;
     }
   }
 
-  /// Deletes a sheet's header image from Storage (tolerating one that was
-  /// never uploaded) and clears the field on the sheet document.
-  Future<void> removeHeaderImage(String sheetId) async {
-    await deleteHeaderImageFile(sheetId);
-    await updateHeaderImageUrl(sheetId, null);
+  /// Deletes a signup's header image from Storage (tolerating one that was
+  /// never uploaded) and clears the field on the signup document.
+  Future<void> removeHeaderImage(String signupId) async {
+    await deleteHeaderImageFile(signupId);
+    await updateHeaderImageUrl(signupId, null);
   }
 
-  /// Streams a single sheet, or `null` if it doesn't exist.
-  Stream<Signup?> getSheetById(String sheetId) {
-    return _sheetsRef.doc(sheetId).snapshots().map((snapshot) {
+  /// Streams a single signup, or `null` if it doesn't exist.
+  Stream<Signup?> getSignupById(String signupId) {
+    return _signupsRef.doc(signupId).snapshots().map((snapshot) {
       if (!snapshot.exists) return null;
       return Signup.fromMap(snapshot.id, snapshot.data()!);
     });
   }
 
-  /// Published sheets for a group, most recently created first.
-  Stream<List<Signup>> getActiveSheets(String groupId) {
-    return _sheetsRef
+  /// Published signups for a group, most recently created first.
+  Stream<List<Signup>> getActiveSignups(String groupId) {
+    return _signupsRef
         .where('groupId', isEqualTo: groupId)
         .where('status', isEqualTo: SignupStatus.published.name)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map(_mapSheets);
+        .map(_mapSignups);
   }
 
-  /// All sheets for a group regardless of status (admin dashboard).
-  Stream<List<Signup>> getAllSheets(String groupId) {
-    return _sheetsRef
+  /// All signups for a group regardless of status (admin dashboard).
+  Stream<List<Signup>> getAllSignups(String groupId) {
+    return _signupsRef
         .where('groupId', isEqualTo: groupId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map(_mapSheets);
+        .map(_mapSignups);
   }
 
-  List<Signup> _mapSheets(QuerySnapshot<Map<String, dynamic>> snapshot) {
+  List<Signup> _mapSignups(QuerySnapshot<Map<String, dynamic>> snapshot) {
     return snapshot.docs
         .map((doc) => Signup.fromMap(doc.id, doc.data()))
         .toList();
   }
 
-  /// Overwrites a sheet's fields. Throws if [sheet.id] is null — passing a
+  /// Overwrites a signup's fields. Throws if [signup.id] is null — passing a
   /// null id to Firestore's `.doc()` would silently create a new document
   /// instead of updating the intended one.
-  Future<void> updateSheet(Signup sheet) async {
-    if (sheet.id == null) {
-      throw ArgumentError.value(sheet.id, 'sheet.id', 'must not be null');
+  Future<void> updateSignup(Signup signup) async {
+    if (signup.id == null) {
+      throw ArgumentError.value(signup.id, 'signup.id', 'must not be null');
     }
-    await _sheetsRef.doc(sheet.id).set(sheet.toMap());
+    await _signupsRef.doc(signup.id).set(signup.toMap());
   }
 
-  Future<void> updateSheetStatus(String sheetId, SignupStatus newStatus) async {
-    await _sheetsRef.doc(sheetId).update({
+  Future<void> updateSignupStatus(
+    String signupId,
+    SignupStatus newStatus,
+  ) async {
+    await _signupsRef.doc(signupId).update({
       'status': newStatus.name,
       'updatedAt': Timestamp.now(),
     });
   }
 
-  CollectionReference<Map<String, dynamic>> _slotsRef(String sheetId) =>
-      _sheetsRef.doc(sheetId).collection('slots');
+  CollectionReference<Map<String, dynamic>> _slotsRef(String signupId) =>
+      _signupsRef.doc(signupId).collection('slots');
 
   /// Adds a slot with a Firestore auto-generated ID and returns it.
-  Future<String> addSlot(String sheetId, SignupSlot slot) async {
-    final docRef = await _slotsRef(sheetId).add(slot.toMap());
+  Future<String> addSlot(String signupId, SignupSlot slot) async {
+    final docRef = await _slotsRef(signupId).add(slot.toMap());
     return docRef.id;
   }
 
-  /// Slots for a sheet, ordered by their admin-defined sortOrder.
-  Stream<List<SignupSlot>> getSlots(String sheetId) {
-    return _slotsRef(sheetId)
+  /// Slots for a signup, ordered by their admin-defined sortOrder.
+  Stream<List<SignupSlot>> getSlots(String signupId) {
+    return _slotsRef(signupId)
         .orderBy('sortOrder')
         .snapshots()
         .map(
@@ -183,18 +186,18 @@ class SignupService {
   /// clobber it. Throws if [slot.id] is null — passing a null id to
   /// Firestore's `.doc()` would silently create a new document instead of
   /// updating the intended one.
-  Future<void> updateSlot(String sheetId, SignupSlot slot) async {
+  Future<void> updateSlot(String signupId, SignupSlot slot) async {
     if (slot.id == null) {
       throw ArgumentError.value(slot.id, 'slot.id', 'must not be null');
     }
     final fields = slot.toMap()..remove('claimedCount');
-    await _slotsRef(sheetId).doc(slot.id).update(fields);
+    await _slotsRef(signupId).doc(slot.id).update(fields);
   }
 
   /// Deletes a slot, refusing if it still has claimed entries — deleting it
   /// anyway would orphan those entries (pointing at a missing slot).
-  Future<void> deleteSlot(String sheetId, String slotId) async {
-    final snapshot = await _slotsRef(sheetId).doc(slotId).get();
+  Future<void> deleteSlot(String signupId, String slotId) async {
+    final snapshot = await _slotsRef(signupId).doc(slotId).get();
     if (snapshot.exists) {
       final claimedCount = (snapshot.data()?['claimedCount'] as num?)?.toInt();
       if ((claimedCount ?? 0) > 0) {
@@ -204,65 +207,68 @@ class SignupService {
         );
       }
     }
-    await _slotsRef(sheetId).doc(slotId).delete();
+    await _slotsRef(signupId).doc(slotId).delete();
   }
 
   /// Rewrites `sortOrder` on each slot to match its position in
   /// [orderedSlotIds], in a single batch.
-  Future<void> reorderSlots(String sheetId, List<String> orderedSlotIds) async {
+  Future<void> reorderSlots(
+    String signupId,
+    List<String> orderedSlotIds,
+  ) async {
     final batch = _db.batch();
-    final slotsRef = _slotsRef(sheetId);
+    final slotsRef = _slotsRef(signupId);
     for (var i = 0; i < orderedSlotIds.length; i++) {
       batch.update(slotsRef.doc(orderedSlotIds[i]), {'sortOrder': i});
     }
     await batch.commit();
   }
 
-  /// Creates a sheet and all of its slots in a single batch, so a sheet
+  /// Creates a signup and all of its slots in a single batch, so a signup
   /// with many slots never ends up partially written. Writes to
-  /// [sheet.id] when already set (same pre-set-id support as
-  /// [createSheet]); otherwise auto-generates one. Returns the sheet's ID.
-  Future<String> createSheetWithSlots(
-    Signup sheet,
+  /// [signup.id] when already set (same pre-set-id support as
+  /// [createSignup]); otherwise auto-generates one. Returns the signup's ID.
+  Future<String> createSignupWithSlots(
+    Signup signup,
     List<SignupSlot> slots,
   ) async {
     if (slots.isEmpty) {
       throw ArgumentError.value(slots, 'slots', 'must not be empty');
     }
 
-    final sheetRef = sheet.id != null
-        ? _sheetsRef.doc(sheet.id)
-        : _sheetsRef.doc();
+    final signupRef = signup.id != null
+        ? _signupsRef.doc(signup.id)
+        : _signupsRef.doc();
     final batch = _db.batch();
-    batch.set(sheetRef, sheet.toMap());
+    batch.set(signupRef, signup.toMap());
 
-    final slotsRef = _slotsRef(sheetRef.id);
+    final slotsRef = _slotsRef(signupRef.id);
     for (final slot in slots) {
       batch.set(slotsRef.doc(), slot.toMap());
     }
 
     await batch.commit();
-    return sheetRef.id;
+    return signupRef.id;
   }
 
-  CollectionReference<Map<String, dynamic>> _entriesRef(String sheetId) =>
-      _sheetsRef.doc(sheetId).collection('entries');
+  CollectionReference<Map<String, dynamic>> _entriesRef(String signupId) =>
+      _signupsRef.doc(signupId).collection('entries');
 
-  /// All entries for a sheet (admin entry-management view).
-  Stream<List<SignupEntry>> getAllEntries(String sheetId) {
-    return _entriesRef(sheetId).snapshots().map(
+  /// All entries for a signup (admin entry-management view).
+  Stream<List<SignupEntry>> getAllEntries(String signupId) {
+    return _entriesRef(signupId).snapshots().map(
       (snapshot) => snapshot.docs
           .map((doc) => SignupEntry.fromMap(doc.id, doc.data()))
           .toList(),
     );
   }
 
-  /// A device's own entries on a sheet ("my signups").
+  /// A device's own entries on a signup ("my signups").
   Stream<List<SignupEntry>> getEntriesByDevice(
-    String sheetId,
+    String signupId,
     String deviceId,
   ) {
-    return _entriesRef(sheetId)
+    return _entriesRef(signupId)
         .where('deviceId', isEqualTo: deviceId)
         .snapshots()
         .map(
@@ -279,12 +285,12 @@ class SignupService {
   /// claimedCount transaction as [claimSlot], which this method doesn't
   /// perform, so the entry's original slot is always preserved regardless
   /// of what [entry.slotId] holds. Throws if [entry.id] is null.
-  Future<void> updateEntry(String sheetId, SignupEntry entry) async {
+  Future<void> updateEntry(String signupId, SignupEntry entry) async {
     if (entry.id == null) {
       throw ArgumentError.value(entry.id, 'entry.id', 'must not be null');
     }
     final fields = entry.toMap()..remove('slotId');
-    await _entriesRef(sheetId).doc(entry.id).update(fields);
+    await _entriesRef(signupId).doc(entry.id).update(fields);
   }
 
   /// True if [slotId] already has an entry matching [email] or [phone]
@@ -294,7 +300,7 @@ class SignupService {
   /// security boundary, so a race between two near-simultaneous claims with
   /// the same contact info could still both succeed.
   Future<bool> _hasDuplicateEntry({
-    required String sheetId,
+    required String signupId,
     required String slotId,
     String? email,
     String? phone,
@@ -307,7 +313,7 @@ class SignupService {
     }
 
     final snapshot = await _entriesRef(
-      sheetId,
+      signupId,
     ).where('slotId', isEqualTo: slotId).get();
 
     for (final doc in snapshot.docs) {
@@ -332,7 +338,7 @@ class SignupService {
   }
 
   /// Claims a slot for a devotee. Runs in a transaction so a slot can
-  /// never be over-claimed: reads the sheet (for join-code validation) and
+  /// never be over-claimed: reads the signup (for join-code validation) and
   /// the slot (for capacity), then writes the entry and increments the
   /// slot's `claimedCount` together, or writes nothing at all.
   ///
@@ -340,7 +346,7 @@ class SignupService {
   /// `{'success': false, 'error': 'not_found' | 'invalid_join_code' |
   /// 'slot_full' | 'duplicate_entry'}`.
   Future<Map<String, dynamic>> claimSlot({
-    required String sheetId,
+    required String signupId,
     required String slotId,
     required String name,
     String? phone,
@@ -351,7 +357,7 @@ class SignupService {
     String? joinCode,
   }) async {
     if (await _hasDuplicateEntry(
-      sheetId: sheetId,
+      signupId: signupId,
       slotId: slotId,
       email: email,
       phone: phone,
@@ -359,22 +365,22 @@ class SignupService {
       return {'success': false, 'error': 'duplicate_entry'};
     }
 
-    final sheetRef = _sheetsRef.doc(sheetId);
-    final slotRef = _slotsRef(sheetId).doc(slotId);
-    final entryRef = _entriesRef(sheetId).doc();
+    final signupRef = _signupsRef.doc(signupId);
+    final slotRef = _slotsRef(signupId).doc(slotId);
+    final entryRef = _entriesRef(signupId).doc();
 
     return _db.runTransaction<Map<String, dynamic>>((transaction) async {
-      final sheetSnapshot = await transaction.get(sheetRef);
+      final signupSnapshot = await transaction.get(signupRef);
       final slotSnapshot = await transaction.get(slotRef);
 
-      if (!sheetSnapshot.exists || !slotSnapshot.exists) {
+      if (!signupSnapshot.exists || !slotSnapshot.exists) {
         return {'success': false, 'error': 'not_found'};
       }
 
-      final sheet = Signup.fromMap(sheetSnapshot.id, sheetSnapshot.data()!);
+      final signup = Signup.fromMap(signupSnapshot.id, signupSnapshot.data()!);
       final slot = SignupSlot.fromMap(slotSnapshot.id, slotSnapshot.data()!);
 
-      if (sheet.requiresJoinCode && joinCode != sheet.joinCode) {
+      if (signup.requiresJoinCode && joinCode != signup.joinCode) {
         return {'success': false, 'error': 'invalid_join_code'};
       }
 
@@ -401,10 +407,10 @@ class SignupService {
   }
 
   Future<void> _removeEntryAndDecrementSlot(
-    String sheetId,
+    String signupId,
     String entryId,
   ) async {
-    final entryRef = _entriesRef(sheetId).doc(entryId);
+    final entryRef = _entriesRef(signupId).doc(entryId);
 
     await _db.runTransaction((transaction) async {
       final entrySnapshot = await transaction.get(entryRef);
@@ -414,7 +420,7 @@ class SignupService {
         entrySnapshot.id,
         entrySnapshot.data()!,
       );
-      final slotRef = _slotsRef(sheetId).doc(entry.slotId);
+      final slotRef = _slotsRef(signupId).doc(entry.slotId);
       final slotSnapshot = await transaction.get(slotRef);
 
       transaction.delete(entryRef);
@@ -426,14 +432,14 @@ class SignupService {
 
   /// A devotee cancelling their own entry. A no-op if the entry is already
   /// gone, so calling it twice never decrements `claimedCount` twice.
-  Future<void> cancelEntry(String sheetId, String entryId) =>
-      _removeEntryAndDecrementSlot(sheetId, entryId);
+  Future<void> cancelEntry(String signupId, String entryId) =>
+      _removeEntryAndDecrementSlot(signupId, entryId);
 
   /// An admin removing any entry. Same behavior as [cancelEntry] — the
   /// devotee-vs-admin distinction is enforced by Firestore rules/UI, not
   /// by different logic here.
-  Future<void> adminRemoveEntry(String sheetId, String entryId) =>
-      _removeEntryAndDecrementSlot(sheetId, entryId);
+  Future<void> adminRemoveEntry(String signupId, String entryId) =>
+      _removeEntryAndDecrementSlot(signupId, entryId);
 
   /// Admin-initiated manual entry, bypassing the join-code check — the
   /// admin is already authenticated as an admin. Still respects slot
@@ -443,7 +449,7 @@ class SignupService {
   /// Returns `{'success': true, 'entryId': ...}` or
   /// `{'success': false, 'error': 'not_found' | 'slot_full'}`.
   Future<Map<String, dynamic>> adminAddEntry({
-    required String sheetId,
+    required String signupId,
     required String slotId,
     required String name,
     String? phone,
@@ -451,8 +457,8 @@ class SignupService {
     double? pledgeAmount,
     String? note,
   }) {
-    final slotRef = _slotsRef(sheetId).doc(slotId);
-    final entryRef = _entriesRef(sheetId).doc();
+    final slotRef = _slotsRef(signupId).doc(slotId);
+    final entryRef = _entriesRef(signupId).doc();
 
     return _db.runTransaction<Map<String, dynamic>>((transaction) async {
       final slotSnapshot = await transaction.get(slotRef);
@@ -482,14 +488,14 @@ class SignupService {
     });
   }
 
-  /// Copies a sheet's title/description/join-code-requirement and every
-  /// slot (with `claimedCount` reset to 0) into a new draft sheet. Entries
+  /// Copies a signup's title/description/join-code-requirement and every
+  /// slot (with `claimedCount` reset to 0) into a new draft signup. Entries
   /// are never copied. A fresh join code is generated if the original
   /// requires one.
-  Future<String> duplicateSheet(String sheetId) async {
-    final sourceSnapshot = await _sheetsRef.doc(sheetId).get();
+  Future<String> duplicateSignup(String signupId) async {
+    final sourceSnapshot = await _signupsRef.doc(signupId).get();
     if (!sourceSnapshot.exists) {
-      throw ArgumentError.value(sheetId, 'sheetId', 'sheet not found');
+      throw ArgumentError.value(signupId, 'signupId', 'signup not found');
     }
     final source = Signup.fromMap(sourceSnapshot.id, sourceSnapshot.data()!);
     final now = DateTime.now();
@@ -509,18 +515,18 @@ class SignupService {
       createdBy: source.createdBy,
     );
 
-    final sourceSlots = await _slotsRef(sheetId).get();
-    final newSheetRef = _sheetsRef.doc();
+    final sourceSlots = await _slotsRef(signupId).get();
+    final newSignupRef = _signupsRef.doc();
     final batch = _db.batch();
-    batch.set(newSheetRef, duplicate.toMap());
+    batch.set(newSignupRef, duplicate.toMap());
 
-    final newSlotsRef = _slotsRef(newSheetRef.id);
+    final newSlotsRef = _slotsRef(newSignupRef.id);
     for (final doc in sourceSlots.docs) {
       final slot = SignupSlot.fromMap(doc.id, doc.data());
       batch.set(newSlotsRef.doc(), slot.copyWith(claimedCount: 0).toMap());
     }
 
     await batch.commit();
-    return newSheetRef.id;
+    return newSignupRef.id;
   }
 }

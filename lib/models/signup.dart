@@ -16,7 +16,7 @@ enum SignupStatus {
   }
 }
 
-/// A sign-up sheet: an admin-published set of claimable [SignupSlot]s
+/// A sign-up signup: an admin-published set of claimable [SignupSlot]s
 /// (stored in its own `slots` subcollection) that devotees claim via
 /// entries in a flat `entries` subcollection.
 class Signup {

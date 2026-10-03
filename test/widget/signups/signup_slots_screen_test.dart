@@ -13,14 +13,14 @@ import 'package:provider/provider.dart';
 void main() {
   late FakeFirebaseFirestore firestore;
   late SignupService service;
-  late String sheetId;
-  late Signup sheet;
+  late String signupId;
+  late Signup signup;
 
   setUp(() async {
     firestore = FakeFirebaseFirestore();
     service = SignupService(firestore: firestore);
     final now = DateTime.now();
-    sheet = Signup(
+    signup = Signup(
       titleEn: 'Sunday Prasad Seva',
       titleMr: 'रविवार प्रसाद सेवा',
       groupId: 'group_1',
@@ -29,8 +29,8 @@ void main() {
       updatedAt: now,
       createdBy: 'admin@test.com',
     );
-    sheetId = await service.createSheet(sheet);
-    sheet = sheet.copyWith(id: sheetId);
+    signupId = await service.createSignup(signup);
+    signup = signup.copyWith(id: signupId);
   });
 
   Widget wrap(Widget child) {
@@ -55,7 +55,7 @@ void main() {
 
   Future<String> addSlot({String labelEn = 'Week 1', DateTime? date}) {
     return service.addSlot(
-      sheetId,
+      signupId,
       SignupSlot(
         labelEn: labelEn,
         labelMr: 'आठवडा १',
@@ -73,8 +73,8 @@ void main() {
     await tester.pumpWidget(
       wrap(
         SignupSlotsScreen(
-          sheetId: sheetId,
-          sheet: sheet,
+          signupId: signupId,
+          signup: signup,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -92,8 +92,8 @@ void main() {
     await tester.pumpWidget(
       wrap(
         SignupSlotsScreen(
-          sheetId: sheetId,
-          sheet: sheet,
+          signupId: signupId,
+          signup: signup,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -114,8 +114,8 @@ void main() {
     await tester.pumpWidget(
       wrap(
         SignupSlotsScreen(
-          sheetId: sheetId,
-          sheet: sheet,
+          signupId: signupId,
+          signup: signup,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -139,8 +139,8 @@ void main() {
     await tester.pumpWidget(
       wrap(
         SignupSlotsScreen(
-          sheetId: sheetId,
-          sheet: sheet,
+          signupId: signupId,
+          signup: signup,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -156,13 +156,13 @@ void main() {
     tester,
   ) async {
     final slotId = await addSlot();
-    await service.claimSlot(sheetId: sheetId, slotId: slotId, name: 'Jane');
+    await service.claimSlot(signupId: signupId, slotId: slotId, name: 'Jane');
 
     await tester.pumpWidget(
       wrap(
         SignupSlotsScreen(
-          sheetId: sheetId,
-          sheet: sheet,
+          signupId: signupId,
+          signup: signup,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -183,8 +183,8 @@ void main() {
     await tester.pumpWidget(
       wrap(
         SignupSlotsScreen(
-          sheetId: sheetId,
-          sheet: sheet,
+          signupId: signupId,
+          signup: signup,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -211,7 +211,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('1 of 3 claimed'), findsOneWidget);
-    final entries = await service.getAllEntries(sheetId).first;
+    final entries = await service.getAllEntries(signupId).first;
     expect(entries.single.name, 'Jane');
   });
 
@@ -219,8 +219,8 @@ void main() {
     await tester.pumpWidget(
       wrap(
         SignupSlotsScreen(
-          sheetId: sheetId,
-          sheet: sheet,
+          signupId: signupId,
+          signup: signup,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,
@@ -243,8 +243,8 @@ void main() {
     await tester.pumpWidget(
       wrap(
         SignupSlotsScreen(
-          sheetId: sheetId,
-          sheet: sheet,
+          signupId: signupId,
+          signup: signup,
           deviceId: 'device_1',
           firestore: firestore,
           signupService: service,

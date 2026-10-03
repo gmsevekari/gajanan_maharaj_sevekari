@@ -289,7 +289,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               if (adminUser.groupId != null) {
                                 Navigator.pushNamed(
                                   context,
-                                  Routes.adminSignupSheetsDashboard,
+                                  Routes.adminSignupsDashboard,
                                   arguments: adminUser,
                                 );
                               } else {
