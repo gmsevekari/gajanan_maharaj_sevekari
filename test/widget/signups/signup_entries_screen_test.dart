@@ -148,7 +148,7 @@ void main() {
     ]);
   });
 
-  testWidgets('keeps one slot\'s entries together when slots share a date', (
+  testWidgets('keeps one slot\'s entries together and shows its date and title once', (
     tester,
   ) async {
     final first = await addSlot(labelEn: 'Morning', date: future);
@@ -161,9 +161,10 @@ void main() {
     await tester.pumpWidget(screen());
     await tester.pumpAndSettle();
 
+    // The date and title appear once per slot, on its first row only.
     expect(tableRows(tester), [
       ['March 15', 'Morning', 'Bob'],
-      ['March 15', 'Morning', 'Zoe'],
+      ['', '', 'Zoe'],
       ['March 15', 'Evening', 'Amy'],
     ]);
   });

@@ -121,23 +121,25 @@ class SignupEntriesTable extends StatelessWidget {
                     columnWidths: _columnWidths,
                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                     children: [
-                      for (final entry in groups[i])
+                      for (var j = 0; j < groups[i].length; j++)
                         TableRow(
                           children: [
+                            // Date and title are the slot's, so they show
+                            // once, on its first row.
                             _cell(
-                              slotsById[entry.slotId]?.date != null
-                                  ? formatDateShort(
-                                      slotsById[entry.slotId]!.date!,
-                                      'en',
+                              j == 0 ? _dateText(slotsById, groups[i][j]) : '',
+                              cellStyle,
+                            ),
+                            _cell(
+                              j == 0
+                                  ? _slotLabel(
+                                      slotsById[groups[i][j].slotId],
+                                      isMarathi,
                                     )
-                                  : '-',
+                                  : '',
                               cellStyle,
                             ),
-                            _cell(
-                              _slotLabel(slotsById[entry.slotId], isMarathi),
-                              cellStyle,
-                            ),
-                            _cell(entry.name, cellStyle),
+                            _cell(groups[i][j].name, cellStyle),
                           ],
                         ),
                     ],
@@ -161,6 +163,11 @@ class SignupEntriesTable extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: vertical),
         child: Text(text, style: style),
       );
+
+  String _dateText(Map<String?, SignupSlot> slotsById, SignupEntry entry) {
+    final date = slotsById[entry.slotId]?.date;
+    return date != null ? formatDateShort(date, 'en') : '-';
+  }
 
   String _slotLabel(SignupSlot? slot, bool isMarathi) {
     if (slot == null) return '';
