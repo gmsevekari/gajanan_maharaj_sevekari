@@ -216,7 +216,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final item = snapshot.data!;
-                    final title = locale.localizedContent(
+                    final title = locale.localizedDetailContent(
                       item['title_en'] ?? '',
                       item['title_mr'] ?? '',
                     );
@@ -412,7 +412,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                   future: _contentFuture,
                   builder: (context, snapshot) {
                     final title = snapshot.hasData
-                        ? locale.localizedContent(
+                        ? locale.localizedDetailContent(
                             snapshot.data!['title_en'] ?? '',
                             snapshot.data!['title_mr'] ?? '',
                           )
@@ -588,7 +588,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
           final data = snapshot.data!;
-          final text = locale.localizedContent(
+          final text = locale.localizedDetailContent(
             data['content_en'] ?? '',
             data['content_mr'] ?? '',
           );
@@ -610,7 +610,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                 future: _contentFuture,
                 builder: (context, titleSnapshot) {
                   final title = titleSnapshot.hasData
-                      ? locale.localizedContent(
+                      ? locale.localizedDetailContent(
                           titleSnapshot.data!['title_en'] ?? '',
                           titleSnapshot.data!['title_mr'] ?? '',
                         )
@@ -686,7 +686,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
         } else if (snapshot.hasData) {
           final data = snapshot.data!;
           final videoId = data['youtube_video_id'];
-          final title = locale.localizedContent(
+          final title = locale.localizedDetailContent(
             data['title_en'] ?? '',
             data['title_mr'] ?? '',
           );
