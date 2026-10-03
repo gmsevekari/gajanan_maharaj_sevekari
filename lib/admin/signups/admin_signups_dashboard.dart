@@ -239,13 +239,6 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
     final title = isMarathi
         ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
         : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);
-    final description = isMarathi
-        ? (signup.descriptionMr.isNotEmpty
-              ? signup.descriptionMr
-              : signup.descriptionEn)
-        : (signup.descriptionEn.isNotEmpty
-              ? signup.descriptionEn
-              : signup.descriptionMr);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -276,17 +269,6 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
                   _buildStatusBadge(signup.status, localizations, theme),
                 ],
               ),
-              if (description.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                Text(
-                  description,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.appColors.secondaryText,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
               if (signup.requiresJoinCode && signup.joinCode != null) ...[
                 const SizedBox(height: 10),
                 Row(

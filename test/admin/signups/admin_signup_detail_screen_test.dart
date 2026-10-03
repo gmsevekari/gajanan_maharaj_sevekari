@@ -5,6 +5,8 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_status_section.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_header_image_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_overview_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
@@ -216,6 +218,77 @@ void main() {
         ),
         findsOneWidget,
       );
+    });
+
+    group('description', () {
+      Future<String> seed({
+        String descriptionEn = 'Help prepare prasad',
+        String descriptionMr = 'प्रसाद बनवण्यासाठी मदत',
+      }) async {
+        final now = DateTime.now();
+        final ref = await firestore.collection('signups').add({
+          'titleEn': 'Prasad Seva',
+          'titleMr': 'प्रसाद सेवा',
+          'descriptionEn': descriptionEn,
+          'descriptionMr': descriptionMr,
+          'groupId': 'gajanan_maharaj_seattle',
+          'status': SignupStatus.draft.name,
+          'requiresJoinCode': false,
+          'createdAt': Timestamp.fromDate(now),
+          'updatedAt': Timestamp.fromDate(now),
+          'createdBy': 'admin@test.com',
+        });
+        return ref.id;
+      }
+
+      Finder inBody(String text) =>
+          find.descendant(of: find.byType(ListView), matching: find.text(text));
+
+      testWidgets('shows below the header image', (tester) async {
+        await pumpDetailScreen(tester, signupId: await seed());
+
+        expect(inBody('Help prepare prasad'), findsOneWidget);
+        final image = tester.getBottomLeft(find.byType(SignupHeaderImageCard));
+        final description = tester.getTopLeft(inBody('Help prepare prasad'));
+        expect(description.dy, greaterThanOrEqualTo(image.dy));
+        // ...and above the status controls.
+        final status = tester.getTopLeft(find.byType(SignupStatusSection));
+        expect(description.dy, lessThan(status.dy));
+      });
+
+      testWidgets('is hidden when the signup has none', (tester) async {
+        final id = await seed(descriptionEn: '', descriptionMr: '');
+        await pumpDetailScreen(tester, signupId: id);
+
+        final image = tester.getBottomLeft(find.byType(SignupHeaderImageCard));
+        final status = tester.getTopLeft(find.byType(SignupStatusSection));
+        // Only the normal gap separates the image card and status card.
+        expect(status.dy - image.dy, lessThan(20));
+      });
+
+      testWidgets('follows the app language', (tester) async {
+        await pumpDetailScreen(
+          tester,
+          signupId: await seed(),
+          locale: const Locale('mr'),
+        );
+
+        expect(inBody('प्रसाद बनवण्यासाठी मदत'), findsOneWidget);
+        expect(inBody('Help prepare prasad'), findsNothing);
+      });
+
+      testWidgets('falls back to English when the Marathi one is blank', (
+        tester,
+      ) async {
+        final id = await seed(descriptionMr: '');
+        await pumpDetailScreen(
+          tester,
+          signupId: id,
+          locale: const Locale('mr'),
+        );
+
+        expect(inBody('Help prepare prasad'), findsOneWidget);
+      });
     });
 
     testWidgets('renders not found state when signup does not exist', (

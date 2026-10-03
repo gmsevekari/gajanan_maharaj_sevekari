@@ -543,6 +543,13 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
         final title = isMarathi
             ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
             : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);
+        final desc = isMarathi
+            ? (signup.descriptionMr.isNotEmpty
+                  ? signup.descriptionMr
+                  : signup.descriptionEn)
+            : (signup.descriptionEn.isNotEmpty
+                  ? signup.descriptionEn
+                  : signup.descriptionMr);
 
         return page(
           title,
@@ -605,6 +612,15 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
                                 ? null
                                 : () => _confirmRemoveImage(signup, l10n),
                           ),
+                          if (desc.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            Text(
+                              desc,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.appColors.secondaryText,
+                              ),
+                            ),
+                          ],
                           const SizedBox(height: 12),
                           SignupStatusSection(
                             currentStatus: signup.status,
