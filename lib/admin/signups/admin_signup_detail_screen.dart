@@ -28,6 +28,7 @@ import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/phone_number_field.dart';
 
 class AdminSignupDetailScreen extends StatefulWidget {
   final String? signupId;
@@ -277,6 +278,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
     showEnglishDialog(
       context: context,
       builder: (_) => AdminEntryEditDialog(
+        defaultCountryCode: defaultCountryCodeFor(context, signup.groupId),
         onSave: (name, phone, email, pledge, note) async {
           try {
             final res = await _service.adminAddEntry(
@@ -327,6 +329,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
     showEnglishDialog(
       context: context,
       builder: (_) => AdminEntryEditDialog(
+        defaultCountryCode: defaultCountryCodeFor(context, signup.groupId),
         entry: entry,
         onSave: (name, phone, email, pledge, note) async {
           try {

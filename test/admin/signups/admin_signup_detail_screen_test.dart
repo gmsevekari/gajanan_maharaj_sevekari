@@ -459,7 +459,7 @@ void main() {
       );
       await tester.enterText(
         find.byKey(const Key('entryPhoneField')),
-        '5551234',
+        '5551234567',
       );
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
@@ -470,6 +470,61 @@ void main() {
       // Verify slot claimedCount incremented
       final slotDoc = await slotRef.get();
       expect(slotDoc.data()?['claimedCount'], 1);
+
+      // The number is saved with the country code (the group's default).
+      final entries = await signupRef.collection('entries').get();
+      expect(entries.docs.single.data()['phone'], '+15551234567');
+    });
+
+    testWidgets('prefills the sign up group\'s default country code in the '
+        'add dialog', (tester) async {
+      final config = AppConfig(
+        deities: const [],
+        gajananMaharajGroups: [
+          GajananMaharajGroup(
+            id: 'gajanan_maharaj_seattle',
+            nameEn: 'Seattle',
+            nameMr: 'सिॲटल',
+            defaultCountryCode: '+91',
+          ),
+        ],
+        socialMediaLinks: const [],
+        appName: const {},
+        updateMessage: const {},
+        latestVersion: '1.0.0',
+        forceUpdate: 'false',
+        playStoreUrl: '',
+        appStoreUrl: '',
+      );
+      when(() => appConfigProvider.appConfig).thenReturn(config);
+      final now = DateTime.now();
+      final signupRef = await firestore.collection('signups').add({
+        'titleEn': 'Signup 1',
+        'titleMr': 'शीट १',
+        'groupId': 'gajanan_maharaj_seattle',
+        'status': SignupStatus.published.name,
+        'requiresJoinCode': false,
+        'createdAt': Timestamp.fromDate(now),
+        'updatedAt': Timestamp.fromDate(now),
+        'createdBy': 'admin@test.com',
+      });
+      await signupRef.collection('slots').add({
+        'labelEn': 'Morning Seva',
+        'labelMr': 'सकाळची सेवा',
+        'capacity': 3,
+        'claimedCount': 0,
+        'sortOrder': 0,
+        'createdAt': Timestamp.fromDate(now),
+      });
+
+      await pumpDetailScreen(tester, signupId: signupRef.id);
+      await tester.tap(find.text('Add Devotee'));
+      await tester.pumpAndSettle();
+
+      final code = tester.widget<TextFormField>(
+        find.byKey(const Key('entryCountryCodeField')),
+      );
+      expect(code.controller!.text, '+91');
     });
 
     testWidgets('edits and removes an entry', (tester) async {

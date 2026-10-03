@@ -531,6 +531,47 @@ void main() {
       expect(entries, hasLength(1));
     });
 
+    test('treats a phone saved with a country code as the same as one saved '
+        'without it', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+        phone: '5851234567', // saved before country codes were added
+      );
+
+      final result = await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane Again',
+        phone: '+15851234567',
+      );
+
+      expect(result, {'success': false, 'error': 'duplicate_entry'});
+    });
+
+    test('lets two different numbers claim the same slot', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+        phone: '+15851234567',
+      );
+
+      final result = await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Joe',
+        phone: '+15851234568',
+      );
+
+      expect(result['success'], true);
+    });
+
     test('allows the same email/phone to claim a different slot on the same '
         'signup', () async {
       final signupId = await service.createSignup(buildSignup());

@@ -3,13 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signup_slots_screen.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
+
+class _MockAppConfigProvider extends Mock implements AppConfigProvider {}
 
 void main() {
   late FakeFirebaseFirestore firestore;
@@ -34,9 +39,17 @@ void main() {
     signup = signup.copyWith(id: signupId);
   });
 
-  Widget wrap(Widget child, {Locale? locale}) {
+  Widget wrap(
+    Widget child, {
+    Locale? locale,
+    AppConfigProvider? appConfigProvider,
+  }) {
     return MultiProvider(
       providers: [
+        if (appConfigProvider != null)
+          ChangeNotifierProvider<AppConfigProvider>.value(
+            value: appConfigProvider,
+          ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => FestivalProvider()),
       ],
@@ -339,4 +352,53 @@ void main() {
     final controller = tester.widget<TabBar>(find.byType(TabBar)).controller!;
     expect(controller.index, 0);
   });
+
+  testWidgets(
+    'the claim dialog starts with the sign up group\'s country code',
+    (tester) async {
+      await addSlot(date: DateTime.now().add(const Duration(days: 3)));
+      final provider = _MockAppConfigProvider();
+      when(() => provider.appConfig).thenReturn(
+        AppConfig(
+          deities: const [],
+          gajananMaharajGroups: [
+            GajananMaharajGroup(
+              id: 'group_1',
+              nameEn: 'Group',
+              nameMr: 'गट',
+              defaultCountryCode: '+91',
+            ),
+          ],
+          socialMediaLinks: const [],
+          appName: const {},
+          updateMessage: const {},
+          latestVersion: '1.0.0',
+          forceUpdate: 'false',
+          playStoreUrl: '',
+          appStoreUrl: '',
+        ),
+      );
+
+      await tester.pumpWidget(
+        wrap(
+          SignupSlotsScreen(
+            signupId: signupId,
+            signup: signup,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+          appConfigProvider: provider,
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('signUpButton')));
+      await tester.pumpAndSettle();
+
+      final code = tester.widget<TextFormField>(
+        find.byKey(const Key('claimCountryCodeField')),
+      );
+      expect(code.controller!.text, '+91');
+    },
+  );
 }

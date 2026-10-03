@@ -17,6 +17,7 @@ void main() {
     )
     onSave,
     VoidCallback? onDelete,
+    String? defaultCountryCode,
   }) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
@@ -33,6 +34,7 @@ void main() {
                     entry: entry,
                     onSave: onSave,
                     onDelete: onDelete,
+                    defaultCountryCode: defaultCountryCode,
                   ),
                 );
               },
@@ -114,11 +116,161 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(savedName, 'Devotee Name');
-      expect(savedPhone, '1234567890');
+      expect(savedPhone, '+11234567890');
       expect(savedEmail, 'test@example.com');
       expect(savedPledge, 101.0);
       expect(savedNote, 'Special seva');
       expect(find.text('Add Devotee Entry'), findsNothing); // Dialog closed
+    });
+
+    group('phone number with country code', () {
+      Future<void> open(
+        WidgetTester tester, {
+        SignupEntry? entry,
+        String? defaultCountryCode,
+        void Function(String, String?, String?, double?, String?)? onSave,
+      }) async {
+        await tester.pumpWidget(
+          createDialogWidget(
+            entry: entry,
+            defaultCountryCode: defaultCountryCode,
+            onSave: onSave ?? (_, _, _, _, _) {},
+          ),
+        );
+        await tester.tap(find.text('Open Dialog'));
+        await tester.pumpAndSettle();
+      }
+
+      String codeText(WidgetTester tester) => tester
+          .widget<TextFormField>(find.byKey(const Key('entryCountryCodeField')))
+          .controller!
+          .text;
+
+      String numberText(WidgetTester tester) => tester
+          .widget<TextFormField>(find.byKey(const Key('entryPhoneField')))
+          .controller!
+          .text;
+
+      testWidgets('prefills the default country code, +1 unless told '
+          'otherwise', (tester) async {
+        await open(tester);
+        expect(codeText(tester), '+1');
+      });
+
+      testWidgets('prefills the group\'s default country code', (tester) async {
+        String? savedPhone;
+        await open(
+          tester,
+          defaultCountryCode: '+91',
+          onSave: (_, phone, _, _, _) => savedPhone = phone,
+        );
+        expect(codeText(tester), '+91');
+
+        await tester.enterText(find.byKey(const Key('entryNameField')), 'A');
+        await tester.enterText(
+          find.byKey(const Key('entryPhoneField')),
+          '9876543210',
+        );
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(savedPhone, '+919876543210');
+      });
+
+      testWidgets('saves no phone when the number is left blank', (
+        tester,
+      ) async {
+        var saved = false;
+        String? savedPhone = 'unset';
+        await open(
+          tester,
+          onSave: (_, phone, _, _, _) {
+            saved = true;
+            savedPhone = phone;
+          },
+        );
+
+        await tester.enterText(find.byKey(const Key('entryNameField')), 'A');
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(saved, isTrue);
+        expect(savedPhone, isNull);
+      });
+
+      testWidgets('blocks a number that is too short for its code', (
+        tester,
+      ) async {
+        var saved = false;
+        await open(tester, onSave: (_, _, _, _, _) => saved = true);
+
+        await tester.enterText(find.byKey(const Key('entryNameField')), 'A');
+        await tester.enterText(
+          find.byKey(const Key('entryPhoneField')),
+          '12345',
+        );
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Please enter a valid phone number'), findsOneWidget);
+        expect(saved, isFalse);
+      });
+
+      testWidgets('blocks an invalid country code', (tester) async {
+        var saved = false;
+        await open(tester, onSave: (_, _, _, _, _) => saved = true);
+
+        await tester.enterText(find.byKey(const Key('entryNameField')), 'A');
+        await tester.enterText(
+          find.byKey(const Key('entryCountryCodeField')),
+          '44',
+        );
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('!'), findsOneWidget);
+        expect(saved, isFalse);
+      });
+
+      testWidgets('splits a stored number into its code and number when '
+          'editing', (tester) async {
+        final entry = SignupEntry(
+          id: 'e',
+          slotId: 's',
+          name: 'Existing',
+          phone: '+441234567890',
+          joinedAt: DateTime.now(),
+        );
+        await open(tester, entry: entry, defaultCountryCode: '+1');
+
+        expect(codeText(tester), '+44');
+        expect(numberText(tester), '1234567890');
+      });
+
+      testWidgets('keeps a number saved without a code under the default '
+          'code when editing', (tester) async {
+        final entry = SignupEntry(
+          id: 'e',
+          slotId: 's',
+          name: 'Existing',
+          phone: '9876543210',
+          joinedAt: DateTime.now(),
+        );
+        String? savedPhone;
+        await open(
+          tester,
+          entry: entry,
+          defaultCountryCode: '+91',
+          onSave: (_, phone, _, _, _) => savedPhone = phone,
+        );
+
+        expect(codeText(tester), '+91');
+        expect(numberText(tester), '9876543210');
+
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+        expect(savedPhone, '+919876543210');
+      });
     });
 
     testWidgets('renders edit mode with pre-filled fields and delete button', (

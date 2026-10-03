@@ -4,7 +4,10 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/form_utils.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
+import 'package:gajanan_maharaj_sevekari/utils/phone_utils.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/phone_number_field.dart';
 
 /// Lets a devotee claim one [slot] on a sign-up signup. Reuses
 /// AddStepsDialog's confirm-before-submit pattern: validate, show what was
@@ -19,6 +22,10 @@ class ClaimSlotDialog extends StatefulWidget {
   final String? deviceId;
   final SignupService signupService;
 
+  /// Country code prefilled in the phone field; the caller resolves it from
+  /// the sign-up's group. Falls back to the app-wide default.
+  final String? defaultCountryCode;
+
   const ClaimSlotDialog({
     super.key,
     required this.signupId,
@@ -26,6 +33,7 @@ class ClaimSlotDialog extends StatefulWidget {
     required this.requiresJoinCode,
     required this.deviceId,
     required this.signupService,
+    this.defaultCountryCode,
   });
 
   @override
@@ -36,6 +44,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
   final _formKey = GlobalKey<FormState>();
   final _errorKey = GlobalKey();
   final _nameController = TextEditingController();
+  late final TextEditingController _countryCodeController;
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _pledgeController = TextEditingController();
@@ -46,7 +55,16 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
   String? _errorText;
 
   @override
+  void initState() {
+    super.initState();
+    _countryCodeController = TextEditingController(
+      text: widget.defaultCountryCode ?? GroupConstants.defaultCountryCode,
+    );
+  }
+
+  @override
   void dispose() {
+    _countryCodeController.dispose();
     _nameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
@@ -129,7 +147,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
         signupId: widget.signupId,
         slotId: widget.slot.id!,
         name: _nameController.text.trim(),
-        phone: _phoneController.text.trim(),
+        phone: joinPhone(_countryCodeController.text, _phoneController.text),
         email: _emailController.text.trim(),
         pledgeAmount: pledgeText.isEmpty ? null : double.tryParse(pledgeText),
         note: _noteController.text.trim().isEmpty
@@ -213,25 +231,14 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 },
               ),
               const SizedBox(height: 8),
-              TextFormField(
-                key: const Key('claimPhoneField'),
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                maxLength: 30,
-                decoration: _decoration(l10n.signupEntryPhoneLabel),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return l10n.phoneRequired;
-                  }
-                  final digitCount = value
-                      .trim()
-                      .replaceAll(RegExp(r'\D'), '')
-                      .length;
-                  if (digitCount < 8) {
-                    return l10n.invalidPhoneError;
-                  }
-                  return null;
-                },
+              PhoneNumberField(
+                codeKey: const Key('claimCountryCodeField'),
+                numberKey: const Key('claimPhoneField'),
+                codeController: _countryCodeController,
+                numberController: _phoneController,
+                label: l10n.signupEntryPhoneLabel,
+                requiredMessage: l10n.phoneRequired,
+                invalidMessage: l10n.invalidPhoneError,
               ),
               const SizedBox(height: 8),
               TextFormField(

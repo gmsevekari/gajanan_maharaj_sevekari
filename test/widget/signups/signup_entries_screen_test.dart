@@ -148,26 +148,27 @@ void main() {
     ]);
   });
 
-  testWidgets('keeps one slot\'s entries together and shows its date and title once', (
-    tester,
-  ) async {
-    final first = await addSlot(labelEn: 'Morning', date: future);
-    final second = await addSlot(labelEn: 'Evening', date: future);
-    // Alphabetical order across slots would interleave these: Amy, Bob, Zoe.
-    await service.claimSlot(signupId: signupId, slotId: second, name: 'Amy');
-    await service.claimSlot(signupId: signupId, slotId: first, name: 'Zoe');
-    await service.claimSlot(signupId: signupId, slotId: first, name: 'Bob');
+  testWidgets(
+    'keeps one slot\'s entries together and shows its date and title once',
+    (tester) async {
+      final first = await addSlot(labelEn: 'Morning', date: future);
+      final second = await addSlot(labelEn: 'Evening', date: future);
+      // Alphabetical order across slots would interleave these: Amy, Bob, Zoe.
+      await service.claimSlot(signupId: signupId, slotId: second, name: 'Amy');
+      await service.claimSlot(signupId: signupId, slotId: first, name: 'Zoe');
+      await service.claimSlot(signupId: signupId, slotId: first, name: 'Bob');
 
-    await tester.pumpWidget(screen());
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(screen());
+      await tester.pumpAndSettle();
 
-    // The date and title appear once per slot, on its first row only.
-    expect(tableRows(tester), [
-      ['March 15', 'Morning', 'Bob'],
-      ['', '', 'Zoe'],
-      ['March 15', 'Evening', 'Amy'],
-    ]);
-  });
+      // The date and title appear once per slot, on its first row only.
+      expect(tableRows(tester), [
+        ['March 15', 'Morning', 'Bob'],
+        ['', '', 'Zoe'],
+        ['March 15', 'Evening', 'Amy'],
+      ]);
+    },
+  );
 
   testWidgets('gives each slot one background and alternates between slots', (
     tester,

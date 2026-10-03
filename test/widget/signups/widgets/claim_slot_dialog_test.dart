@@ -99,6 +99,7 @@ void main() {
     required String signupId,
     required String slotId,
     required bool requiresJoinCode,
+    String? defaultCountryCode,
   }) async {
     final slot = await slotById(signupId, slotId);
     await tester.pumpWidget(
@@ -113,6 +114,7 @@ void main() {
                 requiresJoinCode: requiresJoinCode,
                 deviceId: 'device_1',
                 signupService: service,
+                defaultCountryCode: defaultCountryCode,
               ),
             ),
             child: const Text('Open'),
@@ -375,6 +377,127 @@ void main() {
       },
     );
 
+    testWidgets('prefills the country code with +1 by default', (tester) async {
+      await openDialog(
+        tester,
+        signupId: openSignupId,
+        slotId: plainSlotId,
+        requiresJoinCode: false,
+      );
+
+      final code = tester.widget<TextFormField>(
+        find.byKey(const Key('claimCountryCodeField')),
+      );
+      expect(code.controller!.text, '+1');
+    });
+
+    testWidgets('prefills the group\'s default country code', (tester) async {
+      await openDialog(
+        tester,
+        signupId: openSignupId,
+        slotId: plainSlotId,
+        requiresJoinCode: false,
+        defaultCountryCode: '+91',
+      );
+      await fillRequiredFields(tester);
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Yes'));
+      await tester.pumpAndSettle();
+
+      final entry = (await service.getAllEntries(openSignupId).first).single;
+      expect(entry.phone, '+911234567890');
+    });
+
+    testWidgets('saves the phone with the country code the devotee typed', (
+      tester,
+    ) async {
+      await openDialog(
+        tester,
+        signupId: openSignupId,
+        slotId: plainSlotId,
+        requiresJoinCode: false,
+      );
+      await fillRequiredFields(tester);
+      await tester.enterText(
+        find.byKey(const Key('claimCountryCodeField')),
+        '+44',
+      );
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Yes'));
+      await tester.pumpAndSettle();
+
+      final entry = (await service.getAllEntries(openSignupId).first).single;
+      expect(entry.phone, '+441234567890');
+    });
+
+    testWidgets('blocks a country code without a plus', (tester) async {
+      await openDialog(
+        tester,
+        signupId: openSignupId,
+        slotId: plainSlotId,
+        requiresJoinCode: false,
+      );
+      await fillRequiredFields(tester);
+      await tester.enterText(
+        find.byKey(const Key('claimCountryCodeField')),
+        '91',
+      );
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('!'), findsOneWidget);
+      expect(find.text('Submit this signup?'), findsNothing);
+      expect(await service.getAllEntries(openSignupId).first, isEmpty);
+    });
+
+    testWidgets('accepts an 8-digit number for a +65 country code', (
+      tester,
+    ) async {
+      await openDialog(
+        tester,
+        signupId: openSignupId,
+        slotId: plainSlotId,
+        requiresJoinCode: false,
+        defaultCountryCode: '+65',
+      );
+      await fillRequiredFields(tester);
+      await tester.enterText(
+        find.byKey(const Key('claimPhoneField')),
+        '91234567',
+      );
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Yes'));
+      await tester.pumpAndSettle();
+
+      final entry = (await service.getAllEntries(openSignupId).first).single;
+      expect(entry.phone, '+6591234567');
+    });
+
+    testWidgets('rejects a 9-digit number for the default +1 code', (
+      tester,
+    ) async {
+      await openDialog(
+        tester,
+        signupId: openSignupId,
+        slotId: plainSlotId,
+        requiresJoinCode: false,
+      );
+      await fillRequiredFields(tester);
+      await tester.enterText(
+        find.byKey(const Key('claimPhoneField')),
+        '123456789',
+      );
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter a valid phone number'), findsOneWidget);
+    });
+
     testWidgets('submits phone, email, and note when filled in', (
       tester,
     ) async {
@@ -404,7 +527,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final entry = (await service.getAllEntries(openSignupId).first).single;
-      expect(entry.phone, '1234567890');
+      expect(entry.phone, '+11234567890');
       expect(entry.email, 'jane@example.com');
       expect(entry.note, 'Bringing sweets');
     });

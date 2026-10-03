@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
+import 'package:gajanan_maharaj_sevekari/utils/phone_utils.dart';
 
 class SignupService {
   /// Header images larger than this are rejected before an upload is even
@@ -336,11 +337,9 @@ class SignupService {
     String? phone,
   }) async {
     final normalizedEmail = email?.trim().toLowerCase();
-    final normalizedPhone = phone?.replaceAll(RegExp(r'\D'), '');
-    if ((normalizedEmail == null || normalizedEmail.isEmpty) &&
-        (normalizedPhone == null || normalizedPhone.isEmpty)) {
-      return false;
-    }
+    final hasEmail = normalizedEmail != null && normalizedEmail.isNotEmpty;
+    final hasPhone = (phone?.replaceAll(RegExp(r'\D'), '') ?? '').isNotEmpty;
+    if (!hasEmail && !hasPhone) return false;
 
     final snapshot = await _entriesRef(
       signupId,
@@ -349,18 +348,8 @@ class SignupService {
     for (final doc in snapshot.docs) {
       final data = doc.data();
       final existingEmail = (data['email'] as String?)?.trim().toLowerCase();
-      final existingPhone = (data['phone'] as String?)?.replaceAll(
-        RegExp(r'\D'),
-        '',
-      );
-      if (normalizedEmail != null &&
-          normalizedEmail.isNotEmpty &&
-          existingEmail == normalizedEmail) {
-        return true;
-      }
-      if (normalizedPhone != null &&
-          normalizedPhone.isNotEmpty &&
-          existingPhone == normalizedPhone) {
+      if (hasEmail && existingEmail == normalizedEmail) return true;
+      if (hasPhone && phonesMatch(data['phone'] as String?, phone)) {
         return true;
       }
     }

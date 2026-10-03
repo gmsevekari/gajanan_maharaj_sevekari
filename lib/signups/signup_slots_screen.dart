@@ -10,6 +10,7 @@ import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_slot_tile.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/phone_number_field.dart';
 
 /// Every slot on a sign-up signup, reached from
 /// [SignupDetailScreen]'s "Slots" card. Splits slots into
@@ -72,6 +73,10 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
         requiresJoinCode: widget.signup.requiresJoinCode,
         deviceId: widget.deviceId,
         signupService: _service,
+        defaultCountryCode: defaultCountryCodeFor(
+          context,
+          widget.signup.groupId,
+        ),
       ),
     );
 

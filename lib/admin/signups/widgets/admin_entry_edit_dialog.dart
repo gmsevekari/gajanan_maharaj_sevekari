@@ -3,7 +3,10 @@ import 'package:gajanan_maharaj_sevekari/admin/widgets/participant_contact_actio
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
+import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
+import 'package:gajanan_maharaj_sevekari/utils/phone_utils.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/phone_number_field.dart';
 
 class AdminEntryEditDialog extends StatefulWidget {
   final SignupEntry? entry;
@@ -17,11 +20,16 @@ class AdminEntryEditDialog extends StatefulWidget {
   onSave;
   final VoidCallback? onDelete;
 
+  /// Country code prefilled for a new number (and for an existing one saved
+  /// without a code). The caller resolves it from the sign-up's group.
+  final String? defaultCountryCode;
+
   const AdminEntryEditDialog({
     super.key,
     this.entry,
     required this.onSave,
     this.onDelete,
+    this.defaultCountryCode,
   });
 
   @override
@@ -31,6 +39,7 @@ class AdminEntryEditDialog extends StatefulWidget {
 class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
+  late final TextEditingController _countryCodeController;
   late final TextEditingController _phoneController;
   late final TextEditingController _emailController;
   late final TextEditingController _pledgeController;
@@ -41,7 +50,12 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
     super.initState();
     final entry = widget.entry;
     _nameController = TextEditingController(text: entry?.name ?? '');
-    _phoneController = TextEditingController(text: entry?.phone ?? '');
+    final phone = splitPhone(
+      entry?.phone,
+      widget.defaultCountryCode ?? GroupConstants.defaultCountryCode,
+    );
+    _countryCodeController = TextEditingController(text: phone.code);
+    _phoneController = TextEditingController(text: phone.number);
     _emailController = TextEditingController(text: entry?.email ?? '');
     _pledgeController = TextEditingController(
       text: entry?.pledgeAmount != null
@@ -54,6 +68,7 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
   @override
   void dispose() {
     _nameController.dispose();
+    _countryCodeController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
     _pledgeController.dispose();
@@ -65,9 +80,7 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
     if (!_formKey.currentState!.validate()) return;
 
     final name = _nameController.text.trim();
-    final phone = _phoneController.text.trim().isEmpty
-        ? null
-        : _phoneController.text.trim();
+    final phone = joinPhone(_countryCodeController.text, _phoneController.text);
     final email = _emailController.text.trim().isEmpty
         ? null
         : _emailController.text.trim();
@@ -163,14 +176,16 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
                 },
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('entryPhoneField'),
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  labelText: l10n.signupEntryPhoneLabel,
-                  border: const OutlineInputBorder(),
-                ),
+              PhoneNumberField(
+                codeKey: const Key('entryCountryCodeField'),
+                numberKey: const Key('entryPhoneField'),
+                codeController: _countryCodeController,
+                numberController: _phoneController,
+                label: l10n.signupEntryPhoneLabel,
+                // Admins often add phoned-in entries without a number.
+                required: false,
+                requiredMessage: l10n.phoneRequired,
+                invalidMessage: l10n.invalidPhoneError,
               ),
               const SizedBox(height: 12),
               TextFormField(
