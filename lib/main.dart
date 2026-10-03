@@ -42,11 +42,11 @@ import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/settings_screen.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signups_screen.dart';
-import 'package:gajanan_maharaj_sevekari/signups/signup_sheets_list_screen.dart';
-import 'package:gajanan_maharaj_sevekari/signups/signup_sheet_detail_screen.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_sheets_dashboard.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/admin_create_signup_sheet_screen.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_sheet_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/signups/signups_list_screen.dart';
+import 'package:gajanan_maharaj_sevekari/signups/signup_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signups_dashboard.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_create_signup_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/social_media/social_media_screen.dart';
 import 'package:gajanan_maharaj_sevekari/splash/splash_screen.dart';
 import 'package:gajanan_maharaj_sevekari/jap_mala/namjap_screen.dart';
@@ -658,7 +658,7 @@ class _MyAppState extends State<MyApp> {
                 Routes.signupSheetsList: (context) {
                   final args =
                       ModalRoute.of(context)?.settings.arguments as Map?;
-                  return SignupSheetsListScreen(
+                  return SignupsListScreen(
                     groupId: args?['groupId'],
                     groupName: args?['groupName'],
                   );
@@ -681,7 +681,7 @@ class _MyAppState extends State<MyApp> {
                       ),
                     );
                   }
-                  return SignupSheetDetailScreen(sheetId: sheetId);
+                  return SignupDetailScreen(sheetId: sheetId);
                 },
                 Routes.adminSignupSheetsDashboard: (context) {
                   final args = ModalRoute.of(context)?.settings.arguments;
@@ -706,7 +706,7 @@ class _MyAppState extends State<MyApp> {
                       body: Center(child: Text('Access Denied')),
                     );
                   }
-                  return AdminSignupSheetsDashboard(adminUser: adminUser);
+                  return AdminSignupsDashboard(adminUser: adminUser);
                 },
                 Routes.adminCreateSignupSheet: (context) {
                   final args = ModalRoute.of(context)!.settings.arguments;
@@ -716,7 +716,7 @@ class _MyAppState extends State<MyApp> {
                       body: Center(child: Text('Access Denied')),
                     );
                   }
-                  return AdminCreateSignupSheetScreen(adminUser: args);
+                  return AdminCreateSignupScreen(adminUser: args);
                 },
                 Routes.onboarding: (context) => const GroupSelectionScreen(),
                 Routes.adminManageGroupAdmins: (context) {
@@ -1018,7 +1018,7 @@ class _MyAppState extends State<MyApp> {
                         );
                       }
                       return MaterialPageRoute(
-                        builder: (context) => AdminSignupSheetDetailScreen(
+                        builder: (context) => AdminSignupDetailScreen(
                           sheetId: args['sheetId'] as String?,
                           adminUser: args['adminUser'] as AdminUser,
                         ),
@@ -1028,7 +1028,7 @@ class _MyAppState extends State<MyApp> {
                       builder: (context) => const Scaffold(
                         body: Center(
                           child: Text(
-                            'Error: Missing AdminSignupSheetDetailScreen arguments',
+                            'Error: Missing AdminSignupDetailScreen arguments',
                           ),
                         ),
                       ),

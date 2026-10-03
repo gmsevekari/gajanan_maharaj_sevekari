@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 
-class SignupSheetExportCard extends StatelessWidget {
+class SignupExportCard extends StatelessWidget {
   /// Fixed width of the exported PNG card in logical pixels.
   static const double _cardWidth = 380;
 
-  final SignupSheet sheet;
+  final Signup sheet;
   final List<SignupSlot> slots;
   final int totalClaims;
   final int totalCapacity;
@@ -18,7 +18,7 @@ class SignupSheetExportCard extends StatelessWidget {
   final ThemeData theme;
   final String langCode;
 
-  const SignupSheetExportCard({
+  const SignupExportCard({
     super.key,
     required this.sheet,
     required this.slots,

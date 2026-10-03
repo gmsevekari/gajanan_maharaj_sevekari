@@ -4,12 +4,12 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/admin_create_signup_sheet_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_create_signup_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
@@ -64,7 +64,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(
-      SignupSheet(
+      Signup(
         titleEn: 'dummy',
         titleMr: 'dummy',
         groupId: 'dummy',
@@ -137,7 +137,7 @@ void main() {
     addTearDown(() => resetScreen(tester));
     await tester.pumpWidget(
       createWidget(
-        AdminCreateSignupSheetScreen(
+        AdminCreateSignupScreen(
           adminUser: adminUser,
           firestore: firestore,
           storage: storage,
@@ -147,7 +147,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  group('AdminCreateSignupSheetScreen', () {
+  group('AdminCreateSignupScreen', () {
     testWidgets(
       'renders title/description fields, join code toggle, and empty slot state',
       (tester) async {
@@ -631,7 +631,7 @@ void main() {
           addTearDown(() => resetScreen(tester));
           await tester.pumpWidget(
             createWidget(
-              AdminCreateSignupSheetScreen(
+              AdminCreateSignupScreen(
                 adminUser: adminUser,
                 signupService: mockService,
               ),
@@ -688,7 +688,7 @@ void main() {
         addTearDown(() => resetScreen(tester));
         await tester.pumpWidget(
           createWidget(
-            AdminCreateSignupSheetScreen(
+            AdminCreateSignupScreen(
               adminUser: adminUser,
               signupService: mockService,
             ),

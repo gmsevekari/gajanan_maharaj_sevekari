@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
@@ -10,7 +10,7 @@ import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 /// Published sign-up sheets for a single group. Reached via the
 /// group-selection indirection described in the design doc - by the time
 /// this screen is shown, a group has already been chosen.
-class SignupSheetsListScreen extends StatefulWidget {
+class SignupsListScreen extends StatefulWidget {
   final String? groupId;
   final String? groupName;
 
@@ -22,7 +22,7 @@ class SignupSheetsListScreen extends StatefulWidget {
   @visibleForTesting
   final SignupService? signupService;
 
-  const SignupSheetsListScreen({
+  const SignupsListScreen({
     super.key,
     this.groupId,
     this.groupName,
@@ -31,12 +31,12 @@ class SignupSheetsListScreen extends StatefulWidget {
   });
 
   @override
-  State<SignupSheetsListScreen> createState() => _SignupSheetsListScreenState();
+  State<SignupsListScreen> createState() => _SignupsListScreenState();
 }
 
-class _SignupSheetsListScreenState extends State<SignupSheetsListScreen> {
+class _SignupsListScreenState extends State<SignupsListScreen> {
   late final SignupService _service;
-  Stream<List<SignupSheet>>? _sheetsStream;
+  Stream<List<Signup>>? _sheetsStream;
 
   @override
   void initState() {
@@ -85,7 +85,7 @@ class _SignupSheetsListScreenState extends State<SignupSheetsListScreen> {
                 ),
               ),
             )
-          : StreamBuilder<List<SignupSheet>>(
+          : StreamBuilder<List<Signup>>(
               stream: _sheetsStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -108,7 +108,7 @@ class _SignupSheetsListScreenState extends State<SignupSheetsListScreen> {
                   padding: const EdgeInsets.all(16),
                   itemCount: sheets.length,
                   itemBuilder: (context, index) =>
-                      _SheetCard(sheet: sheets[index]),
+                      _SignupCard(sheet: sheets[index]),
                 );
               },
             ),
@@ -116,10 +116,10 @@ class _SignupSheetsListScreenState extends State<SignupSheetsListScreen> {
   }
 }
 
-class _SheetCard extends StatelessWidget {
-  final SignupSheet sheet;
+class _SignupCard extends StatelessWidget {
+  final Signup sheet;
 
-  const _SheetCard({required this.sheet});
+  const _SignupCard({required this.sheet});
 
   @override
   Widget build(BuildContext context) {

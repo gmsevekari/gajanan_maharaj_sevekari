@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
-/// One editable slot row inside [AdminCreateSignupSheetScreen]'s dynamic
+/// One editable slot row inside [AdminCreateSignupScreen]'s dynamic
 /// slot list builder. Purely presentational — all state lives in the
 /// caller-owned controllers, so the parent's single [Form] validates this
 /// row's fields along with everything else on the screen.

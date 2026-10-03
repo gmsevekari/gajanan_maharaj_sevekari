@@ -3,14 +3,14 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
 /// Add/replace/remove controls for a sheet's header/display image, shown
-/// on [AdminSignupSheetDetailScreen] right under the overview card.
-class SignupSheetHeaderImageCard extends StatelessWidget {
+/// on [AdminSignupDetailScreen] right under the overview card.
+class SignupHeaderImageCard extends StatelessWidget {
   final String? headerImageUrl;
   final bool isUploading;
   final VoidCallback onPickImage;
   final VoidCallback? onRemoveImage;
 
-  const SignupSheetHeaderImageCard({
+  const SignupHeaderImageCard({
     super.key,
     required this.headerImageUrl,
     required this.isUploading,

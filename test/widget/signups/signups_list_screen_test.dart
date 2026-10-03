@@ -2,11 +2,11 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
-import 'package:gajanan_maharaj_sevekari/signups/signup_sheets_list_screen.dart';
+import 'package:gajanan_maharaj_sevekari/signups/signups_list_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -42,13 +42,13 @@ void main() {
   Future<String> createSheet({
     String titleEn = 'Sunday Prasad Seva',
     String descriptionEn = '',
-    SignupSheetStatus status = SignupSheetStatus.published,
+    SignupStatus status = SignupStatus.published,
     String groupId = 'group_1',
     bool requiresJoinCode = false,
   }) {
     final now = DateTime.now();
     return service.createSheet(
-      SignupSheet(
+      Signup(
         titleEn: titleEn,
         titleMr: '',
         descriptionEn: descriptionEn,
@@ -64,14 +64,12 @@ void main() {
     );
   }
 
-  group('SignupSheetsListScreen', () {
+  group('SignupsListScreen', () {
     testWidgets('shows an invalid-group message when groupId is null', (
       tester,
     ) async {
       await tester.pumpWidget(
-        wrap(
-          SignupSheetsListScreen(firestore: firestore, signupService: service),
-        ),
+        wrap(SignupsListScreen(firestore: firestore, signupService: service)),
       );
       await tester.pumpAndSettle();
 
@@ -81,7 +79,7 @@ void main() {
     testWidgets('tapping home icon navigates to home', (tester) async {
       await tester.pumpWidget(
         wrap(
-          SignupSheetsListScreen(
+          SignupsListScreen(
             groupId: 'group_1',
             firestore: firestore,
             signupService: service,
@@ -103,7 +101,7 @@ void main() {
     testWidgets('tapping settings icon navigates to settings', (tester) async {
       await tester.pumpWidget(
         wrap(
-          SignupSheetsListScreen(
+          SignupsListScreen(
             groupId: 'group_1',
             firestore: firestore,
             signupService: service,
@@ -127,7 +125,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         wrap(
-          SignupSheetsListScreen(
+          SignupsListScreen(
             groupId: 'group_1',
             firestore: firestore,
             signupService: service,
@@ -149,7 +147,7 @@ void main() {
 
         await tester.pumpWidget(
           wrap(
-            SignupSheetsListScreen(
+            SignupsListScreen(
               groupId: 'group_1',
               firestore: firestore,
               signupService: service,
@@ -164,19 +162,13 @@ void main() {
     );
 
     testWidgets('does not show draft or closed sheets', (tester) async {
-      await createSheet(
-        titleEn: 'Draft Sheet',
-        status: SignupSheetStatus.draft,
-      );
-      await createSheet(
-        titleEn: 'Closed Sheet',
-        status: SignupSheetStatus.closed,
-      );
+      await createSheet(titleEn: 'Draft Sheet', status: SignupStatus.draft);
+      await createSheet(titleEn: 'Closed Sheet', status: SignupStatus.closed);
       await createSheet(titleEn: 'Published Sheet');
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetsListScreen(
+          SignupsListScreen(
             groupId: 'group_1',
             firestore: firestore,
             signupService: service,
@@ -197,7 +189,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetsListScreen(
+          SignupsListScreen(
             groupId: 'group_1',
             firestore: firestore,
             signupService: service,
@@ -217,7 +209,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetsListScreen(
+          SignupsListScreen(
             groupId: 'group_1',
             firestore: firestore,
             signupService: service,
@@ -235,13 +227,13 @@ void main() {
     testWidgets('renders the Marathi title when locale is mr', (tester) async {
       final now = DateTime.now();
       await service.createSheet(
-        SignupSheet(
+        Signup(
           titleEn: 'Sunday Prasad Seva',
           titleMr: 'रविवार प्रसाद सेवा',
           descriptionEn: 'Cook and serve prasad',
           descriptionMr: 'प्रसाद शिजवा आणि वाढा',
           groupId: 'group_1',
-          status: SignupSheetStatus.published,
+          status: SignupStatus.published,
           createdAt: now,
           updatedAt: now,
           createdBy: 'admin@test.com',
@@ -250,7 +242,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetsListScreen(
+          SignupsListScreen(
             groupId: 'group_1',
             firestore: firestore,
             signupService: service,
@@ -269,13 +261,13 @@ void main() {
     ) async {
       final now = DateTime.now();
       await service.createSheet(
-        SignupSheet(
+        Signup(
           titleEn: 'Sunday Prasad Seva',
           titleMr: 'रविवार प्रसाद सेवा',
           descriptionEn: 'Cook and serve prasad',
           descriptionMr: '',
           groupId: 'group_1',
-          status: SignupSheetStatus.published,
+          status: SignupStatus.published,
           createdAt: now,
           updatedAt: now,
           createdBy: 'admin@test.com',
@@ -284,7 +276,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetsListScreen(
+          SignupsListScreen(
             groupId: 'group_1',
             firestore: firestore,
             signupService: service,

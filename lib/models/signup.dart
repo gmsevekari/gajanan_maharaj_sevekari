@@ -1,17 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Lifecycle state of a [SignupSheet].
-enum SignupSheetStatus {
+/// Lifecycle state of a [Signup].
+enum SignupStatus {
   draft,
   published,
   closed;
 
   /// Parses a Firestore string value, defaulting to [draft] for a missing,
   /// wrong-typed, or unrecognized value rather than throwing.
-  static SignupSheetStatus fromValue(String? value) {
-    return SignupSheetStatus.values.firstWhere(
+  static SignupStatus fromValue(String? value) {
+    return SignupStatus.values.firstWhere(
       (status) => status.name == value,
-      orElse: () => SignupSheetStatus.draft,
+      orElse: () => SignupStatus.draft,
     );
   }
 }
@@ -19,14 +19,14 @@ enum SignupSheetStatus {
 /// A sign-up sheet: an admin-published set of claimable [SignupSlot]s
 /// (stored in its own `slots` subcollection) that devotees claim via
 /// entries in a flat `entries` subcollection.
-class SignupSheet {
+class Signup {
   final String? id;
   final String titleEn;
   final String titleMr;
   final String descriptionEn;
   final String descriptionMr;
   final String groupId;
-  final SignupSheetStatus status;
+  final SignupStatus status;
   final bool requiresJoinCode;
   final String? joinCode;
   final DateTime? startDate;
@@ -40,14 +40,14 @@ class SignupSheet {
   /// has been uploaded.
   final String? headerImageUrl;
 
-  const SignupSheet({
+  const Signup({
     this.id,
     required this.titleEn,
     required this.titleMr,
     this.descriptionEn = '',
     this.descriptionMr = '',
     required this.groupId,
-    this.status = SignupSheetStatus.draft,
+    this.status = SignupStatus.draft,
     this.requiresJoinCode = false,
     this.joinCode,
     this.startDate,
@@ -61,8 +61,8 @@ class SignupSheet {
          'joinCode must be null when requiresJoinCode is false',
        );
 
-  factory SignupSheet.fromMap(String id, Map<String, dynamic> data) {
-    return SignupSheet(
+  factory Signup.fromMap(String id, Map<String, dynamic> data) {
+    return Signup(
       id: id,
       titleEn: data['titleEn'] is String ? data['titleEn'] as String : '',
       titleMr: data['titleMr'] is String ? data['titleMr'] as String : '',
@@ -73,7 +73,7 @@ class SignupSheet {
           ? data['descriptionMr'] as String
           : '',
       groupId: data['groupId'] is String ? data['groupId'] as String : '',
-      status: SignupSheetStatus.fromValue(
+      status: SignupStatus.fromValue(
         data['status'] is String ? data['status'] as String : null,
       ),
       requiresJoinCode: data['requiresJoinCode'] is bool
@@ -118,14 +118,14 @@ class SignupSheet {
     };
   }
 
-  SignupSheet copyWith({
+  Signup copyWith({
     String? id,
     String? titleEn,
     String? titleMr,
     String? descriptionEn,
     String? descriptionMr,
     String? groupId,
-    SignupSheetStatus? status,
+    SignupStatus? status,
     bool? requiresJoinCode,
     String? joinCode,
     DateTime? startDate,
@@ -136,7 +136,7 @@ class SignupSheet {
     String? headerImageUrl,
   }) {
     final newRequiresJoinCode = requiresJoinCode ?? this.requiresJoinCode;
-    return SignupSheet(
+    return Signup(
       id: id ?? this.id,
       titleEn: titleEn ?? this.titleEn,
       titleMr: titleMr ?? this.titleMr,
@@ -158,7 +158,7 @@ class SignupSheet {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SignupSheet &&
+      other is Signup &&
           runtimeType == other.runtimeType &&
           id == other.id &&
           titleEn == other.titleEn &&

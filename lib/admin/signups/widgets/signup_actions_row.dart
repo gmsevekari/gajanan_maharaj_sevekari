@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
-/// Duplicate/Share/Export actions for [AdminSignupSheetDetailScreen].
-class SignupSheetActionsRow extends StatelessWidget {
+/// Duplicate/Share/Export actions for [AdminSignupDetailScreen].
+class SignupActionsRow extends StatelessWidget {
   final VoidCallback onDuplicate;
   final VoidCallback onShare;
   final VoidCallback onExport;
 
-  const SignupSheetActionsRow({
+  const SignupActionsRow({
     super.key,
     required this.onDuplicate,
     required this.onShare,

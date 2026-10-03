@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// A single claimable slot within a [SignupSheet]'s `slots` subcollection.
+/// A single claimable slot within a [Signup]'s `slots` subcollection.
 class SignupSlot {
   final String? id;
   final String labelEn;

@@ -5,7 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 
@@ -49,17 +49,17 @@ void main() {
     service = SignupService(firestore: fakeFirestore, storage: mockStorage);
   });
 
-  SignupSheet buildSheet({
+  Signup buildSheet({
     String? id,
     String titleEn = 'Sunday Prasad Seva',
     String titleMr = 'रविवार प्रसाद सेवा',
     String groupId = 'group_1',
-    SignupSheetStatus status = SignupSheetStatus.draft,
+    SignupStatus status = SignupStatus.draft,
     bool requiresJoinCode = false,
     String? joinCode,
   }) {
     final now = DateTime.now();
-    return SignupSheet(
+    return Signup(
       id: id,
       titleEn: titleEn,
       titleMr: titleMr,
@@ -134,11 +134,11 @@ void main() {
       'getActiveSheets returns only published sheets for the group',
       () async {
         final publishedId = await service.createSheet(
-          buildSheet(status: SignupSheetStatus.published),
+          buildSheet(status: SignupStatus.published),
         );
-        await service.createSheet(buildSheet(status: SignupSheetStatus.draft));
+        await service.createSheet(buildSheet(status: SignupStatus.draft));
         await service.createSheet(
-          buildSheet(status: SignupSheetStatus.published, groupId: 'group_2'),
+          buildSheet(status: SignupStatus.published, groupId: 'group_2'),
         );
 
         final sheets = await service.getActiveSheets('group_1').first;
@@ -149,11 +149,9 @@ void main() {
     );
 
     test('getAllSheets returns every status for the group', () async {
-      await service.createSheet(buildSheet(status: SignupSheetStatus.draft));
-      await service.createSheet(
-        buildSheet(status: SignupSheetStatus.published),
-      );
-      await service.createSheet(buildSheet(status: SignupSheetStatus.closed));
+      await service.createSheet(buildSheet(status: SignupStatus.draft));
+      await service.createSheet(buildSheet(status: SignupStatus.published));
+      await service.createSheet(buildSheet(status: SignupStatus.closed));
       await service.createSheet(buildSheet(groupId: 'group_2'));
 
       final sheets = await service.getAllSheets('group_1').first;
@@ -190,10 +188,10 @@ void main() {
       final id = await service.createSheet(buildSheet());
       final before = (await service.getSheetById(id).first)!;
 
-      await service.updateSheetStatus(id, SignupSheetStatus.published);
+      await service.updateSheetStatus(id, SignupStatus.published);
 
       final after = await service.getSheetById(id).first;
-      expect(after!.status, SignupSheetStatus.published);
+      expect(after!.status, SignupStatus.published);
       expect(after.titleEn, before.titleEn);
       expect(
         after.updatedAt.isAfter(before.updatedAt) ||
@@ -694,7 +692,7 @@ void main() {
           buildSheet(
             titleEn: 'Original Title',
             requiresJoinCode: false,
-            status: SignupSheetStatus.closed,
+            status: SignupStatus.closed,
           ),
         );
 
@@ -704,7 +702,7 @@ void main() {
         expect(copy!.titleEn, 'Original Title');
         expect(copy.requiresJoinCode, false);
         expect(copy.joinCode, isNull);
-        expect(copy.status, SignupSheetStatus.draft);
+        expect(copy.status, SignupStatus.draft);
       },
     );
 

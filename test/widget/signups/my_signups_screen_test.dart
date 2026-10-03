@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
@@ -24,11 +24,11 @@ void main() {
     service = SignupService(firestore: firestore);
     final now = DateTime.now();
     sheetId = await service.createSheet(
-      SignupSheet(
+      Signup(
         titleEn: 'Sunday Prasad Seva',
         titleMr: 'रविवार प्रसाद सेवा',
         groupId: 'group_1',
-        status: SignupSheetStatus.published,
+        status: SignupStatus.published,
         createdAt: now,
         updatedAt: now,
         createdBy: 'admin@test.com',

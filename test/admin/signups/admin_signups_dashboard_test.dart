@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_sheets_dashboard.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signups_dashboard.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
@@ -96,7 +96,7 @@ void main() {
     addTearDown(() => resetScreen(tester));
     await tester.pumpWidget(
       createWidget(
-        child: AdminSignupSheetsDashboard(
+        child: AdminSignupsDashboard(
           adminUser: user ?? adminUser,
           firestore: firestore,
         ),
@@ -116,7 +116,7 @@ void main() {
       'descriptionEn': 'Help cook Prasad',
       'descriptionMr': 'प्रसाद बनवण्यासाठी मदत',
       'groupId': 'gajanan_maharaj_seattle',
-      'status': SignupSheetStatus.draft.name,
+      'status': SignupStatus.draft.name,
       'requiresJoinCode': true,
       'joinCode': 'ABC123',
       'createdAt': Timestamp.fromDate(now.subtract(const Duration(hours: 2))),
@@ -131,7 +131,7 @@ void main() {
       'descriptionEn': 'Navaratri saree sponsorship',
       'descriptionMr': 'नवरात्री साडी सेवा',
       'groupId': 'gajanan_maharaj_seattle',
-      'status': SignupSheetStatus.published.name,
+      'status': SignupStatus.published.name,
       'requiresJoinCode': false,
       'joinCode': null,
       'createdAt': Timestamp.fromDate(now.subtract(const Duration(hours: 1))),
@@ -146,7 +146,7 @@ void main() {
       'descriptionEn': 'Past event',
       'descriptionMr': 'गेलेला कार्यक्रम',
       'groupId': 'gajanan_maharaj_seattle',
-      'status': SignupSheetStatus.closed.name,
+      'status': SignupStatus.closed.name,
       'requiresJoinCode': false,
       'joinCode': null,
       'createdAt': Timestamp.fromDate(now.subtract(const Duration(days: 1))),
@@ -161,7 +161,7 @@ void main() {
       'descriptionEn': 'Other group',
       'descriptionMr': 'दुसरा गट',
       'groupId': 'other_group',
-      'status': SignupSheetStatus.published.name,
+      'status': SignupStatus.published.name,
       'requiresJoinCode': false,
       'joinCode': null,
       'createdAt': Timestamp.fromDate(now),
@@ -170,7 +170,7 @@ void main() {
     });
   }
 
-  group('AdminSignupSheetsDashboard', () {
+  group('AdminSignupsDashboard', () {
     testWidgets(
       'renders app bar, filter chips, and empty state when no sheets exist',
       (tester) async {
@@ -412,11 +412,11 @@ void main() {
       final mockService = MockSignupService();
       when(
         () => mockService.getAllSheets(any()),
-      ).thenAnswer((_) => Stream<List<SignupSheet>>.error('Test error'));
+      ).thenAnswer((_) => Stream<List<Signup>>.error('Test error'));
 
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetsDashboard(
+          child: AdminSignupsDashboard(
             adminUser: adminUser,
             signupService: mockService,
           ),
@@ -438,7 +438,7 @@ void main() {
 
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetsDashboard(
+          child: AdminSignupsDashboard(
             adminUser: adminUser,
             firestore: firestore,
           ),
@@ -455,7 +455,7 @@ void main() {
 
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetsDashboard(
+          child: AdminSignupsDashboard(
             adminUser: newAdmin,
             firestore: firestore,
           ),

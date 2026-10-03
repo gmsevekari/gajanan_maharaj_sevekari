@@ -5,13 +5,13 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_sheet_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
@@ -75,7 +75,7 @@ void main() {
   late MockAppConfigProvider appConfigProvider;
 
   setUpAll(() {
-    registerFallbackValue(SignupSheetStatus.published);
+    registerFallbackValue(SignupStatus.published);
     registerFallbackValue(Uint8List(0));
     registerFallbackValue(
       SignupEntry(
@@ -164,7 +164,7 @@ void main() {
     addTearDown(() => resetScreen(tester));
     await tester.pumpWidget(
       createWidget(
-        child: AdminSignupSheetDetailScreen(
+        child: AdminSignupDetailScreen(
           sheetId: sheetId,
           adminUser: adminUser,
           firestore: firestore,
@@ -177,7 +177,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  group('AdminSignupSheetDetailScreen', () {
+  group('AdminSignupDetailScreen', () {
     testWidgets('renders not found state when sheet does not exist', (
       tester,
     ) async {
@@ -233,7 +233,7 @@ void main() {
         'descriptionEn': 'Help prepare prasad',
         'descriptionMr': 'प्रसाद बनवण्यासाठी मदत',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.draft.name,
+        'status': SignupStatus.draft.name,
         'requiresJoinCode': true,
         'joinCode': 'JOIN99',
         'createdAt': Timestamp.fromDate(now),
@@ -259,7 +259,7 @@ void main() {
         'descriptionEn': 'Description',
         'descriptionMr': 'वर्णन',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.published.name,
+        'status': SignupStatus.published.name,
         'requiresJoinCode': true,
         'joinCode': 'JOIN99',
         'createdAt': Timestamp.fromDate(now),
@@ -283,7 +283,7 @@ void main() {
         'descriptionEn': 'Draft',
         'descriptionMr': 'मसुदा',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.draft.name,
+        'status': SignupStatus.draft.name,
         'requiresJoinCode': false,
         'createdAt': Timestamp.fromDate(now),
         'updatedAt': Timestamp.fromDate(now),
@@ -324,7 +324,7 @@ void main() {
         'descriptionEn': 'Desc',
         'descriptionMr': 'वर्णन',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.published.name,
+        'status': SignupStatus.published.name,
         'requiresJoinCode': true,
         'joinCode': 'ORIG01',
         'createdAt': Timestamp.fromDate(now),
@@ -388,7 +388,7 @@ void main() {
         'descriptionEn': '',
         'descriptionMr': '',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.published.name,
+        'status': SignupStatus.published.name,
         'requiresJoinCode': false,
         'createdAt': Timestamp.fromDate(now),
         'updatedAt': Timestamp.fromDate(now),
@@ -441,7 +441,7 @@ void main() {
         'descriptionEn': '',
         'descriptionMr': '',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.published.name,
+        'status': SignupStatus.published.name,
         'requiresJoinCode': false,
         'createdAt': Timestamp.fromDate(now),
         'updatedAt': Timestamp.fromDate(now),
@@ -511,7 +511,7 @@ void main() {
         'descriptionEn': 'Help',
         'descriptionMr': 'मदत',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.draft.name,
+        'status': SignupStatus.draft.name,
         'requiresJoinCode': false,
         'createdAt': Timestamp.fromDate(now),
         'updatedAt': Timestamp.fromDate(now),
@@ -544,7 +544,7 @@ void main() {
         'descriptionEn': 'Help cook prasad',
         'descriptionMr': '',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.draft.name,
+        'status': SignupStatus.draft.name,
         'requiresJoinCode': false,
         'createdAt': Timestamp.fromDate(now),
         'updatedAt': Timestamp.fromDate(now),
@@ -570,7 +570,7 @@ void main() {
         'descriptionEn': '',
         'descriptionMr': '',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.published.name,
+        'status': SignupStatus.published.name,
         'requiresJoinCode': false,
         'createdAt': Timestamp.fromDate(now),
         'updatedAt': Timestamp.fromDate(now),
@@ -605,12 +605,12 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheet = SignupSheet(
+      final sheet = Signup(
         id: 'sheet_err',
         titleEn: 'Error Sheet',
         titleMr: 'त्रुटी शीट',
         groupId: 'gajanan_maharaj_seattle',
-        status: SignupSheetStatus.draft,
+        status: SignupStatus.draft,
         requiresJoinCode: false,
         createdAt: now,
         updatedAt: now,
@@ -636,7 +636,7 @@ void main() {
 
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetDetailScreen(
+          child: AdminSignupDetailScreen(
             sheetId: 'sheet_err',
             adminUser: adminUser,
             signupService: mockService,
@@ -655,12 +655,12 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheet = SignupSheet(
+      final sheet = Signup(
         id: 'sheet_status_err',
         titleEn: 'Status Error Sheet',
         titleMr: 'शीट',
         groupId: 'gajanan_maharaj_seattle',
-        status: SignupSheetStatus.draft,
+        status: SignupStatus.draft,
         requiresJoinCode: false,
         createdAt: now,
         updatedAt: now,
@@ -686,7 +686,7 @@ void main() {
 
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetDetailScreen(
+          child: AdminSignupDetailScreen(
             sheetId: 'sheet_status_err',
             adminUser: adminUser,
             signupService: mockService,
@@ -714,7 +714,7 @@ void main() {
           'descriptionEn': '',
           'descriptionMr': '',
           'groupId': 'gajanan_maharaj_seattle',
-          'status': SignupSheetStatus.published.name,
+          'status': SignupStatus.published.name,
           'requiresJoinCode': false,
           'createdAt': Timestamp.fromDate(now),
           'updatedAt': Timestamp.fromDate(now),
@@ -741,7 +741,7 @@ void main() {
                           },
                         ),
                         builder: (_) =>
-                            AdminSignupSheetDetailScreen(firestore: firestore),
+                            AdminSignupDetailScreen(firestore: firestore),
                       ),
                     );
                   },
@@ -768,7 +768,7 @@ void main() {
         'titleEn': 'Cancel Remove Sheet',
         'titleMr': '',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.published.name,
+        'status': SignupStatus.published.name,
         'requiresJoinCode': false,
         'createdAt': Timestamp.fromDate(now),
         'updatedAt': Timestamp.fromDate(now),
@@ -795,7 +795,7 @@ void main() {
 
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetDetailScreen(
+          child: AdminSignupDetailScreen(
             sheetId: sheetRef.id,
             adminUser: adminUser,
             firestore: firestore,
@@ -831,12 +831,12 @@ void main() {
       const sheetId = 'fail_remove_sheet';
       const slotId = 'slot_1';
       const entryId = 'entry_1';
-      final sheet = SignupSheet(
+      final sheet = Signup(
         id: sheetId,
         titleEn: 'Fail Remove Sheet',
         titleMr: '',
         groupId: 'gajanan_maharaj_seattle',
-        status: SignupSheetStatus.published,
+        status: SignupStatus.published,
         requiresJoinCode: false,
         createdAt: now,
         updatedAt: now,
@@ -877,7 +877,7 @@ void main() {
 
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetDetailScreen(
+          child: AdminSignupDetailScreen(
             sheetId: sheetId,
             adminUser: adminUser,
             signupService: mockService,
@@ -900,12 +900,12 @@ void main() {
       const sheetId = 'fail_update_sheet';
       const slotId = 'slot_1';
       const entryId = 'entry_1';
-      final sheet = SignupSheet(
+      final sheet = Signup(
         id: sheetId,
         titleEn: 'Fail Update Sheet',
         titleMr: '',
         groupId: 'gajanan_maharaj_seattle',
-        status: SignupSheetStatus.published,
+        status: SignupStatus.published,
         requiresJoinCode: false,
         createdAt: now,
         updatedAt: now,
@@ -946,7 +946,7 @@ void main() {
 
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetDetailScreen(
+          child: AdminSignupDetailScreen(
             sheetId: sheetId,
             adminUser: adminUser,
             signupService: mockService,
@@ -970,12 +970,12 @@ void main() {
         final now = DateTime.now();
         const sheetId = 'fail_add_sheet';
         const slotId = 'slot_1';
-        final sheet = SignupSheet(
+        final sheet = Signup(
           id: sheetId,
           titleEn: 'Fail Add Sheet',
           titleMr: '',
           groupId: 'gajanan_maharaj_seattle',
-          status: SignupSheetStatus.published,
+          status: SignupStatus.published,
           requiresJoinCode: false,
           createdAt: now,
           updatedAt: now,
@@ -1017,7 +1017,7 @@ void main() {
 
         await tester.pumpWidget(
           createWidget(
-            child: AdminSignupSheetDetailScreen(
+            child: AdminSignupDetailScreen(
               sheetId: sheetId,
               adminUser: adminUser,
               signupService: mockService,
@@ -1048,7 +1048,7 @@ void main() {
         'titleEn': 'Shareable Sheet',
         'titleMr': '',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.published.name,
+        'status': SignupStatus.published.name,
         'requiresJoinCode': true,
         'joinCode': 'CODE12',
         'createdAt': Timestamp.fromDate(now),
@@ -1061,7 +1061,7 @@ void main() {
 
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetDetailScreen(
+          child: AdminSignupDetailScreen(
             sheetId: sheetRef.id,
             adminUser: adminUser,
             firestore: firestore,
@@ -1082,7 +1082,7 @@ void main() {
         'titleEn': 'Exportable Sheet',
         'titleMr': '',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.published.name,
+        'status': SignupStatus.published.name,
         'requiresJoinCode': false,
         'createdAt': Timestamp.fromDate(now),
         'updatedAt': Timestamp.fromDate(now),
@@ -1094,7 +1094,7 @@ void main() {
 
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetDetailScreen(
+          child: AdminSignupDetailScreen(
             sheetId: sheetRef.id,
             adminUser: adminUser,
             firestore: firestore,
@@ -1129,7 +1129,7 @@ void main() {
           'titleEn': 'Exportable Sheet',
           'titleMr': '',
           'groupId': 'gajanan_maharaj_seattle',
-          'status': SignupSheetStatus.published.name,
+          'status': SignupStatus.published.name,
           'requiresJoinCode': false,
           'createdAt': Timestamp.fromDate(now),
           'updatedAt': Timestamp.fromDate(now),
@@ -1141,7 +1141,7 @@ void main() {
 
         await tester.pumpWidget(
           createWidget(
-            child: AdminSignupSheetDetailScreen(
+            child: AdminSignupDetailScreen(
               sheetId: sheetRef.id,
               adminUser: adminUser,
               firestore: firestore,
@@ -1163,12 +1163,12 @@ void main() {
     ) async {
       final now = DateTime.now();
       const sheetId = 'processing_sheet';
-      final sheet = SignupSheet(
+      final sheet = Signup(
         id: sheetId,
         titleEn: 'Processing Sheet',
         titleMr: '',
         groupId: 'gajanan_maharaj_seattle',
-        status: SignupSheetStatus.draft,
+        status: SignupStatus.draft,
         requiresJoinCode: false,
         createdAt: now,
         updatedAt: now,
@@ -1194,7 +1194,7 @@ void main() {
 
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetDetailScreen(
+          child: AdminSignupDetailScreen(
             sheetId: sheetId,
             adminUser: adminUser,
             signupService: mockService,
@@ -1220,7 +1220,7 @@ void main() {
           'titleEn': 'Dialog Delete Sheet',
           'titleMr': '',
           'groupId': 'gajanan_maharaj_seattle',
-          'status': SignupSheetStatus.published.name,
+          'status': SignupStatus.published.name,
           'requiresJoinCode': false,
           'createdAt': Timestamp.fromDate(now),
           'updatedAt': Timestamp.fromDate(now),
@@ -1266,12 +1266,12 @@ void main() {
       final now = DateTime.now();
       const sheetId = 'fail_add_exc_sheet';
       const slotId = 'slot_1';
-      final sheet = SignupSheet(
+      final sheet = Signup(
         id: sheetId,
         titleEn: 'Fail Add Sheet',
         titleMr: '',
         groupId: 'gajanan_maharaj_seattle',
-        status: SignupSheetStatus.published,
+        status: SignupStatus.published,
         requiresJoinCode: false,
         createdAt: now,
         updatedAt: now,
@@ -1313,7 +1313,7 @@ void main() {
 
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetDetailScreen(
+          child: AdminSignupDetailScreen(
             sheetId: sheetId,
             adminUser: adminUser,
             signupService: mockService,
@@ -1336,7 +1336,7 @@ void main() {
     });
   });
 
-  group('AdminSignupSheetDetailScreen header image', () {
+  group('AdminSignupDetailScreen header image', () {
     // Image.network makes a real HTTP request with no network access in
     // the test environment, so it always fails - that's expected here
     // (these tests only care about the button/Firestore state, not the
@@ -1357,7 +1357,7 @@ void main() {
         'descriptionEn': 'Description',
         'descriptionMr': 'वर्णन',
         'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupSheetStatus.draft.name,
+        'status': SignupStatus.draft.name,
         'requiresJoinCode': false,
         'createdAt': Timestamp.fromDate(now),
         'updatedAt': Timestamp.fromDate(now),
@@ -1435,7 +1435,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final sheet = SignupSheet(
+      final sheet = Signup(
         id: 'sheet_img_err',
         titleEn: 'Error Sheet',
         titleMr: 'त्रुटी शीट',
@@ -1470,7 +1470,7 @@ void main() {
       addTearDown(() => resetScreen(tester));
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetDetailScreen(
+          child: AdminSignupDetailScreen(
             sheetId: 'sheet_img_err',
             adminUser: adminUser,
             signupService: mockService,
@@ -1530,7 +1530,7 @@ void main() {
       'hides add/replace/remove buttons while a removal is in flight',
       (tester) async {
         final now = DateTime.now();
-        final sheet = SignupSheet(
+        final sheet = Signup(
           id: 'sheet_removing',
           titleEn: 'Removing Sheet',
           titleMr: 'काढत आहे',
@@ -1559,7 +1559,7 @@ void main() {
         addTearDown(() => resetScreen(tester));
         await tester.pumpWidget(
           createWidget(
-            child: AdminSignupSheetDetailScreen(
+            child: AdminSignupDetailScreen(
               sheetId: 'sheet_removing',
               adminUser: adminUser,
               signupService: mockService,
@@ -1590,7 +1590,7 @@ void main() {
 
     testWidgets('shows an error snackbar when removal fails', (tester) async {
       final now = DateTime.now();
-      final sheet = SignupSheet(
+      final sheet = Signup(
         id: 'sheet_remove_err',
         titleEn: 'Error Sheet',
         titleMr: 'त्रुटी शीट',
@@ -1618,7 +1618,7 @@ void main() {
       addTearDown(() => resetScreen(tester));
       await tester.pumpWidget(
         createWidget(
-          child: AdminSignupSheetDetailScreen(
+          child: AdminSignupDetailScreen(
             sheetId: 'sheet_remove_err',
             adminUser: adminUser,
             signupService: mockService,

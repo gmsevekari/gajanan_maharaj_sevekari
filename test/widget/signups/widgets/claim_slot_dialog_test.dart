@@ -2,7 +2,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_slot_dialog.dart';
@@ -25,7 +25,7 @@ void main() {
     final now = DateTime.now();
 
     openSheetId = await service.createSheet(
-      SignupSheet(
+      Signup(
         titleEn: 'Sunday Prasad Seva',
         titleMr: 'रविवार प्रसाद सेवा',
         groupId: 'group_1',
@@ -57,7 +57,7 @@ void main() {
     );
 
     codeSheetId = await service.createSheet(
-      SignupSheet(
+      Signup(
         titleEn: 'Members-Only Seva',
         titleMr: 'सदस्यांसाठी सेवा',
         groupId: 'group_1',

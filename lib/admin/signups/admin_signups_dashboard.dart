@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
-class AdminSignupSheetsDashboard extends StatefulWidget {
+class AdminSignupsDashboard extends StatefulWidget {
   final AdminUser adminUser;
 
   /// Injected for testing; defaults to [FirebaseFirestore.instance].
@@ -19,7 +19,7 @@ class AdminSignupSheetsDashboard extends StatefulWidget {
   @visibleForTesting
   final SignupService? signupService;
 
-  const AdminSignupSheetsDashboard({
+  const AdminSignupsDashboard({
     super.key,
     required this.adminUser,
     this.firestore,
@@ -27,15 +27,13 @@ class AdminSignupSheetsDashboard extends StatefulWidget {
   });
 
   @override
-  State<AdminSignupSheetsDashboard> createState() =>
-      _AdminSignupSheetsDashboardState();
+  State<AdminSignupsDashboard> createState() => _AdminSignupsDashboardState();
 }
 
-class _AdminSignupSheetsDashboardState
-    extends State<AdminSignupSheetsDashboard> {
+class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
   late final SignupService _service;
-  late Stream<List<SignupSheet>> _sheetsStream;
-  SignupSheetStatus? _selectedStatus;
+  late Stream<List<Signup>> _sheetsStream;
+  SignupStatus? _selectedStatus;
 
   @override
   void initState() {
@@ -55,7 +53,7 @@ class _AdminSignupSheetsDashboardState
   }
 
   @override
-  void didUpdateWidget(covariant AdminSignupSheetsDashboard oldWidget) {
+  void didUpdateWidget(covariant AdminSignupsDashboard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.adminUser.groupId != oldWidget.adminUser.groupId) {
       setState(_initializeStream);
@@ -105,7 +103,7 @@ class _AdminSignupSheetsDashboardState
                 ),
               ),
             )
-          : StreamBuilder<List<SignupSheet>>(
+          : StreamBuilder<List<Signup>>(
               stream: _sheetsStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -195,30 +193,30 @@ class _AdminSignupSheetsDashboardState
           const SizedBox(width: 8),
           ChoiceChip(
             label: Text(localizations.signupStatusDraft),
-            selected: _selectedStatus == SignupSheetStatus.draft,
+            selected: _selectedStatus == SignupStatus.draft,
             onSelected: (selected) {
               if (selected) {
-                setState(() => _selectedStatus = SignupSheetStatus.draft);
+                setState(() => _selectedStatus = SignupStatus.draft);
               }
             },
           ),
           const SizedBox(width: 8),
           ChoiceChip(
             label: Text(localizations.signupStatusPublished),
-            selected: _selectedStatus == SignupSheetStatus.published,
+            selected: _selectedStatus == SignupStatus.published,
             onSelected: (selected) {
               if (selected) {
-                setState(() => _selectedStatus = SignupSheetStatus.published);
+                setState(() => _selectedStatus = SignupStatus.published);
               }
             },
           ),
           const SizedBox(width: 8),
           ChoiceChip(
             label: Text(localizations.signupStatusClosed),
-            selected: _selectedStatus == SignupSheetStatus.closed,
+            selected: _selectedStatus == SignupStatus.closed,
             onSelected: (selected) {
               if (selected) {
-                setState(() => _selectedStatus = SignupSheetStatus.closed);
+                setState(() => _selectedStatus = SignupStatus.closed);
               }
             },
           ),
@@ -229,7 +227,7 @@ class _AdminSignupSheetsDashboardState
 
   Widget _buildSheetCard(
     BuildContext context,
-    SignupSheet sheet,
+    Signup sheet,
     AppLocalizations localizations,
     ThemeData theme,
   ) {
@@ -314,20 +312,20 @@ class _AdminSignupSheetsDashboardState
   }
 
   Widget _buildStatusBadge(
-    SignupSheetStatus status,
+    SignupStatus status,
     AppLocalizations localizations,
     ThemeData theme,
   ) {
     final (String label, Color color) = switch (status) {
-      SignupSheetStatus.draft => (
+      SignupStatus.draft => (
         localizations.signupStatusDraft,
         theme.appColors.warning,
       ),
-      SignupSheetStatus.published => (
+      SignupStatus.published => (
         localizations.signupStatusPublished,
         theme.appColors.success,
       ),
-      SignupSheetStatus.closed => (
+      SignupStatus.closed => (
         localizations.signupStatusClosed,
         theme.appColors.secondaryText,
       ),

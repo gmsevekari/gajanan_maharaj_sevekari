@@ -2,7 +2,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
@@ -14,17 +14,17 @@ void main() {
   late FakeFirebaseFirestore firestore;
   late SignupService service;
   late String sheetId;
-  late SignupSheet sheet;
+  late Signup sheet;
 
   setUp(() async {
     firestore = FakeFirebaseFirestore();
     service = SignupService(firestore: firestore);
     final now = DateTime.now();
-    sheet = SignupSheet(
+    sheet = Signup(
       titleEn: 'Sunday Prasad Seva',
       titleMr: 'रविवार प्रसाद सेवा',
       groupId: 'group_1',
-      status: SignupSheetStatus.published,
+      status: SignupStatus.published,
       createdAt: now,
       updatedAt: now,
       createdBy: 'admin@test.com',

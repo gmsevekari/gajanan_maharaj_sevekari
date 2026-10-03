@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_actions_row.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_actions_row.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
@@ -17,11 +17,7 @@ void main() {
   testWidgets('renders duplicate, share, and export buttons', (tester) async {
     await tester.pumpWidget(
       wrap(
-        SignupSheetActionsRow(
-          onDuplicate: () {},
-          onShare: () {},
-          onExport: () {},
-        ),
+        SignupActionsRow(onDuplicate: () {}, onShare: () {}, onExport: () {}),
       ),
     );
 
@@ -37,7 +33,7 @@ void main() {
 
     await tester.pumpWidget(
       wrap(
-        SignupSheetActionsRow(
+        SignupActionsRow(
           onDuplicate: () => duplicated = true,
           onShare: () => shared = true,
           onExport: () => exported = true,

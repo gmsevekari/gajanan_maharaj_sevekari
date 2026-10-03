@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_status_section.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_status_section.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 
 void main() {
   Widget wrap(Widget child) {
@@ -18,12 +18,12 @@ void main() {
   testWidgets('starts locked, ignoring taps on the status segments', (
     tester,
   ) async {
-    SignupSheetStatus? changedTo;
+    SignupStatus? changedTo;
 
     await tester.pumpWidget(
       wrap(
-        SignupSheetStatusSection(
-          currentStatus: SignupSheetStatus.draft,
+        SignupStatusSection(
+          currentStatus: SignupStatus.draft,
           onStatusChanged: (status) => changedTo = status,
         ),
       ),
@@ -38,12 +38,12 @@ void main() {
   });
 
   testWidgets('unlocking allows selecting a different status', (tester) async {
-    SignupSheetStatus? changedTo;
+    SignupStatus? changedTo;
 
     await tester.pumpWidget(
       wrap(
-        SignupSheetStatusSection(
-          currentStatus: SignupSheetStatus.draft,
+        SignupStatusSection(
+          currentStatus: SignupStatus.draft,
           onStatusChanged: (status) => changedTo = status,
         ),
       ),
@@ -56,7 +56,7 @@ void main() {
     await tester.tap(find.text('Published'));
     await tester.pumpAndSettle();
 
-    expect(changedTo, SignupSheetStatus.published);
+    expect(changedTo, SignupStatus.published);
   });
 
   testWidgets(
@@ -66,8 +66,8 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetStatusSection(
-            currentStatus: SignupSheetStatus.draft,
+          SignupStatusSection(
+            currentStatus: SignupStatus.draft,
             onStatusChanged: (_) => callCount++,
           ),
         ),

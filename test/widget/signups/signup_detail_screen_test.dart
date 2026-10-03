@@ -4,14 +4,13 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/signups/my_signups_screen.dart';
-import 'package:gajanan_maharaj_sevekari/signups/signup_sheet_detail_screen.dart';
+import 'package:gajanan_maharaj_sevekari/signups/signup_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signup_slots_screen.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
@@ -55,13 +54,13 @@ void main() {
   }) async {
     final now = DateTime.now();
     return service.createSheet(
-      SignupSheet(
+      Signup(
         titleEn: 'Sunday Prasad Seva',
         titleMr: 'रविवार प्रसाद सेवा',
         descriptionEn: 'Cook and serve prasad',
         descriptionMr: 'प्रसाद शिजवा आणि वाढा',
         groupId: 'group_1',
-        status: SignupSheetStatus.published,
+        status: SignupStatus.published,
         requiresJoinCode: requiresJoinCode,
         joinCode: requiresJoinCode ? 'ABC123' : null,
         createdAt: now,
@@ -72,13 +71,13 @@ void main() {
     );
   }
 
-  group('SignupSheetDetailScreen', () {
+  group('SignupDetailScreen', () {
     testWidgets('shows not-found message when the sheet does not exist', (
       tester,
     ) async {
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: 'missing',
             deviceId: 'device_1',
             firestore: firestore,
@@ -94,7 +93,7 @@ void main() {
     testWidgets('tapping home icon navigates to home', (tester) async {
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: 'missing',
             deviceId: 'device_1',
             firestore: firestore,
@@ -117,7 +116,7 @@ void main() {
     testWidgets('tapping settings icon navigates to settings', (tester) async {
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: 'missing',
             deviceId: 'device_1',
             firestore: firestore,
@@ -144,7 +143,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: sheetId,
             deviceId: 'device_1',
             firestore: firestore,
@@ -167,7 +166,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: sheetId,
             deviceId: 'device_1',
             firestore: firestore,
@@ -190,7 +189,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: sheetId,
             deviceId: 'device_1',
             firestore: firestore,
@@ -213,7 +212,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: sheetId,
             deviceId: 'device_1',
             firestore: firestore,
@@ -280,7 +279,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: sheetId,
             deviceId: 'device_1',
             firestore: firestore,
@@ -326,7 +325,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: sheetId,
             deviceId: 'device_1',
             firestore: firestore,
@@ -370,7 +369,7 @@ void main() {
 
         await tester.pumpWidget(
           wrap(
-            SignupSheetDetailScreen(
+            SignupDetailScreen(
               sheetId: sheetId,
               deviceId: 'device_1',
               firestore: firestore,
@@ -395,7 +394,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: sheetId,
             firestore: firestore,
             signupService: service,
@@ -424,7 +423,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             onGenerateRoute: (settings) => MaterialPageRoute(
               settings: settings,
-              builder: (_) => SignupSheetDetailScreen(
+              builder: (_) => SignupDetailScreen(
                 deviceId: 'device_1',
                 firestore: firestore,
                 signupService: service,
@@ -436,7 +435,7 @@ void main() {
                   context,
                   MaterialPageRoute(
                     settings: RouteSettings(arguments: {'sheetId': sheetId}),
-                    builder: (_) => SignupSheetDetailScreen(
+                    builder: (_) => SignupDetailScreen(
                       deviceId: 'device_1',
                       firestore: firestore,
                       signupService: service,
@@ -461,7 +460,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: sheetId,
             deviceId: 'device_1',
             firestore: firestore,
@@ -480,13 +479,13 @@ void main() {
     ) async {
       final now = DateTime.now();
       final sheetId = await service.createSheet(
-        SignupSheet(
+        Signup(
           titleEn: 'Sunday Prasad Seva',
           titleMr: 'रविवार प्रसाद सेवा',
           descriptionEn: 'Cook and serve prasad',
           descriptionMr: '',
           groupId: 'group_1',
-          status: SignupSheetStatus.published,
+          status: SignupStatus.published,
           createdAt: now,
           updatedAt: now,
           createdBy: 'admin@test.com',
@@ -495,7 +494,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: sheetId,
             deviceId: 'device_1',
             firestore: firestore,
@@ -512,12 +511,12 @@ void main() {
     testWidgets('does not resubscribe to getAllEntries on every rebuild', (
       tester,
     ) async {
-      final sheet = SignupSheet(
+      final sheet = Signup(
         id: 'sheet_rebuild',
         titleEn: 'Sheet',
         titleMr: 'शीट',
         groupId: 'group_1',
-        status: SignupSheetStatus.published,
+        status: SignupStatus.published,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         createdBy: 'admin@test.com',
@@ -537,7 +536,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: 'sheet_rebuild',
             deviceId: 'device_1',
             signupService: mockService,
@@ -566,7 +565,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: sheetId,
             deviceId: 'device_1',
             firestore: firestore,
@@ -588,7 +587,7 @@ void main() {
 
       await tester.pumpWidget(
         wrap(
-          SignupSheetDetailScreen(
+          SignupDetailScreen(
             sheetId: sheetId,
             deviceId: 'device_1',
             firestore: firestore,

@@ -339,31 +339,30 @@ void main() {
   });
 
   group('HomeScreen Signup Sheets Card Navigation Tests', () {
-    testWidgets(
-      'navigates to SignupSheetsListScreen when single group selected',
-      (tester) async {
-        tester.view.physicalSize = const Size(1200, 1200);
-        tester.view.devicePixelRatio = 1.0;
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
+    testWidgets('navigates to SignupsListScreen when single group selected', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1200, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
 
-        when(() => mockGroupProvider.selectedGroupIds).thenReturn(['g1']);
+      when(() => mockGroupProvider.selectedGroupIds).thenReturn(['g1']);
 
-        await tester.pumpWidget(createHomeScreen());
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(createHomeScreen());
+      await tester.pumpAndSettle();
 
-        final signupCard = find.byKey(const Key('signup_sheets_card'));
-        expect(signupCard, findsOneWidget);
+      final signupCard = find.byKey(const Key('signup_sheets_card'));
+      expect(signupCard, findsOneWidget);
 
-        await tester.ensureVisible(signupCard);
-        await tester.pumpAndSettle();
-        await tester.tap(signupCard);
-        await tester.pumpAndSettle();
+      await tester.ensureVisible(signupCard);
+      await tester.pumpAndSettle();
+      await tester.tap(signupCard);
+      await tester.pumpAndSettle();
 
-        expect(find.text('Signup Sheets List'), findsOneWidget);
-        expect(find.text('Group: g1'), findsOneWidget);
-      },
-    );
+      expect(find.text('Signup Sheets List'), findsOneWidget);
+      expect(find.text('Group: g1'), findsOneWidget);
+    });
 
     testWidgets(
       'navigates to GajananMaharajGroupScreen when multiple groups selected',

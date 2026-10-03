@@ -1,21 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 
 void main() {
-  group('SignupSheet', () {
+  group('Signup', () {
     test('round-trips through toMap/fromMap', () {
       final createdAt = DateTime(2026, 1, 1, 8, 0);
       final updatedAt = DateTime(2026, 1, 2, 8, 0);
       final startDate = DateTime(2026, 3, 1);
       final endDate = DateTime(2026, 3, 31);
-      final sheet = SignupSheet(
+      final sheet = Signup(
         id: 'sheet1',
         titleEn: 'Sunday Prasad Seva',
         titleMr: 'रविवार प्रसाद सेवा',
         descriptionEn: 'Cook and serve prasad',
         descriptionMr: 'प्रसाद शिजवा आणि वाढा',
         groupId: 'gajanan_maharaj_seattle',
-        status: SignupSheetStatus.published,
+        status: SignupStatus.published,
         requiresJoinCode: true,
         joinCode: 'ABC123',
         startDate: startDate,
@@ -27,7 +27,7 @@ void main() {
       );
 
       final map = sheet.toMap();
-      final roundTripped = SignupSheet.fromMap('sheet1', map);
+      final roundTripped = Signup.fromMap('sheet1', map);
 
       expect(roundTripped.id, 'sheet1');
       expect(roundTripped.titleEn, 'Sunday Prasad Seva');
@@ -35,7 +35,7 @@ void main() {
       expect(roundTripped.descriptionEn, 'Cook and serve prasad');
       expect(roundTripped.descriptionMr, 'प्रसाद शिजवा आणि वाढा');
       expect(roundTripped.groupId, 'gajanan_maharaj_seattle');
-      expect(roundTripped.status, SignupSheetStatus.published);
+      expect(roundTripped.status, SignupStatus.published);
       expect(roundTripped.requiresJoinCode, true);
       expect(roundTripped.joinCode, 'ABC123');
       expect(roundTripped.startDate, startDate);
@@ -47,7 +47,7 @@ void main() {
     });
 
     test('headerImageUrl defaults to null when not specified', () {
-      final sheet = SignupSheet(
+      final sheet = Signup(
         titleEn: 'No Image',
         titleMr: 'प्रतिमा नाही',
         groupId: 'group1',
@@ -61,7 +61,7 @@ void main() {
     });
 
     test('defaults to status draft when not specified', () {
-      final sheet = SignupSheet(
+      final sheet = Signup(
         titleEn: 'Draft Sheet',
         titleMr: 'मसुदा',
         groupId: 'group1',
@@ -70,11 +70,11 @@ void main() {
         createdBy: 'admin@example.com',
       );
 
-      expect(sheet.status, SignupSheetStatus.draft);
+      expect(sheet.status, SignupStatus.draft);
     });
 
     test('joinCode is null when requiresJoinCode is false', () {
-      final sheet = SignupSheet(
+      final sheet = Signup(
         titleEn: 'Open Sheet',
         titleMr: 'खुली शीट',
         groupId: 'group1',
@@ -87,13 +87,13 @@ void main() {
       final map = sheet.toMap();
       expect(map['joinCode'], isNull);
 
-      final roundTripped = SignupSheet.fromMap('sheet2', map);
+      final roundTripped = Signup.fromMap('sheet2', map);
       expect(roundTripped.requiresJoinCode, false);
       expect(roundTripped.joinCode, isNull);
     });
 
     test('startDate and endDate are null when absent', () {
-      final sheet = SignupSheet(
+      final sheet = Signup(
         titleEn: 'No Date Range',
         titleMr: 'तारीख नाही',
         groupId: 'group1',
@@ -106,7 +106,7 @@ void main() {
       expect(map['startDate'], isNull);
       expect(map['endDate'], isNull);
 
-      final roundTripped = SignupSheet.fromMap('sheet3', map);
+      final roundTripped = Signup.fromMap('sheet3', map);
       expect(roundTripped.startDate, isNull);
       expect(roundTripped.endDate, isNull);
     });
@@ -114,19 +114,19 @@ void main() {
     test(
       'fromMap defaults missing required string fields to empty rather than throwing',
       () {
-        final sheet = SignupSheet.fromMap('sheet4', {});
+        final sheet = Signup.fromMap('sheet4', {});
 
         expect(sheet.titleEn, '');
         expect(sheet.titleMr, '');
         expect(sheet.groupId, '');
-        expect(sheet.status, SignupSheetStatus.draft);
+        expect(sheet.status, SignupStatus.draft);
         expect(sheet.requiresJoinCode, false);
       },
     );
 
     test('fromMap defaults createdAt/updatedAt to now when absent', () {
       final before = DateTime.now();
-      final sheet = SignupSheet.fromMap('sheet5', {});
+      final sheet = Signup.fromMap('sheet5', {});
       final after = DateTime.now();
 
       expect(
@@ -147,33 +147,33 @@ void main() {
       );
     });
 
-    group('SignupSheetStatus', () {
+    group('SignupStatus', () {
       test('fromMap parses published and closed statuses', () {
-        final published = SignupSheet.fromMap('s1', {'status': 'published'});
-        final closed = SignupSheet.fromMap('s2', {'status': 'closed'});
+        final published = Signup.fromMap('s1', {'status': 'published'});
+        final closed = Signup.fromMap('s2', {'status': 'closed'});
 
-        expect(published.status, SignupSheetStatus.published);
-        expect(closed.status, SignupSheetStatus.closed);
+        expect(published.status, SignupStatus.published);
+        expect(closed.status, SignupStatus.closed);
       });
 
       test('fromMap defaults an unrecognized status string to draft', () {
-        final sheet = SignupSheet.fromMap('s3', {'status': 'not-a-status'});
+        final sheet = Signup.fromMap('s3', {'status': 'not-a-status'});
 
-        expect(sheet.status, SignupSheetStatus.draft);
+        expect(sheet.status, SignupStatus.draft);
       });
 
       test('fromMap defaults a wrong-typed status field to draft', () {
-        final sheet = SignupSheet.fromMap('s4', {'status': 42});
+        final sheet = Signup.fromMap('s4', {'status': 42});
 
-        expect(sheet.status, SignupSheetStatus.draft);
+        expect(sheet.status, SignupStatus.draft);
       });
 
       test('toMap writes the enum name as a plain string', () {
-        final sheet = SignupSheet(
+        final sheet = Signup(
           titleEn: 'T',
           titleMr: 'T',
           groupId: 'g',
-          status: SignupSheetStatus.closed,
+          status: SignupStatus.closed,
           createdAt: DateTime(2026, 1, 1),
           updatedAt: DateTime(2026, 1, 1),
           createdBy: 'admin@example.com',
@@ -188,7 +188,7 @@ void main() {
         'constructor throws an assertion error when joinCode is set but requiresJoinCode is false',
         () {
           expect(
-            () => SignupSheet(
+            () => Signup(
               titleEn: 'T',
               titleMr: 'T',
               groupId: 'g',
@@ -204,7 +204,7 @@ void main() {
       );
 
       test('constructor allows joinCode when requiresJoinCode is true', () {
-        final sheet = SignupSheet(
+        final sheet = Signup(
           titleEn: 'T',
           titleMr: 'T',
           groupId: 'g',
@@ -220,12 +220,12 @@ void main() {
     });
 
     group('copyWith', () {
-      final base = SignupSheet(
+      final base = Signup(
         id: 'sheet1',
         titleEn: 'Original',
         titleMr: 'मूळ',
         groupId: 'group1',
-        status: SignupSheetStatus.draft,
+        status: SignupStatus.draft,
         requiresJoinCode: true,
         joinCode: 'ABC123',
         createdAt: DateTime(2026, 1, 1),
@@ -250,9 +250,9 @@ void main() {
       });
 
       test('updates the status field', () {
-        final updated = base.copyWith(status: SignupSheetStatus.published);
+        final updated = base.copyWith(status: SignupStatus.published);
 
-        expect(updated.status, SignupSheetStatus.published);
+        expect(updated.status, SignupStatus.published);
       });
 
       test(
@@ -289,7 +289,7 @@ void main() {
         () {
           final createdAt = DateTime(2026, 1, 1);
           final updatedAt = DateTime(2026, 1, 2);
-          final a = SignupSheet(
+          final a = Signup(
             id: 'sheet1',
             titleEn: 'T',
             titleMr: 'T',
@@ -298,7 +298,7 @@ void main() {
             updatedAt: updatedAt,
             createdBy: 'admin@example.com',
           );
-          final b = SignupSheet(
+          final b = Signup(
             id: 'sheet1',
             titleEn: 'T',
             titleMr: 'T',
@@ -315,7 +315,7 @@ void main() {
 
       test('sheets differing by one field are not equal', () {
         final createdAt = DateTime(2026, 1, 1);
-        final a = SignupSheet(
+        final a = Signup(
           id: 'sheet1',
           titleEn: 'T',
           titleMr: 'T',
@@ -331,7 +331,7 @@ void main() {
 
       test('sheets differing only by headerImageUrl are not equal', () {
         final createdAt = DateTime(2026, 1, 1);
-        final a = SignupSheet(
+        final a = Signup(
           id: 'sheet1',
           titleEn: 'T',
           titleMr: 'T',
@@ -349,7 +349,7 @@ void main() {
 
     group('fromMap type guards', () {
       test('falls back to defaults when fields have the wrong type', () {
-        final sheet = SignupSheet.fromMap('sheet6', {
+        final sheet = Signup.fromMap('sheet6', {
           'titleEn': 123,
           'titleMr': true,
           'descriptionEn': 1.5,

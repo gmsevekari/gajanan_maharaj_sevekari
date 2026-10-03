@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/slot_form_row.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
@@ -27,7 +27,7 @@ class _SlotFormRowData {
   }
 }
 
-class AdminCreateSignupSheetScreen extends StatefulWidget {
+class AdminCreateSignupScreen extends StatefulWidget {
   final AdminUser adminUser;
 
   /// Injected for testing; defaults to [FirebaseFirestore.instance].
@@ -42,7 +42,7 @@ class AdminCreateSignupSheetScreen extends StatefulWidget {
   @visibleForTesting
   final SignupService? signupService;
 
-  const AdminCreateSignupSheetScreen({
+  const AdminCreateSignupScreen({
     super.key,
     required this.adminUser,
     this.firestore,
@@ -51,12 +51,11 @@ class AdminCreateSignupSheetScreen extends StatefulWidget {
   });
 
   @override
-  State<AdminCreateSignupSheetScreen> createState() =>
-      _AdminCreateSignupSheetScreenState();
+  State<AdminCreateSignupScreen> createState() =>
+      _AdminCreateSignupScreenState();
 }
 
-class _AdminCreateSignupSheetScreenState
-    extends State<AdminCreateSignupSheetScreen> {
+class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleEnController = TextEditingController();
   final _titleMrController = TextEditingController();
@@ -187,7 +186,7 @@ class _AdminCreateSignupSheetScreenState
       }
 
       final now = DateTime.now();
-      final sheet = SignupSheet(
+      final sheet = Signup(
         id: sheetId,
         titleEn: _titleEnController.text.trim(),
         titleMr: _titleMrController.text.trim(),
@@ -230,7 +229,7 @@ class _AdminCreateSignupSheetScreenState
       // (e.g. ArgumentError from a future bug) should crash visibly during
       // development rather than being masked behind this generic message.
       if (kDebugMode) {
-        debugPrint('AdminCreateSignupSheetScreen._submit error: $e');
+        debugPrint('AdminCreateSignupScreen._submit error: $e');
       }
       if (sheetId != null) {
         // Best-effort: an uploaded image whose sheet never got created

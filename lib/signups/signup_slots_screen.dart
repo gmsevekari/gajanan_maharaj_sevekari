@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_slot_dialog.dart';
@@ -10,13 +10,13 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 /// Every slot on a sign-up sheet, reached from
-/// [SignupSheetDetailScreen]'s "Slots" card. Splits slots into
+/// [SignupDetailScreen]'s "Slots" card. Splits slots into
 /// Upcoming/Past by their own date - a slot with no date is treated as
 /// upcoming, since there's no basis to call it past. Unlike the sheet's
 /// Entries table, this screen never shows who's signed up for a slot.
 class SignupSlotsScreen extends StatefulWidget {
   final String sheetId;
-  final SignupSheet sheet;
+  final Signup sheet;
   final String? deviceId;
 
   /// Injected for testing; defaults to [FirebaseFirestore.instance].

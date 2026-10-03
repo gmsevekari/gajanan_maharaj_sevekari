@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
 
@@ -38,7 +38,7 @@ class SignupService {
   /// with [newSheetId], so a header image can be uploaded to a known path
   /// before the sheet document exists); otherwise auto-generates one via
   /// Firestore, matching this method's original behavior.
-  Future<String> createSheet(SignupSheet sheet) async {
+  Future<String> createSheet(Signup sheet) async {
     if (sheet.id != null) {
       await _sheetsRef.doc(sheet.id).set(sheet.toMap());
       return sheet.id!;
@@ -106,25 +106,25 @@ class SignupService {
   }
 
   /// Streams a single sheet, or `null` if it doesn't exist.
-  Stream<SignupSheet?> getSheetById(String sheetId) {
+  Stream<Signup?> getSheetById(String sheetId) {
     return _sheetsRef.doc(sheetId).snapshots().map((snapshot) {
       if (!snapshot.exists) return null;
-      return SignupSheet.fromMap(snapshot.id, snapshot.data()!);
+      return Signup.fromMap(snapshot.id, snapshot.data()!);
     });
   }
 
   /// Published sheets for a group, most recently created first.
-  Stream<List<SignupSheet>> getActiveSheets(String groupId) {
+  Stream<List<Signup>> getActiveSheets(String groupId) {
     return _sheetsRef
         .where('groupId', isEqualTo: groupId)
-        .where('status', isEqualTo: SignupSheetStatus.published.name)
+        .where('status', isEqualTo: SignupStatus.published.name)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(_mapSheets);
   }
 
   /// All sheets for a group regardless of status (admin dashboard).
-  Stream<List<SignupSheet>> getAllSheets(String groupId) {
+  Stream<List<Signup>> getAllSheets(String groupId) {
     return _sheetsRef
         .where('groupId', isEqualTo: groupId)
         .orderBy('createdAt', descending: true)
@@ -132,26 +132,23 @@ class SignupService {
         .map(_mapSheets);
   }
 
-  List<SignupSheet> _mapSheets(QuerySnapshot<Map<String, dynamic>> snapshot) {
+  List<Signup> _mapSheets(QuerySnapshot<Map<String, dynamic>> snapshot) {
     return snapshot.docs
-        .map((doc) => SignupSheet.fromMap(doc.id, doc.data()))
+        .map((doc) => Signup.fromMap(doc.id, doc.data()))
         .toList();
   }
 
   /// Overwrites a sheet's fields. Throws if [sheet.id] is null — passing a
   /// null id to Firestore's `.doc()` would silently create a new document
   /// instead of updating the intended one.
-  Future<void> updateSheet(SignupSheet sheet) async {
+  Future<void> updateSheet(Signup sheet) async {
     if (sheet.id == null) {
       throw ArgumentError.value(sheet.id, 'sheet.id', 'must not be null');
     }
     await _sheetsRef.doc(sheet.id).set(sheet.toMap());
   }
 
-  Future<void> updateSheetStatus(
-    String sheetId,
-    SignupSheetStatus newStatus,
-  ) async {
+  Future<void> updateSheetStatus(String sheetId, SignupStatus newStatus) async {
     await _sheetsRef.doc(sheetId).update({
       'status': newStatus.name,
       'updatedAt': Timestamp.now(),
@@ -226,7 +223,7 @@ class SignupService {
   /// [sheet.id] when already set (same pre-set-id support as
   /// [createSheet]); otherwise auto-generates one. Returns the sheet's ID.
   Future<String> createSheetWithSlots(
-    SignupSheet sheet,
+    Signup sheet,
     List<SignupSlot> slots,
   ) async {
     if (slots.isEmpty) {
@@ -374,10 +371,7 @@ class SignupService {
         return {'success': false, 'error': 'not_found'};
       }
 
-      final sheet = SignupSheet.fromMap(
-        sheetSnapshot.id,
-        sheetSnapshot.data()!,
-      );
+      final sheet = Signup.fromMap(sheetSnapshot.id, sheetSnapshot.data()!);
       final slot = SignupSlot.fromMap(slotSnapshot.id, slotSnapshot.data()!);
 
       if (sheet.requiresJoinCode && joinCode != sheet.joinCode) {
@@ -497,18 +491,15 @@ class SignupService {
     if (!sourceSnapshot.exists) {
       throw ArgumentError.value(sheetId, 'sheetId', 'sheet not found');
     }
-    final source = SignupSheet.fromMap(
-      sourceSnapshot.id,
-      sourceSnapshot.data()!,
-    );
+    final source = Signup.fromMap(sourceSnapshot.id, sourceSnapshot.data()!);
     final now = DateTime.now();
-    final duplicate = SignupSheet(
+    final duplicate = Signup(
       titleEn: source.titleEn,
       titleMr: source.titleMr,
       descriptionEn: source.descriptionEn,
       descriptionMr: source.descriptionMr,
       groupId: source.groupId,
-      status: SignupSheetStatus.draft,
+      status: SignupStatus.draft,
       requiresJoinCode: source.requiresJoinCode,
       joinCode: source.requiresJoinCode ? generateJoinCode() : null,
       startDate: source.startDate,

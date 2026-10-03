@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_header_image_card.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_header_image_card.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
@@ -19,7 +19,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       wrap(
-        SignupSheetHeaderImageCard(
+        SignupHeaderImageCard(
           headerImageUrl: null,
           isUploading: false,
           onPickImage: () {},
@@ -39,7 +39,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       wrap(
-        SignupSheetHeaderImageCard(
+        SignupHeaderImageCard(
           headerImageUrl: 'https://example.com/header.jpg',
           isUploading: false,
           onPickImage: () {},
@@ -63,7 +63,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       wrap(
-        SignupSheetHeaderImageCard(
+        SignupHeaderImageCard(
           headerImageUrl: null,
           isUploading: true,
           onPickImage: () {},
@@ -83,7 +83,7 @@ void main() {
     var tapped = false;
     await tester.pumpWidget(
       wrap(
-        SignupSheetHeaderImageCard(
+        SignupHeaderImageCard(
           headerImageUrl: null,
           isUploading: false,
           onPickImage: () => tapped = true,
@@ -104,7 +104,7 @@ void main() {
     var tapped = false;
     await tester.pumpWidget(
       wrap(
-        SignupSheetHeaderImageCard(
+        SignupHeaderImageCard(
           headerImageUrl: 'https://example.com/header.jpg',
           isUploading: false,
           onPickImage: () {},

@@ -5,17 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_entry_edit_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_slot_entries_section.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_actions_row.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_export_card.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_header_image_card.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_join_code_card.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_overview_card.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_status_section.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_actions_row.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_export_card.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_header_image_card.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_join_code_card.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_overview_card.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_status_section.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
@@ -27,7 +27,7 @@ import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
-class AdminSignupSheetDetailScreen extends StatefulWidget {
+class AdminSignupDetailScreen extends StatefulWidget {
   final String? sheetId;
   final AdminUser? adminUser;
 
@@ -52,7 +52,7 @@ class AdminSignupSheetDetailScreen extends StatefulWidget {
   @visibleForTesting
   final Future<Uint8List?> Function()? exportCapture;
 
-  const AdminSignupSheetDetailScreen({
+  const AdminSignupDetailScreen({
     super.key,
     this.sheetId,
     this.adminUser,
@@ -63,12 +63,11 @@ class AdminSignupSheetDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<AdminSignupSheetDetailScreen> createState() =>
-      _AdminSignupSheetDetailScreenState();
+  State<AdminSignupDetailScreen> createState() =>
+      _AdminSignupDetailScreenState();
 }
 
-class _AdminSignupSheetDetailScreenState
-    extends State<AdminSignupSheetDetailScreen> {
+class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
   static const double _offscreenExportOffset = 9999;
 
   late final SignupService _service;
@@ -76,7 +75,7 @@ class _AdminSignupSheetDetailScreenState
   bool _isProcessing = false;
   bool _isProcessingImage = false;
   String _sheetId = '';
-  Stream<SignupSheet?>? _sheetStream;
+  Stream<Signup?>? _sheetStream;
   Stream<List<SignupSlot>>? _slotsStream;
   Stream<List<SignupEntry>>? _entriesStream;
 
@@ -120,7 +119,7 @@ class _AdminSignupSheetDetailScreenState
   }
 
   Future<void> _shareDeepLink(
-    SignupSheet sheet,
+    Signup sheet,
     AppLocalizations l10n,
     bool isMarathi,
   ) async {
@@ -143,7 +142,7 @@ class _AdminSignupSheetDetailScreenState
   }
 
   Future<void> _duplicateSheet(
-    SignupSheet sheet,
+    Signup sheet,
     AdminUser adminUser,
     AppLocalizations l10n,
   ) async {
@@ -171,8 +170,8 @@ class _AdminSignupSheetDetailScreenState
   }
 
   Future<void> _updateStatus(
-    SignupSheet sheet,
-    SignupSheetStatus newStatus,
+    Signup sheet,
+    SignupStatus newStatus,
     AppLocalizations l10n,
   ) async {
     try {
@@ -190,7 +189,7 @@ class _AdminSignupSheetDetailScreenState
   }
 
   Future<void> _exportSummaryImage(
-    SignupSheet sheet,
+    Signup sheet,
     List<SignupSlot> slots,
     List<SignupEntry> entries,
     AppLocalizations l10n,
@@ -220,7 +219,7 @@ class _AdminSignupSheetDetailScreenState
   }
 
   void _showAddEntryDialog(
-    SignupSheet sheet,
+    Signup sheet,
     SignupSlot slot,
     AppLocalizations l10n,
   ) {
@@ -270,7 +269,7 @@ class _AdminSignupSheetDetailScreenState
   }
 
   void _showEditEntryDialog(
-    SignupSheet sheet,
+    Signup sheet,
     SignupEntry entry,
     AppLocalizations l10n,
   ) {
@@ -311,7 +310,7 @@ class _AdminSignupSheetDetailScreenState
   }
 
   Future<void> _removeEntry(
-    SignupSheet sheet,
+    Signup sheet,
     SignupEntry entry,
     AppLocalizations l10n,
   ) async {
@@ -330,7 +329,7 @@ class _AdminSignupSheetDetailScreenState
   }
 
   void _confirmRemoveEntry(
-    SignupSheet sheet,
+    Signup sheet,
     SignupEntry entry,
     AppLocalizations l10n,
   ) {
@@ -359,10 +358,7 @@ class _AdminSignupSheetDetailScreenState
     );
   }
 
-  Future<void> _pickAndUploadImage(
-    SignupSheet sheet,
-    AppLocalizations l10n,
-  ) async {
+  Future<void> _pickAndUploadImage(Signup sheet, AppLocalizations l10n) async {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked == null) return;
 
@@ -401,7 +397,7 @@ class _AdminSignupSheetDetailScreenState
     }
   }
 
-  Future<void> _removeImage(SignupSheet sheet, AppLocalizations l10n) async {
+  Future<void> _removeImage(Signup sheet, AppLocalizations l10n) async {
     setState(() => _isProcessingImage = true);
     try {
       await _service.removeHeaderImage(sheet.id!);
@@ -418,7 +414,7 @@ class _AdminSignupSheetDetailScreenState
     }
   }
 
-  void _confirmRemoveImage(SignupSheet sheet, AppLocalizations l10n) {
+  void _confirmRemoveImage(Signup sheet, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
@@ -476,7 +472,7 @@ class _AdminSignupSheetDetailScreenState
           ),
         ],
       ),
-      body: StreamBuilder<SignupSheet?>(
+      body: StreamBuilder<Signup?>(
         stream: _sheetStream,
         builder: (context, sheetSnapshot) {
           if (sheetSnapshot.connectionState == ConnectionState.waiting) {
@@ -528,7 +524,7 @@ class _AdminSignupSheetDetailScreenState
                         top: -_offscreenExportOffset,
                         child: Screenshot(
                           controller: _exportController,
-                          child: SignupSheetExportCard(
+                          child: SignupExportCard(
                             sheet: sheet,
                             slots: slots,
                             totalClaims: entries.length,
@@ -543,13 +539,13 @@ class _AdminSignupSheetDetailScreenState
                       ListView(
                         padding: const EdgeInsets.all(16),
                         children: [
-                          SignupSheetOverviewCard(
+                          SignupOverviewCard(
                             title: title,
                             description: desc,
                             groupName: groupName,
                           ),
                           const SizedBox(height: 12),
-                          SignupSheetHeaderImageCard(
+                          SignupHeaderImageCard(
                             headerImageUrl: sheet.headerImageUrl,
                             // Covers both the upload and remove flows: the
                             // card hides its buttons whenever this is true,
@@ -564,16 +560,16 @@ class _AdminSignupSheetDetailScreenState
                           if (sheet.requiresJoinCode &&
                               sheet.joinCode != null) ...[
                             const SizedBox(height: 12),
-                            SignupSheetJoinCodeCard(joinCode: sheet.joinCode!),
+                            SignupJoinCodeCard(joinCode: sheet.joinCode!),
                           ],
                           const SizedBox(height: 12),
-                          SignupSheetStatusSection(
+                          SignupStatusSection(
                             currentStatus: sheet.status,
                             onStatusChanged: (newStatus) =>
                                 _updateStatus(sheet, newStatus, l10n),
                           ),
                           const SizedBox(height: 12),
-                          SignupSheetActionsRow(
+                          SignupActionsRow(
                             onDuplicate: () =>
                                 _duplicateSheet(sheet, adminUser, l10n),
                             onShare: () =>

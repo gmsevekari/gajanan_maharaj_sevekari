@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_sheet_overview_card.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_overview_card.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 
 void main() {
@@ -14,7 +14,7 @@ void main() {
   testWidgets('renders the title and description', (tester) async {
     await tester.pumpWidget(
       wrap(
-        const SignupSheetOverviewCard(
+        const SignupOverviewCard(
           title: 'Sunday Prasad Seva',
           description: 'Cook and serve prasad',
           groupName: '',
@@ -29,7 +29,7 @@ void main() {
   testWidgets('hides the description text when it is empty', (tester) async {
     await tester.pumpWidget(
       wrap(
-        const SignupSheetOverviewCard(
+        const SignupOverviewCard(
           title: 'Sunday Prasad Seva',
           description: '',
           groupName: '',
@@ -44,7 +44,7 @@ void main() {
   testWidgets('shows a group chip when groupName is non-empty', (tester) async {
     await tester.pumpWidget(
       wrap(
-        const SignupSheetOverviewCard(
+        const SignupOverviewCard(
           title: 'Sunday Prasad Seva',
           description: '',
           groupName: 'Seattle',

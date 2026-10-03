@@ -9,7 +9,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 /// The devotee's own claimed entries on a sign-up sheet, reached from
-/// [SignupSheetDetailScreen]'s "My Sign Ups" card. Splits entries into
+/// [SignupDetailScreen]'s "My Sign Ups" card. Splits entries into
 /// Upcoming/Past by their slot's date, matching [SignupSlotsScreen]'s own
 /// split - an entry whose slot has no date is treated as upcoming, since
 /// there's no basis to call it past.

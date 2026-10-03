@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/my_signups_screen.dart';
@@ -13,7 +13,7 @@ import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
-class SignupSheetDetailScreen extends StatefulWidget {
+class SignupDetailScreen extends StatefulWidget {
   final String? sheetId;
 
   /// Injected for testing; defaults to fetching the real device ID.
@@ -28,7 +28,7 @@ class SignupSheetDetailScreen extends StatefulWidget {
   @visibleForTesting
   final SignupService? signupService;
 
-  const SignupSheetDetailScreen({
+  const SignupDetailScreen({
     super.key,
     this.sheetId,
     this.deviceId,
@@ -37,15 +37,14 @@ class SignupSheetDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<SignupSheetDetailScreen> createState() =>
-      _SignupSheetDetailScreenState();
+  State<SignupDetailScreen> createState() => _SignupDetailScreenState();
 }
 
-class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
+class _SignupDetailScreenState extends State<SignupDetailScreen> {
   late final SignupService _service;
   String? _deviceId;
   String _sheetId = '';
-  Stream<SignupSheet?>? _sheetStream;
+  Stream<Signup?>? _sheetStream;
   Stream<List<SignupSlot>>? _slotsStream;
   Stream<List<SignupEntry>>? _entriesStream;
 
@@ -119,7 +118,7 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
     );
   }
 
-  void _openSlots(SignupSheet sheet) {
+  void _openSlots(Signup sheet) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -140,7 +139,7 @@ class _SignupSheetDetailScreenState extends State<SignupSheetDetailScreen> {
     final theme = Theme.of(context);
     final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
 
-    return StreamBuilder<SignupSheet?>(
+    return StreamBuilder<Signup?>(
       stream: _sheetStream,
       builder: (context, sheetSnapshot) {
         if (_deviceId == null ||

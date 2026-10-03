@@ -4,11 +4,11 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
 /// A sign-up sheet's join code, with a copy-to-clipboard action. Shown in
-/// [AdminSignupSheetDetailScreen] only when the sheet requires a join code.
-class SignupSheetJoinCodeCard extends StatelessWidget {
+/// [AdminSignupDetailScreen] only when the sheet requires a join code.
+class SignupJoinCodeCard extends StatelessWidget {
   final String joinCode;
 
-  const SignupSheetJoinCodeCard({super.key, required this.joinCode});
+  const SignupJoinCodeCard({super.key, required this.joinCode});
 
   @override
   Widget build(BuildContext context) {

@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_sheet.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 
-/// A lock-guarded status segmented button for [AdminSignupSheetDetailScreen]
+/// A lock-guarded status segmented button for [AdminSignupDetailScreen]
 /// - starts locked so a stray tap can't change a published sheet's status,
 /// and owns its own lock state since nothing outside this widget needs it.
-class SignupSheetStatusSection extends StatefulWidget {
-  final SignupSheetStatus currentStatus;
-  final ValueChanged<SignupSheetStatus> onStatusChanged;
+class SignupStatusSection extends StatefulWidget {
+  final SignupStatus currentStatus;
+  final ValueChanged<SignupStatus> onStatusChanged;
 
-  const SignupSheetStatusSection({
+  const SignupStatusSection({
     super.key,
     required this.currentStatus,
     required this.onStatusChanged,
   });
 
   @override
-  State<SignupSheetStatusSection> createState() =>
-      _SignupSheetStatusSectionState();
+  State<SignupStatusSection> createState() => _SignupStatusSectionState();
 }
 
-class _SignupSheetStatusSectionState extends State<SignupSheetStatusSection> {
+class _SignupStatusSectionState extends State<SignupStatusSection> {
   bool _isLocked = true;
 
   @override
@@ -66,18 +65,18 @@ class _SignupSheetStatusSectionState extends State<SignupSheetStatusSection> {
                 opacity: _isLocked ? 0.6 : 1.0,
                 child: SizedBox(
                   width: double.infinity,
-                  child: SegmentedButton<SignupSheetStatus>(
+                  child: SegmentedButton<SignupStatus>(
                     segments: [
                       ButtonSegment(
-                        value: SignupSheetStatus.draft,
+                        value: SignupStatus.draft,
                         label: Text(l10n.signupStatusDraft),
                       ),
                       ButtonSegment(
-                        value: SignupSheetStatus.published,
+                        value: SignupStatus.published,
                         label: Text(l10n.signupStatusPublished),
                       ),
                       ButtonSegment(
-                        value: SignupSheetStatus.closed,
+                        value: SignupStatus.closed,
                         label: Text(l10n.signupStatusClosed),
                       ),
                     ],
