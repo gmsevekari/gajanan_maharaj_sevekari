@@ -110,12 +110,20 @@ class _MySignupsScreenState extends State<MySignupsScreen>
 
   Widget _buildScreen(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.signupMySignupsHeading),
         bottom: TabBar(
           controller: _tabController,
+          // The default label colour is the theme's primary, which is the
+          // app bar's own colour, so the selected tab's name was invisible.
+          labelColor: theme.colorScheme.onPrimary,
+          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(
+            alpha: 0.7,
+          ),
+          indicatorColor: theme.colorScheme.onPrimary,
           tabs: [
             Tab(text: l10n.signupUpcomingTab),
             Tab(text: l10n.signupPastTab),

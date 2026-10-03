@@ -1,6 +1,7 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
@@ -43,6 +44,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => FestivalProvider()),
       ],
       child: MaterialApp(
+        theme: AppTheme.lightTheme,
         locale: locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -358,5 +360,27 @@ void main() {
     expect(find.text('Upcoming'), findsOneWidget);
     expect(find.text('Past'), findsOneWidget);
     expect(find.text("You haven't signed up for anything yet"), findsOneWidget);
+  });
+
+  testWidgets('tab labels contrast with the app bar so the selected tab is '
+      'visible', (tester) async {
+    await tester.pumpWidget(
+      wrap(
+        MySignupsScreen(
+          signupId: signupId,
+          deviceId: 'device_1',
+          firestore: firestore,
+          signupService: service,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final tabBar = tester.widget<TabBar>(find.byType(TabBar));
+    final theme = AppTheme.lightTheme;
+    final appBarColor = theme.appBarTheme.backgroundColor;
+    expect(tabBar.labelColor, theme.colorScheme.onPrimary);
+    expect(tabBar.labelColor, isNot(appBarColor));
+    expect(tabBar.indicatorColor, theme.colorScheme.onPrimary);
   });
 }
