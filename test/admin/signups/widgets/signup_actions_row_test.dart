@@ -62,4 +62,63 @@ void main() {
     expect(exported, isTrue);
     expect(deleted, isTrue);
   });
+
+  testWidgets('lays the buttons out as an equal-width 2x2 grid', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrap(
+        SignupActionsRow(
+          onDuplicate: () {},
+          onShare: () {},
+          onExport: () {},
+          onDelete: () {},
+        ),
+      ),
+    );
+
+    Rect rectOf(String label) => tester.getRect(
+      find.ancestor(
+        of: find.text(label),
+        matching: find.byType(ElevatedButton),
+      ),
+    );
+    final duplicate = rectOf('Duplicate');
+    final share = rectOf('Share');
+    final export = rectOf('Export Summary');
+    final delete = rectOf('Delete');
+
+    expect(duplicate.width, share.width);
+    expect(duplicate.width, export.width);
+    expect(duplicate.width, delete.width);
+    expect(duplicate.top, share.top);
+    expect(export.top, delete.top);
+    expect(export.top, greaterThan(duplicate.bottom));
+    expect(duplicate.left, export.left);
+    expect(share.left, delete.left);
+    expect(share.left, greaterThan(duplicate.right));
+  });
+
+  testWidgets('fits a narrow phone screen without overflowing', (tester) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      wrap(
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: SignupActionsRow(
+            onDuplicate: () {},
+            onShare: () {},
+            onExport: () {},
+            onDelete: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Export Summary'), findsOneWidget);
+  });
 }
