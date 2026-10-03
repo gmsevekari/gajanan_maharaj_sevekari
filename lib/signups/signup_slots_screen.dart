@@ -137,6 +137,7 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
               .toList();
 
           return TabBarView(
+            physics: const NeverScrollableScrollPhysics(),
             controller: _tabController,
             children: [
               _buildSlotList(upcoming, l10n),

@@ -172,6 +172,7 @@ class _MySignupsScreenState extends State<MySignupsScreen>
               }
 
               return TabBarView(
+                physics: const NeverScrollableScrollPhysics(),
                 controller: _tabController,
                 children: [
                   MySignupsSection(

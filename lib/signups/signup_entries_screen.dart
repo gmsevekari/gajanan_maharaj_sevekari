@@ -126,6 +126,7 @@ class _SignupEntriesScreenState extends State<SignupEntriesScreen>
               }
 
               return TabBarView(
+                physics: const NeverScrollableScrollPhysics(),
                 controller: _tabController,
                 children: [
                   ListView(

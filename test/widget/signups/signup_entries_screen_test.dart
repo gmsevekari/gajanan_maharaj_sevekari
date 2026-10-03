@@ -299,4 +299,17 @@ void main() {
 
     expect(find.text('Navigated to: /settings'), findsOneWidget);
   });
+
+  testWidgets('does not switch tabs when the content is swiped', (
+    tester,
+  ) async {
+    await tester.pumpWidget(screen());
+    await tester.pumpAndSettle();
+
+    await tester.fling(find.byType(TabBarView), const Offset(-400, 0), 1000);
+    await tester.pumpAndSettle();
+
+    final controller = tester.widget<TabBar>(find.byType(TabBar)).controller!;
+    expect(controller.index, 0);
+  });
 }

@@ -383,4 +383,26 @@ void main() {
     expect(tabBar.labelColor, isNot(appBarColor));
     expect(tabBar.indicatorColor, theme.colorScheme.onPrimary);
   });
+
+  testWidgets('does not switch tabs when the content is swiped', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrap(
+        MySignupsScreen(
+          signupId: signupId,
+          deviceId: 'device_1',
+          firestore: firestore,
+          signupService: service,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.fling(find.byType(TabBarView), const Offset(-400, 0), 1000);
+    await tester.pumpAndSettle();
+
+    final controller = tester.widget<TabBar>(find.byType(TabBar)).controller!;
+    expect(controller.index, 0);
+  });
 }
