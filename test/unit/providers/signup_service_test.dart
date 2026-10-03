@@ -1106,4 +1106,95 @@ void main() {
       },
     );
   });
+
+  group('SignupService deleteSignup', () {
+    test('removes the signup with all of its slots and entries', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot());
+      await service.addSlot(signupId, buildSlot(labelEn: 'Week 2'));
+      await service.claimSlot(signupId: signupId, slotId: slotId, name: 'Jane');
+
+      await service.deleteSignup(signupId);
+
+      expect(await service.getSignupById(signupId).first, isNull);
+      final slots = await fakeFirestore
+          .collection('signups')
+          .doc(signupId)
+          .collection('slots')
+          .get();
+      final entries = await fakeFirestore
+          .collection('signups')
+          .doc(signupId)
+          .collection('entries')
+          .get();
+      expect(slots.docs, isEmpty);
+      expect(entries.docs, isEmpty);
+    });
+
+    test('deletes the header image from Storage', () async {
+      final signupId = await service.createSignup(buildSignup());
+      await service.uploadHeaderImage(
+        signupId: signupId,
+        bytes: Uint8List.fromList([1, 2, 3]),
+        contentType: 'image/jpeg',
+      );
+
+      await service.deleteSignup(signupId);
+
+      expect(
+        mockStorage.storedDataMap.containsKey('signups/$signupId/header'),
+        false,
+      );
+    });
+
+    test('succeeds for a signup that never had an image', () async {
+      final signupId = await service.createSignup(buildSignup());
+
+      await service.deleteSignup(signupId);
+
+      expect(await service.getSignupById(signupId).first, isNull);
+    });
+
+    test('leaves other signups untouched', () async {
+      final keepId = await service.createSignup(buildSignup(titleEn: 'Keep'));
+      await service.addSlot(keepId, buildSlot());
+      final deleteId = await service.createSignup(buildSignup());
+
+      await service.deleteSignup(deleteId);
+
+      expect((await service.getSignupById(keepId).first)!.titleEn, 'Keep');
+      expect(await service.getSlots(keepId).first, hasLength(1));
+    });
+
+    test('deletes more slots than fit in one batch', () async {
+      final signupId = await service.createSignup(buildSignup());
+      for (var i = 0; i < 450; i++) {
+        await service.addSlot(signupId, buildSlot(labelEn: 'Slot $i'));
+      }
+
+      await service.deleteSignup(signupId);
+
+      final slots = await fakeFirestore
+          .collection('signups')
+          .doc(signupId)
+          .collection('slots')
+          .get();
+      expect(slots.docs, isEmpty);
+    });
+
+    test('keeps the signup when the Storage delete fails', () async {
+      final throwingService = SignupService(
+        firestore: fakeFirestore,
+        storage: _ThrowingHeaderImageStorage(),
+      );
+      final signupId = await service.createSignup(buildSignup());
+
+      await expectLater(
+        throwingService.deleteSignup(signupId),
+        throwsA(isA<FirebaseException>()),
+      );
+
+      expect(await service.getSignupById(signupId).first, isNotNull);
+    });
+  });
 }

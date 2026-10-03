@@ -13,6 +13,8 @@ class SignupService {
   /// the same bound server-side as the real security boundary.
   static const int maxHeaderImageBytes = 2 * 1024 * 1024;
 
+  static const int _batchLimit = 400;
+
   final FirebaseFirestore _db;
   final FirebaseStorage? _storageOverride;
 
@@ -103,6 +105,34 @@ class SignupService {
   Future<void> removeHeaderImage(String signupId) async {
     await deleteHeaderImageFile(signupId);
     await updateHeaderImageUrl(signupId, null);
+  }
+
+  /// Deletes a signup together with its slots, entries and header image.
+  ///
+  /// Firestore doesn't cascade to subcollections, so they are removed
+  /// explicitly, and the signup document goes last: if anything fails
+  /// part-way (e.g. the Storage delete), the signup is still listed and
+  /// the admin can simply retry.
+  Future<void> deleteSignup(String signupId) async {
+    await _deleteCollection(_entriesRef(signupId));
+    await _deleteCollection(_slotsRef(signupId));
+    await deleteHeaderImageFile(signupId);
+    await _signupsRef.doc(signupId).delete();
+  }
+
+  /// Deletes every document in [collection], in batches under Firestore's
+  /// 500-writes-per-batch limit.
+  Future<void> _deleteCollection(
+    CollectionReference<Map<String, dynamic>> collection,
+  ) async {
+    final snapshot = await collection.get();
+    for (var start = 0; start < snapshot.docs.length; start += _batchLimit) {
+      final batch = _db.batch();
+      for (final doc in snapshot.docs.skip(start).take(_batchLimit)) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
+    }
   }
 
   /// Streams a single signup, or `null` if it doesn't exist.

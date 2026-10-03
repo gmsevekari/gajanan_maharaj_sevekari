@@ -4611,6 +4611,36 @@ abstract class AppLocalizations {
   /// **'Failed to duplicate sign up'**
   String get signupDuplicateError;
 
+  /// No description provided for @signupDeleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get signupDeleteButton;
+
+  /// No description provided for @signupDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Sign Up?'**
+  String get signupDeleteConfirmTitle;
+
+  /// No description provided for @signupDeleteConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete this sign up, including all of its slots, entries and its header image. This cannot be undone.'**
+  String get signupDeleteConfirmMessage;
+
+  /// No description provided for @signupDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up deleted'**
+  String get signupDeleteSuccess;
+
+  /// No description provided for @signupDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete sign up. Please try again.'**
+  String get signupDeleteError;
+
   /// No description provided for @signupShareButton.
   ///
   /// In en, this message translates to:

@@ -1641,4 +1641,145 @@ void main() {
       );
     });
   });
+
+  group('AdminSignupDetailScreen delete', () {
+    Future<String> seedSignupWithSlot() async {
+      final now = DateTime.now();
+      final signupRef = await firestore.collection('signups').add({
+        'titleEn': 'Prasad Seva',
+        'titleMr': 'प्रसाद सेवा',
+        'groupId': 'gajanan_maharaj_seattle',
+        'status': SignupStatus.draft.name,
+        'requiresJoinCode': false,
+        'createdAt': Timestamp.fromDate(now),
+        'updatedAt': Timestamp.fromDate(now),
+        'createdBy': 'admin@test.com',
+      });
+      await signupRef.collection('slots').add({
+        'labelEn': 'Week 1',
+        'labelMr': 'आठवडा १',
+        'capacity': 3,
+        'claimedCount': 0,
+        'sortOrder': 0,
+        'createdAt': Timestamp.fromDate(now),
+      });
+      return signupRef.id;
+    }
+
+    Future<void> pumpPushedDetailScreen(
+      WidgetTester tester, {
+      required String signupId,
+      SignupService? signupService,
+    }) async {
+      setLargeScreen(tester);
+      addTearDown(() => resetScreen(tester));
+      await tester.pumpWidget(
+        createWidget(
+          child: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AdminSignupDetailScreen(
+                        signupId: signupId,
+                        adminUser: adminUser,
+                        firestore: firestore,
+                        storage: storage,
+                        signupService: signupService,
+                      ),
+                    ),
+                  ),
+                  child: const Text('Open detail'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open detail'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('asks for confirmation and keeps the signup on No', (
+      tester,
+    ) async {
+      final signupId = await seedSignupWithSlot();
+      await pumpPushedDetailScreen(tester, signupId: signupId);
+
+      await tester.tap(find.text('Delete'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Delete Sign Up?'), findsOneWidget);
+      await tester.tap(find.text('No'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AdminSignupDetailScreen), findsOneWidget);
+      final doc = await firestore.collection('signups').doc(signupId).get();
+      expect(doc.exists, isTrue);
+    });
+
+    testWidgets('deleting removes the signup and returns to the previous '
+        'screen', (tester) async {
+      final signupId = await seedSignupWithSlot();
+      await pumpPushedDetailScreen(tester, signupId: signupId);
+
+      await tester.tap(find.text('Delete'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Yes'));
+      await tester.pumpAndSettle();
+
+      final signupRef = firestore.collection('signups').doc(signupId);
+      expect((await signupRef.get()).exists, isFalse);
+      expect((await signupRef.collection('slots').get()).docs, isEmpty);
+      expect(find.byType(AdminSignupDetailScreen), findsNothing);
+      expect(find.text('Open detail'), findsOneWidget);
+      expect(find.text('Sign up deleted'), findsOneWidget);
+    });
+
+    testWidgets('shows an error and stays on the screen when delete fails', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      final signup = Signup(
+        id: 'signup_del_err',
+        titleEn: 'Delete Error Signup',
+        titleMr: 'त्रुटी',
+        groupId: 'gajanan_maharaj_seattle',
+        createdAt: now,
+        updatedAt: now,
+        createdBy: 'admin@test.com',
+      );
+      final mockService = MockSignupService();
+      when(
+        () => mockService.getSignupById('signup_del_err'),
+      ).thenAnswer((_) => Stream.value(signup));
+      when(
+        () => mockService.getSlots('signup_del_err'),
+      ).thenAnswer((_) => Stream.value(const []));
+      when(
+        () => mockService.getAllEntries('signup_del_err'),
+      ).thenAnswer((_) => Stream.value(const []));
+      when(
+        () => mockService.deleteSignup('signup_del_err'),
+      ).thenThrow(Exception('Firestore error'));
+
+      await pumpPushedDetailScreen(
+        tester,
+        signupId: 'signup_del_err',
+        signupService: mockService,
+      );
+      await tester.tap(find.text('Delete'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Yes'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Failed to delete sign up. Please try again.'),
+        findsOneWidget,
+      );
+      expect(find.byType(AdminSignupDetailScreen), findsOneWidget);
+    });
+  });
 }

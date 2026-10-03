@@ -2397,6 +2397,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupDuplicateError => 'Failed to duplicate sign up';
 
   @override
+  String get signupDeleteButton => 'Delete';
+
+  @override
+  String get signupDeleteConfirmTitle => 'Delete Sign Up?';
+
+  @override
+  String get signupDeleteConfirmMessage =>
+      'This will permanently delete this sign up, including all of its slots, entries and its header image. This cannot be undone.';
+
+  @override
+  String get signupDeleteSuccess => 'Sign up deleted';
+
+  @override
+  String get signupDeleteError => 'Failed to delete sign up. Please try again.';
+
+  @override
   String get signupShareButton => 'Share';
 
   @override

@@ -2410,6 +2410,23 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupDuplicateError => 'साइन अप डुप्लिकेट करण्यात अयशस्वी';
 
   @override
+  String get signupDeleteButton => 'डिलीट करा';
+
+  @override
+  String get signupDeleteConfirmTitle => 'साइन अप डिलीट करायचे आहे का?';
+
+  @override
+  String get signupDeleteConfirmMessage =>
+      'हे साइन अप, त्यातील सर्व स्लॉट, एंट्री आणि हेडर इमेज कायमची डिलीट होईल. हे पूर्ववत करता येणार नाही.';
+
+  @override
+  String get signupDeleteSuccess => 'साइन अप डिलीट झाले';
+
+  @override
+  String get signupDeleteError =>
+      'साइन अप डिलीट करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
   String get signupShareButton => 'शेअर';
 
   @override

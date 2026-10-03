@@ -170,6 +170,55 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
     }
   }
 
+  void _confirmDeleteSignup(Signup signup, AppLocalizations l10n) {
+    showEnglishDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: Text(l10n.signupDeleteConfirmTitle),
+        content: Text(l10n.signupDeleteConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: Text(l10n.no),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogCtx).pop();
+              _deleteSignup(signup, l10n);
+            },
+            child: Text(
+              l10n.yes,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteSignup(Signup signup, AppLocalizations l10n) async {
+    if (_isProcessing) return;
+    setState(() => _isProcessing = true);
+    try {
+      await _service.deleteSignup(signup.id!);
+      if (!mounted) return;
+      // Grab the messenger and navigator before popping: this screen's
+      // context is gone afterwards, but the snackbar belongs to the
+      // surviving ScaffoldMessenger and should show on the previous screen.
+      final messenger = ScaffoldMessenger.of(context);
+      Navigator.of(context).pop();
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(l10n.signupDeleteSuccess)));
+    } on Exception catch (_) {
+      if (!mounted) return;
+      setState(() => _isProcessing = false);
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(l10n.signupDeleteError)));
+    }
+  }
+
   Future<void> _updateStatus(
     Signup signup,
     SignupStatus newStatus,
@@ -578,6 +627,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
                                 _duplicateSignup(signup, adminUser, l10n),
                             onShare: () =>
                                 _shareDeepLink(signup, l10n, isMarathi),
+                            onDelete: () => _confirmDeleteSignup(signup, l10n),
                             onExport: () => _exportSummaryImage(
                               signup,
                               slots,
