@@ -48,50 +48,119 @@ class SignupEntriesTable extends StatelessWidget {
     final rows = entries.toList()
       ..sort((a, b) => _compareEntries(a, b, slotsById));
 
-    final headerStyle = theme.textTheme.labelLarge?.copyWith(
+    final headerStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.secondary,
       fontWeight: FontWeight.bold,
+      letterSpacing: 0.5,
     );
-    final cellStyle = theme.textTheme.bodyMedium;
-    final divider = BorderSide(
-      color: theme.dividerColor.withValues(alpha: 0.5),
+    final cellStyle = theme.textTheme.bodyMedium?.copyWith(
+      fontWeight: FontWeight.w500,
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.9),
+    );
+    final cardColor =
+        theme.cardTheme.color ?? theme.colorScheme.surfaceContainer;
+    final bandBorder = BorderSide(
+      color: theme.colorScheme.primary.withValues(alpha: 0.2),
     );
 
-    return Table(
-      columnWidths: const {
-        0: FlexColumnWidth(2),
-        1: FlexColumnWidth(3),
-        2: FlexColumnWidth(3),
-      },
-      border: TableBorder(horizontalInside: divider, bottom: divider),
+    // Entries arrive sorted, so each slot's entries are adjacent. Group them
+    // so a slot reads as one block, with the block tint alternating.
+    final groups = <List<SignupEntry>>[];
+    for (final entry in rows) {
+      if (groups.isNotEmpty && groups.last.first.slotId == entry.slotId) {
+        groups.last.add(entry);
+      } else {
+        groups.add([entry]);
+      }
+    }
+
+    return Column(
       children: [
-        TableRow(
-          children: [
-            _cell(l10n.date, headerStyle),
-            _cell(l10n.signupEntriesTitleColumn, headerStyle),
-            _cell(l10n.name, headerStyle),
-          ],
-        ),
-        for (final entry in rows)
-          TableRow(
+        Container(
+          decoration: BoxDecoration(
+            color: cardColor.withValues(alpha: 0.8),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+          ),
+          child: Table(
+            columnWidths: _columnWidths,
             children: [
-              _cell(
-                slotsById[entry.slotId]?.date != null
-                    ? formatDateShort(slotsById[entry.slotId]!.date!, 'en')
-                    : '-',
-                cellStyle,
+              TableRow(
+                children: [
+                  _cell(l10n.date, headerStyle, vertical: 14),
+                  _cell(
+                    l10n.signupEntriesTitleColumn,
+                    headerStyle,
+                    vertical: 14,
+                  ),
+                  _cell(l10n.name, headerStyle, vertical: 14),
+                ],
               ),
-              _cell(_slotLabel(slotsById[entry.slotId], isMarathi), cellStyle),
-              _cell(entry.name, cellStyle),
             ],
           ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: cardColor.withValues(alpha: 0.3),
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(12),
+            ),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              for (var i = 0; i < groups.length; i++)
+                Container(
+                  key: Key('entriesGroup_$i'),
+                  decoration: BoxDecoration(
+                    color: i.isEven
+                        ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                        : Colors.transparent,
+                    border: Border(top: i > 0 ? bandBorder : BorderSide.none),
+                  ),
+                  child: Table(
+                    columnWidths: _columnWidths,
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    children: [
+                      for (final entry in groups[i])
+                        TableRow(
+                          children: [
+                            _cell(
+                              slotsById[entry.slotId]?.date != null
+                                  ? formatDateShort(
+                                      slotsById[entry.slotId]!.date!,
+                                      'en',
+                                    )
+                                  : '-',
+                              cellStyle,
+                            ),
+                            _cell(
+                              _slotLabel(slotsById[entry.slotId], isMarathi),
+                              cellStyle,
+                            ),
+                            _cell(entry.name, cellStyle),
+                          ],
+                        ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
       ],
     );
   }
 
-  Widget _cell(String text, TextStyle? style) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-    child: Text(text, style: style),
-  );
+  static const Map<int, TableColumnWidth> _columnWidths = {
+    0: FlexColumnWidth(2),
+    1: FlexColumnWidth(3),
+    2: FlexColumnWidth(3),
+  };
+
+  Widget _cell(String text, TextStyle? style, {double vertical = 12}) =>
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: vertical),
+        child: Text(text, style: style),
+      );
 
   String _slotLabel(SignupSlot? slot, bool isMarathi) {
     if (slot == null) return '';

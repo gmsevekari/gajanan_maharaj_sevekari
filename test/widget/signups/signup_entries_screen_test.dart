@@ -89,16 +89,23 @@ void main() {
     );
   }
 
+  /// The cells of every entry row. The first Table is the header; each slot
+  /// then gets a Table of its own, so rows are collected across them.
   List<List<String?>> tableRows(WidgetTester tester) {
-    final table = tester.widget<Table>(find.byType(Table));
-    return table.children
-        .skip(1) // header row
-        .map(
-          (row) => row.children
+    return [
+      for (final table in tester.widgetList<Table>(find.byType(Table)).skip(1))
+        for (final row in table.children)
+          row.children
               .map((cell) => ((cell as Padding).child! as Text).data)
               .toList(),
-        )
-        .toList();
+    ];
+  }
+
+  Color? groupColor(WidgetTester tester, int index) {
+    final box = tester.widget<Container>(
+      find.byKey(Key('entriesGroup_$index')),
+    );
+    return (box.decoration! as BoxDecoration).color;
   }
 
   testWidgets('shows the empty message when there are no entries', (
@@ -161,6 +168,39 @@ void main() {
     ]);
   });
 
+  testWidgets('gives each slot one background and alternates between slots', (
+    tester,
+  ) async {
+    final a = await addSlot(labelEn: 'Morning', date: future);
+    final b = await addSlot(labelEn: 'Evening', date: future);
+    final c = await addSlot(labelEn: 'Night', date: farFuture);
+    await service.claimSlot(signupId: signupId, slotId: a, name: 'Amy');
+    await service.claimSlot(signupId: signupId, slotId: a, name: 'Bob');
+    await service.claimSlot(signupId: signupId, slotId: b, name: 'Cat');
+    await service.claimSlot(signupId: signupId, slotId: c, name: 'Dan');
+
+    await tester.pumpWidget(screen());
+    await tester.pumpAndSettle();
+
+    // Three slots -> three groups; the two entries of the first slot share
+    // one group (one Table of two rows).
+    expect(find.byKey(const Key('entriesGroup_0')), findsOneWidget);
+    expect(find.byKey(const Key('entriesGroup_1')), findsOneWidget);
+    expect(find.byKey(const Key('entriesGroup_2')), findsOneWidget);
+    expect(find.byKey(const Key('entriesGroup_3')), findsNothing);
+    final firstGroupTable = tester.widget<Table>(
+      find.descendant(
+        of: find.byKey(const Key('entriesGroup_0')),
+        matching: find.byType(Table),
+      ),
+    );
+    expect(firstGroupTable.children, hasLength(2));
+
+    // Neighbouring slots differ, every other slot repeats.
+    expect(groupColor(tester, 0), isNot(groupColor(tester, 1)));
+    expect(groupColor(tester, 2), groupColor(tester, 0));
+  });
+
   testWidgets('shows only Date, Title and Name columns', (tester) async {
     final slotId = await addSlot(date: future);
     await service.claimSlot(signupId: signupId, slotId: slotId, name: 'Jane');
@@ -172,8 +212,8 @@ void main() {
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Name'), findsOneWidget);
     expect(find.text('Available Slots'), findsNothing);
-    final table = tester.widget<Table>(find.byType(Table));
-    expect(table.children.first.children, hasLength(3));
+    final header = tester.widgetList<Table>(find.byType(Table)).first;
+    expect(header.children.single.children, hasLength(3));
   });
 
   testWidgets('puts entries for past slots on the Past tab only', (
@@ -294,7 +334,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
-    expect(tester.getSize(find.byType(Table)).width, lessThanOrEqualTo(360));
+    for (final table in find.byType(Table).evaluate()) {
+      expect(
+        (table.renderObject! as RenderBox).size.width,
+        lessThanOrEqualTo(360),
+      );
+    }
   });
 
   testWidgets('tab labels contrast with the app bar so the selected tab is '
