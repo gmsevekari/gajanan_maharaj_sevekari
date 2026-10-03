@@ -2607,7 +2607,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   AppLocalizationsEnMr() : super('en_MR');
 
   @override
-  String get font => 'font';
+  String get font => 'Font';
 
   @override
   String get granthTitle => 'गजानन विजय ग्रंथ';
@@ -2664,19 +2664,19 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get donationsTitle => 'देणगी';
 
   @override
-  String get galleryTitle => 'gallery';
+  String get galleryTitle => 'Gallery';
 
   @override
   String get appName => 'गजानन महाराज सेवेकरी';
 
   @override
-  String get settings => 'settings';
+  String get settings => 'Settings';
 
   @override
   String get language => 'भाषा';
 
   @override
-  String get theme => 'theme';
+  String get theme => 'Theme';
 
   @override
   String get about => 'बद्दल';
@@ -2688,16 +2688,16 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get contactUs => 'संपर्क साधा';
 
   @override
-  String get lightTheme => 'light theme';
+  String get lightTheme => 'Light Theme';
 
   @override
-  String get darkTheme => 'dark theme';
+  String get darkTheme => 'Dark Theme';
 
   @override
-  String get systemTheme => 'system theme';
+  String get systemTheme => 'System Theme';
 
   @override
-  String get colorPalette => 'रंग palette';
+  String get colorPalette => 'रंग Palette';
 
   @override
   String get themeSaffron => 'भगवा';
@@ -2724,34 +2724,34 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get themePeacock => 'मोर निळा';
 
   @override
-  String get themeCustom => 'custom';
+  String get themeCustom => 'Custom';
 
   @override
   String get customColorPicker => 'तुमचा रंग निवडा';
 
   @override
-  String get savedThemes => 'माझ्या themes';
+  String get savedThemes => 'माझ्या Themes';
 
   @override
-  String get saveTheme => 'theme save करा';
+  String get saveTheme => 'Theme Save करा';
 
   @override
-  String get deleteTheme => 'theme delete करा';
+  String get deleteTheme => 'Theme Delete करा';
 
   @override
-  String get themeSaved => 'theme save झाली';
+  String get themeSaved => 'Theme save झाली';
 
   @override
-  String get themeDeleted => 'theme delete झाली';
+  String get themeDeleted => 'Theme delete झाली';
 
   @override
   String get noSavedThemes => 'अद्याप कोणतीही theme save केलेली नाही';
 
   @override
-  String get themeAlreadySaved => 'ही theme आधीच save केलेली आहे';
+  String get themeAlreadySaved => 'ही Theme आधीच save केलेली आहे';
 
   @override
-  String get hexLabel => 'hex code';
+  String get hexLabel => 'Hex Code';
 
   @override
   String get english => 'इंग्रजी';
@@ -2830,10 +2830,10 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'तुमचे अध्याय पाहण्यासाठी \'माझे अध्याय शोधा\' वर click करा.';
 
   @override
-  String get claimedLabel => 'अध्याय claim केलेले';
+  String get claimedLabel => 'अध्याय Claim केलेले';
 
   @override
-  String get unclaimedLabel => 'अध्याय claim न केलेले';
+  String get unclaimedLabel => 'अध्याय Claim न केलेले';
 
   @override
   String get claimSuccessMessage => 'अध्याय यशस्वीरीत्या claim झाले!';
@@ -2843,7 +2843,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'हा phone number आधीच दुसऱ्या phone वर जोडला गेला आहे. तो या phone वर घ्यायचा आहे का?';
 
   @override
-  String get phoneNumberHint => 'phone number टाका';
+  String get phoneNumberHint => 'Phone Number टाका';
 
   @override
   String get invalidPhoneError => 'कृपया योग्य phone number टाका';
@@ -2947,10 +2947,10 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'gajananmaharajseattle@gmail.com वर Zelle द्वारे देणगी द्या';
 
   @override
-  String get zelleQRCode => 'Zelle QR code';
+  String get zelleQRCode => 'Zelle QR Code';
 
   @override
-  String get qrCodeHere => 'येथे QR code';
+  String get qrCodeHere => 'येथे QR Code';
 
   @override
   String get couldNotOpenZelle => 'Zelle उघडू शकलो नाही.';
@@ -3016,7 +3016,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get footerQuote => 'भक्तांच्या हाकेला धावून जाणारे दयासागर';
 
   @override
-  String get socialMediaTitle => 'social media';
+  String get socialMediaTitle => 'Social Media';
 
   @override
   String get officialSocialMediaHandles => 'अधिकृत social media handles';
@@ -3040,43 +3040,43 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get sendTextTooltip => 'मजकूर पाठवा';
 
   @override
-  String get officialPage => 'अधिकृत page';
+  String get officialPage => 'अधिकृत Page';
 
   @override
-  String get videosAndStreams => 'videos आणि live streams';
+  String get videosAndStreams => 'Videos आणि Live Streams';
 
   @override
-  String get photosAndReels => 'photos आणि reels';
+  String get photosAndReels => 'Photos आणि Reels';
 
   @override
-  String get photoGallery => 'photo gallery';
+  String get photoGallery => 'Photo Gallery';
 
   @override
-  String get whatsappAdminContact => 'WhatsApp group admin contact';
+  String get whatsappAdminContact => 'WhatsApp Group Admin Contact';
 
   @override
-  String get officialLinks => 'अधिकृत links';
+  String get officialLinks => 'अधिकृत Links';
 
   @override
-  String get socialMedia => 'social media';
+  String get socialMedia => 'Social Media';
 
   @override
   String get nityopasanaTitle => 'नित्योपासना';
 
   @override
-  String get share => 'share करा';
+  String get share => 'Share करा';
 
   @override
   String get narrator => 'निवेदक';
 
   @override
-  String get internetRequired => 'video playback साठी internet आवश्यक आहे';
+  String get internetRequired => 'Video playback साठी internet आवश्यक आहे';
 
   @override
   String get shareMessage => 'गजानन विजय ग्रंथाचा हा अध्याय नक्की ऐका';
 
   @override
-  String get signupsTitle => 'sign-up';
+  String get signupsTitle => 'Sign-up';
 
   @override
   String get signupsDescription =>
@@ -3087,14 +3087,14 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get sundayPrasadSevaSignupDescription =>
-      'रविवार प्रसाद सेवेसाठी sign up करा';
+      'रविवार प्रसाद सेवेसाठी Sign up करा';
 
   @override
   String get vastralankarSevaSignup => 'वस्त्रालंकार सेवा';
 
   @override
   String get vastralankarSevaSignupDescription =>
-      'वस्त्रालंकार सेवेसाठी sign up करा';
+      'वस्त्रालंकार सेवेसाठी Sign up करा';
 
   @override
   String get allEvents => 'सर्व उत्सव';
@@ -3153,7 +3153,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   }
 
   @override
-  String get downloadAppTitle => 'app download करा';
+  String get downloadAppTitle => 'App Download करा';
 
   @override
   String get downloadAppSubtitle =>
@@ -3163,7 +3163,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get downloadAppButton => 'मिळवा';
 
   @override
-  String get notificationPreferences => 'notification प्राधान्ये';
+  String get notificationPreferences => 'Notification प्राधान्ये';
 
   @override
   String get weeklyPoojaReminder => 'साप्ताहिक पूजा आठवण';
@@ -3177,7 +3177,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get notificationDialogBody =>
-      'पूजा, उत्सवाची आठवण आणि मंदिराचे महत्त्वाचे notifications मिळवण्यासाठी सक्षम करा.\n\nतुम्ही हे कधीही \'settings > notification प्राधान्ये\' मध्ये बदलू शकता.';
+      'पूजा, उत्सवाची आठवण आणि मंदिराचे महत्त्वाचे notifications मिळवण्यासाठी सक्षम करा.\n\nतुम्ही हे कधीही \'Settings > Notification प्राधान्ये\' मध्ये बदलू शकता.';
 
   @override
   String get notificationDialogAllow => 'परवानगी द्या';
@@ -3186,7 +3186,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get notificationDialogDeny => 'आता नको';
 
   @override
-  String get openSettings => 'settings उघडा';
+  String get openSettings => 'Settings उघडा';
 
   @override
   String get specialEvents => 'विशेष उत्सव';
@@ -3217,11 +3217,11 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'स्वतः जप करा किंवा विशिष्ट वेळेसाठी / माळांसाठी ऐका.';
 
   @override
-  String get groupNamjapLabel => 'group नामजप';
+  String get groupNamjapLabel => 'Group नामजप';
 
   @override
   String get groupNamjapDescription =>
-      'group नामजपमध्ये सहभागी व्हा आणि सामूहिक संकल्पासाठी योगदान द्या.';
+      'Group नामजपमध्ये सहभागी व्हा आणि सामूहिक संकल्पासाठी योगदान द्या.';
 
   @override
   String get malaCountingTab => 'माळा मोजणी';
@@ -3230,7 +3230,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get timeBasedTab => 'वेळ आधारित';
 
   @override
-  String get manualJapTab => 'manual';
+  String get manualJapTab => 'Manual';
 
   @override
   String get targetMalaCount => 'लक्ष्य (माळा)';
@@ -3242,7 +3242,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get start => 'सुरू';
 
   @override
-  String get reset => 'reset करा';
+  String get reset => 'Reset करा';
 
   @override
   String get count => 'मोजणी';
@@ -3286,23 +3286,23 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get startPlay => 'सुरू करा';
 
   @override
-  String get audioJapWillStart => 'audio जप चालू होईल';
+  String get audioJapWillStart => 'Audio जप चालू होईल';
 
   @override
   String get keepPhoneUnlocked =>
       'नामजप सुरू ठेवण्यासाठी कृपया phone unlock ठेवा';
 
   @override
-  String get tap => 'tap करा';
+  String get tap => 'Tap करा';
 
   @override
-  String get tapToEdit => 'बदलण्यासाठी tap करा';
+  String get tapToEdit => 'बदलण्यासाठी Tap करा';
 
   @override
   String get jap => 'जप';
 
   @override
-  String get enterCustomTarget => 'लक्ष्य माळा number टाका (उदा. ११)';
+  String get enterCustomTarget => 'लक्ष्य माळा Number टाका (उदा. ११)';
 
   @override
   String get search => 'शोधा';
@@ -3322,21 +3322,21 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   }
 
   @override
-  String get templeNotifications => 'मंदिराचे notifications';
+  String get templeNotifications => 'मंदिराचे Notifications';
 
   @override
   String get templeNotificationsNote =>
       '(उदा., स्वयंसेवक विनंती, महत्त्वाचे notifications)';
 
   @override
-  String get adminAccess => 'admin access';
+  String get adminAccess => 'Admin Access';
 
   @override
   String get googleSignInWebNotSupported =>
-      'web वर Google sign-in बंद केले आहे. कृपया admin access साठी mobile app वापरा.';
+      'Web वर Google Sign-In बंद केले आहे. कृपया admin access साठी mobile app वापरा.';
 
   @override
-  String get logoutInactivity => 'निष्क्रियतेमुळे log out झाले.';
+  String get logoutInactivity => 'निष्क्रियतेमुळे Log out झाले.';
 
   @override
   String get notificationRecently => 'काही वेळापूर्वी';
@@ -3349,52 +3349,52 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signInError =>
-      'sign in करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.';
+      'Sign in करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.';
 
   @override
   String get accessDeniedNotAuthorized =>
-      'प्रवेश नाकारला: तुमचा email admin access साठी अधिकृत नाही.';
+      'प्रवेश नाकारला: तुमचा email admin Access साठी अधिकृत नाही.';
 
   @override
-  String get notificationDeleteTooltip => 'delete करा';
+  String get notificationDeleteTooltip => 'Delete करा';
 
   @override
-  String get notificationDefaultTitle => 'notification';
+  String get notificationDefaultTitle => 'Notification';
 
   @override
-  String get adminRestrictedArea => 'admin प्रतिबंधित क्षेत्र';
+  String get adminRestrictedArea => 'Admin प्रतिबंधित क्षेत्र';
 
   @override
   String get adminSignInInstruction => 'कृपया Google account ने sign in करा.';
 
   @override
-  String get adminDashboardTitle => 'admin dashboard';
+  String get adminDashboardTitle => 'Admin Dashboard';
 
   @override
-  String get logoutLabel => 'log out';
+  String get logoutLabel => 'Log out';
 
   @override
-  String get loggedInAs => 'log in email';
+  String get loggedInAs => 'Log in email';
 
   @override
-  String get unknownAdmin => 'अज्ञात admin';
+  String get unknownAdmin => 'अज्ञात Admin';
 
   @override
-  String get adminModules => 'admin विभाग';
+  String get adminModules => 'Admin विभाग';
 
   @override
-  String get templeNotificationsModuleTitle => 'मंदिराचे notifications';
+  String get templeNotificationsModuleTitle => 'मंदिराचे Notifications';
 
   @override
   String get templeNotificationsModuleSubtitle =>
       'सर्व सदस्यांना manual push notification पाठवा';
 
   @override
-  String get notificationSentSuccess => 'notification यशस्वीरित्या पाठवले!';
+  String get notificationSentSuccess => 'Notification यशस्वीरित्या पाठवले!';
 
   @override
   String notificationSendError(String error) {
-    return 'notification पाठवण्यात अयशस्वी: $error';
+    return 'Notification पाठवण्यात अयशस्वी: $error';
   }
 
   @override
@@ -3402,10 +3402,10 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get broadcastNotificationInstruction =>
-      'मंदिराच्या notifications ना subscribe केलेल्या सर्वांना त्वरित push notification पाठविले जाईल.';
+      'मंदिराच्या Notifications ना subscribe केलेल्या सर्वांना त्वरित push notification पाठविले जाईल.';
 
   @override
-  String get notificationTitleLabel => 'notification चे शीर्षक';
+  String get notificationTitleLabel => 'Notification चे शीर्षक';
 
   @override
   String get notificationTitleHint => 'उदा., स्वयंसेवक पाहिजेत';
@@ -3414,25 +3414,25 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get notificationTitleRequired => 'कृपया शीर्षक लिहा';
 
   @override
-  String get notificationMessageLabel => 'notification message';
+  String get notificationMessageLabel => 'Notification Message';
 
   @override
   String get notificationMessageHint =>
-      'उदा., आम्हाला रविवारच्या प्रसादासाठी १० स्वयंसेवकांची गरज आहे! sign up करा: https://example.com\n\nवापरकर्त्यांसाठी URL आपोआप highlight केल्या जातील आणि tap करता येतील.';
+      'उदा., आम्हाला रविवारच्या प्रसादासाठी १० स्वयंसेवकांची गरज आहे! Sign up करा: https://example.com\n\nवापरकर्त्यांसाठी URL आपोआप highlight केल्या जातील आणि tap करता येतील.';
 
   @override
   String get notificationMessageRequired =>
       'कृपया notification चा message लिहा';
 
   @override
-  String get broadcastButtonLabel => 'notification पाठवा';
+  String get broadcastButtonLabel => 'Notification पाठवा';
 
   @override
-  String get allNotifications => 'सर्व notifications';
+  String get allNotifications => 'सर्व Notifications';
 
   @override
   String notificationRetentionMessage(String days) {
-    return 'notifications $days दिवसांनंतर आपोआप delete केले जातील';
+    return 'Notifications $days दिवसांनंतर आपोआप delete केले जातील';
   }
 
   @override
@@ -3510,7 +3510,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get remindersFixedLabel =>
-      'reminder या वेळेत पाठवले जातील: दुपारी १:००, ४:०० आणि संध्याकाळी ७:००';
+      'Reminder या वेळेत पाठवले जातील: दुपारी १:००, ४:०० आणि संध्याकाळी ७:००';
 
   @override
   String get parayanTypeLabel => 'पारायण प्रकार';
@@ -3522,13 +3522,13 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get endDateLabel => 'अंतिम तारीख';
 
   @override
-  String get reminderTimeLabel => 'reminder notification वेळ';
+  String get reminderTimeLabel => 'Reminder Notification वेळ';
 
   @override
   String get createParayanButton => 'नवीन पारायण तयार करा';
 
   @override
-  String get addParticipantLabel => 'सदस्य add करा';
+  String get addParticipantLabel => 'सदस्य Add करा';
 
   @override
   String get nameAlphabetRegexError =>
@@ -3543,13 +3543,13 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'तुमचे पारायण sign-up यशस्वीरित्या update केले आहे!';
 
   @override
-  String get addHousehold => 'दुसरे कुटुंब add करा';
+  String get addHousehold => 'दुसरे कुटुंब Add करा';
 
   @override
-  String get addParticipant => 'दुसरा सदस्य add करा';
+  String get addParticipant => 'दुसरा सदस्य Add करा';
 
   @override
-  String get submitAll => 'सर्व submit करा';
+  String get submitAll => 'सर्व Submit करा';
 
   @override
   String get householdLabel => 'कुटुंब';
@@ -3561,16 +3561,16 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get assignedAdhyaysLabel => 'तुमचे नियुक्त अध्याय';
 
   @override
-  String get markAsRead => 'वाचले म्हणून mark करा';
+  String get markAsRead => 'वाचले म्हणून Mark करा';
 
   @override
   String get readingCompleted => 'वाचन पूर्ण झाले';
 
   @override
-  String get submitReadingStatus => 'status submit करा';
+  String get submitReadingStatus => 'Status Submit करा';
 
   @override
-  String get manualPingLabel => 'reminder notification पाठवा - लवकरच येत आहे';
+  String get manualPingLabel => 'Reminder Notification पाठवा - लवकरच येत आहे';
 
   @override
   String statsParticipants(int count) {
@@ -3581,7 +3581,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get joinParayanLabel => 'पारायणात सहभागी व्हा';
 
   @override
-  String get signedUpLabel => 'sign-up केले आहे';
+  String get signedUpLabel => 'Sign-Up केले आहे';
 
   @override
   String get noActiveParayans => 'सध्या कोणतेही सक्रिय पारायण नाहीत.';
@@ -3590,7 +3590,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get adhyaysCompleted => 'अध्याय पूर्ण झाले';
 
   @override
-  String get totalSignups => 'एकूण sign-up';
+  String get totalSignups => 'एकूण Sign-up';
 
   @override
   String get ongoingParayansLabel => 'चालू पारायण';
@@ -3636,7 +3636,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get notAllocated => 'वाटप अद्याप झाले नाही';
 
   @override
-  String get videoUnavailable => 'video उपलब्ध नाही';
+  String get videoUnavailable => 'Video उपलब्ध नाही';
 
   @override
   String get noDataAvailable => 'माहिती उपलब्ध नाही';
@@ -3678,7 +3678,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get myAllocationTitle => 'माझी स्थिती';
 
   @override
-  String get submitLabel => 'submit करा';
+  String get submitLabel => 'Submit करा';
 
   @override
   String get activeLabel => 'सक्रिय पारायण #';
@@ -3687,13 +3687,13 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get completedLabel => 'पूर्ण पारायण #';
 
   @override
-  String get emailRequired => 'email ID आवश्यक आहे';
+  String get emailRequired => 'Email id आवश्यक आहे';
 
   @override
-  String get invalidEmail => 'कृपया योग्य email ID टाका';
+  String get invalidEmail => 'कृपया योग्य email id टाका';
 
   @override
-  String get phoneRequired => 'phone number आवश्यक आहे';
+  String get phoneRequired => 'Phone number आवश्यक आहे';
 
   @override
   String get invalidPhone => 'कृपया योग्य १०-अंकी phone number प्रविष्ट करा';
@@ -3722,7 +3722,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get totalParticipantsLabel => 'एकूण सदस्य';
 
   @override
-  String get remindersStatusLabel => 'notification status';
+  String get remindersStatusLabel => 'Notification Status';
 
   @override
   String get reminderSentStatus => 'पाठवले';
@@ -3731,7 +3731,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get reminderPendingStatus => 'पाठवायचे आहे';
 
   @override
-  String get updateStatusLabel => 'पारायण status';
+  String get updateStatusLabel => 'पारायण Status';
 
   @override
   String get statusUpcoming => 'आगामी';
@@ -3750,7 +3750,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   }
 
   @override
-  String get statusUpdateSuccess => 'status यशस्वीरित्या update केले';
+  String get statusUpdateSuccess => 'Status यशस्वीरित्या update केले';
 
   @override
   String get successLabel => 'यशस्वी';
@@ -3779,85 +3779,85 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get completedParayansTab => 'पूर्ण झालेले';
 
   @override
-  String get parayanReminders => 'पारायण reminder';
+  String get parayanReminders => 'पारायण Reminder';
 
   @override
   String get parayanRemindersNote =>
-      'तुम्हाला नेमून दिलेले परायणाचे अध्याय वाचण्याची आठवण करून देणारे notifications प्राप्त करा';
+      'तुम्हाला नेमून दिलेले परायणाचे अध्याय वाचण्याची आठवण करून देणारे Notifications प्राप्त करा';
 
   @override
-  String get favorites => 'favorites';
+  String get favorites => 'Favorites';
 
   @override
-  String get myFavorites => 'माझे favorites';
+  String get myFavorites => 'माझे Favorites';
 
   @override
-  String get createPlaylist => 'नवीन list तयार करा';
+  String get createPlaylist => 'नवीन List तयार करा';
 
   @override
-  String get renamePlaylist => 'list चे नाव बदला';
+  String get renamePlaylist => 'List चे नाव बदला';
 
   @override
-  String get deletePlaylist => 'list delete करा';
+  String get deletePlaylist => 'List Delete करा';
 
   @override
-  String get playlistName => 'list चे नाव';
+  String get playlistName => 'List चे नाव';
 
   @override
-  String get addAarti => 'add करा';
+  String get addAarti => 'Add करा';
 
   @override
-  String get removeAarti => 'delete करा';
+  String get removeAarti => 'Delete करा';
 
   @override
-  String get playAll => 'सर्व play करा';
+  String get playAll => 'सर्व Play करा';
 
   @override
   String get readAll => 'सर्व वाचा';
 
   @override
-  String get addToPlaylist => 'list मध्ये add करा';
+  String get addToPlaylist => 'List मध्ये Add करा';
 
   @override
-  String get createNewPlaylist => 'नवीन list तयार करा';
+  String get createNewPlaylist => 'नवीन List तयार करा';
 
   @override
-  String get playlistCreated => 'list तयार केली';
+  String get playlistCreated => 'List तयार केली';
 
   @override
-  String get playlistRenamed => 'list चे नाव बदलले';
+  String get playlistRenamed => 'List चे नाव बदलले';
 
   @override
-  String get playlistDeleted => 'list delete केली';
+  String get playlistDeleted => 'List Delete केली';
 
   @override
-  String get playlistNameRequired => 'list चे नाव आवश्यक आहे';
+  String get playlistNameRequired => 'List चे नाव आवश्यक आहे';
 
   @override
-  String get playlistNameMaxChars => 'list चे नाव ५० अक्षरांपेक्षा कमी असावे';
+  String get playlistNameMaxChars => 'List चे नाव ५० अक्षरांपेक्षा कमी असावे';
 
   @override
   String get playlistNameAlphanumeric =>
-      'list च्या नावात फक्त अक्षरे, अंक आणि space असावेत';
+      'List च्या नावात फक्त अक्षरे, अंक आणि space असावेत';
 
   @override
   String get playlistAlreadyExists => 'या नावाची list आधीच अस्तित्वात आहे';
 
   @override
-  String get addedToPlaylist => 'list मध्ये add केले';
+  String get addedToPlaylist => 'List मध्ये Add केले';
 
   @override
-  String get removedFromPlaylist => 'list मधून delete केले';
+  String get removedFromPlaylist => 'List मधून delete केले';
 
   @override
   String get defaultPlaylistCannotBeDeleted =>
-      'default list delete करता येत नाही';
+      'Default list delete करता येत नाही';
 
   @override
-  String get editEnrollmentLabel => 'sign-up बदला';
+  String get editEnrollmentLabel => 'Sign-up बदला';
 
   @override
-  String get updateEnrollmentLabel => 'sign-up update करा';
+  String get updateEnrollmentLabel => 'Sign-up Update करा';
 
   @override
   String get filterAll => 'सर्व';
@@ -3869,7 +3869,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get filterPending => 'अपूर्ण';
 
   @override
-  String get exportAllocations => 'status export करा';
+  String get exportAllocations => 'Status Export करा';
 
   @override
   String get exportingGroups => 'गट snapshot तयार करत आहे...';
@@ -3887,20 +3887,20 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get adhyaysLabel => 'अध्याय';
 
   @override
-  String get statusLabel => 'status';
+  String get statusLabel => 'Status';
 
   @override
-  String get shareParayan => 'पारायण share करा';
+  String get shareParayan => 'पारायण Share करा';
 
   @override
-  String get deleteSignupLabel => 'sign-up delete करा';
+  String get deleteSignupLabel => 'Sign-up Delete करा';
 
   @override
   String get signupDeletedSuccess =>
       'तुमचे sign-up यशस्वीरित्या delete केले आहे.';
 
   @override
-  String get deleteSignupConfirmTitle => 'sign-up delete करा?';
+  String get deleteSignupConfirmTitle => 'Sign-up Delete करा?';
 
   @override
   String get deleteSignupConfirmMessage =>
@@ -3917,10 +3917,10 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get householdMembersLabel => 'घरातील सदस्य';
 
   @override
-  String get addLabel => 'सदस्य add करा';
+  String get addLabel => 'सदस्य Add करा';
 
   @override
-  String get phoneNumberLabel => 'phone number';
+  String get phoneNumberLabel => 'Phone Number';
 
   @override
   String get joiningSignupProgress => 'पारायणासाठी sign-up करत आहे...';
@@ -3932,58 +3932,58 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get deletingSignupProgress => 'तुमचे sign-up delete करत आहे...';
 
   @override
-  String get confirm => 'confirm करा';
+  String get confirm => 'Confirm करा';
 
   @override
-  String get subscribingProgress => 'notifications subscribe करत आहे...';
+  String get subscribingProgress => 'Notifications subscribe करत आहे...';
 
   @override
   String get nothingHereYet => 'येथे अद्याप काहीही नाही आहे';
 
   @override
-  String get unsubscribingProgress => 'notifications unsubscribe करत आहे...';
+  String get unsubscribingProgress => 'Notifications unsubscribe करत आहे...';
 
   @override
   String get exportSuffixAllocated => ' - अध्याय वाटप';
 
   @override
-  String get exportSuffixOngoing => ' - आत्ताचे status';
+  String get exportSuffixOngoing => ' - आत्ताचे Status';
 
   @override
   String get exportSuffixCompleted => ' पूर्ण झाले. जय गजानन 🙏🏻';
 
   @override
-  String get exportToCalendar => 'calendar export करा';
+  String get exportToCalendar => 'Calendar Export करा';
 
   @override
-  String get shareParayanAction => 'हे पारायण join करा';
+  String get shareParayanAction => 'हे पारायण Join करा';
 
   @override
-  String get shareLink => 'link';
+  String get shareLink => 'Link';
 
   @override
   String get deletePlaylistConfirm =>
       'तुम्ही खात्रीने ही list delete करू इच्छिता?';
 
   @override
-  String get updateAvailableTitle => 'update उपलब्ध';
+  String get updateAvailableTitle => 'Update उपलब्ध';
 
   @override
   String get forcedUpdateMessage =>
-      'app वापरण्यासाठी update करणे आवश्यक आहे. कृपया app update करा.';
+      'App वापरण्यासाठी update करणे आवश्यक आहे. कृपया app update करा.';
 
   @override
   String get recommendedUpdateMessage =>
-      'app चे नवीन version उपलब्ध आहे. तुम्ही आता update करू इच्छिता का?';
+      'App चे नवीन version उपलब्ध आहे. तुम्ही आता update करू इच्छिता का?';
 
   @override
-  String get latestVersionLabel => 'नवीन version';
+  String get latestVersionLabel => 'नवीन Version';
 
   @override
-  String get currentVersionLabel => 'आत्ताचे version';
+  String get currentVersionLabel => 'आत्ताचे Version';
 
   @override
-  String get updateNow => 'आता update करा';
+  String get updateNow => 'आता Update करा';
 
   @override
   String get updateLater => 'नंतर';
@@ -3992,31 +3992,31 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get noParayansFound => 'चालू वर्षासाठी कोणतेही पारायण सापडले नाही';
 
   @override
-  String get joinCodeTitle => 'join code enter करा';
+  String get joinCodeTitle => 'Join Code Enter करा';
 
   @override
-  String get joinCodeHint => '६-अक्षरी code enter करा';
+  String get joinCodeHint => '६-अक्षरी code Enter करा';
 
   @override
-  String get invalidJoinCode => 'join code चुकीचा आहे!';
+  String get invalidJoinCode => 'Join Code चुकीचा आहे!';
 
   @override
-  String get copyInviteLink => 'निमंत्रण link copy करा';
+  String get copyInviteLink => 'निमंत्रण Link Copy करा';
 
   @override
-  String get copyJoinCode => 'join code copy करा';
+  String get copyJoinCode => 'Join Code Copy करा';
 
   @override
-  String get joinCodeCopied => 'join code clipboard वर copy केला';
+  String get joinCodeCopied => 'Join Code clipboard वर copy केला';
 
   @override
-  String get inviteLinkCopied => 'निमंत्रण link clipboard वर copy केली';
+  String get inviteLinkCopied => 'निमंत्रण Link clipboard वर copy केली';
 
   @override
-  String get joinCodeLabel => 'join code';
+  String get joinCodeLabel => 'Join Code';
 
   @override
-  String get shareWithCode => 'code सह share करा';
+  String get shareWithCode => 'Code सह Share करा';
 
   @override
   String get guruPushyaEndDateRequired =>
@@ -4030,7 +4030,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'तुम्हाला नियुक्त केलेला अध्याय वाचून पूर्ण झाला आहे का?';
 
   @override
-  String get confirmStepsSubmissionTitle => 'submission ची खात्री करा';
+  String get confirmStepsSubmissionTitle => 'Submission ची खात्री करा';
 
   @override
   String get confirmStepsSubmissionQuestion =>
@@ -4052,13 +4052,13 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get storiesTitle => 'कथा';
 
   @override
-  String get audiosTitle => 'audios';
+  String get audiosTitle => 'Audios';
 
   @override
-  String get videosTitle => 'videos';
+  String get videosTitle => 'Videos';
 
   @override
-  String get reportTypoTitle => 'चूक report करा';
+  String get reportTypoTitle => 'चूक Report करा';
 
   @override
   String get reportTypoLabel => 'चूक';
@@ -4074,16 +4074,16 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'दुरुस्ती नोंदवता आली नाही. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get adminTypoReportsModuleTitle => 'typo reports';
+  String get adminTypoReportsModuleTitle => 'Typo Reports';
 
   @override
   String get adminTypoReportsModuleSubtitle => 'मजकुरातील दुरुस्त्या तपासा';
 
   @override
-  String get typoNotificationToggleLabel => 'typo report notifications';
+  String get typoNotificationToggleLabel => 'Typo Report Notifications';
 
   @override
-  String get markAsFixed => 'fix mark करा';
+  String get markAsFixed => 'Fix Mark करा';
 
   @override
   String get selectTextToReportHint =>
@@ -4094,7 +4094,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'तुम्ही हा report delete करू इच्छिता?';
 
   @override
-  String get typoReportDeleteButton => 'report delete करा';
+  String get typoReportDeleteButton => 'Report Delete करा';
 
   @override
   String get typoReportIncorrectTextLabel => 'चुकीचा मजकूर:';
@@ -4114,7 +4114,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   }
 
   @override
-  String get parayanGroupLabel => 'पारायण group';
+  String get parayanGroupLabel => 'पारायण Group';
 
   @override
   String get statusOngoingDesc =>
@@ -4125,7 +4125,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'पारायण यशस्वीरीत्या पूर्ण झाले आहे. जय गजानन!';
 
   @override
-  String get adminParayanGroupTitle => 'पारायण groups';
+  String get adminParayanGroupTitle => 'पारायण Groups';
 
   @override
   String get parayanAlreadyExists =>
@@ -4135,28 +4135,28 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get useMobileAppForParayan => 'पारायणासाठी कृपया mobile app वापरा';
 
   @override
-  String get groupNamjapModuleTitle => 'group नामजप';
+  String get groupNamjapModuleTitle => 'Group नामजप';
 
   @override
-  String get groupNamjapModuleSubtitle => 'group नामजप आणि आकडेवारी manage करा';
+  String get groupNamjapModuleSubtitle => 'Group नामजप आणि आकडेवारी Manage करा';
 
   @override
-  String get createGroupNamjapTitle => 'नवीन group नामजप तयार करा';
+  String get createGroupNamjapTitle => 'नवीन Group नामजप तयार करा';
 
   @override
-  String get groupNamjapDashboardTitle => 'group नामजप';
+  String get groupNamjapDashboardTitle => 'Group नामजप';
 
   @override
-  String get groupNamjapCompleted => 'पूर्ण झालेले group नामजप';
+  String get groupNamjapCompleted => 'पूर्ण झालेले Group नामजप';
 
   @override
-  String get groupNamjapRecentlyCompleted => 'नुकतेच पूर्ण झालेले group नामजप';
+  String get groupNamjapRecentlyCompleted => 'नुकतेच पूर्ण झालेले Group नामजप';
 
   @override
-  String get groupNamjapOngoing => 'सुरू असलेले group नामजप';
+  String get groupNamjapOngoing => 'सुरू असलेले Group नामजप';
 
   @override
-  String get groupNamjapUpcoming => 'आगामी group नामजप';
+  String get groupNamjapUpcoming => 'आगामी Group नामजप';
 
   @override
   String get groupNamjapNoOngoing => 'सध्या कोणतेही सक्रिय group नामजप नाहीत';
@@ -4172,7 +4172,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get groupNamjapEventDetails => 'तपशील';
 
   @override
-  String get groupNamjapJoinCode => 'join code';
+  String get groupNamjapJoinCode => 'Join Code';
 
   @override
   String get groupNamjapProgress => 'प्रगती';
@@ -4184,10 +4184,10 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get groupNamjapNoParticipants => 'अद्याप कोणीही सहभागी झालेले नाही.';
 
   @override
-  String get groupNamjapNameEn => 'event चे नाव (इंग्रजी)';
+  String get groupNamjapNameEn => 'Event चे नाव (इंग्रजी)';
 
   @override
-  String get groupNamjapNameMr => 'event चे नाव (मराठी)';
+  String get groupNamjapNameMr => 'Event चे नाव (मराठी)';
 
   @override
   String get groupNamjapSankalpEn => 'संकल्प (इंग्रजी)';
@@ -4205,7 +4205,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get groupNamjapEndDate => 'शेवटची तारीख';
 
   @override
-  String get groupNamjapCreateSuccess => 'group नामजप यशस्वीरित्या तयार झाला!';
+  String get groupNamjapCreateSuccess => 'Group नामजप यशस्वीरित्या तयार झाला!';
 
   @override
   String get groupNamjapRequired => 'आवश्यक';
@@ -4235,43 +4235,43 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get groupNamjapQuickActions => 'त्वरित कृती';
 
   @override
-  String get groupNamjapShare => 'नामजप share करा';
+  String get groupNamjapShare => 'नामजप Share करा';
 
   @override
-  String get groupNamjapExportStatus => 'status export करा';
+  String get groupNamjapExportStatus => 'Status Export करा';
 
   @override
   String get groupNamjapSankalpLabel => 'संकल्प';
 
   @override
-  String get groupNamjapStatusLabel => 'नामजप status';
+  String get groupNamjapStatusLabel => 'नामजप Status';
 
   @override
-  String get groupNamjapEventNotFound => 'event सापडला नाही';
+  String get groupNamjapEventNotFound => 'Event सापडला नाही';
 
   @override
-  String get groupNamjapFailedToCapture => 'screenshot capture करण्यात अयशस्वी';
+  String get groupNamjapFailedToCapture => 'Screenshot capture करण्यात अयशस्वी';
 
   @override
-  String get groupNamjapStatusExport => 'नामजप status';
+  String get groupNamjapStatusExport => 'नामजप Status';
 
   @override
   String get groupNamjapSharePrefix => 'नामजपमध्ये सामील व्हा';
 
   @override
-  String get groupNamjapShareLinkPrefix => 'link';
+  String get groupNamjapShareLinkPrefix => 'Link';
 
   @override
   String get groupNamjapTableColName => 'नाव';
 
   @override
-  String get groupNamjapTableColPhone => 'phone';
+  String get groupNamjapTableColPhone => 'Phone';
 
   @override
   String get groupNamjapTableColTotalChants => 'नामजप';
 
   @override
-  String get signUp => 'sign-up करा';
+  String get signUp => 'Sign-Up करा';
 
   @override
   String get totalCountLabel => 'एकूण जप';
@@ -4280,7 +4280,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get myTotalLabel => 'माझा जप';
 
   @override
-  String get manualEntryLabel => 'नामजप count add करा';
+  String get manualEntryLabel => 'नामजप Count Add करा';
 
   @override
   String get mantraLabel => 'मंत्र';
@@ -4290,7 +4290,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String groupNamjapSubmitCount(String count) {
-    return 'नामजप submit करा: $count';
+    return 'नामजप Submit करा: $count';
   }
 
   @override
@@ -4306,26 +4306,26 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get memberName => 'सदस्याचे नाव';
 
   @override
-  String get phone => 'phone number';
+  String get phone => 'Phone Number';
 
   @override
   String get fieldRequired => 'ही माहिती भरणे आवश्यक आहे';
 
   @override
-  String get deleteSignupSuccess => 'sign-up यशस्वीरित्या delete झाले';
+  String get deleteSignupSuccess => 'Sign-up यशस्वीरित्या delete झाले';
 
   @override
-  String get editLabel => 'sign-up बदला';
+  String get editLabel => 'Sign-up बदला';
 
   @override
-  String get updateLabel => 'sign-up update करा';
+  String get updateLabel => 'Sign-up Update करा';
 
   @override
   String get deleteSignupConfirmMessageNamjap =>
       'तुम्ही खात्रीने या नामजपासाठी तुमचे sign-up delete करू इच्छिता?';
 
   @override
-  String get groupNamjapTimezone => 'timezone';
+  String get groupNamjapTimezone => 'Timezone';
 
   @override
   String get upcomingActiveTab => 'आगामी / सक्रिय';
@@ -4337,90 +4337,90 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get next => 'पुढील';
 
   @override
-  String get home => 'home';
+  String get home => 'Home';
 
   @override
-  String get manageGroups => 'groups manage करा';
+  String get manageGroups => 'Groups Manage करा';
 
   @override
-  String get activeGroups => 'तुमचे groups';
+  String get activeGroups => 'तुमचे Groups';
 
   @override
-  String get availableGroups => 'उपलब्ध असलेले groups';
+  String get availableGroups => 'उपलब्ध असलेले Groups';
 
   @override
-  String get dragToReorder => 'groups क्रमवार लावण्यासाठी long press करा';
+  String get dragToReorder => 'Groups क्रमवार लावण्यासाठी Long press करा';
 
   @override
   String get noActiveGroups =>
       'तुम्ही कोणतेही group निवडले नाही. खालील groups मधून निवडा';
 
   @override
-  String get groupAdded => 'group add झाला';
+  String get groupAdded => 'Group add झाला';
 
   @override
-  String get groupRemoved => 'group काढला';
+  String get groupRemoved => 'Group काढला';
 
   @override
   String get onboardingWelcome => 'श्री गजानन महाराज सेवेकरी';
 
   @override
   String get onboardingDescription =>
-      'तुमच्या group चे पारायण आणि नामजप पाहण्यासाठी/सहभागी होण्यासाठी, कृपया तुमच्याशी संबंधित गजानन महाराज group निवडा. तुम्ही हे नंतर कधीही settings मध्ये बदलू शकता.';
+      'तुमच्या group चे पारायण आणि नामजप पाहण्यासाठी/सहभागी होण्यासाठी, कृपया तुमच्याशी संबंधित गजानन महाराज group निवडा. तुम्ही हे नंतर कधीही Settings मध्ये बदलू शकता.';
 
   @override
-  String get finishOnboarding => 'save करा';
+  String get finishOnboarding => 'Save करा';
 
   @override
-  String get swipeHint => 'इतर groups साठी swipe करा';
+  String get swipeHint => 'इतर groups साठी Swipe करा';
 
   @override
   String get noParayanGroupsSelectedMessage =>
-      'कृपया पारायण पाहण्यासाठी/सहभागी होण्यासाठी settings -> groups manage करा मधून एक किंवा अधिक groups निवडा. जय गजानन 🙏🏻';
+      'कृपया पारायण पाहण्यासाठी/सहभागी होण्यासाठी Settings -> groups Manage करा मधून एक किंवा अधिक Groups निवडा. जय गजानन 🙏🏻';
 
   @override
   String get noNamjapGroupsSelectedMessage =>
-      'कृपया group नामजप पाहण्यासाठी/सहभागी होण्यासाठी settings -> groups manage करा मधून एक किंवा अधिक groups निवडा. जय गजानन 🙏🏻';
+      'कृपया Group नामजप पाहण्यासाठी/सहभागी होण्यासाठी Settings -> groups Manage करा मधून एक किंवा अधिक Groups निवडा. जय गजानन 🙏🏻';
 
   @override
-  String get manageGroupAdminsModuleTitle => 'manage group admins';
+  String get manageGroupAdminsModuleTitle => 'Manage Group Admins';
 
   @override
-  String get manageGroupAdminsModuleSubtitle => 'group admins manage करा';
+  String get manageGroupAdminsModuleSubtitle => 'Group admins manage करा';
 
   @override
-  String get manageGroupAdminsTitle => 'manage group admins';
+  String get manageGroupAdminsTitle => 'Manage Group Admins';
 
   @override
-  String get addGroupAdminTitle => 'group admin add करा';
+  String get addGroupAdminTitle => 'Group Admin Add करा';
 
   @override
-  String get adminEmailLabel => 'admin email';
+  String get adminEmailLabel => 'Admin Email';
 
   @override
-  String get rolesLabel => 'roles';
+  String get rolesLabel => 'Roles';
 
   @override
-  String get addAdminButton => 'admin add करा';
+  String get addAdminButton => 'Admin Add करा';
 
   @override
   String get deleteAdminConfirm =>
       'तुम्हाला खात्री आहे की तुम्हाला हा admin काढायचा आहे?';
 
   @override
-  String get adminDeleteSuccess => 'admin यशस्वीरित्या काढला गेला';
+  String get adminDeleteSuccess => 'Admin यशस्वीरित्या काढला गेला';
 
   @override
-  String get adminAddSuccess => 'admin यशस्वीरित्या add झाला';
+  String get adminAddSuccess => 'Admin यशस्वीरित्या add झाला';
 
   @override
-  String get selectGroupLabel => 'group निवडा';
+  String get selectGroupLabel => 'Group निवडा';
 
   @override
-  String get delete => 'delete करा';
+  String get delete => 'Delete करा';
 
   @override
-  String get adminGroupLabel => 'group';
+  String get adminGroupLabel => 'Group';
 
   @override
   String get errorLabel => 'त्रुटी';
@@ -4429,22 +4429,22 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get noAdminsFound => 'कोणतेही admin सापडले नाहीत';
 
   @override
-  String get roleSuperAdmin => 'super admin';
+  String get roleSuperAdmin => 'Super Admin';
 
   @override
-  String get roleGroupAdmin => 'group admin';
+  String get roleGroupAdmin => 'Group Admin';
 
   @override
-  String get roleParayanCoordinator => 'पारायण admin';
+  String get roleParayanCoordinator => 'पारायण Admin';
 
   @override
-  String get roleNamjapCoordinator => 'नामजप admin';
+  String get roleNamjapCoordinator => 'नामजप Admin';
 
   @override
-  String get roleVaariCoordinator => 'वारी admin';
+  String get roleVaariCoordinator => 'वारी Admin';
 
   @override
-  String get roleSignupCoordinator => 'sign-up समन्वयक';
+  String get roleSignupCoordinator => 'Sign-Up समन्वयक';
 
   @override
   String get atLeastOneRoleRequired => 'किमान एक role निवडणे आवश्यक आहे';
@@ -4453,25 +4453,25 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get groupRequired => 'कृपया एक group निवडा';
 
   @override
-  String get savingLabel => 'save करत आहे...';
+  String get savingLabel => 'Save करत आहे...';
 
   @override
-  String get editAdminTitle => 'admin संपादन करा';
+  String get editAdminTitle => 'Admin संपादन करा';
 
   @override
-  String get updateAdminButton => 'admin update करा';
+  String get updateAdminButton => 'Admin Update करा';
 
   @override
-  String get deleteAdminButton => 'admin delete करा';
+  String get deleteAdminButton => 'Admin Delete करा';
 
   @override
-  String get adminAlreadyExists => 'या email चा admin आधीच अस्तित्वात आहे';
+  String get adminAlreadyExists => 'या email चा Admin आधीच अस्तित्वात आहे';
 
   @override
-  String get adminUpdateSuccess => 'admin यशस्वीरित्या update झाला';
+  String get adminUpdateSuccess => 'Admin यशस्वीरित्या update झाला';
 
   @override
-  String get adminNamjapGroupTitle => 'नामजप groups';
+  String get adminNamjapGroupTitle => 'नामजप Groups';
 
   @override
   String get updatingStatus => 'स्थिती update होत आहे...';
@@ -4487,7 +4487,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get discardLabel => 'रद्द करा';
 
   @override
-  String get createParayanWithAllocation => 'allocation सह पारायण तयार करा';
+  String get createParayanWithAllocation => 'Allocation सह पारायण तयार करा';
 
   @override
   String get selectLastParayan => 'मागील पारायण निवडा';
@@ -4496,7 +4496,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get lastParayanLabel => 'मागील पारायण';
 
   @override
-  String get createWithAllocationButton => 'तयार करा आणि allocate करा';
+  String get createWithAllocationButton => 'तयार करा आणि Allocate करा';
 
   @override
   String get duplicateDateError => 'या तारखेसाठी पारायण आधीच अस्तित्वात आहे.';
@@ -4510,18 +4510,18 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String createParayanSuccess(String title) {
-    return 'allocation सह पारायण \"$title\" यशस्वीरीत्या तयार केले आहे.';
+    return 'Allocation सह पारायण \"$title\" यशस्वीरीत्या तयार केले आहे.';
   }
 
   @override
   String get noPreviousParayansFound =>
-      'copy करण्यासाठी मागील गुंजन पारायण सापडले नाहीत.';
+      'Copy करण्यासाठी मागील गुंजन पारायण सापडले नाहीत.';
 
   @override
   String get failedToCreateParayan => 'पारायण तयार करण्यात अयशस्वी.';
 
   @override
-  String get missingAdminError => 'admin परवानगी नाही.';
+  String get missingAdminError => 'Admin परवानगी नाही.';
 
   @override
   String parayanCreatedSuccess(String title) {
@@ -4533,7 +4533,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'अंतिम तारीख आणि वेळ सुरुवातीच्या तारीख आणि वेळेनंतर असणे आवश्यक आहे.';
 
   @override
-  String get timezoneLabel => 'timezone';
+  String get timezoneLabel => 'Timezone';
 
   @override
   String get timezoneSeattle => 'Seattle (Pacific वेळ)';
@@ -4543,24 +4543,24 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get groupIdRequiredError =>
-      'पारायण event तयार करण्यासाठी group ID आवश्यक आहे.';
+      'पारायण event तयार करण्यासाठी Group ID आवश्यक आहे.';
 
   @override
-  String get missingParayanGroupError => 'missing पारायण group';
+  String get missingParayanGroupError => 'Missing पारायण Group';
 
   @override
   String get navigateFromDashboardPrompt =>
       'कृपया एका विशिष्ट group coordination dashboard वरून navigate करा.';
 
   @override
-  String get failedToUpdateStatus => 'event status update करण्यात अयशस्वी.';
+  String get failedToUpdateStatus => 'Event status update करण्यात अयशस्वी.';
 
   @override
   String get failedToUpdateCompletion =>
-      'event पूर्णता update करण्यात अयशस्वी.';
+      'Event पूर्णता update करण्यात अयशस्वी.';
 
   @override
-  String get failedToExport => 'groups export करण्यात अयशस्वी.';
+  String get failedToExport => 'Groups export करण्यात अयशस्वी.';
 
   @override
   String get vaariTitle => 'वारी';
@@ -4581,7 +4581,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get noSignupsGroupsSelectedMessage =>
-      'sign ups पाहण्यासाठी कृपया एक group निवडा.';
+      'Sign Ups पाहण्यासाठी कृपया एक group निवडा.';
 
   @override
   String get vaariStepsSuffix => ' steps';
@@ -4600,10 +4600,10 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'वारी events उघडता आले नाहीत: group निवडलेला नाही.';
 
   @override
-  String get vaariEventDetails => 'event तपशील';
+  String get vaariEventDetails => 'Event तपशील';
 
   @override
-  String get vaariEventNotFound => 'event सापडला नाही';
+  String get vaariEventNotFound => 'Event सापडला नाही';
 
   @override
   String get deleteSignupConfirmMessageVaari =>
@@ -4613,7 +4613,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get descriptionLabel => 'वर्णन';
 
   @override
-  String get totalStepsLabel => 'एकूण steps';
+  String get totalStepsLabel => 'एकूण Steps';
 
   @override
   String get totalDistanceLabel => 'एकूण अंतर';
@@ -4625,10 +4625,10 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get vaariTotalParticipants => 'सहभागी';
 
   @override
-  String get addStepsLabel => 'steps add करा';
+  String get addStepsLabel => 'Steps Add करा';
 
   @override
-  String get addStepsOrDistanceTitle => 'steps / अंतर add करा';
+  String get addStepsOrDistanceTitle => 'Steps / अंतर Add करा';
 
   @override
   String estimatedDistance(String distance, String unit) {
@@ -4641,7 +4641,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   }
 
   @override
-  String get stepsLabel => 'steps';
+  String get stepsLabel => 'Steps';
 
   @override
   String distanceOptionalLabel(String unit) {
@@ -4649,10 +4649,10 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   }
 
   @override
-  String get stepsSubmittedSuccess => 'steps यशस्वीरित्या submit केल्या';
+  String get stepsSubmittedSuccess => 'Steps यशस्वीरित्या submit केल्या';
 
   @override
-  String get adminVaariDashboardTitle => 'वारी dashboard';
+  String get adminVaariDashboardTitle => 'वारी Dashboard';
 
   @override
   String get adminVaariGroupTitle => 'वारीसाठी गट निवडा';
@@ -4661,11 +4661,11 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get adminVaariModuleSubtitle => 'वारी तयार करा, सहभागी आणि steps पहा';
 
   @override
-  String get adminSignupGroupTitle => 'sign upsसाठी गट निवडा';
+  String get adminSignupGroupTitle => 'Sign Upsसाठी गट निवडा';
 
   @override
   String get adminSignupsModuleSubtitle =>
-      'sign ups तयार करा आणि व्यवस्थापित करा';
+      'Sign ups तयार करा आणि व्यवस्थापित करा';
 
   @override
   String get createVaariTitle => 'वारी तयार करा';
@@ -4699,13 +4699,13 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get adminVaariSharePrefix => 'आमच्या वारीमध्ये सामील व्हा';
 
   @override
-  String get adminVaariJoinCode => 'सामील होण्याचा code';
+  String get adminVaariJoinCode => 'सामील होण्याचा Code';
 
   @override
   String get adminVaariShareLinkPrefix => 'या link द्वारे सामील व्हा';
 
   @override
-  String get adminVaariTotalSteps => 'एकूण steps';
+  String get adminVaariTotalSteps => 'एकूण STEPS';
 
   @override
   String get adminVaariTotalDistance => 'एकूण अंतर';
@@ -4723,10 +4723,10 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get adminVaariTargetDistancePrefix => 'सामूहिक लक्ष्य: ';
 
   @override
-  String get adminVaariNameEnLabel => 'event चे नाव (इंग्रजी)';
+  String get adminVaariNameEnLabel => 'Event चे नाव (इंग्रजी)';
 
   @override
-  String get adminVaariNameMrLabel => 'event चे नाव (मराठी)';
+  String get adminVaariNameMrLabel => 'Event चे नाव (मराठी)';
 
   @override
   String get adminVaariDescEnLabel => 'वर्णन (इंग्रजी)';
@@ -4742,24 +4742,24 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'कृपया योग्य सकारात्मक संख्या टाका';
 
   @override
-  String get adminVaariSaveEvent => 'save करा';
+  String get adminVaariSaveEvent => 'Save करा';
 
   @override
-  String get copyTooltip => 'copy करा';
+  String get copyTooltip => 'Copy करा';
 
   @override
-  String get shareLinkTooltip => 'link share करा';
+  String get shareLinkTooltip => 'Link Share करा';
 
   @override
   String get adminVaariStatusUpdateError =>
-      'status update करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+      'Status update करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
   String get adminVaariShareError =>
-      'share करता आले नाही. कृपया पुन्हा प्रयत्न करा.';
+      'Share करता आले नाही. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get adminVaariLoadError => 'data load करण्यात त्रुटी';
+  String get adminVaariLoadError => 'Data load करण्यात त्रुटी';
 
   @override
   String get vaariRouteProgressLabel => 'मार्गातील प्रगती';
@@ -4801,7 +4801,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get vaariAddStepsError =>
-      'steps add करण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.';
+      'Steps add करण्यात त्रुटी आली. कृपया पुन्हा प्रयत्न करा.';
 
   @override
   String get distanceUnitKilometers => 'किलोमीटर (कि.मी.)';
@@ -4832,16 +4832,16 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get andSeparator => ' आणि ';
 
   @override
-  String get adminCreateSignupTitle => 'sign up तयार करा';
+  String get adminCreateSignupTitle => 'Sign Up तयार करा';
 
   @override
-  String get signupTitleEnLabel => 'title (इंग्रजी)';
+  String get signupTitleEnLabel => 'Title (इंग्रजी)';
 
   @override
   String get signupTitleEnRequired => 'कृपया इंग्रजी title enter करा';
 
   @override
-  String get signupTitleMrLabel => 'title (मराठी, ऐच्छिक)';
+  String get signupTitleMrLabel => 'Title (मराठी, ऐच्छिक)';
 
   @override
   String get signupDescEnLabel => 'वर्णन (इंग्रजी)';
@@ -4851,32 +4851,32 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupRequiresJoinCodeLabel =>
-      'sign up करण्यासाठी join code आवश्यक करा';
+      'Sign up करण्यासाठी join code आवश्यक करा';
 
   @override
-  String get signupSlotsHeading => 'slots';
+  String get signupSlotsHeading => 'Slots';
 
   @override
-  String get signupAddSlotButton => 'slot   add करा';
+  String get signupAddSlotButton => 'Slot   Add करा';
 
   @override
   String get signupNoSlotsMessage =>
-      'अजून slots नाहीत. एक तयार करण्यासाठी \"slot add करा\" दाबा.';
+      'अजून slots नाहीत. एक तयार करण्यासाठी \"Slot Add करा\" दाबा.';
 
   @override
   String get signupSlotsRequiredError => 'कृपया किमान एक slot add करा';
 
   @override
-  String get signupSlotHeading => 'slot';
+  String get signupSlotHeading => 'Slot';
 
   @override
-  String get signupSlotLabelEnLabel => 'slot label (इंग्रजी)';
+  String get signupSlotLabelEnLabel => 'Slot Label (इंग्रजी)';
 
   @override
   String get signupSlotLabelEnRequired => 'कृपया इंग्रजी label enter करा';
 
   @override
-  String get signupSlotLabelMrLabel => 'slot label (मराठी, ऐच्छिक)';
+  String get signupSlotLabelMrLabel => 'Slot Label (मराठी, ऐच्छिक)';
 
   @override
   String get signupSlotCapacityLabel => 'क्षमता';
@@ -4894,51 +4894,51 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get signupSlotSuggestedAmountInvalid => 'कृपया valid रक्कम enter करा';
 
   @override
-  String get signupSlotSetDateLabel => 'तारीख set करा';
+  String get signupSlotSetDateLabel => 'तारीख Set करा';
 
   @override
   String get signupSlotNoDateLabel => 'तारीख set केलेली नाही';
 
   @override
-  String get signupRemoveSlotTooltip => 'slot remove करा';
+  String get signupRemoveSlotTooltip => 'Slot Remove करा';
 
   @override
-  String get signupMoveSlotUpTooltip => 'slot वर हलवा';
+  String get signupMoveSlotUpTooltip => 'Slot वर हलवा';
 
   @override
-  String get signupMoveSlotDownTooltip => 'slot खाली हलवा';
+  String get signupMoveSlotDownTooltip => 'Slot खाली हलवा';
 
   @override
-  String get signupSaveButton => 'save करा';
+  String get signupSaveButton => 'Save करा';
 
   @override
-  String get signupHeaderImageLabel => 'header image';
+  String get signupHeaderImageLabel => 'Header Image';
 
   @override
-  String get signupAddImageButton => 'image add करा';
+  String get signupAddImageButton => 'Image Add करा';
 
   @override
-  String get signupReplaceImageButton => 'image बदला';
+  String get signupReplaceImageButton => 'Image बदला';
 
   @override
-  String get signupRemoveImageButton => 'image remove करा';
+  String get signupRemoveImageButton => 'Image Remove करा';
 
   @override
-  String get signupImageTooLargeError => 'image 2 MB पेक्षा लहान असावी';
+  String get signupImageTooLargeError => 'Image 2 MB पेक्षा लहान असावी';
 
   @override
   String get signupImageUploadError =>
-      'image upload करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+      'Image upload करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
   String get signupUploadingImage => 'कृपया थांबा...';
 
   @override
   String get signupImageRemoveError =>
-      'image काढण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+      'Image काढण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get signupRemoveImageConfirmTitle => 'image remove करायची आहे का?';
+  String get signupRemoveImageConfirmTitle => 'Image Remove करायची आहे का?';
 
   @override
   String get signupRemoveImageConfirmMessage =>
@@ -4949,26 +4949,26 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       '॥ अनंत कोटी ब्रह्मांडनायक गजानन महाराज की जय ॥';
 
   @override
-  String get signupCreateSuccess => 'sign up यशस्वीरित्या तयार झाले';
+  String get signupCreateSuccess => 'Sign up यशस्वीरित्या तयार झाले';
 
   @override
   String get signupCreateError =>
-      'sign up तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+      'Sign up तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get adminSignupsDashboardTitle => 'sign ups';
+  String get adminSignupsDashboardTitle => 'Sign Ups';
 
   @override
-  String get signupStatusLabel => 'status';
+  String get signupStatusLabel => 'STATUS';
 
   @override
   String get signupStatusAll => 'सर्व';
 
   @override
-  String get signupStatusDraft => 'draft';
+  String get signupStatusDraft => 'Draft';
 
   @override
-  String get signupStatusPublished => 'published';
+  String get signupStatusPublished => 'Published';
 
   @override
   String get signupStatusClosed => 'बंद';
@@ -4978,88 +4978,88 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupNoGroupAssigned =>
-      'admin साठी कोणताही group assign केलेला नाही';
+      'Admin साठी कोणताही group assign केलेला नाही';
 
   @override
   String get adminSignupsError =>
-      'sign ups load करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+      'Sign ups load करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get signupCreateTooltip => 'sign up तयार करा';
+  String get signupCreateTooltip => 'Sign Up तयार करा';
 
   @override
-  String get signupRequiresJoinCodeBadge => 'join code आवश्यक';
+  String get signupRequiresJoinCodeBadge => 'Join Code आवश्यक';
 
   @override
-  String get signupJoinCodePrefix => 'join code: ';
+  String get signupJoinCodePrefix => 'Join Code: ';
 
   @override
-  String get adminSignupDetailTitle => 'sign up details';
+  String get adminSignupDetailTitle => 'Sign Up Details';
 
   @override
-  String get signupDuplicateButton => 'duplicate करा';
+  String get signupDuplicateButton => 'Duplicate करा';
 
   @override
-  String get signupDuplicating => 'sign up duplicate करत आहे...';
+  String get signupDuplicating => 'Sign up duplicate करत आहे...';
 
   @override
-  String get signupDuplicateSuccess => 'sign up duplicate यशस्वी झाले';
+  String get signupDuplicateSuccess => 'Sign up duplicate यशस्वी झाले';
 
   @override
-  String get signupDuplicateError => 'sign up duplicate करण्यात अयशस्वी';
+  String get signupDuplicateError => 'Sign up duplicate करण्यात अयशस्वी';
 
   @override
-  String get signupDeleteButton => 'delete करा';
+  String get signupDeleteButton => 'Delete करा';
 
   @override
-  String get signupDeleteConfirmTitle => 'sign up delete करायचे आहे का?';
+  String get signupDeleteConfirmTitle => 'Sign Up Delete करायचे आहे का?';
 
   @override
   String get signupDeleteConfirmMessage =>
       'हे sign up, त्यातील सर्व slot, entry आणि header image कायमची delete होईल. हे पूर्ववत करता येणार नाही.';
 
   @override
-  String get signupDeleteSuccess => 'sign up delete झाले';
+  String get signupDeleteSuccess => 'Sign up delete झाले';
 
   @override
   String get signupDeleteError =>
-      'sign up delete करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+      'Sign up delete करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get signupShareButton => 'share';
+  String get signupShareButton => 'Share';
 
   @override
-  String get signupExportButton => 'summary export';
+  String get signupExportButton => 'Summary Export';
 
   @override
-  String get signupExporting => 'summary तयार करत आहे...';
+  String get signupExporting => 'Summary तयार करत आहे...';
 
   @override
-  String get signupSharePrefix => 'sign up';
+  String get signupSharePrefix => 'Sign Up';
 
   @override
-  String get signupShareLinkPrefix => 'sign up link';
+  String get signupShareLinkPrefix => 'Sign up link';
 
   @override
-  String get signupStatusUpdateError => 'status update करण्यात अयशस्वी';
+  String get signupStatusUpdateError => 'Status update करण्यात अयशस्वी';
 
   @override
-  String get signupCopyJoinCodeTooltip => 'join code copy करा';
+  String get signupCopyJoinCodeTooltip => 'Join Code Copy करा';
 
   @override
-  String get signupDateRange => 'तारीख range';
+  String get signupDateRange => 'तारीख Range';
 
   @override
-  String get signupSlotsSectionHeading => 'slots आणि entries';
+  String get signupSlotsSectionHeading => 'Slots आणि Entries';
 
   @override
   String get signupAddEntryButton => 'भाविक जोडा';
 
   @override
-  String get signupEditEntryTitle => 'entry edit करा';
+  String get signupEditEntryTitle => 'Entry Edit करा';
 
   @override
-  String get signupAddEntryTitle => 'भाविकची entry जोडा';
+  String get signupAddEntryTitle => 'भाविकची Entry जोडा';
 
   @override
   String get signupEntryNameLabel => 'नाव';
@@ -5068,29 +5068,29 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get signupEntryNameRequired => 'कृपया नाव enter करा';
 
   @override
-  String get signupEntryPhoneLabel => 'phone';
+  String get signupEntryPhoneLabel => 'Phone';
 
   @override
-  String get signupEntryEmailLabel => 'email';
+  String get signupEntryEmailLabel => 'Email';
 
   @override
-  String get signupEntryNoteLabel => 'note';
+  String get signupEntryNoteLabel => 'Note';
 
   @override
   String get signupEntryPledgeLabel => 'संकल्पित रक्कम';
 
   @override
-  String get signupRemoveEntryTitle => 'entry काढा';
+  String get signupRemoveEntryTitle => 'Entry काढा';
 
   @override
   String get signupRemoveEntryConfirm =>
       'तुम्हाला ही entry नक्की काढायची आहे का?';
 
   @override
-  String get signupEntryRemoveSuccess => 'entry यशस्वीरित्या काढली';
+  String get signupEntryRemoveSuccess => 'Entry यशस्वीरित्या काढली';
 
   @override
-  String get signupEntryRemoveError => 'entry काढण्यात अयशस्वी';
+  String get signupEntryRemoveError => 'Entry काढण्यात अयशस्वी';
 
   @override
   String get signupEntryAddSuccess => 'भाविक add केले';
@@ -5099,16 +5099,16 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get signupEntryAddError => 'भाविक add करण्यात अयशस्वी';
 
   @override
-  String get signupEntryEditSuccess => 'entry यशस्वीरित्या update केली';
+  String get signupEntryEditSuccess => 'Entry यशस्वीरित्या update केली';
 
   @override
-  String get signupEntryEditError => 'entry update करण्यात अयशस्वी';
+  String get signupEntryEditError => 'Entry update करण्यात अयशस्वी';
 
   @override
   String get signupSlotFullError => 'हा slot पूर्ण भरला आहे';
 
   @override
-  String get signupSlotFullBadge => 'slot पूर्ण';
+  String get signupSlotFullBadge => 'Slot पूर्ण';
 
   @override
   String signupSlotClaimedCount(String claimed, String capacity) {
@@ -5125,25 +5125,25 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
       'या slot साठी अद्याप कोणत्याही भाविकाने sign up केलेले नाही';
 
   @override
-  String get signupExportSummaryTitle => 'sign up सारांश';
+  String get signupExportSummaryTitle => 'Sign Up सारांश';
 
   @override
-  String get signupTotalSlotsLabel => 'एकूण slots';
+  String get signupTotalSlotsLabel => 'एकूण Slots';
 
   @override
-  String get signupTotalClaimsLabel => 'एकूण sign-ups';
+  String get signupTotalClaimsLabel => 'एकूण Sign-ups';
 
   @override
   String get signupFillPercentageLabel => 'भरलेले';
 
   @override
-  String get signupExportFailed => 'image export करण्यात अयशस्वी';
+  String get signupExportFailed => 'Image export करण्यात अयशस्वी';
 
   @override
-  String get signupNotFound => 'sign up सापडले नाही';
+  String get signupNotFound => 'Sign up सापडले नाही';
 
   @override
-  String get signupsListTitle => 'sign ups';
+  String get signupsListTitle => 'Sign Ups';
 
   @override
   String get signupInvalidGroupError => 'अवैध group';
@@ -5152,7 +5152,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get signupNoActiveSignups => 'कोणतेही सक्रिय sign up नाही';
 
   @override
-  String get signupMySignupsHeading => 'माझे sign-ups';
+  String get signupMySignupsHeading => 'माझे Sign-ups';
 
   @override
   String get signupNoMySignups => 'आपण अद्याप कशासाठीही sign up केलेले नाही';
@@ -5161,34 +5161,34 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get signupCancelSignupButton => 'रद्द करा';
 
   @override
-  String get signupCancelSignupConfirmTitle => 'sign-up रद्द करायचे?';
+  String get signupCancelSignupConfirmTitle => 'Sign-up रद्द करायचे?';
 
   @override
   String get signupCancelSignupConfirmMessage =>
       'आपल्याला हे sign-up रद्द करायचे आहे याची खात्री आहे का?';
 
   @override
-  String get signupCancelSignupSuccess => 'sign-up रद्द केले';
+  String get signupCancelSignupSuccess => 'Sign-up रद्द केले';
 
   @override
   String get signupCancelSignupError =>
-      'sign-up रद्द करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+      'Sign-up रद्द करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
-  String get signupClaimSlotTitle => 'slot claim करा';
+  String get signupClaimSlotTitle => 'Slot Claim करा';
 
   @override
-  String get signupClaimConfirmTitle => 'sign-up confirm करा';
+  String get signupClaimConfirmTitle => 'Sign-up Confirm करा';
 
   @override
-  String get signupClaimConfirmQuestion => 'हे sign-up submit करायचे?';
+  String get signupClaimConfirmQuestion => 'हे sign-up Submit करायचे?';
 
   @override
   String get signupClaimSuccess => 'तुम्ही sign up केले आहे!';
 
   @override
   String get signupClaimError =>
-      'slot claim करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
+      'Slot claim करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.';
 
   @override
   String get signupDuplicateEntryError =>
@@ -5201,16 +5201,16 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get signupPastTab => 'मागील';
 
   @override
-  String get signupEntriesHeading => 'entries';
+  String get signupEntriesHeading => 'Entries';
 
   @override
   String get signupEntriesEmptyMessage => 'अद्याप कोणीही sign up केलेले नाही';
 
   @override
-  String get signupEntriesTitleColumn => 'title';
+  String get signupEntriesTitleColumn => 'Title';
 
   @override
-  String get signupEntriesAvailableSlotsColumn => 'उपलब्ध slots';
+  String get signupEntriesAvailableSlotsColumn => 'उपलब्ध Slots';
 
   @override
   String get signupNoSlotsInTabMessage => 'इथे कोणतेही slots नाहीत';
