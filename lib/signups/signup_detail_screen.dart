@@ -382,38 +382,57 @@ class _EntriesTable extends StatelessWidget {
         return a.name.compareTo(b.name);
       });
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
-        columns: [
-          DataColumn(label: Text(l10n.date)),
-          DataColumn(label: Text(l10n.signupEntriesTitleColumn)),
-          DataColumn(label: Text(l10n.name)),
-          DataColumn(label: Text(l10n.signupEntriesAvailableSlotsColumn)),
-        ],
-        rows: [
-          for (final entry in rows)
-            DataRow(
-              cells: [
-                DataCell(
-                  Text(
-                    slotsById[entry.slotId]?.date != null
-                        ? formatDateShort(
-                            slotsById[entry.slotId]!.date!,
-                            langCode,
-                          )
-                        : '-',
-                  ),
-                ),
-                DataCell(Text(_slotLabel(slotsById[entry.slotId]))),
-                DataCell(Text(entry.name)),
-                DataCell(Text(_availableSlots(slotsById[entry.slotId]))),
-              ],
-            ),
-        ],
+    final headerStyle = theme.textTheme.labelLarge?.copyWith(
+      fontWeight: FontWeight.bold,
+    );
+    final cellStyle = theme.textTheme.bodyMedium;
+
+    // A Table rather than a DataTable: columns share the screen width and
+    // their text wraps, instead of the table growing wider than the screen.
+    return Table(
+      columnWidths: const {
+        0: FlexColumnWidth(2),
+        1: FlexColumnWidth(3),
+        2: FlexColumnWidth(3),
+        3: FlexColumnWidth(2),
+      },
+      border: TableBorder(
+        horizontalInside: BorderSide(
+          color: theme.dividerColor.withValues(alpha: 0.5),
+        ),
+        bottom: BorderSide(color: theme.dividerColor.withValues(alpha: 0.5)),
       ),
+      children: [
+        TableRow(
+          children: [
+            _cell(l10n.date, headerStyle),
+            _cell(l10n.signupEntriesTitleColumn, headerStyle),
+            _cell(l10n.name, headerStyle),
+            _cell(l10n.signupEntriesAvailableSlotsColumn, headerStyle),
+          ],
+        ),
+        for (final entry in rows)
+          TableRow(
+            children: [
+              _cell(
+                slotsById[entry.slotId]?.date != null
+                    ? formatDateShort(slotsById[entry.slotId]!.date!, langCode)
+                    : '-',
+                cellStyle,
+              ),
+              _cell(_slotLabel(slotsById[entry.slotId]), cellStyle),
+              _cell(entry.name, cellStyle),
+              _cell(_availableSlots(slotsById[entry.slotId]), cellStyle),
+            ],
+          ),
+      ],
     );
   }
+
+  Widget _cell(String text, TextStyle? style) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+    child: Text(text, style: style),
+  );
 
   String _slotLabel(SignupSlot? slot) {
     if (slot == null) return '';

@@ -292,11 +292,13 @@ void main() {
       // Rows are sorted by slot date (slot3's null date sorts last, slot1
       // and slot4 tie on date and fall back to comparing names) - verifies
       // every branch of the comparator.
-      final dataTable = tester.widget<DataTable>(find.byType(DataTable));
-      final rows = dataTable.rows
+      final table = tester.widget<Table>(find.byType(Table));
+      final rows = table.children
+          .skip(1) // header row
           .map(
-            (row) =>
-                row.cells.map((cell) => (cell.child as Text).data).toList(),
+            (row) => row.children
+                .map((cell) => ((cell as Padding).child! as Text).data)
+                .toList(),
           )
           .toList();
       expect(rows, [
@@ -305,6 +307,50 @@ void main() {
         ['March 15', 'Week 1', 'Jane', '2'], // slot1: 3 capacity - 1 claimed
         ['-', 'Week 3', 'Priya', '0'], // slot3: no date, 1 cap - 1 claimed
       ]);
+    });
+
+    testWidgets('Entries table fits the screen width and wraps long text', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final signupId = await createOpenSignup();
+      final slotId = await service.addSlot(
+        signupId,
+        SignupSlot(
+          labelEn: 'A very long slot title that must wrap onto lines',
+          labelMr: 'x',
+          date: DateTime(2026, 3, 15),
+          capacity: 3,
+          sortOrder: 0,
+          createdAt: DateTime.now(),
+        ),
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'A devotee with a remarkably long full name',
+      );
+
+      await tester.pumpWidget(
+        wrap(
+          SignupDetailScreen(
+            signupId: signupId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // No overflow errors, and the table is no wider than the viewport.
+      expect(tester.takeException(), isNull);
+      expect(tester.getSize(find.byType(Table)).width, lessThanOrEqualTo(360));
+      expect(find.byType(SingleChildScrollView), findsNothing);
     });
 
     testWidgets('shows the Marathi slot label in the Entries table', (
