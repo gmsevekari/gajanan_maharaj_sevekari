@@ -5,6 +5,8 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_entries_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_slots_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_status_section.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_header_image_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_overview_card.dart';
@@ -15,7 +17,6 @@ import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
@@ -291,6 +292,88 @@ void main() {
       });
     });
 
+    group('slots and entries cards', () {
+      Future<String> seedWithSlotAndEntry() async {
+        final now = DateTime.now();
+        final ref = await firestore.collection('signups').add({
+          'titleEn': 'Prasad Seva',
+          'titleMr': '',
+          'groupId': 'gajanan_maharaj_seattle',
+          'status': SignupStatus.published.name,
+          'requiresJoinCode': false,
+          'createdAt': Timestamp.fromDate(now),
+          'updatedAt': Timestamp.fromDate(now),
+          'createdBy': 'admin@test.com',
+        });
+        final slot = await ref.collection('slots').add({
+          'labelEn': 'Morning Seva',
+          'labelMr': '',
+          'capacity': 3,
+          'claimedCount': 1,
+          'sortOrder': 0,
+          'createdAt': Timestamp.fromDate(now),
+        });
+        await ref.collection('entries').add({
+          'slotId': slot.id,
+          'name': 'Ram Das',
+          'joinedAt': Timestamp.fromDate(now),
+        });
+        return ref.id;
+      }
+
+      testWidgets('replace the inline slot and entry lists', (tester) async {
+        await pumpDetailScreen(tester, signupId: await seedWithSlotAndEntry());
+
+        expect(find.text('Slots'), findsOneWidget);
+        expect(find.text('Entries'), findsOneWidget);
+        // Nothing from the slots or entries is listed in the screen body any
+        // more (the hidden export image still contains them).
+        Finder inBody(String text) => find.descendant(
+          of: find.byType(ListView),
+          matching: find.text(text),
+        );
+        expect(inBody('Morning Seva'), findsNothing);
+        expect(inBody('Ram Das'), findsNothing);
+        expect(find.text('Add Devotee'), findsNothing);
+        expect(find.text('Slots & Entries'), findsNothing);
+      });
+
+      testWidgets('open the Slots screen', (tester) async {
+        await pumpDetailScreen(tester, signupId: await seedWithSlotAndEntry());
+
+        await tester.tap(find.text('Slots'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AdminSignupSlotsScreen), findsOneWidget);
+        expect(find.text('Morning Seva'), findsOneWidget);
+        expect(find.text('Add Devotee'), findsOneWidget);
+      });
+
+      testWidgets('open the Entries screen', (tester) async {
+        await pumpDetailScreen(tester, signupId: await seedWithSlotAndEntry());
+
+        await tester.tap(find.text('Entries'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AdminSignupEntriesScreen), findsOneWidget);
+        expect(find.text('Ram Das'), findsOneWidget);
+      });
+
+      testWidgets('sit below the actions', (tester) async {
+        await pumpDetailScreen(tester, signupId: await seedWithSlotAndEntry());
+
+        final actions = tester.getBottomLeft(find.text('Export Summary'));
+        expect(
+          tester.getTopLeft(find.text('Slots')).dy,
+          greaterThan(actions.dy),
+        );
+        expect(
+          tester.getTopLeft(find.text('Entries')).dy,
+          greaterThan(tester.getTopLeft(find.text('Slots')).dy),
+        );
+      });
+    });
+
     testWidgets('renders not found state when signup does not exist', (
       tester,
     ) async {
@@ -514,182 +597,6 @@ void main() {
       expect(duplicateSlots.docs.first.data()['claimedCount'], 0);
     });
 
-    testWidgets('manually adds an entry to a slot via dialog', (tester) async {
-      final now = DateTime.now();
-      final signupRef = await firestore.collection('signups').add({
-        'titleEn': 'Signup 1',
-        'titleMr': 'शीट १',
-        'descriptionEn': '',
-        'descriptionMr': '',
-        'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupStatus.published.name,
-        'requiresJoinCode': false,
-        'createdAt': Timestamp.fromDate(now),
-        'updatedAt': Timestamp.fromDate(now),
-        'createdBy': 'admin@test.com',
-      });
-
-      final slotRef = await signupRef.collection('slots').add({
-        'labelEn': 'Morning Seva',
-        'labelMr': 'सकाळची सेवा',
-        'capacity': 3,
-        'claimedCount': 0,
-        'sortOrder': 0,
-        'createdAt': Timestamp.fromDate(now),
-      });
-
-      await pumpDetailScreen(tester, signupId: signupRef.id);
-
-      expect(find.text('Morning Seva').first, findsOneWidget);
-      expect(find.text('Add Devotee'), findsOneWidget);
-
-      await tester.tap(find.text('Add Devotee'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Add Devotee Entry'), findsOneWidget);
-
-      await tester.enterText(
-        find.byKey(const Key('entryNameField')),
-        'Ram Das',
-      );
-      await tester.enterText(
-        find.byKey(const Key('entryPhoneField')),
-        '5551234567',
-      );
-      await tester.tap(find.text('Save'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Devotee added successfully'), findsOneWidget);
-      expect(find.text('Ram Das'), findsOneWidget);
-
-      // Verify slot claimedCount incremented
-      final slotDoc = await slotRef.get();
-      expect(slotDoc.data()?['claimedCount'], 1);
-
-      // The number is saved with the country code (the group's default).
-      final entries = await signupRef.collection('entries').get();
-      expect(entries.docs.single.data()['phone'], '+15551234567');
-    });
-
-    testWidgets('prefills the sign up group\'s default country code in the '
-        'add dialog', (tester) async {
-      final config = AppConfig(
-        deities: const [],
-        gajananMaharajGroups: [
-          GajananMaharajGroup(
-            id: 'gajanan_maharaj_seattle',
-            nameEn: 'Seattle',
-            nameMr: 'सिॲटल',
-            defaultCountryCode: '+91',
-          ),
-        ],
-        socialMediaLinks: const [],
-        appName: const {},
-        updateMessage: const {},
-        latestVersion: '1.0.0',
-        forceUpdate: 'false',
-        playStoreUrl: '',
-        appStoreUrl: '',
-      );
-      when(() => appConfigProvider.appConfig).thenReturn(config);
-      final now = DateTime.now();
-      final signupRef = await firestore.collection('signups').add({
-        'titleEn': 'Signup 1',
-        'titleMr': 'शीट १',
-        'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupStatus.published.name,
-        'requiresJoinCode': false,
-        'createdAt': Timestamp.fromDate(now),
-        'updatedAt': Timestamp.fromDate(now),
-        'createdBy': 'admin@test.com',
-      });
-      await signupRef.collection('slots').add({
-        'labelEn': 'Morning Seva',
-        'labelMr': 'सकाळची सेवा',
-        'capacity': 3,
-        'claimedCount': 0,
-        'sortOrder': 0,
-        'createdAt': Timestamp.fromDate(now),
-      });
-
-      await pumpDetailScreen(tester, signupId: signupRef.id);
-      await tester.tap(find.text('Add Devotee'));
-      await tester.pumpAndSettle();
-
-      final code = tester.widget<TextFormField>(
-        find.byKey(const Key('entryCountryCodeField')),
-      );
-      expect(code.controller!.text, '+91');
-    });
-
-    testWidgets('edits and removes an entry', (tester) async {
-      final now = DateTime.now();
-      final signupRef = await firestore.collection('signups').add({
-        'titleEn': 'Signup 1',
-        'titleMr': 'शीट १',
-        'descriptionEn': '',
-        'descriptionMr': '',
-        'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupStatus.published.name,
-        'requiresJoinCode': false,
-        'createdAt': Timestamp.fromDate(now),
-        'updatedAt': Timestamp.fromDate(now),
-        'createdBy': 'admin@test.com',
-      });
-
-      final slotRef = await signupRef.collection('slots').add({
-        'labelEn': 'Morning Seva',
-        'labelMr': 'सकाळची सेवा',
-        'capacity': 3,
-        'claimedCount': 1,
-        'sortOrder': 0,
-        'createdAt': Timestamp.fromDate(now),
-      });
-
-      await signupRef.collection('entries').add({
-        'slotId': slotRef.id,
-        'name': 'Old Name',
-        'phone': '1112223333',
-        'joinedAt': Timestamp.fromDate(now),
-      });
-
-      await pumpDetailScreen(tester, signupId: signupRef.id);
-
-      expect(find.text('Old Name'), findsOneWidget);
-
-      // Tap Edit
-      await tester.tap(find.byTooltip('Edit Entry'));
-      await tester.pumpAndSettle();
-
-      await tester.enterText(
-        find.byKey(const Key('entryNameField')),
-        'New Name',
-      );
-      await tester.tap(find.text('Save'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Entry updated successfully'), findsOneWidget);
-      expect(find.text('New Name'), findsOneWidget);
-
-      // Tap Remove
-      await tester.tap(find.byTooltip('Remove Entry'));
-      await tester.pumpAndSettle();
-
-      expect(
-        find.text('Are you sure you want to remove this entry?'),
-        findsOneWidget,
-      );
-      await tester.tap(find.text('Yes'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Entry removed successfully'), findsOneWidget);
-      expect(find.text('New Name'), findsNothing);
-
-      // Verify slot claimedCount decremented to 0
-      final slotDoc = await slotRef.get();
-      expect(slotDoc.data()?['claimedCount'], 0);
-    });
-
     testWidgets(
       'keeps the UI in English but shows Marathi content when locale is mr',
       (tester) async {
@@ -724,52 +631,10 @@ void main() {
         expect(find.text('प्रसाद सेवा').first, findsOneWidget);
         expect(find.text('Duplicate'), findsOneWidget);
         expect(find.text('Share'), findsOneWidget);
-        await tester.tap(find.text('Share'));
-        await tester.pumpAndSettle();
-        expect(find.text('Slots & Entries'), findsOneWidget);
+        expect(find.text('Slots'), findsOneWidget);
+        expect(find.text('Entries'), findsOneWidget);
       },
     );
-
-    testWidgets('shows slot full error when admin adds entry to full slot', (
-      tester,
-    ) async {
-      final now = DateTime.now();
-      final signupRef = await firestore.collection('signups').add({
-        'titleEn': 'Full Signup',
-        'titleMr': 'शीट',
-        'descriptionEn': '',
-        'descriptionMr': '',
-        'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupStatus.published.name,
-        'requiresJoinCode': false,
-        'createdAt': Timestamp.fromDate(now),
-        'updatedAt': Timestamp.fromDate(now),
-        'createdBy': 'admin@test.com',
-      });
-
-      await signupRef.collection('slots').add({
-        'labelEn': 'Slot 1',
-        'labelMr': 'स्लॉट १',
-        'capacity': 1,
-        'claimedCount': 1, // already full!
-        'sortOrder': 0,
-        'createdAt': Timestamp.fromDate(now),
-      });
-
-      await pumpDetailScreen(tester, signupId: signupRef.id);
-
-      await tester.tap(find.text('Add Devotee'));
-      await tester.pumpAndSettle();
-
-      await tester.enterText(
-        find.byKey(const Key('entryNameField')),
-        'New Devotee',
-      );
-      await tester.tap(find.text('Save'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('This slot is already full'), findsOneWidget);
-    });
 
     testWidgets('shows error snackbar when duplicateSignup throws', (
       tester,
@@ -927,286 +792,6 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Route Args Signup').first, findsOneWidget);
-      },
-    );
-
-    testWidgets('cancels remove entry dialog when No is clicked', (
-      tester,
-    ) async {
-      final now = DateTime.now();
-      final signupRef = await firestore.collection('signups').add({
-        'titleEn': 'Cancel Remove Signup',
-        'titleMr': '',
-        'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupStatus.published.name,
-        'requiresJoinCode': false,
-        'createdAt': Timestamp.fromDate(now),
-        'updatedAt': Timestamp.fromDate(now),
-        'createdBy': 'admin@test.com',
-      });
-
-      final slotRef = await signupRef.collection('slots').add({
-        'titleEn': 'Slot 1',
-        'titleMr': '',
-        'maxCapacity': 5,
-        'order': 0,
-      });
-
-      await signupRef.collection('entries').add({
-        'slotId': slotRef.id,
-        'name': 'Stay Put User',
-        'phone': '1112223333',
-        'createdAt': Timestamp.fromDate(now),
-        'status': 'confirmed',
-      });
-
-      setLargeScreen(tester);
-      addTearDown(() => resetScreen(tester));
-
-      await tester.pumpWidget(
-        createWidget(
-          child: AdminSignupDetailScreen(
-            signupId: signupRef.id,
-            adminUser: adminUser,
-            firestore: firestore,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Stay Put User'), findsOneWidget);
-
-      await tester.tap(find.byTooltip('Remove Entry'));
-      await tester.pumpAndSettle();
-
-      expect(
-        find.text('Are you sure you want to remove this entry?'),
-        findsOneWidget,
-      );
-
-      await tester.tap(find.text('No'));
-      await tester.pumpAndSettle();
-
-      expect(
-        find.text('Are you sure you want to remove this entry?'),
-        findsNothing,
-      );
-      expect(find.text('Stay Put User'), findsOneWidget);
-    });
-
-    testWidgets('shows error snackbar when adminRemoveEntry fails', (
-      tester,
-    ) async {
-      final now = DateTime.now();
-      const signupId = 'fail_remove_signup';
-      const slotId = 'slot_1';
-      const entryId = 'entry_1';
-      final signup = Signup(
-        id: signupId,
-        titleEn: 'Fail Remove Signup',
-        titleMr: '',
-        groupId: 'gajanan_maharaj_seattle',
-        status: SignupStatus.published,
-        requiresJoinCode: false,
-        createdAt: now,
-        updatedAt: now,
-        createdBy: 'admin@test.com',
-      );
-      final slot = SignupSlot(
-        id: slotId,
-        labelEn: 'Slot 1',
-        labelMr: '',
-        capacity: 5,
-        sortOrder: 0,
-        createdAt: now,
-      );
-      final entry = SignupEntry(
-        id: entryId,
-        slotId: slotId,
-        name: 'Fail Remove User',
-        phone: '1112223333',
-        joinedAt: now,
-      );
-
-      final mockService = MockSignupService();
-      when(
-        () => mockService.getSignupById(signupId),
-      ).thenAnswer((_) => Stream.value(signup));
-      when(
-        () => mockService.getSlots(signupId),
-      ).thenAnswer((_) => Stream.value([slot]));
-      when(
-        () => mockService.getAllEntries(signupId),
-      ).thenAnswer((_) => Stream.value([entry]));
-      when(
-        () => mockService.adminRemoveEntry(signupId, entryId),
-      ).thenThrow(Exception('Delete failed'));
-
-      setLargeScreen(tester);
-      addTearDown(() => resetScreen(tester));
-
-      await tester.pumpWidget(
-        createWidget(
-          child: AdminSignupDetailScreen(
-            signupId: signupId,
-            adminUser: adminUser,
-            signupService: mockService,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byTooltip('Remove Entry'));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Yes'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Failed to remove entry'), findsOneWidget);
-    });
-
-    testWidgets('shows error snackbar when updateEntry fails', (tester) async {
-      final now = DateTime.now();
-      const signupId = 'fail_update_signup';
-      const slotId = 'slot_1';
-      const entryId = 'entry_1';
-      final signup = Signup(
-        id: signupId,
-        titleEn: 'Fail Update Signup',
-        titleMr: '',
-        groupId: 'gajanan_maharaj_seattle',
-        status: SignupStatus.published,
-        requiresJoinCode: false,
-        createdAt: now,
-        updatedAt: now,
-        createdBy: 'admin@test.com',
-      );
-      final slot = SignupSlot(
-        id: slotId,
-        labelEn: 'Slot 1',
-        labelMr: '',
-        capacity: 5,
-        sortOrder: 0,
-        createdAt: now,
-      );
-      final entry = SignupEntry(
-        id: entryId,
-        slotId: slotId,
-        name: 'Fail Update User',
-        phone: '1112223333',
-        joinedAt: now,
-      );
-
-      final mockService = MockSignupService();
-      when(
-        () => mockService.getSignupById(signupId),
-      ).thenAnswer((_) => Stream.value(signup));
-      when(
-        () => mockService.getSlots(signupId),
-      ).thenAnswer((_) => Stream.value([slot]));
-      when(
-        () => mockService.getAllEntries(signupId),
-      ).thenAnswer((_) => Stream.value([entry]));
-      when(
-        () => mockService.updateEntry(signupId, any()),
-      ).thenThrow(Exception('Update failed'));
-
-      setLargeScreen(tester);
-      addTearDown(() => resetScreen(tester));
-
-      await tester.pumpWidget(
-        createWidget(
-          child: AdminSignupDetailScreen(
-            signupId: signupId,
-            adminUser: adminUser,
-            signupService: mockService,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byIcon(Icons.edit_outlined));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Save'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Failed to update entry'), findsOneWidget);
-    });
-
-    testWidgets(
-      'shows error snackbar when adminAddEntry throws generic error',
-      (tester) async {
-        final now = DateTime.now();
-        const signupId = 'fail_add_signup';
-        const slotId = 'slot_1';
-        final signup = Signup(
-          id: signupId,
-          titleEn: 'Fail Add Signup',
-          titleMr: '',
-          groupId: 'gajanan_maharaj_seattle',
-          status: SignupStatus.published,
-          requiresJoinCode: false,
-          createdAt: now,
-          updatedAt: now,
-          createdBy: 'admin@test.com',
-        );
-        final slot = SignupSlot(
-          id: slotId,
-          labelEn: 'Slot 1',
-          labelMr: '',
-          capacity: 5,
-          sortOrder: 0,
-          createdAt: now,
-        );
-
-        final mockService = MockSignupService();
-        when(
-          () => mockService.getSignupById(signupId),
-        ).thenAnswer((_) => Stream.value(signup));
-        when(
-          () => mockService.getSlots(signupId),
-        ).thenAnswer((_) => Stream.value([slot]));
-        when(
-          () => mockService.getAllEntries(signupId),
-        ).thenAnswer((_) => Stream.value(const []));
-        when(
-          () => mockService.adminAddEntry(
-            signupId: any(named: 'signupId'),
-            slotId: any(named: 'slotId'),
-            name: any(named: 'name'),
-            phone: null,
-            email: null,
-            pledgeAmount: null,
-            note: null,
-          ),
-        ).thenAnswer((_) async => {'success': false, 'error': 'generic_error'});
-
-        setLargeScreen(tester);
-        addTearDown(() => resetScreen(tester));
-
-        await tester.pumpWidget(
-          createWidget(
-            child: AdminSignupDetailScreen(
-              signupId: signupId,
-              adminUser: adminUser,
-              signupService: mockService,
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
-
-        await tester.tap(find.text('Add Devotee'));
-        await tester.pumpAndSettle();
-
-        await tester.enterText(
-          find.byKey(const Key('entryNameField')),
-          'Test Person',
-        );
-        await tester.tap(find.text('Save'));
-        await tester.pumpAndSettle();
-
-        expect(find.text('Failed to add devotee'), findsOneWidget);
       },
     );
 
@@ -1380,129 +965,6 @@ void main() {
 
       completer.complete('new_id');
       await tester.pumpAndSettle();
-    });
-
-    testWidgets(
-      'deleting from within edit dialog triggers confirm remove dialog',
-      (tester) async {
-        final now = DateTime.now();
-        final signupRef = await firestore.collection('signups').add({
-          'titleEn': 'Dialog Delete Signup',
-          'titleMr': '',
-          'groupId': 'gajanan_maharaj_seattle',
-          'status': SignupStatus.published.name,
-          'requiresJoinCode': false,
-          'createdAt': Timestamp.fromDate(now),
-          'updatedAt': Timestamp.fromDate(now),
-          'createdBy': 'admin@test.com',
-        });
-
-        final slotRef = await signupRef.collection('slots').add({
-          'labelEn': 'Slot 1',
-          'labelMr': '',
-          'capacity': 5,
-          'sortOrder': 0,
-          'createdAt': Timestamp.fromDate(now),
-        });
-
-        await signupRef.collection('entries').add({
-          'slotId': slotRef.id,
-          'name': 'Dialog Delete User',
-          'phone': '1112223333',
-          'joinedAt': Timestamp.fromDate(now),
-        });
-
-        await pumpDetailScreen(tester, signupId: signupRef.id);
-
-        await tester.tap(find.byTooltip('Edit Entry'));
-        await tester.pumpAndSettle();
-
-        await tester.tap(find.widgetWithText(TextButton, 'Remove Entry'));
-        await tester.pumpAndSettle();
-
-        expect(
-          find.text('Are you sure you want to remove this entry?'),
-          findsOneWidget,
-        );
-
-        await tester.tap(find.text('No'));
-        await tester.pumpAndSettle();
-      },
-    );
-
-    testWidgets('shows error snackbar when adminAddEntry throws exception', (
-      tester,
-    ) async {
-      final now = DateTime.now();
-      const signupId = 'fail_add_exc_signup';
-      const slotId = 'slot_1';
-      final signup = Signup(
-        id: signupId,
-        titleEn: 'Fail Add Signup',
-        titleMr: '',
-        groupId: 'gajanan_maharaj_seattle',
-        status: SignupStatus.published,
-        requiresJoinCode: false,
-        createdAt: now,
-        updatedAt: now,
-        createdBy: 'admin@test.com',
-      );
-      final slot = SignupSlot(
-        id: slotId,
-        labelEn: 'Slot 1',
-        labelMr: '',
-        capacity: 5,
-        sortOrder: 0,
-        createdAt: now,
-      );
-
-      final mockService = MockSignupService();
-      when(
-        () => mockService.getSignupById(signupId),
-      ).thenAnswer((_) => Stream.value(signup));
-      when(
-        () => mockService.getSlots(signupId),
-      ).thenAnswer((_) => Stream.value([slot]));
-      when(
-        () => mockService.getAllEntries(signupId),
-      ).thenAnswer((_) => Stream.value(const []));
-      when(
-        () => mockService.adminAddEntry(
-          signupId: any(named: 'signupId'),
-          slotId: any(named: 'slotId'),
-          name: any(named: 'name'),
-          phone: null,
-          email: null,
-          pledgeAmount: null,
-          note: null,
-        ),
-      ).thenAnswer((_) => Future.error(Exception('Crash on add')));
-
-      setLargeScreen(tester);
-      addTearDown(() => resetScreen(tester));
-
-      await tester.pumpWidget(
-        createWidget(
-          child: AdminSignupDetailScreen(
-            signupId: signupId,
-            adminUser: adminUser,
-            signupService: mockService,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Add Devotee'));
-      await tester.pumpAndSettle();
-
-      await tester.enterText(
-        find.byKey(const Key('entryNameField')),
-        'Test Person',
-      );
-      await tester.tap(find.text('Save'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Failed to add devotee'), findsOneWidget);
     });
   });
 

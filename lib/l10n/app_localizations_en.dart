@@ -2440,9 +2440,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupDateRange => 'Date Range';
 
   @override
-  String get signupSlotsSectionHeading => 'Slots & Entries';
-
-  @override
   String get signupAddEntryButton => 'Add Devotee';
 
   @override
@@ -2509,10 +2506,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String signupSuggestedAmountFormat(String amount) {
     return 'Suggested: $amount';
   }
-
-  @override
-  String get signupNoEntriesForSlot =>
-      'No devotees have signed up for this slot yet';
 
   @override
   String get signupExportSummaryTitle => 'Sign Up Summary';
@@ -5053,9 +5046,6 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get signupDateRange => 'तारीख Range';
 
   @override
-  String get signupSlotsSectionHeading => 'Slots आणि Entries';
-
-  @override
   String get signupAddEntryButton => 'भाविक जोडा';
 
   @override
@@ -5122,10 +5112,6 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String signupSuggestedAmountFormat(String amount) {
     return 'सुचवलेले: $amount';
   }
-
-  @override
-  String get signupNoEntriesForSlot =>
-      'या slot साठी अद्याप कोणत्याही भाविकाने sign up केलेले नाही';
 
   @override
   String get signupExportSummaryTitle => 'Sign Up सारांश';

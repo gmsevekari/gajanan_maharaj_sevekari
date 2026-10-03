@@ -4,8 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_entry_edit_dialog.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_slot_entries_section.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_entries_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_slots_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_actions_row.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_export_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_header_image_card.dart';
@@ -19,6 +19,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_nav_card.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,7 +28,6 @@ import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
-import 'package:gajanan_maharaj_sevekari/widgets/phone_number_field.dart';
 
 class AdminSignupDetailScreen extends StatefulWidget {
   final String? signupId;
@@ -269,148 +269,6 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
     }
   }
 
-  void _showAddEntryDialog(
-    Signup signup,
-    SignupSlot slot,
-    AppLocalizations l10n,
-  ) {
-    showEnglishDialog(
-      context: context,
-      builder: (_) => AdminEntryEditDialog(
-        defaultCountryCode: defaultCountryCodeFor(context, signup.groupId),
-        onSave: (name, phone, email, pledge, note) async {
-          try {
-            final res = await _service.adminAddEntry(
-              signupId: signup.id!,
-              slotId: slot.id!,
-              name: name,
-              phone: phone,
-              email: email,
-              pledgeAmount: pledge,
-              note: note,
-            );
-            if (!mounted) return;
-            if (res['success'] == true) {
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(content: Text(l10n.signupEntryAddSuccess)),
-                );
-            } else if (res['error'] == 'slot_full') {
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(content: Text(l10n.signupSlotFullError)),
-                );
-            } else {
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(content: Text(l10n.signupEntryAddError)),
-                );
-            }
-          } catch (_) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(SnackBar(content: Text(l10n.signupEntryAddError)));
-          }
-        },
-      ),
-    );
-  }
-
-  void _showEditEntryDialog(
-    Signup signup,
-    SignupEntry entry,
-    AppLocalizations l10n,
-  ) {
-    showEnglishDialog(
-      context: context,
-      builder: (_) => AdminEntryEditDialog(
-        defaultCountryCode: defaultCountryCodeFor(context, signup.groupId),
-        entry: entry,
-        onSave: (name, phone, email, pledge, note) async {
-          try {
-            await _service.updateEntry(
-              signup.id!,
-              entry.copyWith(
-                name: name,
-                phone: phone,
-                email: email,
-                pledgeAmount: pledge,
-                note: note,
-              ),
-            );
-            if (!mounted) return;
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(content: Text(l10n.signupEntryEditSuccess)),
-              );
-          } catch (_) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(content: Text(l10n.signupEntryEditError)),
-              );
-          }
-        },
-        onDelete: () => _removeEntry(signup, entry, l10n),
-      ),
-    );
-  }
-
-  Future<void> _removeEntry(
-    Signup signup,
-    SignupEntry entry,
-    AppLocalizations l10n,
-  ) async {
-    try {
-      await _service.adminRemoveEntry(signup.id!, entry.id!);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(l10n.signupEntryRemoveSuccess)));
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(l10n.signupEntryRemoveError)));
-    }
-  }
-
-  void _confirmRemoveEntry(
-    Signup signup,
-    SignupEntry entry,
-    AppLocalizations l10n,
-  ) {
-    showEnglishDialog(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: Text(l10n.signupRemoveEntryTitle),
-        content: Text(l10n.signupRemoveEntryConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: Text(l10n.no),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogCtx).pop();
-              _removeEntry(signup, entry, l10n);
-            },
-            child: Text(
-              l10n.yes,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _pickAndUploadImage(Signup signup, AppLocalizations l10n) async {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked == null) return;
@@ -489,6 +347,34 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _openSlots(Signup signup) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AdminSignupSlotsScreen(
+          signupId: _signupId,
+          signup: signup,
+          firestore: widget.firestore,
+          signupService: _service,
+        ),
+      ),
+    );
+  }
+
+  void _openEntries(Signup signup) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AdminSignupEntriesScreen(
+          signupId: _signupId,
+          signup: signup,
+          firestore: widget.firestore,
+          signupService: _service,
+        ),
       ),
     );
   }
@@ -641,29 +527,18 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
                               l10n,
                             ),
                           ),
-                          const SizedBox(height: 24),
-                          Text(
-                            l10n.signupSlotsSectionHeading,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                          const SizedBox(height: 16),
+                          SignupNavCard(
+                            icon: Icons.event_seat_outlined,
+                            label: l10n.signupSlotsHeading,
+                            onTap: () => _openSlots(signup),
                           ),
                           const SizedBox(height: 12),
-                          ...slots.map((slot) {
-                            final slotEntries = entries
-                                .where((e) => e.slotId == slot.id)
-                                .toList();
-                            return AdminSlotEntriesSection(
-                              slot: slot,
-                              entries: slotEntries,
-                              onAddEntry: (s) =>
-                                  _showAddEntryDialog(signup, s, l10n),
-                              onEditEntry: (e, _) =>
-                                  _showEditEntryDialog(signup, e, l10n),
-                              onRemoveEntry: (e) =>
-                                  _confirmRemoveEntry(signup, e, l10n),
-                            );
-                          }),
+                          SignupNavCard(
+                            icon: Icons.table_rows_outlined,
+                            label: l10n.signupEntriesHeading,
+                            onTap: () => _openEntries(signup),
+                          ),
                         ],
                       ),
                       if (_isProcessing)

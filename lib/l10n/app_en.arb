@@ -929,7 +929,6 @@
   "signupStatusUpdateError": "Failed to update status",
   "signupCopyJoinCodeTooltip": "Copy Join Code",
   "signupDateRange": "Date Range",
-  "signupSlotsSectionHeading": "Slots & Entries",
   "signupAddEntryButton": "Add Devotee",
   "signupEditEntryTitle": "Edit Entry",
   "signupAddEntryTitle": "Add Devotee Entry",
@@ -968,7 +967,6 @@
       }
     }
   },
-  "signupNoEntriesForSlot": "No devotees have signed up for this slot yet",
   "signupExportSummaryTitle": "Sign Up Summary",
   "signupTotalSlotsLabel": "Total Slots",
   "signupTotalClaimsLabel": "Total Signups",

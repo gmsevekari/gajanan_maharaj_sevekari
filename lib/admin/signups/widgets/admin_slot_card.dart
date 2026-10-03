@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:gajanan_maharaj_sevekari/admin/widgets/participant_contact_actions.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
-class AdminSlotEntriesSection extends StatelessWidget {
+/// A slot's summary - label, date, suggested amount and how full it is -
+/// with an "Add Devotee" action. Used on [AdminSignupSlotsScreen]; the
+/// slot's entries are listed on the Entries screen instead.
+class AdminSlotCard extends StatelessWidget {
   final SignupSlot slot;
-  final List<SignupEntry> entries;
   final void Function(SignupSlot slot) onAddEntry;
-  final void Function(SignupEntry entry, SignupSlot slot) onEditEntry;
-  final void Function(SignupEntry entry) onRemoveEntry;
 
-  const AdminSlotEntriesSection({
+  const AdminSlotCard({
     super.key,
     required this.slot,
-    required this.entries,
     required this.onAddEntry,
-    required this.onEditEntry,
-    required this.onRemoveEntry,
   });
 
   @override
@@ -183,178 +178,21 @@ class AdminSlotEntriesSection extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 8),
-
-            // Entries section header with "Add Devotee" button
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${l10n.signupSlotsHeading} (${entries.length})',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.appColors.secondaryText,
-                  ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.person_add_alt_1, size: 16),
+                label: Text(l10n.signupAddEntryButton),
+                onPressed: () => onAddEntry(slot),
+                style: OutlinedButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                 ),
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.person_add_alt_1, size: 16),
-                  label: Text(l10n.signupAddEntryButton),
-                  onPressed: () => onAddEntry(slot),
-                  style: OutlinedButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                  ),
-                ),
-              ],
+              ),
             ),
-            const SizedBox(height: 8),
-
-            // Entries list
-            if (entries.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  l10n.signupNoEntriesForSlot,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.appColors.secondaryText,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              )
-            else
-              ...entries.map((entry) => _buildEntryRow(entry, l10n, theme)),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildEntryRow(
-    SignupEntry entry,
-    AppLocalizations l10n,
-    ThemeData theme,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: theme.appColors.disabledBackground.withValues(alpha: 0.35),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  entry.name,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.edit_outlined, size: 18),
-                tooltip: l10n.signupEditEntryTitle,
-                visualDensity: VisualDensity.compact,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () => onEditEntry(entry, slot),
-              ),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: Icon(
-                  Icons.delete_outline,
-                  size: 18,
-                  color: theme.colorScheme.error,
-                ),
-                tooltip: l10n.signupRemoveEntryTitle,
-                visualDensity: VisualDensity.compact,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () => onRemoveEntry(entry),
-              ),
-            ],
-          ),
-          if (entry.phone != null && entry.phone!.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Icon(
-                  Icons.phone_outlined,
-                  size: 14,
-                  color: theme.appColors.secondaryText,
-                ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    entry.phone!,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.appColors.secondaryText,
-                    ),
-                  ),
-                ),
-                ParticipantContactActions(
-                  phone: entry.phone!,
-                  textTooltip: l10n.sendTextTooltip,
-                  whatsAppTooltip: l10n.whatsapp,
-                ),
-              ],
-            ),
-          ],
-          if (entry.email != null && entry.email!.isNotEmpty) ...[
-            const SizedBox(height: 2),
-            Row(
-              children: [
-                Icon(
-                  Icons.email_outlined,
-                  size: 14,
-                  color: theme.appColors.secondaryText,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  entry.email!,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.appColors.secondaryText,
-                  ),
-                ),
-              ],
-            ),
-          ],
-          if (entry.pledgeAmount != null) ...[
-            const SizedBox(height: 2),
-            Row(
-              children: [
-                Icon(
-                  Icons.monetization_on_outlined,
-                  size: 14,
-                  color: theme.appColors.brandAccent,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '${entry.pledgeAmount}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.appColors.brandAccent,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ],
-          if (entry.note != null && entry.note!.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(
-              entry.note!,
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontStyle: FontStyle.italic,
-                color: theme.appColors.secondaryText,
-              ),
-            ),
-          ],
-        ],
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/my_signups_screen.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signup_entries_screen.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signup_slots_screen.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_nav_card.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
@@ -249,19 +250,19 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
                 ),
                 const SizedBox(height: 16),
               ],
-              _NavCard(
+              SignupNavCard(
                 icon: Icons.assignment_ind_outlined,
                 label: l10n.signupMySignupsHeading,
                 onTap: _openMySignups,
               ),
               const SizedBox(height: 12),
-              _NavCard(
+              SignupNavCard(
                 icon: Icons.event_seat_outlined,
                 label: l10n.signupSlotsHeading,
                 onTap: () => _openSlots(signup),
               ),
               const SizedBox(height: 12),
-              _NavCard(
+              SignupNavCard(
                 icon: Icons.table_rows_outlined,
                 label: l10n.signupEntriesHeading,
                 onTap: _openEntries,
@@ -270,48 +271,6 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
           ),
         );
       },
-    );
-  }
-}
-
-class _NavCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  const _NavCard({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: EdgeInsets.zero,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(icon, color: theme.colorScheme.primary),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  label,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const Icon(Icons.chevron_right),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

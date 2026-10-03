@@ -4695,12 +4695,6 @@ abstract class AppLocalizations {
   /// **'Date Range'**
   String get signupDateRange;
 
-  /// No description provided for @signupSlotsSectionHeading.
-  ///
-  /// In en, this message translates to:
-  /// **'Slots & Entries'**
-  String get signupSlotsSectionHeading;
-
   /// No description provided for @signupAddEntryButton.
   ///
   /// In en, this message translates to:
@@ -4826,12 +4820,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Suggested: {amount}'**
   String signupSuggestedAmountFormat(String amount);
-
-  /// No description provided for @signupNoEntriesForSlot.
-  ///
-  /// In en, this message translates to:
-  /// **'No devotees have signed up for this slot yet'**
-  String get signupNoEntriesForSlot;
 
   /// No description provided for @signupExportSummaryTitle.
   ///

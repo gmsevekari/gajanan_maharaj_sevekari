@@ -2454,9 +2454,6 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupDateRange => 'तारीख रेंज';
 
   @override
-  String get signupSlotsSectionHeading => 'स्लॉट्स आणि एंट्रीज';
-
-  @override
   String get signupAddEntryButton => 'भाविक जोडा';
 
   @override
@@ -2523,10 +2520,6 @@ class AppLocalizationsMr extends AppLocalizations {
   String signupSuggestedAmountFormat(String amount) {
     return 'सुचवलेले: $amount';
   }
-
-  @override
-  String get signupNoEntriesForSlot =>
-      'या स्लॉटसाठी अद्याप कोणत्याही भाविकाने साइन अप केलेले नाही';
 
   @override
   String get signupExportSummaryTitle => 'साइन अप सारांश';
