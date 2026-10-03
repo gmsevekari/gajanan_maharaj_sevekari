@@ -8,6 +8,7 @@ import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_slot_dialog.dart'
 import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_slot_tile.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 /// Every slot on a sign-up signup, reached from
 /// [SignupDetailScreen]'s "Slots" card. Splits slots into
@@ -62,7 +63,7 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
   }
 
   Future<void> _claimSlot(SignupSlot slot, AppLocalizations l10n) async {
-    final claimed = await showDialog<bool>(
+    final claimed = await showEnglishDialog<bool>(
       context: context,
       builder: (_) => ClaimSlotDialog(
         signupId: widget.signupId,
@@ -81,7 +82,9 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => EnglishOnly(builder: _buildScreen);
+
+  Widget _buildScreen(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(

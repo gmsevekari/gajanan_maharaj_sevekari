@@ -109,4 +109,21 @@ void main() {
 
     expect(find.text('आठवडा १'), findsOneWidget);
   });
+
+  testWidgets(
+    'always formats the date in English, even under a Marathi locale',
+    (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          SignupSlotTile(
+            slot: buildSlot(date: DateTime(2026, 3, 15), claimedCount: 1),
+            onTap: () {},
+          ),
+          locale: const Locale('mr'),
+        ),
+      );
+
+      expect(find.text('March 15'), findsOneWidget);
+    },
+  );
 }

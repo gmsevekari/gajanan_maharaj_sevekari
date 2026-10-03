@@ -26,6 +26,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 class AdminSignupDetailScreen extends StatefulWidget {
   final String? signupId;
@@ -223,7 +224,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
     SignupSlot slot,
     AppLocalizations l10n,
   ) {
-    showDialog(
+    showEnglishDialog(
       context: context,
       builder: (_) => AdminEntryEditDialog(
         onSave: (name, phone, email, pledge, note) async {
@@ -273,7 +274,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
     SignupEntry entry,
     AppLocalizations l10n,
   ) {
-    showDialog(
+    showEnglishDialog(
       context: context,
       builder: (_) => AdminEntryEditDialog(
         entry: entry,
@@ -333,7 +334,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
     SignupEntry entry,
     AppLocalizations l10n,
   ) {
-    showDialog(
+    showEnglishDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
         title: Text(l10n.signupRemoveEntryTitle),
@@ -415,7 +416,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
   }
 
   void _confirmRemoveImage(Signup signup, AppLocalizations l10n) {
-    showDialog(
+    showEnglishDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
         title: Text(l10n.signupRemoveImageConfirmTitle),
@@ -441,11 +442,13 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => EnglishOnly(builder: _buildScreen);
+
+  Widget _buildScreen(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final adminUser = _getEffectiveAdminUser(context);
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    final isMarathi = contentIsMarathi(context);
 
     final appConfig = context.watch<AppConfigProvider>().appConfig;
     final group = appConfig?.gajananMaharajGroups

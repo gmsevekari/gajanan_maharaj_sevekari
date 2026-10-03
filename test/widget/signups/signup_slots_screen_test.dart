@@ -33,13 +33,14 @@ void main() {
     signup = signup.copyWith(id: signupId);
   });
 
-  Widget wrap(Widget child) {
+  Widget wrap(Widget child, {Locale? locale}) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => FestivalProvider()),
       ],
       child: MaterialApp(
+        locale: locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         onGenerateRoute: (settings) => MaterialPageRoute(
@@ -261,5 +262,33 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Navigated to: /settings'), findsOneWidget);
+  });
+
+  testWidgets('stays English under a Marathi app locale, including the claim '
+      'dialog and dates', (tester) async {
+    await addSlot(date: DateTime.now().add(const Duration(days: 3)));
+
+    await tester.pumpWidget(
+      wrap(
+        SignupSlotsScreen(
+          signupId: signupId,
+          signup: signup,
+          deviceId: 'device_1',
+          firestore: firestore,
+          signupService: service,
+        ),
+        locale: const Locale('mr'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Upcoming'), findsOneWidget);
+    expect(find.text('Past'), findsOneWidget);
+    expect(find.text('Sign Up'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('signUpButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Claim Slot'), findsOneWidget);
   });
 }

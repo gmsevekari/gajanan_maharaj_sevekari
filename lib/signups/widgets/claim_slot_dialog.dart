@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 /// Lets a devotee claim one [slot] on a sign-up signup. Reuses
 /// AddStepsDialog's confirm-before-submit pattern: validate, show what was
@@ -59,7 +60,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
         ? widget.slot.labelEn
         : widget.slot.labelMr;
 
-    return showDialog<bool>(
+    return showEnglishDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.signupClaimConfirmTitle),

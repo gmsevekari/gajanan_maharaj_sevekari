@@ -7,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/my_signups_section.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 /// The devotee's own claimed entries on a sign-up signup, reached from
 /// [SignupDetailScreen]'s "My Sign Ups" card. Splits entries into
@@ -64,7 +65,7 @@ class _MySignupsScreenState extends State<MySignupsScreen>
   }
 
   void _confirmCancelEntry(SignupEntry entry, AppLocalizations l10n) {
-    showDialog(
+    showEnglishDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
         title: Text(l10n.signupCancelSignupConfirmTitle),
@@ -105,7 +106,9 @@ class _MySignupsScreenState extends State<MySignupsScreen>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => EnglishOnly(builder: _buildScreen);
+
+  Widget _buildScreen(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(

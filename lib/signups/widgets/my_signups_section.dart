@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 /// A list of the devotee's own claimed entries, each showing which [slots]
 /// it belongs to - an entry's own `slotId` would otherwise be the only
@@ -29,7 +30,7 @@ class MySignupsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    final isMarathi = contentIsMarathi(context);
 
     String slotLabelFor(String slotId) {
       final slot = slots.where((s) => s.id == slotId).firstOrNull;

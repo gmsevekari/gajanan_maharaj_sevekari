@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 class AdminSlotEntriesSection extends StatelessWidget {
   final SignupSlot slot;
@@ -27,8 +28,8 @@ class AdminSlotEntriesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
-    final langCode = isMarathi ? 'mr' : 'en';
+    final isMarathi = contentIsMarathi(context);
+    const langCode = 'en';
 
     final label = isMarathi
         ? (slot.labelMr.isNotEmpty ? slot.labelMr : slot.labelEn)

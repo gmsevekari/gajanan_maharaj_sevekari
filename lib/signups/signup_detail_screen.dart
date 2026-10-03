@@ -12,6 +12,7 @@ import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 class SignupDetailScreen extends StatefulWidget {
   final String? signupId;
@@ -134,10 +135,12 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => EnglishOnly(builder: _buildScreen);
+
+  Widget _buildScreen(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    final isMarathi = contentIsMarathi(context);
 
     return StreamBuilder<Signup?>(
       stream: _signupStream,
@@ -365,7 +368,7 @@ class _EntriesTable extends StatelessWidget {
     }
 
     final slotsById = {for (final slot in slots) slot.id: slot};
-    final langCode = isMarathi ? 'mr' : 'en';
+    const langCode = 'en';
 
     final rows = entries.toList()
       ..sort((a, b) {

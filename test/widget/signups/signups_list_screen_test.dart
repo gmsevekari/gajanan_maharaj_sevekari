@@ -289,4 +289,23 @@ void main() {
       expect(find.text('Cook and serve prasad'), findsOneWidget);
     });
   });
+
+  testWidgets('keeps the app bar title in English under a Marathi locale', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrap(
+        SignupsListScreen(
+          groupId: 'group_1',
+          firestore: firestore,
+          signupService: service,
+        ),
+        locale: const Locale('mr'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Sign Ups'), findsOneWidget);
+    expect(find.text('No active sign ups'), findsOneWidget);
+  });
 }

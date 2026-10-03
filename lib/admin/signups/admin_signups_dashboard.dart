@@ -7,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 class AdminSignupsDashboard extends StatefulWidget {
   final AdminUser adminUser;
@@ -61,7 +62,9 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => EnglishOnly(builder: _buildScreen);
+
+  Widget _buildScreen(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -231,7 +234,7 @@ class _AdminSignupsDashboardState extends State<AdminSignupsDashboard> {
     AppLocalizations localizations,
     ThemeData theme,
   ) {
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    final isMarathi = contentIsMarathi(context);
     final title = isMarathi
         ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
         : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);

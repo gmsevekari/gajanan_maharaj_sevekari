@@ -10,6 +10,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 class _SlotFormRowData {
   final TextEditingController labelEnController = TextEditingController();
@@ -125,7 +126,7 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
   }
 
   Future<void> _pickImage() async {
-    final localizations = AppLocalizations.of(context)!;
+    final localizations = lookupAppLocalizations(const Locale('en'));
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked == null) return;
 
@@ -153,7 +154,7 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
   }
 
   Future<void> _submit() async {
-    final localizations = AppLocalizations.of(context)!;
+    final localizations = lookupAppLocalizations(const Locale('en'));
     final formValid = _formKey.currentState!.validate();
     final hasSlots = _slots.isNotEmpty;
 
@@ -253,7 +254,9 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => EnglishOnly(builder: _buildScreen);
+
+  Widget _buildScreen(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 

@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/admin/widgets/participant_contact_actio
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 class AdminEntryEditDialog extends StatefulWidget {
   final SignupEntry? entry;
@@ -81,7 +82,7 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
   }
 
   void _confirmDelete(BuildContext context, AppLocalizations l10n) {
-    showDialog(
+    showEnglishDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
         title: Text(l10n.signupRemoveEntryTitle),

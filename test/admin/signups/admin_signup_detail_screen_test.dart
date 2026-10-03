@@ -501,38 +501,40 @@ void main() {
       expect(slotDoc.data()?['claimedCount'], 0);
     });
 
-    testWidgets('renders Marathi localized strings when locale is mr', (
-      tester,
-    ) async {
-      final now = DateTime.now();
-      final signupRef = await firestore.collection('signups').add({
-        'titleEn': 'Prasad Seva',
-        'titleMr': 'प्रसाद सेवा',
-        'descriptionEn': 'Help',
-        'descriptionMr': 'मदत',
-        'groupId': 'gajanan_maharaj_seattle',
-        'status': SignupStatus.draft.name,
-        'requiresJoinCode': false,
-        'createdAt': Timestamp.fromDate(now),
-        'updatedAt': Timestamp.fromDate(now),
-        'createdBy': 'admin@test.com',
-      });
+    testWidgets(
+      'keeps the UI in English but shows Marathi content when locale is mr',
+      (tester) async {
+        final now = DateTime.now();
+        final signupRef = await firestore.collection('signups').add({
+          'titleEn': 'Prasad Seva',
+          'titleMr': 'प्रसाद सेवा',
+          'descriptionEn': 'Help',
+          'descriptionMr': 'मदत',
+          'groupId': 'gajanan_maharaj_seattle',
+          'status': SignupStatus.draft.name,
+          'requiresJoinCode': false,
+          'createdAt': Timestamp.fromDate(now),
+          'updatedAt': Timestamp.fromDate(now),
+          'createdBy': 'admin@test.com',
+        });
 
-      await pumpDetailScreen(
-        tester,
-        signupId: signupRef.id,
-        locale: const Locale('mr'),
-      );
+        await pumpDetailScreen(
+          tester,
+          signupId: signupRef.id,
+          locale: const Locale('mr'),
+        );
 
-      expect(find.text('साइन अप डिटेल्स'), findsOneWidget);
-      expect(find.text('प्रसाद सेवा').first, findsOneWidget);
-      expect(find.text('मदत').first, findsOneWidget);
-      expect(find.text('डुप्लीकेट करा'), findsOneWidget);
-      expect(find.text('शेअर'), findsOneWidget);
-      await tester.tap(find.text('शेअर'));
-      await tester.pumpAndSettle();
-      expect(find.text('स्लॉट्स आणि एंट्रीज'), findsOneWidget);
-    });
+        // UI text stays English; admin-entered content follows the app locale.
+        expect(find.text('Sign Up Details'), findsOneWidget);
+        expect(find.text('प्रसाद सेवा').first, findsOneWidget);
+        expect(find.text('मदत').first, findsOneWidget);
+        expect(find.text('Duplicate'), findsOneWidget);
+        expect(find.text('Share'), findsOneWidget);
+        await tester.tap(find.text('Share'));
+        await tester.pumpAndSettle();
+        expect(find.text('Slots & Entries'), findsOneWidget);
+      },
+    );
 
     testWidgets('falls back to the English description when Marathi is blank', (
       tester,

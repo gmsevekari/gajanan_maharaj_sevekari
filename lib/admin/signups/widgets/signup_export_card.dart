@@ -16,6 +16,9 @@ class SignupExportCard extends StatelessWidget {
   final String groupName;
   final AppLocalizations l10n;
   final ThemeData theme;
+
+  /// Language of the admin-entered content (title, description, slot labels)
+  /// shown on the card; numbers and dates are always English.
   final String langCode;
 
   const SignupExportCard({
@@ -48,23 +51,15 @@ class SignupExportCard extends StatelessWidget {
         ? ((totalClaims / totalCapacity) * 100).round()
         : 0;
 
-    final totalSlotsStr = formatNumberLocalized(
-      slots.length,
-      langCode,
-      pad: false,
-    );
-    final totalClaimsStr = formatNumberLocalized(
-      totalClaims,
-      langCode,
-      pad: false,
-    );
+    final totalSlotsStr = formatNumberLocalized(slots.length, 'en', pad: false);
+    final totalClaimsStr = formatNumberLocalized(totalClaims, 'en', pad: false);
     final totalCapacityStr = formatNumberLocalized(
       totalCapacity,
-      langCode,
+      'en',
       pad: false,
     );
     final percentStr =
-        '${formatNumberLocalized(percentFilled, langCode, pad: false)}%';
+        '${formatNumberLocalized(percentFilled, 'en', pad: false)}%';
 
     return Material(
       color: Colors.transparent,
@@ -178,12 +173,12 @@ class SignupExportCard extends StatelessWidget {
                   : 0.0;
               final claimed = formatNumberLocalized(
                 slot.claimedCount,
-                langCode,
+                'en',
                 pad: false,
               );
               final cap = formatNumberLocalized(
                 slot.capacity,
-                langCode,
+                'en',
                 pad: false,
               );
 

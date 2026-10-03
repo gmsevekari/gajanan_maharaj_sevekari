@@ -220,21 +220,23 @@ void main() {
       },
     );
 
-    testWidgets('renders Marathi titles and badges when in Marathi locale', (
-      tester,
-    ) async {
-      await seedSignups();
-      await pumpDashboard(tester, locale: const Locale('mr'));
+    testWidgets(
+      'keeps the UI in English but shows Marathi titles when in Marathi locale',
+      (tester) async {
+        await seedSignups();
+        await pumpDashboard(tester, locale: const Locale('mr'));
 
-      expect(find.text('साइन अप्स'), findsOneWidget);
-      expect(find.text('प्रसाद सेवा मसुदा'), findsOneWidget);
-      expect(find.text('साडी सेवा प्रकाशित'), findsOneWidget);
-      expect(find.text('अन्नकूट बंद'), findsOneWidget);
-      expect(find.text('सर्व'), findsOneWidget);
-      expect(find.text('ड्राफ्ट'), findsNWidgets(2)); // chip + badge
-      expect(find.text('पब्लिश्ड'), findsNWidgets(2)); // chip + badge
-      expect(find.text('बंद'), findsNWidgets(2)); // chip + badge
-    });
+        // UI text stays English; titles are admin-entered content.
+        expect(find.text('Sign Ups'), findsOneWidget);
+        expect(find.text('प्रसाद सेवा मसुदा'), findsOneWidget);
+        expect(find.text('साडी सेवा प्रकाशित'), findsOneWidget);
+        expect(find.text('अन्नकूट बंद'), findsOneWidget);
+        expect(find.text('All'), findsOneWidget);
+        expect(find.text('Draft'), findsNWidgets(2)); // chip + badge
+        expect(find.text('Published'), findsNWidgets(2)); // chip + badge
+        expect(find.text('Closed'), findsNWidgets(2)); // chip + badge
+      },
+    );
 
     testWidgets('falls back to the English description when Marathi is blank', (
       tester,

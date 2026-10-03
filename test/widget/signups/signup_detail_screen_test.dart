@@ -646,4 +646,44 @@ void main() {
       expect(find.byType(Image), findsNothing);
     });
   });
+
+  testWidgets('keeps UI text and dates in English under a Marathi locale', (
+    tester,
+  ) async {
+    final signupId = await createOpenSignup();
+    final slotId = await service.addSlot(
+      signupId,
+      SignupSlot(
+        labelEn: 'Week 1',
+        labelMr: 'आठवडा १',
+        date: DateTime(2026, 3, 15),
+        capacity: 3,
+        sortOrder: 0,
+        createdAt: DateTime.now(),
+      ),
+    );
+    await service.claimSlot(signupId: signupId, slotId: slotId, name: 'Jane');
+
+    await tester.pumpWidget(
+      wrap(
+        SignupDetailScreen(
+          signupId: signupId,
+          deviceId: 'device_1',
+          firestore: firestore,
+          signupService: service,
+        ),
+        locale: const Locale('mr'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('My Signups'), findsOneWidget);
+    expect(find.text('Slots'), findsOneWidget);
+    expect(find.text('Entries'), findsOneWidget);
+    expect(find.text('Date'), findsOneWidget);
+    expect(find.text('March 15'), findsOneWidget);
+    // Admin-entered content still follows the app language.
+    expect(find.text('रविवार प्रसाद सेवा'), findsOneWidget);
+    expect(find.text('आठवडा १'), findsOneWidget);
+  });
 }

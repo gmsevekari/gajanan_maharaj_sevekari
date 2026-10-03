@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 /// Published sign-up signups for a single group. Reached via the
 /// group-selection indirection described in the design doc - by the time
@@ -50,7 +51,9 @@ class _SignupsListScreenState extends State<SignupsListScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => EnglishOnly(builder: _buildScreen);
+
+  Widget _buildScreen(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -125,7 +128,7 @@ class _SignupCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
+    final isMarathi = contentIsMarathi(context);
     final title = isMarathi
         ? (signup.titleMr.isNotEmpty ? signup.titleMr : signup.titleEn)
         : (signup.titleEn.isNotEmpty ? signup.titleEn : signup.titleMr);

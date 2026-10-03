@@ -18,8 +18,7 @@ class SignupSlotTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isMarathi = Localizations.localeOf(context).languageCode == 'mr';
-    final langCode = isMarathi ? 'mr' : 'en';
+    const langCode = 'en';
     final isFull = slot.claimedCount >= slot.capacity;
     final label = slot.labelEn.isNotEmpty ? slot.labelEn : slot.labelMr;
     final claimedStr = formatNumberLocalized(
