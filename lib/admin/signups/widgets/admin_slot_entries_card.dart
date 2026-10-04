@@ -43,7 +43,7 @@ class AdminSlotEntriesCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            if (slot.date != null) ...[
+            if (slot.startAt != null) ...[
               const SizedBox(height: 4),
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -55,7 +55,7 @@ class AdminSlotEntriesCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    formatDateShort(slot.date!, 'en'),
+                    formatDateShort(slot.startAt!, 'en'),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.appColors.secondaryText,
                     ),

@@ -11,6 +11,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/form_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
+import 'package:gajanan_maharaj_sevekari/utils/slot_schedule.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
@@ -206,18 +207,7 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
       );
 
       final slots = [
-        for (var i = 0; i < _slots.length; i++)
-          SignupSlot(
-            labelEn: _slots[i].labelEnController.text.trim(),
-            labelMr: _slots[i].labelMrController.text.trim(),
-            date: _slots[i].date,
-            capacity: int.parse(_slots[i].capacityController.text.trim()),
-            suggestedAmount: double.tryParse(
-              _slots[i].suggestedAmountController.text.trim(),
-            ),
-            sortOrder: i,
-            createdAt: now,
-          ),
+        for (var i = 0; i < _slots.length; i++) _buildSlot(i, now),
       ];
 
       await _service.createSignupWithSlots(signup, slots);
@@ -254,6 +244,30 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  /// The slot for form row [index]. The form has validated that a date was
+  /// picked, so resolving can't fail here; that would be a programming error.
+  SignupSlot _buildSlot(int index, DateTime now) {
+    final row = _slots[index];
+    final schedule = resolveSlotSchedule(
+      SlotScheduleInput(startDate: row.date),
+    );
+    if (schedule is! SlotScheduleResolved) {
+      throw StateError('Slot ${index + 1} has no valid schedule: $schedule');
+    }
+    return SignupSlot(
+      labelEn: row.labelEnController.text.trim(),
+      labelMr: row.labelMrController.text.trim(),
+      startAt: schedule.startAt,
+      endAt: schedule.endAt,
+      capacity: int.parse(row.capacityController.text.trim()),
+      suggestedAmount: double.tryParse(
+        row.suggestedAmountController.text.trim(),
+      ),
+      sortOrder: index,
+      createdAt: now,
+    );
   }
 
   @override

@@ -81,7 +81,8 @@ void main() {
       SignupSlot(
         labelEn: labelEn,
         labelMr: labelMr,
-        date: date,
+        startAt: date,
+        endAt: date?.add(const Duration(hours: 23, minutes: 59)),
         capacity: capacity,
         sortOrder: nextSortOrder++,
         createdAt: DateTime.now(),

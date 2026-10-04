@@ -69,8 +69,8 @@ class _AdminSignupEntriesScreenState extends State<AdminSignupEntriesScreen>
 
   /// Date first (undated last), then the slots' own order.
   static int _compareSlots(SignupSlot a, SignupSlot b) {
-    final dateA = a.date;
-    final dateB = b.date;
+    final dateA = a.startAt;
+    final dateB = b.startAt;
     if (dateA == null && dateB != null) return 1;
     if (dateA != null && dateB == null) return -1;
     if (dateA != null && dateB != null) {
@@ -105,7 +105,7 @@ class _AdminSignupEntriesScreenState extends State<AdminSignupEntriesScreen>
                   .where((e) => e.slotId == slot.id)
                   .toList();
               if (slotEntries.isEmpty) continue;
-              final isPast = slot.date?.isBefore(now) ?? false;
+              final isPast = slot.startAt?.isBefore(now) ?? false;
               (isPast ? past : upcoming).add((slot, slotEntries));
             }
 

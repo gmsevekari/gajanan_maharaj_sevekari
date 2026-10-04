@@ -1,11 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
 
 /// A single claimable slot within a [Signup]'s `slots` subcollection.
+///
+/// A slot runs from [startAt] to [endAt] (UTC instants) and may span days.
+/// [timezone] is the zone its times were entered in, and the zone they are
+/// shown in. A slot saved without these fields (no [startAt] / [endAt]) loads
+/// as an undated slot.
 class SignupSlot {
   final String? id;
   final String labelEn;
   final String labelMr;
-  final DateTime? date;
+  final DateTime? startAt;
+  final DateTime? endAt;
+  final String timezone;
   final int capacity;
   final int claimedCount;
   final double? suggestedAmount;
@@ -16,7 +24,9 @@ class SignupSlot {
     this.id,
     required this.labelEn,
     required this.labelMr,
-    this.date,
+    this.startAt,
+    this.endAt,
+    this.timezone = EventTimezone.defaultZone,
     required this.capacity,
     this.claimedCount = 0,
     this.suggestedAmount,
@@ -29,9 +39,11 @@ class SignupSlot {
       id: id,
       labelEn: data['labelEn'] is String ? data['labelEn'] as String : '',
       labelMr: data['labelMr'] is String ? data['labelMr'] as String : '',
-      date: data['date'] is Timestamp
-          ? (data['date'] as Timestamp).toDate()
-          : null,
+      startAt: _instant(data['startAt']),
+      endAt: _instant(data['endAt']),
+      timezone: data['timezone'] is String
+          ? data['timezone'] as String
+          : EventTimezone.defaultZone,
       capacity: data['capacity'] is num ? (data['capacity'] as num).toInt() : 0,
       claimedCount: data['claimedCount'] is num
           ? (data['claimedCount'] as num).toInt()
@@ -48,11 +60,16 @@ class SignupSlot {
     );
   }
 
+  static DateTime? _instant(Object? value) =>
+      value is Timestamp ? value.toDate().toUtc() : null;
+
   Map<String, dynamic> toMap() {
     return {
       'labelEn': labelEn,
       'labelMr': labelMr,
-      'date': date != null ? Timestamp.fromDate(date!) : null,
+      'startAt': startAt != null ? Timestamp.fromDate(startAt!) : null,
+      'endAt': endAt != null ? Timestamp.fromDate(endAt!) : null,
+      'timezone': timezone,
       'capacity': capacity,
       'claimedCount': claimedCount,
       'suggestedAmount': suggestedAmount,
@@ -61,11 +78,39 @@ class SignupSlot {
     };
   }
 
+  /// Whether the slot has both a start and an end.
+  bool get hasSchedule => startAt != null && endAt != null;
+
+  /// True when, in [timezone], the slot starts at 00:00 and ends at 23:59 -
+  /// what an empty time gives when it is created - so no time needs showing.
+  bool get isAllDay {
+    if (!hasSchedule) return false;
+    final start = utcToWallClock(startAt!, timezone);
+    final end = utcToWallClock(endAt!, timezone);
+    return start.hour == 0 &&
+        start.minute == 0 &&
+        end.hour == 23 &&
+        end.minute == 59;
+  }
+
+  /// True when, in [timezone], the slot starts and ends on different days
+  /// (including an overnight slot).
+  bool get isMultiDay {
+    if (!hasSchedule) return false;
+    final start = utcToWallClock(startAt!, timezone);
+    final end = utcToWallClock(endAt!, timezone);
+    return start.year != end.year ||
+        start.month != end.month ||
+        start.day != end.day;
+  }
+
   SignupSlot copyWith({
     String? id,
     String? labelEn,
     String? labelMr,
-    DateTime? date,
+    DateTime? startAt,
+    DateTime? endAt,
+    String? timezone,
     int? capacity,
     int? claimedCount,
     double? suggestedAmount,
@@ -76,7 +121,9 @@ class SignupSlot {
       id: id ?? this.id,
       labelEn: labelEn ?? this.labelEn,
       labelMr: labelMr ?? this.labelMr,
-      date: date ?? this.date,
+      startAt: startAt ?? this.startAt,
+      endAt: endAt ?? this.endAt,
+      timezone: timezone ?? this.timezone,
       capacity: capacity ?? this.capacity,
       claimedCount: claimedCount ?? this.claimedCount,
       suggestedAmount: suggestedAmount ?? this.suggestedAmount,
@@ -93,22 +140,32 @@ class SignupSlot {
           id == other.id &&
           labelEn == other.labelEn &&
           labelMr == other.labelMr &&
-          date == other.date &&
+          _sameInstant(startAt, other.startAt) &&
+          _sameInstant(endAt, other.endAt) &&
+          timezone == other.timezone &&
           capacity == other.capacity &&
           claimedCount == other.claimedCount &&
           suggestedAmount == other.suggestedAmount &&
           sortOrder == other.sortOrder &&
           createdAt == other.createdAt;
 
+  /// Compares the moment in time, not the UTC flag (a local and a UTC
+  /// `DateTime` for the same moment are `!=` in Dart).
+  static bool _sameInstant(DateTime? a, DateTime? b) =>
+      a == null || b == null ? a == b : a.isAtSameMomentAs(b);
+
   @override
-  int get hashCode =>
-      id.hashCode ^
-      labelEn.hashCode ^
-      labelMr.hashCode ^
-      date.hashCode ^
-      capacity.hashCode ^
-      claimedCount.hashCode ^
-      suggestedAmount.hashCode ^
-      sortOrder.hashCode ^
-      createdAt.hashCode;
+  int get hashCode => Object.hash(
+    id,
+    labelEn,
+    labelMr,
+    startAt?.millisecondsSinceEpoch,
+    endAt?.millisecondsSinceEpoch,
+    timezone,
+    capacity,
+    claimedCount,
+    suggestedAmount,
+    sortOrder,
+    createdAt,
+  );
 }

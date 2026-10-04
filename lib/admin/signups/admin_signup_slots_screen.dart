@@ -74,10 +74,10 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
         final slots = snapshot.data ?? const <SignupSlot>[];
         final now = DateTime.now();
         final upcoming = slots
-            .where((s) => s.date == null || !s.date!.isBefore(now))
+            .where((s) => s.startAt == null || !s.startAt!.isBefore(now))
             .toList();
         final past = slots
-            .where((s) => s.date?.isBefore(now) ?? false)
+            .where((s) => s.startAt?.isBefore(now) ?? false)
             .toList();
 
         Widget tab(List<SignupSlot> list) => loading

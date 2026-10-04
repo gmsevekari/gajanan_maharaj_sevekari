@@ -66,7 +66,7 @@ class SignupSlotTile extends StatelessWidget {
                   ),
               ],
             ),
-            if (slot.date != null) ...[
+            if (slot.startAt != null) ...[
               const SizedBox(height: 4),
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -78,7 +78,7 @@ class SignupSlotTile extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    formatDateShortWithDay(slot.date!, langCode),
+                    formatDateShortWithDay(slot.startAt!, langCode),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.appColors.secondaryText,
                     ),

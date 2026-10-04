@@ -65,7 +65,8 @@ void main() {
       SignupSlot(
         labelEn: 'Week 1',
         labelMr: 'आठवडा १',
-        date: date,
+        startAt: date,
+        endAt: date?.add(const Duration(hours: 23, minutes: 59)),
         capacity: 3,
         sortOrder: 0,
         createdAt: DateTime.now(),

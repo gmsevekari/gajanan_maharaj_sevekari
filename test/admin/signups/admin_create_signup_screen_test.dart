@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:typed_data';
 
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_create_signup_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
@@ -562,6 +564,51 @@ void main() {
         expect(slots.docs.first.data()['sortOrder'], 0);
       },
     );
+
+    testWidgets('stores the picked date as a whole-day range in Pacific time', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+
+      await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+      await tester.tap(find.text('Add Slot'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
+      await tester.enterText(find.byKey(const Key('slotCapacity_0')), '2');
+      await pickSlotDate(tester); // the picker opens on today
+      final today = DateTime.now();
+
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      final signup = (await firestore.collection('signups').get()).docs.single;
+      final slot = (await signup.reference.collection('slots').get())
+          .docs
+          .single
+          .data();
+      expect(slot.containsKey('date'), isFalse);
+      expect(slot['timezone'], EventTimezone.pacific);
+      expect(
+        (slot['startAt'] as Timestamp).toDate().toUtc(),
+        wallClockToUtc(
+          year: today.year,
+          month: today.month,
+          day: today.day,
+          timezone: EventTimezone.pacific,
+        ),
+      );
+      expect(
+        (slot['endAt'] as Timestamp).toDate().toUtc(),
+        wallClockToUtc(
+          year: today.year,
+          month: today.month,
+          day: today.day,
+          hour: 23,
+          minute: 59,
+          timezone: EventTimezone.pacific,
+        ),
+      );
+    });
 
     testWidgets('generates a join code only when the toggle is enabled', (
       tester,

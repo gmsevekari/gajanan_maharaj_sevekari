@@ -165,7 +165,7 @@ class _MySignupsScreenState extends State<MySignupsScreen>
                 final slot = slots
                     .where((s) => s.id == entry.slotId)
                     .firstOrNull;
-                if (slot?.date != null && slot!.date!.isBefore(now)) {
+                if (slot?.startAt != null && slot!.startAt!.isBefore(now)) {
                   past.add(entry);
                 } else {
                   upcoming.add(entry);

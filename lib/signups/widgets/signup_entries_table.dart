@@ -165,7 +165,7 @@ class SignupEntriesTable extends StatelessWidget {
       );
 
   String _dateText(Map<String?, SignupSlot> slotsById, SignupEntry entry) {
-    final date = slotsById[entry.slotId]?.date;
+    final date = slotsById[entry.slotId]?.startAt;
     return date != null ? formatDateShort(date, 'en') : '-';
   }
 
@@ -185,8 +185,8 @@ class SignupEntriesTable extends StatelessWidget {
   ) {
     final slotA = slotsById[a.slotId];
     final slotB = slotsById[b.slotId];
-    final dateA = slotA?.date;
-    final dateB = slotB?.date;
+    final dateA = slotA?.startAt;
+    final dateB = slotB?.startAt;
     if (dateA == null && dateB != null) return 1;
     if (dateA != null && dateB == null) return -1;
     if (dateA != null && dateB != null) {

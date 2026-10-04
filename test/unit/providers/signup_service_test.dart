@@ -4,6 +4,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
@@ -779,6 +780,30 @@ void main() {
       final newSlots = await service.getSlots(newId).first;
       expect(newSlots.single.labelEn, 'Week 1');
       expect(newSlots.single.claimedCount, 0);
+    });
+
+    test('copies each slot\'s start, end and timezone', () async {
+      final signupId = await service.createSignup(buildSignup());
+      await service.addSlot(
+        signupId,
+        SignupSlot(
+          labelEn: 'Evening',
+          labelMr: 'संध्याकाळ',
+          startAt: DateTime.utc(2026, 7, 2, 1),
+          endAt: DateTime.utc(2026, 7, 2, 2, 30),
+          timezone: EventTimezone.india,
+          capacity: 3,
+          sortOrder: 0,
+          createdAt: DateTime.now(),
+        ),
+      );
+
+      final newId = await service.duplicateSignup(signupId);
+
+      final copied = (await service.getSlots(newId).first).single;
+      expect(copied.startAt, DateTime.utc(2026, 7, 2, 1));
+      expect(copied.endAt, DateTime.utc(2026, 7, 2, 2, 30));
+      expect(copied.timezone, EventTimezone.india);
     });
 
     test('does not copy entries', () async {

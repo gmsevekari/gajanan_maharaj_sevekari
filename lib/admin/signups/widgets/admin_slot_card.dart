@@ -91,12 +91,12 @@ class AdminSlotCard extends StatelessWidget {
             const SizedBox(height: 6),
 
             // Optional Date & Suggested Amount
-            if (slot.date != null || slot.suggestedAmount != null) ...[
+            if (slot.startAt != null || slot.suggestedAmount != null) ...[
               Wrap(
                 spacing: 12,
                 runSpacing: 4,
                 children: [
-                  if (slot.date != null)
+                  if (slot.startAt != null)
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -107,7 +107,7 @@ class AdminSlotCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          formatDateShortWithDay(slot.date!, langCode),
+                          formatDateShortWithDay(slot.startAt!, langCode),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.appColors.secondaryText,
                           ),

@@ -466,7 +466,13 @@ void main() {
         'capacity': capacity,
         'claimedCount': claimed,
         'sortOrder': sortOrder,
-        'date': date == null ? null : Timestamp.fromDate(date),
+        'startAt': date == null ? null : Timestamp.fromDate(date),
+        'endAt': date == null
+            ? null
+            : Timestamp.fromDate(
+                date.add(const Duration(hours: 23, minutes: 59)),
+              ),
+        'timezone': 'America/Los_Angeles',
         'createdAt': Timestamp.fromDate(DateTime.now()),
       });
       return ref.id;
