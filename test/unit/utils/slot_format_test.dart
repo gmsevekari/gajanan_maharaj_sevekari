@@ -366,4 +366,44 @@ void main() {
       expect(const SlotWhen('a').toString(), 'SlotWhen(a)');
     });
   });
+
+  group('formatClockTime', () {
+    test('uses a 12-hour clock with AM/PM', () {
+      expect(formatClockTime((hour: 0, minute: 0)), '12:00 AM');
+      expect(formatClockTime((hour: 9, minute: 5)), '9:05 AM');
+      expect(formatClockTime((hour: 12, minute: 0)), '12:00 PM');
+      expect(formatClockTime((hour: 13, minute: 30)), '1:30 PM');
+      expect(formatClockTime((hour: 23, minute: 59)), '11:59 PM');
+    });
+
+    test('stays English under a Marathi locale', () {
+      final previous = Intl.defaultLocale;
+      addTearDown(() => Intl.defaultLocale = previous);
+      Intl.defaultLocale = 'mr';
+
+      expect(formatClockTime((hour: 18, minute: 0)), '6:00 PM');
+    });
+  });
+
+  group('formatSlotInputDate', () {
+    test('shows the month, day and year', () {
+      expect(formatSlotInputDate(DateTime(2026, 3, 15)), 'Mar 15, 2026');
+      expect(formatSlotInputDate(DateTime(2027, 12, 1)), 'Dec 1, 2027');
+    });
+
+    test('ignores the time of day a date picker adds', () {
+      expect(
+        formatSlotInputDate(DateTime(2026, 3, 15, 23, 59)),
+        'Mar 15, 2026',
+      );
+    });
+
+    test('stays English under a Marathi locale', () {
+      final previous = Intl.defaultLocale;
+      addTearDown(() => Intl.defaultLocale = previous);
+      Intl.defaultLocale = 'mr';
+
+      expect(formatSlotInputDate(DateTime(2026, 3, 15)), 'Mar 15, 2026');
+    });
+  });
 }

@@ -10,6 +10,20 @@ const ClockTime slotDefaultStartTime = (hour: 0, minute: 0);
 /// therefore ends at 23:59:00, and its last 59 seconds count as past.
 const ClockTime slotDefaultEndTime = (hour: 23, minute: 59);
 
+/// Where a time picker for a slot's start opens when none is chosen yet.
+const ClockTime slotPickerStartTime = (hour: 9, minute: 0);
+
+/// Where a time picker for a slot's end opens: an hour after the start time
+/// (the picker's own start if none is chosen), but never past 23:59, since a
+/// slot can't end on another day without an end date.
+ClockTime suggestedSlotEndTime(ClockTime? startTime) {
+  final start = startTime ?? slotPickerStartTime;
+  final minutes = start.hour * 60 + start.minute + 60;
+  const lastMinute = 23 * 60 + 59;
+  final end = minutes > lastMinute ? lastMinute : minutes;
+  return (hour: end ~/ 60, minute: end % 60);
+}
+
 /// What an admin enters for one slot's schedule. Only [startDate] is
 /// required; everything else has a default (see [resolveSlotSchedule]).
 ///

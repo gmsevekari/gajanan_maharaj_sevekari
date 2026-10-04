@@ -1,5 +1,6 @@
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
+import 'package:gajanan_maharaj_sevekari/utils/slot_schedule.dart';
 import 'package:intl/intl.dart';
 
 /// How a slot's schedule reads on screen: a [primary] line and, for a
@@ -69,6 +70,15 @@ SlotWhen? formatSlotWhen(SignupSlot slot) {
   );
 }
 
+/// A time of day for a button or hint in the slot form, e.g. `6:00 PM`.
+String formatClockTime(ClockTime time) =>
+    _time.format(DateTime(2000, 1, 1, time.hour, time.minute));
+
+/// A calendar day for a button in the slot form, e.g. `Mar 15, 2026`. Only
+/// the year, month and day are used, so a picker's time of day is ignored.
+String formatSlotInputDate(DateTime date) =>
+    _inputDate.format(DateTime(date.year, date.month, date.day));
+
 const String _dash = '–';
 
 // Fixed to US English, which needs no locale-data setup, so the output never
@@ -77,6 +87,7 @@ const String _dash = '–';
 DateFormat get _dayWithWeekday => DateFormat('EEEE, MMMM d', 'en_US');
 DateFormat get _day => DateFormat('MMMM d', 'en_US');
 DateFormat get _dayWithYear => DateFormat('MMMM d, y', 'en_US');
+DateFormat get _inputDate => DateFormat('MMM d, y', 'en_US');
 DateFormat get _time => DateFormat('h:mm a', 'en_US');
 DateFormat get _dayAndTime => DateFormat('MMM d, h:mm a', 'en_US');
 DateFormat get _dayYearAndTime => DateFormat('MMM d, y, h:mm a', 'en_US');

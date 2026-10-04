@@ -606,4 +606,23 @@ void main() {
       expect(resolveSlotSchedule(input), resolveSlotSchedule(input));
     });
   });
+
+  group('suggestedSlotEndTime', () {
+    test('is an hour after the start time', () {
+      expect(suggestedSlotEndTime(at(9)), at(10));
+      expect(suggestedSlotEndTime(at(0)), at(1));
+      expect(suggestedSlotEndTime(at(18, 30)), at(19, 30));
+    });
+
+    test('stops at 23:59 rather than rolling into the next day', () {
+      expect(suggestedSlotEndTime(at(23, 30)), at(23, 59));
+      expect(suggestedSlotEndTime(at(22, 59)), at(23, 59));
+      expect(suggestedSlotEndTime(at(23, 59)), at(23, 59));
+    });
+
+    test('with no start time assumes the picker\'s own start of 9:00', () {
+      expect(slotPickerStartTime, at(9));
+      expect(suggestedSlotEndTime(null), at(10));
+    });
+  });
 }
