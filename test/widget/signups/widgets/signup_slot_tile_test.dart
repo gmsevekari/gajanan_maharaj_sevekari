@@ -54,7 +54,7 @@ void main() {
       ),
     );
 
-    expect(find.text('March 15'), findsOneWidget);
+    expect(find.text('Sunday, March 15'), findsOneWidget);
   });
 
   testWidgets('shows nothing for the date when unset', (tester) async {
@@ -123,7 +123,7 @@ void main() {
         ),
       );
 
-      expect(find.text('March 15'), findsOneWidget);
+      expect(find.text('Sunday, March 15'), findsOneWidget);
     },
   );
 }

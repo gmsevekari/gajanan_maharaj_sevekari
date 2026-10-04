@@ -62,7 +62,7 @@ void main() {
       wrap(slot(date: DateTime(2026, 3, 15), suggestedAmount: 50)),
     );
 
-    expect(find.text('March 15'), findsOneWidget);
+    expect(find.text('Sunday, March 15'), findsOneWidget);
     expect(find.text('Suggested: 50.0'), findsOneWidget);
   });
 
