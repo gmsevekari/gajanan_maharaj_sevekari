@@ -17,11 +17,10 @@ void main() {
   test('English wording', () {
     expect(en.signupSlotStartsLabel, 'Starts');
     expect(en.signupSlotEndsLabel, 'Ends');
-    expect(en.signupSlotStartTimeLabel, 'Start time');
-    expect(en.signupSlotEndTimeLabel, 'End time');
-    expect(en.signupSlotSelectDateLabel, 'Select date');
+    expect(en.signupSlotStartTimeLabel, 'Start Time');
+    expect(en.signupSlotEndTimeLabel, 'End Time');
     expect(en.signupSlotTimeOptionalLabel, 'Time (optional)');
-    expect(en.signupSlotClearTimeTooltip, 'Clear time');
+    expect(en.signupSlotClearTimeTooltip, 'Clear Time');
     expect(en.signupSlotEndBeforeStartError, 'End must be after the start');
   });
 
@@ -31,7 +30,6 @@ void main() {
       'ends': mr.signupSlotEndsLabel,
       'startTime': mr.signupSlotStartTimeLabel,
       'endTime': mr.signupSlotEndTimeLabel,
-      'selectDate': mr.signupSlotSelectDateLabel,
       'timeOptional': mr.signupSlotTimeOptionalLabel,
       'clearTime': mr.signupSlotClearTimeTooltip,
       'endBeforeStart': mr.signupSlotEndBeforeStartError,
@@ -41,11 +39,11 @@ void main() {
       'ends': en.signupSlotEndsLabel,
       'startTime': en.signupSlotStartTimeLabel,
       'endTime': en.signupSlotEndTimeLabel,
-      'selectDate': en.signupSlotSelectDateLabel,
       'timeOptional': en.signupSlotTimeOptionalLabel,
       'clearTime': en.signupSlotClearTimeTooltip,
       'endBeforeStart': en.signupSlotEndBeforeStartError,
     };
+    expect(mr.signupSlotClearTimeTooltip, 'वेळ काढून टाका');
     for (final key in marathi.keys) {
       expect(marathi[key], isNotEmpty, reason: key);
       expect(marathi[key], isNot(english[key]), reason: key);
@@ -63,7 +61,6 @@ void main() {
     expect(enMr.signupSlotEndsLabel, mr.signupSlotEndsLabel);
     expect(enMr.signupSlotStartTimeLabel, mr.signupSlotStartTimeLabel);
     expect(enMr.signupSlotEndTimeLabel, mr.signupSlotEndTimeLabel);
-    expect(enMr.signupSlotSelectDateLabel, mr.signupSlotSelectDateLabel);
     expect(enMr.signupSlotTimeOptionalLabel, mr.signupSlotTimeOptionalLabel);
     expect(enMr.signupSlotClearTimeTooltip, mr.signupSlotClearTimeTooltip);
     expect(

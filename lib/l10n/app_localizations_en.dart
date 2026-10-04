@@ -2300,19 +2300,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSlotEndsLabel => 'Ends';
 
   @override
-  String get signupSlotStartTimeLabel => 'Start time';
+  String get signupSlotStartTimeLabel => 'Start Time';
 
   @override
-  String get signupSlotEndTimeLabel => 'End time';
-
-  @override
-  String get signupSlotSelectDateLabel => 'Select date';
+  String get signupSlotEndTimeLabel => 'End Time';
 
   @override
   String get signupSlotTimeOptionalLabel => 'Time (optional)';
 
   @override
-  String get signupSlotClearTimeTooltip => 'Clear time';
+  String get signupSlotClearTimeTooltip => 'Clear Time';
 
   @override
   String get signupSlotEndBeforeStartError => 'End must be after the start';
@@ -4932,13 +4929,10 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get signupSlotEndTimeLabel => 'संपण्याची वेळ';
 
   @override
-  String get signupSlotSelectDateLabel => 'तारीख निवडा';
-
-  @override
   String get signupSlotTimeOptionalLabel => 'वेळ (ऐच्छिक)';
 
   @override
-  String get signupSlotClearTimeTooltip => 'वेळ काढा';
+  String get signupSlotClearTimeTooltip => 'वेळ काढून टाका';
 
   @override
   String get signupSlotEndBeforeStartError => 'शेवट सुरुवातीनंतर असावा';

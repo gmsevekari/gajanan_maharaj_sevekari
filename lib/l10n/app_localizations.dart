@@ -4428,20 +4428,14 @@ abstract class AppLocalizations {
   /// No description provided for @signupSlotStartTimeLabel.
   ///
   /// In en, this message translates to:
-  /// **'Start time'**
+  /// **'Start Time'**
   String get signupSlotStartTimeLabel;
 
   /// No description provided for @signupSlotEndTimeLabel.
   ///
   /// In en, this message translates to:
-  /// **'End time'**
+  /// **'End Time'**
   String get signupSlotEndTimeLabel;
-
-  /// No description provided for @signupSlotSelectDateLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Select date'**
-  String get signupSlotSelectDateLabel;
 
   /// No description provided for @signupSlotTimeOptionalLabel.
   ///
@@ -4452,7 +4446,7 @@ abstract class AppLocalizations {
   /// No description provided for @signupSlotClearTimeTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Clear time'**
+  /// **'Clear Time'**
   String get signupSlotClearTimeTooltip;
 
   /// No description provided for @signupSlotEndBeforeStartError.

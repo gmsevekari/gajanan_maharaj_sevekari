@@ -2316,13 +2316,10 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSlotEndTimeLabel => 'संपण्याची वेळ';
 
   @override
-  String get signupSlotSelectDateLabel => 'तारीख निवडा';
-
-  @override
   String get signupSlotTimeOptionalLabel => 'वेळ (ऐच्छिक)';
 
   @override
-  String get signupSlotClearTimeTooltip => 'वेळ काढा';
+  String get signupSlotClearTimeTooltip => 'वेळ काढून टाका';
 
   @override
   String get signupSlotEndBeforeStartError => 'शेवट सुरुवातीनंतर असावा';
