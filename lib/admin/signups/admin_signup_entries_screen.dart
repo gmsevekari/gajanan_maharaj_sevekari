@@ -74,7 +74,11 @@ class _AdminSignupEntriesScreenState extends State<AdminSignupEntriesScreen>
       stream: _slotsStream,
       builder: (context, slotsSnapshot) {
         final slots = (slotsSnapshot.data ?? const <SignupSlot>[]).toList()
-          ..sort(SignupSlot.compareByStart);
+          ..sort((a, b) {
+            final byStart = SignupSlot.compareByStart(a, b);
+            // Slots that tie on start and order still need a fixed order.
+            return byStart != 0 ? byStart : (a.id ?? '').compareTo(b.id ?? '');
+          });
 
         return StreamBuilder<List<SignupEntry>>(
           stream: _entriesStream,

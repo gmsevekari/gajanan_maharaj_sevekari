@@ -46,7 +46,7 @@ class SignupEntriesTable extends StatelessWidget {
     final slotsById = {for (final slot in slots) slot.id: slot};
 
     final rows = entries.toList()
-      ..sort((a, b) => _compareEntries(a, b, slotsById));
+      ..sort((a, b) => compareEntries(a, b, slotsById));
 
     final headerStyle = theme.textTheme.bodyMedium?.copyWith(
       color: theme.colorScheme.secondary,
@@ -179,7 +179,8 @@ class SignupEntriesTable extends StatelessWidget {
   /// Slot start (undated last, then slot order - see
   /// [SignupSlot.compareByStart]), then slot id (so slots that tie on both
   /// still group), then name. An entry whose slot is gone comes last.
-  static int _compareEntries(
+  @visibleForTesting
+  static int compareEntries(
     SignupEntry a,
     SignupEntry b,
     Map<String?, SignupSlot> slotsById,

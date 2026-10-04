@@ -763,6 +763,35 @@ void main() {
           lessThan(tester.getTopLeft(find.text('Evening')).dy),
         );
       });
+
+      testWidgets('lists slots that tie on start and order by id, so the '
+          'order is fixed', (tester) async {
+        final signup = await seedSignup();
+        final start = DateTime.now().add(const Duration(days: 4));
+        final ids = <String, String>{};
+        for (final label in ['Tie A', 'Tie B', 'Tie C']) {
+          final id = await addTimed(
+            signup,
+            label,
+            startAt: start,
+            endAt: start.add(const Duration(hours: 2)),
+          );
+          ids[label] = id;
+          await addEntry(signup, id, 'Person of $label');
+        }
+        await pumpScreen(tester, signupId: signup.id);
+
+        final shown = ids.keys.toList()
+          ..sort(
+            (a, b) => tester
+                .getTopLeft(find.text(a))
+                .dy
+                .compareTo(tester.getTopLeft(find.text(b)).dy),
+          );
+        final byId = ids.keys.toList()
+          ..sort((a, b) => ids[a]!.compareTo(ids[b]!));
+        expect(shown, byId);
+      });
     });
   });
 }
