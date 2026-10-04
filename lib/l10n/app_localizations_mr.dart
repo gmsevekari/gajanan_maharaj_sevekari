@@ -2304,6 +2304,30 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSlotDateRequired => 'कृपया तारीख निवडा';
 
   @override
+  String get signupSlotStartsLabel => 'सुरुवात';
+
+  @override
+  String get signupSlotEndsLabel => 'शेवट';
+
+  @override
+  String get signupSlotStartTimeLabel => 'सुरू होण्याची वेळ';
+
+  @override
+  String get signupSlotEndTimeLabel => 'संपण्याची वेळ';
+
+  @override
+  String get signupSlotSelectDateLabel => 'तारीख निवडा';
+
+  @override
+  String get signupSlotTimeOptionalLabel => 'वेळ (ऐच्छिक)';
+
+  @override
+  String get signupSlotClearTimeTooltip => 'वेळ काढा';
+
+  @override
+  String get signupSlotEndBeforeStartError => 'शेवट सुरुवातीनंतर असावा';
+
+  @override
   String get signupRemoveSlotTooltip => 'स्लॉट रिमूव्ह करा';
 
   @override

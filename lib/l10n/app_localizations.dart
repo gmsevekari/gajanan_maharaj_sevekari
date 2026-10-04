@@ -4413,6 +4413,54 @@ abstract class AppLocalizations {
   /// **'Please select a date'**
   String get signupSlotDateRequired;
 
+  /// No description provided for @signupSlotStartsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts'**
+  String get signupSlotStartsLabel;
+
+  /// No description provided for @signupSlotEndsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends'**
+  String get signupSlotEndsLabel;
+
+  /// No description provided for @signupSlotStartTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start time'**
+  String get signupSlotStartTimeLabel;
+
+  /// No description provided for @signupSlotEndTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'End time'**
+  String get signupSlotEndTimeLabel;
+
+  /// No description provided for @signupSlotSelectDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get signupSlotSelectDateLabel;
+
+  /// No description provided for @signupSlotTimeOptionalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time (optional)'**
+  String get signupSlotTimeOptionalLabel;
+
+  /// No description provided for @signupSlotClearTimeTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear time'**
+  String get signupSlotClearTimeTooltip;
+
+  /// No description provided for @signupSlotEndBeforeStartError.
+  ///
+  /// In en, this message translates to:
+  /// **'End must be after the start'**
+  String get signupSlotEndBeforeStartError;
+
   /// No description provided for @signupRemoveSlotTooltip.
   ///
   /// In en, this message translates to:

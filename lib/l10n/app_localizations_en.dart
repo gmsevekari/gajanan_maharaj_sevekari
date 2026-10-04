@@ -2294,6 +2294,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSlotDateRequired => 'Please select a date';
 
   @override
+  String get signupSlotStartsLabel => 'Starts';
+
+  @override
+  String get signupSlotEndsLabel => 'Ends';
+
+  @override
+  String get signupSlotStartTimeLabel => 'Start time';
+
+  @override
+  String get signupSlotEndTimeLabel => 'End time';
+
+  @override
+  String get signupSlotSelectDateLabel => 'Select date';
+
+  @override
+  String get signupSlotTimeOptionalLabel => 'Time (optional)';
+
+  @override
+  String get signupSlotClearTimeTooltip => 'Clear time';
+
+  @override
+  String get signupSlotEndBeforeStartError => 'End must be after the start';
+
+  @override
   String get signupRemoveSlotTooltip => 'Remove slot';
 
   @override
@@ -4894,6 +4918,30 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupSlotDateRequired => 'कृपया तारीख निवडा';
+
+  @override
+  String get signupSlotStartsLabel => 'सुरुवात';
+
+  @override
+  String get signupSlotEndsLabel => 'शेवट';
+
+  @override
+  String get signupSlotStartTimeLabel => 'सुरू होण्याची वेळ';
+
+  @override
+  String get signupSlotEndTimeLabel => 'संपण्याची वेळ';
+
+  @override
+  String get signupSlotSelectDateLabel => 'तारीख निवडा';
+
+  @override
+  String get signupSlotTimeOptionalLabel => 'वेळ (ऐच्छिक)';
+
+  @override
+  String get signupSlotClearTimeTooltip => 'वेळ काढा';
+
+  @override
+  String get signupSlotEndBeforeStartError => 'शेवट सुरुवातीनंतर असावा';
 
   @override
   String get signupRemoveSlotTooltip => 'Slot Remove करा';
