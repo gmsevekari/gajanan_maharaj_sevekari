@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 
 abstract class ContentContainer {
@@ -62,6 +63,15 @@ class AppConfig {
       playStoreUrl: json['playStoreUrl'] ?? '',
       appStoreUrl: json['appStoreUrl'] ?? '',
     );
+  }
+
+  /// The timezone new sign-up slots default to for [groupId]; Pacific for an
+  /// unknown or missing group.
+  String getDefaultTimezone(String? groupId) {
+    for (final group in gajananMaharajGroups) {
+      if (group.id == groupId) return group.defaultTimezone;
+    }
+    return EventTimezone.defaultZone;
   }
 
   String getDefaultCountryCode(String? groupId) {
@@ -704,6 +714,10 @@ class GajananMaharajGroup {
   final String? icon;
   final String defaultCountryCode;
 
+  /// The timezone new sign-up slots default to for this group (one of
+  /// [EventTimezone.supported]).
+  final String defaultTimezone;
+
   GajananMaharajGroup({
     required this.id,
     required this.nameEn,
@@ -712,6 +726,7 @@ class GajananMaharajGroup {
     this.parayanNameMr,
     this.icon,
     this.defaultCountryCode = GroupConstants.defaultCountryCode,
+    this.defaultTimezone = EventTimezone.defaultZone,
   });
 
   factory GajananMaharajGroup.fromJson(Map<String, dynamic> json) {
@@ -723,6 +738,11 @@ class GajananMaharajGroup {
       parayanNameMr: json['parayan_name_mr'],
       icon: json['icon'],
       defaultCountryCode: json['default_country_code'] ?? GroupConstants.defaultCountryCode,
+      defaultTimezone: normalizeTimezone(
+        json['default_timezone'] is String
+            ? json['default_timezone'] as String
+            : null,
+      ),
     );
   }
 }

@@ -37,7 +37,8 @@
       "name_mr": "सिअ‍ॅटल गजानन महाराज परिवार",
       "parayan_name_en": "Seattle Gajanan Maharaj Parivaar",
       "parayan_name_mr": "सिअ‍ॅटल गजानन महाराज परिवार",
-      "default_country_code": "+1"
+      "default_country_code": "+1",
+      "default_timezone": "America/Los_Angeles"
     },
     {
       "id": "gajanan_gunjan",
@@ -46,7 +47,8 @@
       "name_mr": "गजानन गुंजन",
       "parayan_name_en": "Gajanan Gunjan Parayan Seva",
       "parayan_name_mr": "गजानन गुंजन पारायण सेवा",
-      "default_country_code": "+91"
+      "default_country_code": "+91",
+      "default_timezone": "Asia/Kolkata"
     }
   ]
 }
