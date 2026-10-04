@@ -556,5 +556,159 @@ void main() {
         expect(build() == withStart, isFalse);
       });
     });
+
+    group('isPast and compareByStart', () {
+      SignupSlot slot({
+        DateTime? startAt,
+        DateTime? endAt,
+        int sortOrder = 0,
+        String id = 's',
+        String timezone = EventTimezone.pacific,
+      }) => SignupSlot(
+        id: id,
+        labelEn: id,
+        labelMr: id,
+        startAt: startAt,
+        endAt: endAt,
+        timezone: timezone,
+        capacity: 1,
+        sortOrder: sortOrder,
+        createdAt: DateTime.utc(2026),
+      );
+
+      // Seattle, all-day on 2026-07-01: 00:00 PDT to 23:59 PDT.
+      final allDay = slot(
+        startAt: DateTime.utc(2026, 7, 1, 7),
+        endAt: DateTime.utc(2026, 7, 2, 6, 59),
+      );
+
+      group('isPast', () {
+        test('an all-day slot stays upcoming through its last minute and '
+            'becomes past the minute after', () {
+          // 23:00 PDT on the day itself.
+          expect(allDay.isPast(DateTime.utc(2026, 7, 2, 6)), isFalse);
+          // 00:00 PDT the next day.
+          expect(allDay.isPast(DateTime.utc(2026, 7, 2, 7)), isTrue);
+        });
+
+        test('an all-day slot is upcoming earlier on its own day', () {
+          expect(allDay.isPast(DateTime.utc(2026, 7, 1, 7, 1)), isFalse);
+          expect(allDay.isPast(DateTime.utc(2026, 7, 1, 20)), isFalse);
+        });
+
+        test('flips exactly at the end of a timed slot', () {
+          final timed = slot(
+            startAt: DateTime.utc(2026, 7, 2, 1),
+            endAt: DateTime.utc(2026, 7, 2, 2, 30),
+          );
+          expect(timed.isPast(DateTime.utc(2026, 7, 2, 2, 29, 59)), isFalse);
+          expect(timed.isPast(DateTime.utc(2026, 7, 2, 2, 30)), isFalse);
+          expect(timed.isPast(DateTime.utc(2026, 7, 2, 2, 30, 1)), isTrue);
+        });
+
+        test('a slot that has started but not ended is not past', () {
+          final multiDay = slot(
+            startAt: DateTime.utc(2026, 7, 1, 7),
+            endAt: DateTime.utc(2026, 7, 4, 6, 59),
+          );
+          expect(multiDay.isPast(DateTime.utc(2026, 7, 2, 12)), isFalse);
+          expect(multiDay.isPast(DateTime.utc(2026, 7, 4, 7)), isTrue);
+        });
+
+        test('a slot that has not started is not past', () {
+          expect(allDay.isPast(DateTime.utc(2026, 6, 1)), isFalse);
+        });
+
+        test('a slot without an end is never past, even with a start long '
+            'ago', () {
+          expect(slot().isPast(DateTime.utc(2030)), isFalse);
+          expect(
+            slot(startAt: DateTime.utc(2020)).isPast(DateTime.utc(2030)),
+            isFalse,
+          );
+        });
+
+        test('does not depend on the time zone `now` is expressed in', () {
+          final nowUtc = DateTime.utc(2026, 7, 2, 7);
+          expect(allDay.isPast(nowUtc), isTrue);
+          expect(allDay.isPast(nowUtc.toLocal()), isTrue);
+          final before = DateTime.utc(2026, 7, 2, 6);
+          expect(allDay.isPast(before.toLocal()), isFalse);
+        });
+      });
+
+      group('compareByStart', () {
+        List<String> order(List<SignupSlot> slots) =>
+            (slots.toList()..sort(SignupSlot.compareByStart))
+                .map((s) => s.id!)
+                .toList();
+
+        test('orders by start time', () {
+          final slots = [
+            slot(id: 'late', startAt: DateTime.utc(2026, 7, 3)),
+            slot(id: 'early', startAt: DateTime.utc(2026, 7, 1)),
+            slot(id: 'mid', startAt: DateTime.utc(2026, 7, 2)),
+          ];
+          expect(order(slots), ['early', 'mid', 'late']);
+        });
+
+        test('orders slots on the same day by start time, whatever their '
+            'sortOrder', () {
+          final slots = [
+            slot(
+              id: 'evening',
+              startAt: DateTime.utc(2026, 7, 2, 1), // 18:00 PDT
+              sortOrder: 0,
+            ),
+            slot(
+              id: 'morning',
+              startAt: DateTime.utc(2026, 7, 1, 16), // 09:00 PDT
+              sortOrder: 5,
+            ),
+          ];
+          expect(order(slots), ['morning', 'evening']);
+        });
+
+        test('breaks a tie on start time by sortOrder', () {
+          final start = DateTime.utc(2026, 7, 1, 7);
+          final slots = [
+            slot(id: 'b', startAt: start, sortOrder: 2),
+            slot(id: 'a', startAt: start, sortOrder: 1),
+          ];
+          expect(order(slots), ['a', 'b']);
+        });
+
+        test('puts slots without a start last, ordered by sortOrder', () {
+          final slots = [
+            slot(id: 'undated2', sortOrder: 4),
+            slot(id: 'dated', startAt: DateTime.utc(2026, 7, 1)),
+            slot(id: 'undated1', sortOrder: 3),
+          ];
+          expect(order(slots), ['dated', 'undated1', 'undated2']);
+        });
+
+        test('compares instants, not UTC flags or the slot zone', () {
+          final a = slot(
+            id: 'a',
+            startAt: DateTime.utc(2026, 7, 1, 12).toLocal(),
+            timezone: EventTimezone.india,
+          );
+          final b = slot(id: 'b', startAt: DateTime.utc(2026, 7, 1, 13));
+          expect(SignupSlot.compareByStart(a, b), lessThan(0));
+          expect(SignupSlot.compareByStart(b, a), greaterThan(0));
+        });
+
+        test('is zero for slots equal in start and sortOrder', () {
+          final a = slot(id: 'a', startAt: DateTime.utc(2026, 7, 1));
+          final b = slot(id: 'b', startAt: DateTime.utc(2026, 7, 1));
+          expect(SignupSlot.compareByStart(a, b), 0);
+          expect(SignupSlot.compareByStart(a, a), 0);
+        });
+
+        test('two slots without a start are equal if sortOrder matches', () {
+          expect(SignupSlot.compareByStart(slot(), slot()), 0);
+        });
+      });
+    });
   });
 }

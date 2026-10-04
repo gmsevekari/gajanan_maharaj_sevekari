@@ -106,6 +106,27 @@ class SignupSlot {
         start.day != end.day;
   }
 
+  /// Whether the slot has finished by [now]: it has an end, and that end has
+  /// passed. A slot without an end is never past, since there is no basis to
+  /// call it so; one with no times set ends at 23:59 on its last day, so it
+  /// stays upcoming all day.
+  bool isPast(DateTime now) => endAt != null && endAt!.isBefore(now);
+
+  /// Orders slots by [startAt] (earliest first), then by [sortOrder]. Slots
+  /// without a start come last, in their own [sortOrder]. Compares instants,
+  /// so it is right whatever zone each slot was entered in.
+  static int compareByStart(SignupSlot a, SignupSlot b) {
+    final startA = a.startAt;
+    final startB = b.startAt;
+    if (startA == null && startB != null) return 1;
+    if (startA != null && startB == null) return -1;
+    if (startA != null && startB != null) {
+      final byStart = startA.compareTo(startB);
+      if (byStart != 0) return byStart;
+    }
+    return a.sortOrder.compareTo(b.sortOrder);
+  }
+
   SignupSlot copyWith({
     String? id,
     String? labelEn,
