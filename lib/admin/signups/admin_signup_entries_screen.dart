@@ -67,19 +67,6 @@ class _AdminSignupEntriesScreenState extends State<AdminSignupEntriesScreen>
   @override
   Widget build(BuildContext context) => EnglishOnly(builder: _buildScreen);
 
-  /// Date first (undated last), then the slots' own order.
-  static int _compareSlots(SignupSlot a, SignupSlot b) {
-    final dateA = a.startAt;
-    final dateB = b.startAt;
-    if (dateA == null && dateB != null) return 1;
-    if (dateA != null && dateB == null) return -1;
-    if (dateA != null && dateB != null) {
-      final byDate = dateA.compareTo(dateB);
-      if (byDate != 0) return byDate;
-    }
-    return a.sortOrder.compareTo(b.sortOrder);
-  }
-
   Widget _buildScreen(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
@@ -87,7 +74,7 @@ class _AdminSignupEntriesScreenState extends State<AdminSignupEntriesScreen>
       stream: _slotsStream,
       builder: (context, slotsSnapshot) {
         final slots = (slotsSnapshot.data ?? const <SignupSlot>[]).toList()
-          ..sort(_compareSlots);
+          ..sort(SignupSlot.compareByStart);
 
         return StreamBuilder<List<SignupEntry>>(
           stream: _entriesStream,
@@ -105,7 +92,7 @@ class _AdminSignupEntriesScreenState extends State<AdminSignupEntriesScreen>
                   .where((e) => e.slotId == slot.id)
                   .toList();
               if (slotEntries.isEmpty) continue;
-              final isPast = slot.startAt?.isBefore(now) ?? false;
+              final isPast = slot.isPast(now);
               (isPast ? past : upcoming).add((slot, slotEntries));
             }
 

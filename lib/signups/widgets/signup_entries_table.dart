@@ -176,8 +176,9 @@ class SignupEntriesTable extends StatelessWidget {
         : (slot.labelEn.isNotEmpty ? slot.labelEn : slot.labelMr);
   }
 
-  /// Date (undated last), then slot order, then slot id (so slots that tie on
-  /// both still group), then name.
+  /// Slot start (undated last, then slot order - see
+  /// [SignupSlot.compareByStart]), then slot id (so slots that tie on both
+  /// still group), then name. An entry whose slot is gone comes last.
   static int _compareEntries(
     SignupEntry a,
     SignupEntry b,
@@ -185,18 +186,12 @@ class SignupEntriesTable extends StatelessWidget {
   ) {
     final slotA = slotsById[a.slotId];
     final slotB = slotsById[b.slotId];
-    final dateA = slotA?.startAt;
-    final dateB = slotB?.startAt;
-    if (dateA == null && dateB != null) return 1;
-    if (dateA != null && dateB == null) return -1;
-    if (dateA != null && dateB != null) {
-      final byDate = dateA.compareTo(dateB);
-      if (byDate != 0) return byDate;
+    if (slotA == null && slotB != null) return 1;
+    if (slotA != null && slotB == null) return -1;
+    if (slotA != null && slotB != null) {
+      final byStart = SignupSlot.compareByStart(slotA, slotB);
+      if (byStart != 0) return byStart;
     }
-    final bySlotOrder = (slotA?.sortOrder ?? 0).compareTo(
-      slotB?.sortOrder ?? 0,
-    );
-    if (bySlotOrder != 0) return bySlotOrder;
     final bySlot = a.slotId.compareTo(b.slotId);
     if (bySlot != 0) return bySlot;
     return a.name.compareTo(b.name);

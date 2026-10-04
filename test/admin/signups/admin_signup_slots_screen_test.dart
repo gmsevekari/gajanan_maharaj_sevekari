@@ -597,5 +597,84 @@ void main() {
 
       expect(find.text('Add Devotee Entry'), findsOneWidget);
     });
+
+    group('which tab a slot is on follows its end', () {
+      final now = DateTime.now();
+
+      Future<void> addTimed(
+        DocumentReference<Map<String, dynamic>> signup, {
+        DateTime? startAt,
+        DateTime? endAt,
+      }) async {
+        await signup.collection('slots').add({
+          'labelEn': 'Timed Week',
+          'labelMr': '',
+          'capacity': 3,
+          'claimedCount': 0,
+          'sortOrder': 0,
+          'startAt': startAt == null ? null : Timestamp.fromDate(startAt),
+          'endAt': endAt == null ? null : Timestamp.fromDate(endAt),
+          'timezone': 'America/Los_Angeles',
+          'createdAt': Timestamp.fromDate(DateTime.now()),
+        });
+      }
+
+      Future<void> expectOnUpcoming(WidgetTester tester) async {
+        expect(find.text('Timed Week'), findsOneWidget);
+        await tester.tap(find.text('Past'));
+        await tester.pumpAndSettle();
+        expect(find.text('Timed Week'), findsNothing);
+      }
+
+      testWidgets('a slot that started earlier today but ends later is '
+          'upcoming', (tester) async {
+        final signup = await seedSignup();
+        await addTimed(
+          signup,
+          startAt: now.subtract(const Duration(hours: 1)),
+          endAt: now.add(const Duration(hours: 5)),
+        );
+        await pumpScreen(tester, signupId: signup.id);
+
+        await expectOnUpcoming(tester);
+      });
+
+      testWidgets('a multi-day slot that is in progress is upcoming', (
+        tester,
+      ) async {
+        final signup = await seedSignup();
+        await addTimed(
+          signup,
+          startAt: now.subtract(const Duration(days: 1)),
+          endAt: now.add(const Duration(days: 2)),
+        );
+        await pumpScreen(tester, signupId: signup.id);
+
+        await expectOnUpcoming(tester);
+      });
+
+      testWidgets('a slot with a start but no end is upcoming', (tester) async {
+        final signup = await seedSignup();
+        await addTimed(signup, startAt: now.subtract(const Duration(days: 10)));
+        await pumpScreen(tester, signupId: signup.id);
+
+        await expectOnUpcoming(tester);
+      });
+
+      testWidgets('a slot that ended earlier today is past', (tester) async {
+        final signup = await seedSignup();
+        await addTimed(
+          signup,
+          startAt: now.subtract(const Duration(hours: 5)),
+          endAt: now.subtract(const Duration(hours: 1)),
+        );
+        await pumpScreen(tester, signupId: signup.id);
+
+        expect(find.text('Timed Week'), findsNothing);
+        await tester.tap(find.text('Past'));
+        await tester.pumpAndSettle();
+        expect(find.text('Timed Week'), findsOneWidget);
+      });
+    });
   });
 }

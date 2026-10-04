@@ -287,6 +287,30 @@ void main() {
     ]);
   });
 
+  testWidgets('lists an entry whose slot is gone after the entries that have '
+      'one', (tester) async {
+    final orphanSlot = await addSlot(labelEn: 'Gone', date: future);
+    final liveSlot = await addSlot(labelEn: 'Live', date: farFuture);
+    await service.claimSlot(
+      signupId: signupId,
+      slotId: orphanSlot,
+      name: 'Orphan',
+    );
+    await service.claimSlot(signupId: signupId, slotId: liveSlot, name: 'Kept');
+    await firestore
+        .collection('signups')
+        .doc(signupId)
+        .collection('slots')
+        .doc(orphanSlot)
+        .delete();
+
+    await tester.pumpWidget(screen());
+    await tester.pumpAndSettle();
+
+    // The orphan's slot would sort first if it still existed (earlier date).
+    expect(tableRows(tester).map((row) => row[2]), ['Kept', 'Orphan']);
+  });
+
   testWidgets(
     'shows the Marathi slot label but English UI and dates under mr',
     (tester) async {
@@ -396,5 +420,143 @@ void main() {
 
     final controller = tester.widget<TabBar>(find.byType(TabBar)).controller!;
     expect(controller.index, 0);
+  });
+
+  group('which tab an entry is on follows the end of its slot', () {
+    final now = DateTime.now();
+
+    Future<String> addTimedSlot(
+      String label, {
+      DateTime? startAt,
+      DateTime? endAt,
+      int sortOrder = 0,
+    }) => service.addSlot(
+      signupId,
+      SignupSlot(
+        labelEn: label,
+        labelMr: '',
+        startAt: startAt,
+        endAt: endAt,
+        capacity: 3,
+        sortOrder: sortOrder,
+        createdAt: DateTime.now(),
+      ),
+    );
+
+    Future<void> pumpEntryFor(
+      WidgetTester tester, {
+      DateTime? startAt,
+      DateTime? endAt,
+    }) async {
+      final slotId = await addTimedSlot(
+        'Timed Week',
+        startAt: startAt,
+        endAt: endAt,
+      );
+      await service.claimSlot(signupId: signupId, slotId: slotId, name: 'Jane');
+      await tester.pumpWidget(screen());
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> expectOnUpcoming(WidgetTester tester) async {
+      expect(find.text('Timed Week'), findsOneWidget);
+      await tester.tap(find.text('Past'));
+      await tester.pumpAndSettle();
+      expect(find.text('Timed Week'), findsNothing);
+    }
+
+    testWidgets('a slot that started earlier today but ends later is '
+        'upcoming', (tester) async {
+      await pumpEntryFor(
+        tester,
+        startAt: now.subtract(const Duration(hours: 1)),
+        endAt: now.add(const Duration(hours: 5)),
+      );
+      await expectOnUpcoming(tester);
+    });
+
+    testWidgets('a multi-day slot that is in progress is upcoming', (
+      tester,
+    ) async {
+      await pumpEntryFor(
+        tester,
+        startAt: now.subtract(const Duration(days: 1)),
+        endAt: now.add(const Duration(days: 2)),
+      );
+      await expectOnUpcoming(tester);
+    });
+
+    testWidgets('a slot with a start but no end is upcoming', (tester) async {
+      await pumpEntryFor(
+        tester,
+        startAt: now.subtract(const Duration(days: 10)),
+      );
+      await expectOnUpcoming(tester);
+    });
+
+    testWidgets('a slot that ended earlier today is past', (tester) async {
+      await pumpEntryFor(
+        tester,
+        startAt: now.subtract(const Duration(hours: 5)),
+        endAt: now.subtract(const Duration(hours: 1)),
+      );
+
+      expect(find.text('Timed Week'), findsNothing);
+      await tester.tap(find.text('Past'));
+      await tester.pumpAndSettle();
+      expect(find.text('Timed Week'), findsOneWidget);
+    });
+
+    testWidgets('slots on the same day are listed by start time, whatever '
+        'their slot order', (tester) async {
+      final day = DateTime.now().add(const Duration(days: 4));
+      final morning = DateTime(day.year, day.month, day.day, 9);
+      final evening = DateTime(day.year, day.month, day.day, 18);
+      final eveningId = await addTimedSlot(
+        'Evening',
+        startAt: evening,
+        endAt: evening.add(const Duration(hours: 2)),
+        sortOrder: 0,
+      );
+      final morningId = await addTimedSlot(
+        'Morning',
+        startAt: morning,
+        endAt: morning.add(const Duration(hours: 2)),
+        sortOrder: 5,
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: eveningId,
+        name: 'Eve',
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: morningId,
+        name: 'Mo',
+      );
+      await tester.pumpWidget(screen());
+      await tester.pumpAndSettle();
+
+      expect(tableRows(tester).map((row) => row[2]), ['Mo', 'Eve']);
+    });
+
+    testWidgets('a slot with no times sorts after slots that have them', (
+      tester,
+    ) async {
+      final undated = await addTimedSlot('Undated', sortOrder: 0);
+      final soon = now.add(const Duration(days: 2));
+      final dated = await addTimedSlot(
+        'Dated',
+        startAt: soon,
+        endAt: soon.add(const Duration(hours: 1)),
+        sortOrder: 9,
+      );
+      await service.claimSlot(signupId: signupId, slotId: undated, name: 'U');
+      await service.claimSlot(signupId: signupId, slotId: dated, name: 'D');
+      await tester.pumpWidget(screen());
+      await tester.pumpAndSettle();
+
+      expect(tableRows(tester).map((row) => row[2]), ['D', 'U']);
+    });
   });
 }

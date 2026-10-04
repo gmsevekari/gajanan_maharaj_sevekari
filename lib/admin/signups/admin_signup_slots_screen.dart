@@ -73,12 +73,8 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
         final loading = snapshot.connectionState == ConnectionState.waiting;
         final slots = snapshot.data ?? const <SignupSlot>[];
         final now = DateTime.now();
-        final upcoming = slots
-            .where((s) => s.startAt == null || !s.startAt!.isBefore(now))
-            .toList();
-        final past = slots
-            .where((s) => s.startAt?.isBefore(now) ?? false)
-            .toList();
+        final upcoming = slots.where((s) => !s.isPast(now)).toList();
+        final past = slots.where((s) => s.isPast(now)).toList();
 
         Widget tab(List<SignupSlot> list) => loading
             ? const Center(child: CircularProgressIndicator())

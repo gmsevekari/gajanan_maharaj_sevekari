@@ -402,4 +402,125 @@ void main() {
       expect(code.controller!.text, '+91');
     },
   );
+
+  group('which tab a slot is on follows its end', () {
+    final now = DateTime.now();
+
+    Future<void> pumpSlotWith(
+      WidgetTester tester, {
+      DateTime? startAt,
+      DateTime? endAt,
+    }) async {
+      await service.addSlot(
+        signupId,
+        SignupSlot(
+          labelEn: 'Timed Week',
+          labelMr: '',
+          startAt: startAt,
+          endAt: endAt,
+          capacity: 3,
+          sortOrder: 0,
+          createdAt: DateTime.now(),
+        ),
+      );
+      await tester.pumpWidget(
+        wrap(
+          SignupSlotsScreen(
+            signupId: signupId,
+            signup: signup,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> expectOnUpcoming(WidgetTester tester) async {
+      expect(find.text('Timed Week'), findsOneWidget);
+      await tester.tap(find.text('Past'));
+      await tester.pumpAndSettle();
+      expect(find.text('Timed Week'), findsNothing);
+    }
+
+    testWidgets('a slot that started earlier today but ends later is '
+        'upcoming', (tester) async {
+      await pumpSlotWith(
+        tester,
+        startAt: now.subtract(const Duration(hours: 1)),
+        endAt: now.add(const Duration(hours: 5)),
+      );
+      await expectOnUpcoming(tester);
+    });
+
+    testWidgets('a multi-day slot that is in progress is upcoming', (
+      tester,
+    ) async {
+      await pumpSlotWith(
+        tester,
+        startAt: now.subtract(const Duration(days: 1)),
+        endAt: now.add(const Duration(days: 2)),
+      );
+      await expectOnUpcoming(tester);
+    });
+
+    testWidgets('a slot with a start but no end is upcoming', (tester) async {
+      await pumpSlotWith(
+        tester,
+        startAt: now.subtract(const Duration(days: 10)),
+      );
+      await expectOnUpcoming(tester);
+    });
+
+    testWidgets('a slot that ended earlier today is past', (tester) async {
+      await pumpSlotWith(
+        tester,
+        startAt: now.subtract(const Duration(hours: 5)),
+        endAt: now.subtract(const Duration(hours: 1)),
+      );
+
+      expect(find.text('Timed Week'), findsNothing);
+      await tester.tap(find.text('Past'));
+      await tester.pumpAndSettle();
+      expect(find.text('Timed Week'), findsOneWidget);
+    });
+
+    testWidgets('keeps the admin\'s slot order, not start order', (
+      tester,
+    ) async {
+      Future<void> add(String label, int sortOrder, DateTime start) =>
+          service.addSlot(
+            signupId,
+            SignupSlot(
+              labelEn: label,
+              labelMr: '',
+              startAt: start,
+              endAt: start.add(const Duration(hours: 2)),
+              capacity: 3,
+              sortOrder: sortOrder,
+              createdAt: DateTime.now(),
+            ),
+          );
+      await add('Listed First', 0, now.add(const Duration(days: 5)));
+      await add('Listed Second', 1, now.add(const Duration(days: 2)));
+      await tester.pumpWidget(
+        wrap(
+          SignupSlotsScreen(
+            signupId: signupId,
+            signup: signup,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getTopLeft(find.text('Listed First')).dy,
+        lessThan(tester.getTopLeft(find.text('Listed Second')).dy),
+      );
+    });
+  });
 }

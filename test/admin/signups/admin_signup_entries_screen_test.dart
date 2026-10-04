@@ -644,5 +644,125 @@ void main() {
       expect(find.byTooltip('WhatsApp'), findsOneWidget);
       expect(find.text('jane@example.com'), findsOneWidget);
     });
+
+    group('which tab an entry is on follows the end of its slot', () {
+      final now = DateTime.now();
+
+      Future<String> addTimed(
+        DocumentReference<Map<String, dynamic>> signup,
+        String label, {
+        DateTime? startAt,
+        DateTime? endAt,
+        int sortOrder = 0,
+      }) async {
+        final ref = await signup.collection('slots').add({
+          'labelEn': label,
+          'labelMr': '',
+          'capacity': 3,
+          'claimedCount': 1,
+          'sortOrder': sortOrder,
+          'startAt': startAt == null ? null : Timestamp.fromDate(startAt),
+          'endAt': endAt == null ? null : Timestamp.fromDate(endAt),
+          'timezone': 'America/Los_Angeles',
+          'createdAt': Timestamp.fromDate(DateTime.now()),
+        });
+        return ref.id;
+      }
+
+      Future<void> pumpEntryFor(
+        WidgetTester tester, {
+        DateTime? startAt,
+        DateTime? endAt,
+      }) async {
+        final signup = await seedSignup();
+        final slotId = await addTimed(
+          signup,
+          'Timed Week',
+          startAt: startAt,
+          endAt: endAt,
+        );
+        await addEntry(signup, slotId, 'Jane');
+        await pumpScreen(tester, signupId: signup.id);
+      }
+
+      Future<void> expectOnUpcoming(WidgetTester tester) async {
+        expect(find.text('Timed Week'), findsOneWidget);
+        await tester.tap(find.text('Past'));
+        await tester.pumpAndSettle();
+        expect(find.text('Timed Week'), findsNothing);
+      }
+
+      testWidgets('a slot that started earlier today but ends later is '
+          'upcoming', (tester) async {
+        await pumpEntryFor(
+          tester,
+          startAt: now.subtract(const Duration(hours: 1)),
+          endAt: now.add(const Duration(hours: 5)),
+        );
+        await expectOnUpcoming(tester);
+      });
+
+      testWidgets('a multi-day slot that is in progress is upcoming', (
+        tester,
+      ) async {
+        await pumpEntryFor(
+          tester,
+          startAt: now.subtract(const Duration(days: 1)),
+          endAt: now.add(const Duration(days: 2)),
+        );
+        await expectOnUpcoming(tester);
+      });
+
+      testWidgets('a slot with a start but no end is upcoming', (tester) async {
+        await pumpEntryFor(
+          tester,
+          startAt: now.subtract(const Duration(days: 10)),
+        );
+        await expectOnUpcoming(tester);
+      });
+
+      testWidgets('a slot that ended earlier today is past', (tester) async {
+        await pumpEntryFor(
+          tester,
+          startAt: now.subtract(const Duration(hours: 5)),
+          endAt: now.subtract(const Duration(hours: 1)),
+        );
+
+        expect(find.text('Timed Week'), findsNothing);
+        await tester.tap(find.text('Past'));
+        await tester.pumpAndSettle();
+        expect(find.text('Timed Week'), findsOneWidget);
+      });
+
+      testWidgets('lists slots on the same day by start time, whatever '
+          'their slot order', (tester) async {
+        final signup = await seedSignup();
+        final day = DateTime.now().add(const Duration(days: 4));
+        final morning = DateTime(day.year, day.month, day.day, 9);
+        final evening = DateTime(day.year, day.month, day.day, 18);
+        final eveningId = await addTimed(
+          signup,
+          'Evening',
+          startAt: evening,
+          endAt: evening.add(const Duration(hours: 2)),
+          sortOrder: 0,
+        );
+        final morningId = await addTimed(
+          signup,
+          'Morning',
+          startAt: morning,
+          endAt: morning.add(const Duration(hours: 2)),
+          sortOrder: 5,
+        );
+        await addEntry(signup, eveningId, 'Eve');
+        await addEntry(signup, morningId, 'Mo');
+        await pumpScreen(tester, signupId: signup.id);
+
+        expect(
+          tester.getTopLeft(find.text('Morning')).dy,
+          lessThan(tester.getTopLeft(find.text('Evening')).dy),
+        );
+      });
+    });
   });
 }

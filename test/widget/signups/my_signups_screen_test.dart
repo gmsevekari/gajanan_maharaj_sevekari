@@ -406,4 +406,96 @@ void main() {
     final controller = tester.widget<TabBar>(find.byType(TabBar)).controller!;
     expect(controller.index, 0);
   });
+
+  group('which tab an entry is on follows the end of its slot', () {
+    final now = DateTime.now();
+
+    Future<void> pumpEntryFor(
+      WidgetTester tester, {
+      DateTime? startAt,
+      DateTime? endAt,
+    }) async {
+      final slotId = await service.addSlot(
+        signupId,
+        SignupSlot(
+          labelEn: 'Timed Week',
+          labelMr: '',
+          startAt: startAt,
+          endAt: endAt,
+          capacity: 3,
+          sortOrder: 0,
+          createdAt: DateTime.now(),
+        ),
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+        deviceId: 'device_1',
+      );
+      await tester.pumpWidget(
+        wrap(
+          MySignupsScreen(
+            signupId: signupId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> expectOnUpcoming(WidgetTester tester) async {
+      expect(find.text('Timed Week'), findsOneWidget);
+      await tester.tap(find.text('Past'));
+      await tester.pumpAndSettle();
+      expect(find.text('Timed Week'), findsNothing);
+    }
+
+    Future<void> expectOnPast(WidgetTester tester) async {
+      expect(find.text('Timed Week'), findsNothing);
+      await tester.tap(find.text('Past'));
+      await tester.pumpAndSettle();
+      expect(find.text('Timed Week'), findsOneWidget);
+    }
+
+    testWidgets('a slot that started earlier today but ends later is '
+        'upcoming', (tester) async {
+      await pumpEntryFor(
+        tester,
+        startAt: now.subtract(const Duration(hours: 1)),
+        endAt: now.add(const Duration(hours: 5)),
+      );
+      await expectOnUpcoming(tester);
+    });
+
+    testWidgets('a multi-day slot that is in progress is upcoming', (
+      tester,
+    ) async {
+      await pumpEntryFor(
+        tester,
+        startAt: now.subtract(const Duration(days: 1)),
+        endAt: now.add(const Duration(days: 2)),
+      );
+      await expectOnUpcoming(tester);
+    });
+
+    testWidgets('a slot that ended earlier today is past', (tester) async {
+      await pumpEntryFor(
+        tester,
+        startAt: now.subtract(const Duration(hours: 5)),
+        endAt: now.subtract(const Duration(hours: 1)),
+      );
+      await expectOnPast(tester);
+    });
+
+    testWidgets('a slot with a start but no end is upcoming', (tester) async {
+      await pumpEntryFor(
+        tester,
+        startAt: now.subtract(const Duration(days: 10)),
+      );
+      await expectOnUpcoming(tester);
+    });
+  });
 }

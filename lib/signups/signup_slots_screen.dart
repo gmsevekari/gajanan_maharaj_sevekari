@@ -135,12 +135,8 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
 
           final slots = snapshot.data ?? const [];
           final now = DateTime.now();
-          final upcoming = slots
-              .where((s) => s.startAt == null || !s.startAt!.isBefore(now))
-              .toList();
-          final past = slots
-              .where((s) => s.startAt?.isBefore(now) ?? false)
-              .toList();
+          final upcoming = slots.where((s) => !s.isPast(now)).toList();
+          final past = slots.where((s) => s.isPast(now)).toList();
 
           return TabBarView(
             physics: const NeverScrollableScrollPhysics(),
