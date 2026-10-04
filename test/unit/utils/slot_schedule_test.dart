@@ -177,21 +177,42 @@ void main() {
     });
 
     test('the zone changes the instants for the same wall-clock input', () {
-      final seattle = resolved(
+      SlotScheduleResolved at18(String timezone) => resolved(
         SlotScheduleInput(
           startDate: day(2026, 7, 1),
           startTime: at(18),
-          timezone: pacific,
+          timezone: timezone,
         ),
       );
-      final ist = resolved(
-        SlotScheduleInput(
-          startDate: day(2026, 7, 1),
-          startTime: at(18),
-          timezone: india,
-        ),
+      // 18:00 in Seattle (UTC-7) is 12.5 hours after 18:00 in India (UTC+5:30).
+      expect(
+        at18(pacific).startAt.difference(at18(india).startAt),
+        const Duration(hours: 12, minutes: 30),
       );
-      expect(ist.startAt.isBefore(seattle.startAt), isTrue);
+    });
+
+    test('rejects an end that is not after the start', () {
+      expect(
+        invalid(
+          SlotScheduleInput(
+            startDate: day(2026, 3, 15),
+            startTime: at(9),
+            endTime: at(8),
+            timezone: india,
+          ),
+        ),
+        SlotScheduleError.endNotAfterStart,
+      );
+      expect(
+        invalid(
+          SlotScheduleInput(
+            startDate: day(2026, 3, 16),
+            endDate: day(2026, 3, 15),
+            timezone: india,
+          ),
+        ),
+        SlotScheduleError.endNotAfterStart,
+      );
     });
   });
 
@@ -210,6 +231,76 @@ void main() {
       );
       expect(r.startAt, utc(2026, 11, 1, 7)); // 00:00 PDT
       expect(r.endAt, utc(2026, 11, 2, 7, 59)); // 23:59 PST
+    });
+
+    test('a multi-day range spanning the spring change keeps its wall-clock '
+        'times', () {
+      final r = resolved(
+        SlotScheduleInput(
+          startDate: day(2026, 3, 7),
+          startTime: at(20),
+          endDate: day(2026, 3, 9),
+          endTime: at(9),
+          timezone: pacific,
+        ),
+      );
+      expect(r.startAt, utc(2026, 3, 8, 4)); // 20:00 PST
+      expect(r.endAt, utc(2026, 3, 9, 16)); // 09:00 PDT
+    });
+
+    test('a multi-day range spanning the fall change keeps its wall-clock '
+        'times', () {
+      final r = resolved(
+        SlotScheduleInput(
+          startDate: day(2026, 10, 31),
+          startTime: at(20),
+          endDate: day(2026, 11, 2),
+          endTime: at(9),
+          timezone: pacific,
+        ),
+      );
+      expect(r.startAt, utc(2026, 11, 1, 3)); // 20:00 PDT
+      expect(r.endAt, utc(2026, 11, 2, 17)); // 09:00 PST
+    });
+
+    test('a range across the skipped hour is valid and stays in order', () {
+      final r = resolved(
+        SlotScheduleInput(
+          startDate: day(2026, 3, 8),
+          startTime: at(1, 30),
+          endTime: at(2, 15),
+          timezone: pacific,
+        ),
+      );
+      expect(r.startAt, utc(2026, 3, 8, 9, 30)); // 01:30 PST
+      expect(r.endAt, utc(2026, 3, 8, 10)); // the jump to 03:00 PDT
+    });
+
+    test('a range entirely inside the skipped hour has no length', () {
+      expect(
+        invalid(
+          SlotScheduleInput(
+            startDate: day(2026, 3, 8),
+            startTime: at(2, 10),
+            endTime: at(2, 40),
+            timezone: pacific,
+          ),
+        ),
+        SlotScheduleError.endNotAfterStart,
+      );
+    });
+
+    test('a range across the repeated hour is valid', () {
+      final r = resolved(
+        SlotScheduleInput(
+          startDate: day(2026, 11, 1),
+          startTime: at(1, 30),
+          endTime: at(3),
+          timezone: pacific,
+        ),
+      );
+      expect(r.startAt, utc(2026, 11, 1, 8, 30)); // 01:30 PDT
+      expect(r.endAt, utc(2026, 11, 1, 11)); // 03:00 PST
     });
   });
 
@@ -313,5 +404,206 @@ void main() {
         );
       },
     );
+  });
+
+  group('input validation', () {
+    test('rejects an hour or minute outside a real time of day', () {
+      for (final bad in [
+        (hour: 24, minute: 0),
+        (hour: -1, minute: 0),
+        (hour: 10, minute: 60),
+        (hour: 10, minute: -1),
+      ]) {
+        expect(
+          () => resolveSlotSchedule(
+            SlotScheduleInput(
+              startDate: day(2026, 7, 1),
+              startTime: bad,
+              timezone: pacific,
+            ),
+          ),
+          throwsArgumentError,
+          reason: '$bad',
+        );
+        expect(
+          () => resolveSlotSchedule(
+            SlotScheduleInput(
+              startDate: day(2026, 7, 1),
+              endTime: bad,
+              timezone: pacific,
+            ),
+          ),
+          throwsArgumentError,
+          reason: '$bad',
+        );
+      }
+    });
+
+    test('accepts the first and last minute of the day', () {
+      expect(
+        resolveSlotSchedule(
+          SlotScheduleInput(
+            startDate: day(2026, 7, 1),
+            startTime: at(0),
+            endTime: at(23, 59),
+            timezone: pacific,
+          ),
+        ),
+        isA<SlotScheduleResolved>(),
+      );
+    });
+  });
+
+  group('SlotScheduleInput', () {
+    final full = SlotScheduleInput(
+      startDate: DateTime(2026, 7, 1),
+      startTime: at(18),
+      endDate: DateTime(2026, 7, 2),
+      endTime: at(9),
+      timezone: india,
+    );
+
+    test('copyWith replaces only the fields given', () {
+      final copy = full.copyWith(startTime: at(7), timezone: pacific);
+      expect(copy.startTime, at(7));
+      expect(copy.timezone, pacific);
+      expect(copy.startDate, full.startDate);
+      expect(copy.endDate, full.endDate);
+      expect(copy.endTime, full.endTime);
+    });
+
+    test('copyWith can set a missing field', () {
+      final copy = const SlotScheduleInput().copyWith(
+        startDate: DateTime(2026, 7, 1),
+        endDate: DateTime(2026, 7, 3),
+        endTime: at(12),
+      );
+      expect(copy.startDate, DateTime(2026, 7, 1));
+      expect(copy.endDate, DateTime(2026, 7, 3));
+      expect(copy.endTime, at(12));
+      expect(copy.startTime, isNull);
+    });
+
+    test('copyWith clears a field only when asked to', () {
+      expect(full.copyWith().startTime, at(18));
+      expect(full.copyWith(clearStartTime: true).startTime, isNull);
+      expect(full.copyWith(clearEndTime: true).endTime, isNull);
+      expect(full.copyWith(clearEndDate: true).endDate, isNull);
+      expect(full.copyWith(clearStartDate: true).startDate, isNull);
+      // Clearing one field leaves the rest alone.
+      final cleared = full.copyWith(clearEndTime: true);
+      expect(cleared.startTime, at(18));
+      expect(cleared.endDate, full.endDate);
+    });
+
+    test('is equal when the same day, times and zone are chosen', () {
+      final same = SlotScheduleInput(
+        startDate: DateTime(2026, 7, 1),
+        startTime: at(18),
+        endDate: DateTime(2026, 7, 2),
+        endTime: at(9),
+        timezone: india,
+      );
+      expect(full, same);
+      expect(full.hashCode, same.hashCode);
+    });
+
+    test('compares dates by day, ignoring the time of day a picker adds', () {
+      final withClock = full.copyWith(
+        startDate: DateTime(2026, 7, 1, 15, 45),
+        endDate: DateTime(2026, 7, 2, 3, 10),
+      );
+      expect(withClock, full);
+      expect(withClock.hashCode, full.hashCode);
+    });
+
+    test('differs when any field differs', () {
+      expect(full == full.copyWith(startDate: DateTime(2026, 7, 5)), isFalse);
+      expect(full == full.copyWith(startTime: at(19)), isFalse);
+      expect(full == full.copyWith(endDate: DateTime(2026, 7, 5)), isFalse);
+      expect(full == full.copyWith(endTime: at(10)), isFalse);
+      expect(full == full.copyWith(timezone: pacific), isFalse);
+      expect(full == full.copyWith(clearStartTime: true), isFalse);
+      expect(full == const SlotScheduleInput(), isFalse);
+    });
+
+    test('has a readable toString', () {
+      expect(full.toString(), contains('2026-07-01'));
+      expect(full.toString(), contains(india));
+    });
+  });
+
+  group('results', () {
+    test('resolved results compare by instants', () {
+      final a = SlotScheduleResolved(
+        startAt: utc(2026, 7, 1),
+        endAt: utc(2026, 7, 2),
+      );
+      final b = SlotScheduleResolved(
+        startAt: utc(2026, 7, 1),
+        endAt: utc(2026, 7, 2),
+      );
+      expect(a, b);
+      expect(a.hashCode, b.hashCode);
+      expect(
+        a ==
+            SlotScheduleResolved(
+              startAt: utc(2026, 7, 1),
+              endAt: utc(2026, 7, 3),
+            ),
+        isFalse,
+      );
+      expect(
+        a ==
+            SlotScheduleResolved(
+              startAt: utc(2026, 6, 30),
+              endAt: utc(2026, 7, 2),
+            ),
+        isFalse,
+      );
+    });
+
+    test('invalid results compare by error', () {
+      expect(
+        const SlotScheduleInvalid(SlotScheduleError.missingStartDate),
+        const SlotScheduleInvalid(SlotScheduleError.missingStartDate),
+      );
+      expect(
+        const SlotScheduleInvalid(SlotScheduleError.missingStartDate) ==
+            const SlotScheduleInvalid(SlotScheduleError.endNotAfterStart),
+        isFalse,
+      );
+    });
+
+    test('invalid results hash by error', () {
+      expect(
+        const SlotScheduleInvalid(SlotScheduleError.endNotAfterStart).hashCode,
+        const SlotScheduleInvalid(SlotScheduleError.endNotAfterStart).hashCode,
+      );
+    });
+
+    test('results have readable descriptions', () {
+      expect(
+        SlotScheduleResolved(
+          startAt: utc(2026, 7, 1),
+          endAt: utc(2026, 7, 2),
+        ).toString(),
+        contains('2026-07-01'),
+      );
+      expect(
+        const SlotScheduleInvalid(
+          SlotScheduleError.missingStartDate,
+        ).toString(),
+        contains('missingStartDate'),
+      );
+    });
+
+    test('resolving the same input twice gives equal results', () {
+      final input = SlotScheduleInput(
+        startDate: day(2026, 7, 1),
+        timezone: pacific,
+      );
+      expect(resolveSlotSchedule(input), resolveSlotSchedule(input));
+    });
   });
 }
