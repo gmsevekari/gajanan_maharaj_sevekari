@@ -210,7 +210,7 @@ class SignupService {
         );
   }
 
-  /// Overwrites a slot's admin-editable fields (label, date, capacity,
+  /// Overwrites a slot's admin-editable fields (label, start/end, timezone, capacity,
   /// suggestedAmount, sortOrder). `claimedCount` is deliberately excluded —
   /// it's owned by claimSlot/cancelEntry's transactions, so an admin
   /// saving a slot loaded before a concurrent claim/cancel can never

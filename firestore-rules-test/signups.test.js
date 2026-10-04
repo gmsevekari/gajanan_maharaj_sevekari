@@ -204,7 +204,7 @@ test('non-admin cannot modify capacity', async () => {
   );
 });
 
-test('non-admin cannot modify label or date fields', async () => {
+test('non-admin cannot modify label or schedule fields', async () => {
   await assertFails(
     updateDoc(doc(unauthedDb(), 'signups/signup1/slots/slot1'), {
       labelEn: 'Hacked label',

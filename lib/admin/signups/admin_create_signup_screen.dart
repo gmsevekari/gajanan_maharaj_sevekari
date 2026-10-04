@@ -180,6 +180,13 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
         throw Exception('Group ID is required to create a sign-up signup');
       }
 
+      // Built first: a slot that can't be built must fail before anything is
+      // uploaded, not leave an orphaned image behind.
+      final now = DateTime.now();
+      final slots = [
+        for (var i = 0; i < _slots.length; i++) _buildSlot(i, now),
+      ];
+
       String? headerImageUrl;
       if (_headerImageBytes != null) {
         signupId = _service.newSignupId();
@@ -190,7 +197,6 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
         );
       }
 
-      final now = DateTime.now();
       final signup = Signup(
         id: signupId,
         titleEn: _titleEnController.text.trim(),
@@ -205,10 +211,6 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
         createdBy: widget.adminUser.email,
         headerImageUrl: headerImageUrl,
       );
-
-      final slots = [
-        for (var i = 0; i < _slots.length; i++) _buildSlot(i, now),
-      ];
 
       await _service.createSignupWithSlots(signup, slots);
 

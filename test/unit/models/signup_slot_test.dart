@@ -83,20 +83,6 @@ void main() {
       expect(roundTripped.suggestedAmount, isNull);
     });
 
-    test('has no date field any more', () {
-      final slot = SignupSlot(
-        labelEn: 'L',
-        labelMr: 'L',
-        startAt: DateTime.utc(2026, 3, 15, 7),
-        endAt: DateTime.utc(2026, 3, 16, 6, 59),
-        capacity: 1,
-        sortOrder: 0,
-        createdAt: DateTime(2026, 1, 1),
-      );
-
-      expect(slot.toMap().containsKey('date'), isFalse);
-    });
-
     test(
       'fromMap defaults missing string fields to empty rather than throwing',
       () {
@@ -265,6 +251,7 @@ void main() {
           Timestamp.fromDate(DateTime.utc(2026, 3, 16, 6, 59)),
         );
         expect(map['timezone'], EventTimezone.india);
+        expect(map.containsKey('date'), isFalse);
       });
 
       test('a document missing the new fields loads without error', () {
@@ -548,6 +535,25 @@ void main() {
         );
         expect(utcSlot, localSlot);
         expect(utcSlot.hashCode, localSlot.hashCode);
+      });
+
+      test('equality compares createdAt by instant too', () {
+        final a = build().copyWith(createdAt: DateTime.utc(2026, 1, 1, 8));
+        final b = build().copyWith(
+          createdAt: DateTime.utc(2026, 1, 1, 8).toLocal(),
+        );
+        expect(a, b);
+        expect(a.hashCode, b.hashCode);
+        expect(
+          a == build().copyWith(createdAt: DateTime.utc(2026, 1, 1, 9)),
+          isFalse,
+        );
+      });
+
+      test('a slot with a start is not equal to one without', () {
+        final withStart = build(startAt: DateTime.utc(2026, 7, 2, 1));
+        expect(withStart == build(), isFalse);
+        expect(build() == withStart, isFalse);
       });
     });
   });

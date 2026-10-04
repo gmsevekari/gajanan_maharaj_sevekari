@@ -41,6 +41,8 @@ class SignupSlot {
       labelMr: data['labelMr'] is String ? data['labelMr'] as String : '',
       startAt: _instant(data['startAt']),
       endAt: _instant(data['endAt']),
+      // Kept verbatim, even if unrecognised, so saving a slot never rewrites
+      // it; the zone helpers treat an unknown zone as Pacific.
       timezone: data['timezone'] is String
           ? data['timezone'] as String
           : EventTimezone.defaultZone,
@@ -147,7 +149,7 @@ class SignupSlot {
           claimedCount == other.claimedCount &&
           suggestedAmount == other.suggestedAmount &&
           sortOrder == other.sortOrder &&
-          createdAt == other.createdAt;
+          _sameInstant(createdAt, other.createdAt);
 
   /// Compares the moment in time, not the UTC flag (a local and a UTC
   /// `DateTime` for the same moment are `!=` in Dart).
@@ -166,6 +168,6 @@ class SignupSlot {
     claimedCount,
     suggestedAmount,
     sortOrder,
-    createdAt,
+    createdAt.millisecondsSinceEpoch,
   );
 }

@@ -268,7 +268,7 @@ service cloud.firestore {
         // own FieldValue.increment(1)/(-1) calls), bounded within
         // [0, capacity]. This blocks a non-admin write from jumping
         // claimedCount straight to 0 or capacity in one step; admins can
-        // still update anything (label, date, capacity, etc).
+        // still update anything (label, start/end, timezone, capacity, etc).
         allow update: if isAdmin()
           || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedCount'])
               && request.resource.data.claimedCount is int
