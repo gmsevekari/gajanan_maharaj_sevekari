@@ -2295,12 +2295,6 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSlotSuggestedAmountInvalid => 'कृपया व्हॅलिड रक्कम एंटर करा';
 
   @override
-  String get signupSlotSetDateLabel => 'तारीख सेट करा';
-
-  @override
-  String get signupSlotNoDateLabel => 'तारीख सेट केलेली नाही';
-
-  @override
   String get signupSlotDateRequired => 'कृपया तारीख निवडा';
 
   @override

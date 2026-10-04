@@ -4395,18 +4395,6 @@ abstract class AppLocalizations {
   /// **'Please enter a valid amount'**
   String get signupSlotSuggestedAmountInvalid;
 
-  /// No description provided for @signupSlotSetDateLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Set Date'**
-  String get signupSlotSetDateLabel;
-
-  /// No description provided for @signupSlotNoDateLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'No date set'**
-  String get signupSlotNoDateLabel;
-
   /// No description provided for @signupSlotDateRequired.
   ///
   /// In en, this message translates to:

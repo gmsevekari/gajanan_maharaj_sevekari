@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/slot_schedule_field.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
+import 'package:gajanan_maharaj_sevekari/utils/slot_schedule.dart';
 
 /// One editable slot row inside [AdminCreateSignupScreen]'s dynamic
-/// slot list builder. Purely presentational — all state lives in the
-/// caller-owned controllers, so the parent's single [Form] validates this
-/// row's fields along with everything else on the screen.
+/// slot list builder. The text fields live in caller-owned controllers and
+/// the schedule in a [SlotScheduleField], so the parent's single [Form]
+/// validates this row's fields along with everything else on the screen.
 class SlotFormRow extends StatelessWidget {
   final int index;
   final TextEditingController labelEnController;
   final TextEditingController labelMrController;
   final TextEditingController capacityController;
   final TextEditingController suggestedAmountController;
-  final DateTime? date;
-  final ValueChanged<DateTime> onDateChanged;
+
+  /// The schedule the row starts with; the row owns it from then on and
+  /// reports every change through [onScheduleChanged].
+  final SlotScheduleInput schedule;
+  final ValueChanged<SlotScheduleInput> onScheduleChanged;
   final VoidCallback onRemove;
   final VoidCallback? onMoveUp;
   final VoidCallback? onMoveDown;
@@ -25,34 +29,12 @@ class SlotFormRow extends StatelessWidget {
     required this.labelMrController,
     required this.capacityController,
     required this.suggestedAmountController,
-    required this.date,
-    required this.onDateChanged,
+    required this.schedule,
+    required this.onScheduleChanged,
     required this.onRemove,
     required this.onMoveUp,
     required this.onMoveDown,
   });
-
-  /// How far into the future an admin can schedule a slot. A fixed offset
-  /// from "now" rather than a hardcoded calendar year, so this doesn't need
-  /// bumping as real years pass.
-  static const Duration _maxSlotDateHorizon = Duration(days: 365 * 5);
-
-  Future<void> _pickDate(
-    BuildContext context,
-    FormFieldState<DateTime> field,
-  ) async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: date ?? now,
-      firstDate: now.subtract(const Duration(days: 30)),
-      lastDate: now.add(_maxSlotDateHorizon),
-    );
-    if (picked != null) {
-      field.didChange(picked);
-      onDateChanged(picked);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,41 +138,13 @@ class SlotFormRow extends StatelessWidget {
               },
             ),
             const SizedBox(height: 12),
-            FormField<DateTime>(
-              initialValue: date,
-              // Validates the field's own value, which _pickDate keeps in
-              // step with [date], so the error clears the moment a date is
-              // picked rather than at the next Save.
-              validator: (value) =>
-                  value == null ? localizations.signupSlotDateRequired : null,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              builder: (field) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          date != null
-                              ? DateFormat('yyyy-MM-dd').format(date!)
-                              : localizations.signupSlotNoDateLabel,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => _pickDate(context, field),
-                        child: Text(localizations.signupSlotSetDateLabel),
-                      ),
-                    ],
-                  ),
-                  if (field.hasError)
-                    Text(
-                      field.errorText!,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ),
-                ],
-              ),
+            SlotScheduleField(
+              index: index,
+              initialValue: schedule,
+              dateRequiredMessage: localizations.signupSlotDateRequired,
+              endNotAfterStartMessage:
+                  localizations.signupSlotEndBeforeStartError,
+              onChanged: onScheduleChanged,
             ),
           ],
         ),

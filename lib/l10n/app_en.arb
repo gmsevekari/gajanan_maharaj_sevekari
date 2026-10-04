@@ -879,8 +879,6 @@
   "signupSlotCapacityInvalid": "Capacity must be a positive number",
   "signupSlotSuggestedAmountLabel": "Suggested Amount (optional)",
   "signupSlotSuggestedAmountInvalid": "Please enter a valid amount",
-  "signupSlotSetDateLabel": "Set Date",
-  "signupSlotNoDateLabel": "No date set",
   "signupSlotDateRequired": "Please select a date",
   "signupSlotStartsLabel": "Starts",
   "signupSlotEndsLabel": "Ends",

@@ -2285,12 +2285,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSlotSuggestedAmountInvalid => 'Please enter a valid amount';
 
   @override
-  String get signupSlotSetDateLabel => 'Set Date';
-
-  @override
-  String get signupSlotNoDateLabel => 'No date set';
-
-  @override
   String get signupSlotDateRequired => 'Please select a date';
 
   @override
@@ -4906,12 +4900,6 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupSlotSuggestedAmountInvalid => 'कृपया valid रक्कम enter करा';
-
-  @override
-  String get signupSlotSetDateLabel => 'तारीख Set करा';
-
-  @override
-  String get signupSlotNoDateLabel => 'तारीख set केलेली नाही';
 
   @override
   String get signupSlotDateRequired => 'कृपया तारीख निवडा';

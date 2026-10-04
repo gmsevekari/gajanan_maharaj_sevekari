@@ -9,6 +9,7 @@ import 'package:gajanan_maharaj_sevekari/models/admin_user.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:gajanan_maharaj_sevekari/utils/default_timezone.dart';
 import 'package:gajanan_maharaj_sevekari/utils/form_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
 import 'package:gajanan_maharaj_sevekari/utils/slot_schedule.dart';
@@ -21,7 +22,11 @@ class _SlotFormRowData {
   final TextEditingController capacityController = TextEditingController();
   final TextEditingController suggestedAmountController =
       TextEditingController();
-  DateTime? date;
+
+  /// The slot's schedule, kept up to date by the row's schedule field.
+  SlotScheduleInput schedule;
+
+  _SlotFormRowData(this.schedule);
 
   void dispose() {
     labelEnController.dispose();
@@ -101,9 +106,14 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
     super.dispose();
   }
 
+  /// Adds a slot in the zone of the one before it, or - for the first - in
+  /// the group's default zone (read now, in case the config has just loaded).
   void _addSlot() {
+    final timezone = _slots.isEmpty
+        ? defaultTimezoneFor(context, widget.adminUser.groupId)
+        : _slots.last.schedule.timezone;
     setState(() {
-      _slots.add(_SlotFormRowData());
+      _slots.add(_SlotFormRowData(SlotScheduleInput(timezone: timezone)));
       _slotsError = null;
     });
   }
@@ -252,9 +262,7 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
   /// picked, so resolving can't fail here; that would be a programming error.
   SignupSlot _buildSlot(int index, DateTime now) {
     final row = _slots[index];
-    final schedule = resolveSlotSchedule(
-      SlotScheduleInput(startDate: row.date),
-    );
+    final schedule = resolveSlotSchedule(row.schedule);
     if (schedule is! SlotScheduleResolved) {
       throw StateError('Slot ${index + 1} has no valid schedule: $schedule');
     }
@@ -263,6 +271,7 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
       labelMr: row.labelMrController.text.trim(),
       startAt: schedule.startAt,
       endAt: schedule.endAt,
+      timezone: row.schedule.timezone,
       capacity: int.parse(row.capacityController.text.trim()),
       suggestedAmount: double.tryParse(
         row.suggestedAmountController.text.trim(),
@@ -413,10 +422,9 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
                           capacityController: _slots[i].capacityController,
                           suggestedAmountController:
                               _slots[i].suggestedAmountController,
-                          date: _slots[i].date,
-                          onDateChanged: (date) {
-                            setState(() => _slots[i].date = date);
-                          },
+                          schedule: _slots[i].schedule,
+                          onScheduleChanged: (schedule) =>
+                              _slots[i].schedule = schedule,
                           onRemove: () => _removeSlot(i),
                           onMoveUp: i == 0 ? null : () => _moveSlotUp(i),
                           onMoveDown: i == _slots.length - 1

@@ -879,8 +879,6 @@
   "signupSlotCapacityInvalid": "क्षमता ही पॉझिटिव्ह संख्या असावी",
   "signupSlotSuggestedAmountLabel": "सुचवलेली रक्कम (ऐच्छिक)",
   "signupSlotSuggestedAmountInvalid": "कृपया व्हॅलिड रक्कम एंटर करा",
-  "signupSlotSetDateLabel": "तारीख सेट करा",
-  "signupSlotNoDateLabel": "तारीख सेट केलेली नाही",
   "signupSlotDateRequired": "कृपया तारीख निवडा",
   "signupSlotStartsLabel": "सुरुवात",
   "signupSlotEndsLabel": "शेवट",

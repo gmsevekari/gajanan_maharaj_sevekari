@@ -152,11 +152,60 @@ void main() {
   /// Picks today's date for slot [index] through the date picker (the date
   /// is mandatory, so any test that saves successfully needs one).
   Future<void> pickSlotDate(WidgetTester tester, [int index = 0]) async {
-    await tester.tap(find.text('Set Date').at(index));
+    await tester.tap(find.byKey(Key('slotStartDate_$index')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
   }
+
+  /// Opens the date picker from [button] and picks [target]. The picker opens
+  /// on the month of [openedOn] (the date the button currently holds), so it
+  /// is paged forward from there.
+  Future<void> pickDate(
+    WidgetTester tester,
+    Key button, {
+    required DateTime openedOn,
+    required DateTime target,
+  }) async {
+    await tester.tap(find.byKey(button));
+    await tester.pumpAndSettle();
+    final months =
+        (target.year - openedOn.year) * 12 + target.month - openedOn.month;
+    for (var i = 0; i < months; i++) {
+      await tester.tap(find.byTooltip('Next month'));
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.text('${target.day}'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+  }
+
+  /// Picks a time in the time picker opened from [button], accepting the time
+  /// it opens on.
+  Future<void> acceptTime(WidgetTester tester, Key button) async {
+    await tester.tap(find.byKey(button));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> fillFirstSlot(WidgetTester tester) async {
+    await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+    await tester.tap(find.text('Add Slot'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'L');
+    await tester.enterText(find.byKey(const Key('slotCapacity_0')), '2');
+  }
+
+  Future<Map<String, dynamic>> onlySlot() async {
+    final signup = (await firestore.collection('signups').get()).docs.single;
+    return (await signup.reference.collection('slots').get()).docs.single
+        .data();
+  }
+
+  DateTime instantOf(Map<String, dynamic> slot, String field) =>
+      (slot[field] as Timestamp).toDate().toUtc();
 
   group('AdminCreateSignupScreen', () {
     testWidgets(
@@ -374,7 +423,7 @@ void main() {
       expect(slots.docs.first.data()['suggestedAmount'], 50.5);
     });
 
-    testWidgets('picking a date shows it on the row, with no way to clear it', (
+    testWidgets('picking a start date fills the start and end buttons', (
       tester,
     ) async {
       await pumpScreen(tester);
@@ -382,11 +431,17 @@ void main() {
       await tester.tap(find.text('Add Slot'));
       await tester.pumpAndSettle();
 
-      expect(find.text('No date set'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('slotStartDate_0')),
+          matching: find.text('Select Date'),
+        ),
+        findsOneWidget,
+      );
 
       await pickSlotDate(tester);
 
-      expect(find.text('No date set'), findsNothing);
+      expect(find.text('Select Date'), findsNothing);
       expect(find.byIcon(Icons.clear), findsNothing);
     });
 
@@ -437,6 +492,7 @@ void main() {
       }
       await pickSlotDate(tester); // only the first slot
 
+      await tester.ensureVisible(find.text('Save'));
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
@@ -608,6 +664,238 @@ void main() {
           timezone: EventTimezone.pacific,
         ),
       );
+    });
+
+    group('slot schedule', () {
+      testWidgets('start and end times are saved in the slot\'s zone', (
+        tester,
+      ) async {
+        await pumpScreen(tester);
+        await fillFirstSlot(tester);
+        await pickSlotDate(tester);
+        await acceptTime(tester, const Key('slotStartTime_0')); // 9:00 AM
+        await acceptTime(tester, const Key('slotEndTime_0')); // 10:00 AM
+        final today = DateTime.now();
+
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        final slot = await onlySlot();
+        DateTime at(int hour) => wallClockToUtc(
+          year: today.year,
+          month: today.month,
+          day: today.day,
+          hour: hour,
+          timezone: EventTimezone.pacific,
+        );
+        expect(instantOf(slot, 'startAt'), at(9));
+        expect(instantOf(slot, 'endAt'), at(10));
+        expect(slot['timezone'], EventTimezone.pacific);
+      });
+
+      testWidgets('an end date on a later day makes a multi-day slot', (
+        tester,
+      ) async {
+        await pumpScreen(tester);
+        await fillFirstSlot(tester);
+        await pickSlotDate(tester);
+        final today = DateTime.now();
+        final later = today.add(const Duration(days: 3));
+        await pickDate(
+          tester,
+          const Key('slotEndDate_0'),
+          openedOn: today,
+          target: later,
+        );
+
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        final slot = await onlySlot();
+        // Midnight on the first day to 23:59 on the last, in Pacific time.
+        expect(
+          instantOf(slot, 'startAt'),
+          wallClockToUtc(
+            year: today.year,
+            month: today.month,
+            day: today.day,
+            timezone: EventTimezone.pacific,
+          ),
+        );
+        expect(
+          instantOf(slot, 'endAt'),
+          wallClockToUtc(
+            year: later.year,
+            month: later.month,
+            day: later.day,
+            hour: 23,
+            minute: 59,
+            timezone: EventTimezone.pacific,
+          ),
+        );
+      });
+
+      testWidgets('a start moved past the end blocks saving and creates '
+          'nothing', (tester) async {
+        await pumpScreen(tester);
+        await fillFirstSlot(tester);
+        await pickSlotDate(tester);
+        final today = DateTime.now();
+        final tomorrow = today.add(const Duration(days: 1));
+        await pickDate(
+          tester,
+          const Key('slotEndDate_0'),
+          openedOn: today,
+          target: tomorrow,
+        );
+        // Move the start two days past the end.
+        await pickDate(
+          tester,
+          const Key('slotStartDate_0'),
+          openedOn: today,
+          target: today.add(const Duration(days: 3)),
+        );
+
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('End must be after the start'), findsOneWidget);
+        expect((await firestore.collection('signups').get()).docs, isEmpty);
+      });
+
+      testWidgets('a seattle admin\'s first slot starts on Pacific time', (
+        tester,
+      ) async {
+        await pumpScreen(tester);
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('slotTimezone_0')),
+            matching: find.text('Seattle (Pacific Time)'),
+          ),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('a Gunjan admin\'s first slot starts on India time and '
+          'is saved that way', (tester) async {
+        when(() => appConfigProvider.appConfig).thenReturn(
+          AppConfig(
+            deities: const [],
+            gajananMaharajGroups: [
+              GajananMaharajGroup(
+                id: 'gajanan_gunjan',
+                nameEn: 'Gunjan',
+                nameMr: 'गुंजन',
+                defaultTimezone: EventTimezone.india,
+              ),
+            ],
+            socialMediaLinks: const [],
+            appName: const {},
+            updateMessage: const {},
+            latestVersion: '1.0.0',
+            forceUpdate: 'false',
+            playStoreUrl: '',
+            appStoreUrl: '',
+          ),
+        );
+        adminUser = const AdminUser(
+          email: 'admin@test.com',
+          roles: ['group_admin'],
+          groupId: 'gajanan_gunjan',
+        );
+        await pumpScreen(tester);
+        await fillFirstSlot(tester);
+        await pickSlotDate(tester);
+        final today = DateTime.now();
+
+        expect(find.text('India (IST)'), findsOneWidget);
+
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        final slot = await onlySlot();
+        expect(slot['timezone'], EventTimezone.india);
+        expect(
+          instantOf(slot, 'startAt'),
+          wallClockToUtc(
+            year: today.year,
+            month: today.month,
+            day: today.day,
+            timezone: EventTimezone.india,
+          ),
+        );
+      });
+
+      testWidgets('a second slot starts in the zone the first one was changed '
+          'to', (tester) async {
+        await pumpScreen(tester);
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('slotTimezone_0')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('India (IST)').last);
+        await tester.pumpAndSettle();
+
+        await tester.ensureVisible(find.text('Add Slot'));
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('slotTimezone_1')),
+            matching: find.text('India (IST)'),
+          ),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('moving a slot keeps its own schedule', (tester) async {
+        await pumpScreen(tester);
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('slotTimezone_0')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('India (IST)').last);
+        await tester.pumpAndSettle();
+        await pickSlotDate(tester, 0);
+        await tester.ensureVisible(find.text('Add Slot'));
+        await tester.tap(find.text('Add Slot')); // inherits India
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.byKey(const Key('slotTimezone_1')));
+        await tester.tap(find.byKey(const Key('slotTimezone_1')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Seattle (Pacific Time)').last);
+        await tester.pumpAndSettle();
+
+        await tester.ensureVisible(find.byTooltip('Move slot down').first);
+        await tester.tap(find.byTooltip('Move slot down').first);
+        await tester.pumpAndSettle();
+
+        // The Seattle slot is first now, the India one (with its date) second.
+        Finder shown(int row, String text) => find.descendant(
+          of: find.byKey(Key('slotTimezone_$row')),
+          matching: find.text(text),
+        );
+        expect(shown(0, 'Seattle (Pacific Time)'), findsOneWidget);
+        expect(shown(1, 'India (IST)'), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('slotStartDate_1')),
+            matching: find.text('Select Date'),
+          ),
+          findsNothing,
+        );
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('slotStartDate_0')),
+            matching: find.text('Select Date'),
+          ),
+          findsOneWidget,
+        );
+      });
     });
 
     testWidgets('generates a join code only when the toggle is enabled', (
