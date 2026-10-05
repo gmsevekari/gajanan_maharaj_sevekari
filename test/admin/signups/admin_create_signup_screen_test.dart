@@ -763,9 +763,8 @@ void main() {
         expect((await firestore.collection('signups').get()).docs, isEmpty);
       });
 
-      testWidgets('a seattle admin\'s first slot starts on Pacific time', (
-        tester,
-      ) async {
+      testWidgets('a first slot starts on Pacific time when the group has no '
+          'setting', (tester) async {
         await pumpScreen(tester);
         await tester.tap(find.text('Add Slot'));
         await tester.pumpAndSettle();
@@ -850,6 +849,150 @@ void main() {
           ),
           findsOneWidget,
         );
+      });
+
+      Future<void> addSlotRow(
+        WidgetTester tester,
+        int index,
+        String label, {
+        String? timezoneLabel,
+      }) async {
+        await tester.ensureVisible(find.text('Add Slot'));
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.byKey(Key('slotLabelEn_$index')));
+        await tester.enterText(find.byKey(Key('slotLabelEn_$index')), label);
+        await tester.enterText(find.byKey(Key('slotCapacity_$index')), '2');
+        if (timezoneLabel != null) {
+          await tester.ensureVisible(find.byKey(Key('slotTimezone_$index')));
+          await tester.tap(find.byKey(Key('slotTimezone_$index')));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text(timezoneLabel).last);
+          await tester.pumpAndSettle();
+        }
+        await tester.ensureVisible(find.byKey(Key('slotStartDate_$index')));
+        await pickSlotDate(tester, index);
+      }
+
+      Future<Map<String, Map<String, dynamic>>> savedSlotsByLabel() async {
+        final signup =
+            (await firestore.collection('signups').get()).docs.single;
+        final slots = await signup.reference.collection('slots').get();
+        return {for (final d in slots.docs) d.data()['labelEn']: d.data()};
+      }
+
+      testWidgets('removing a slot above leaves the others\' schedules '
+          'intact when saved', (tester) async {
+        await pumpScreen(tester);
+        await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+        await addSlotRow(tester, 0, 'A');
+        await addSlotRow(tester, 1, 'B', timezoneLabel: 'India (IST)');
+        await tester.ensureVisible(find.byKey(const Key('slotStartTime_1')));
+        await acceptTime(tester, const Key('slotStartTime_1')); // 9:00 AM
+        final today = DateTime.now();
+
+        await tester.ensureVisible(find.byTooltip('Remove slot').first);
+        await tester.tap(find.byTooltip('Remove slot').first);
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.text('Save'));
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        final slots = await savedSlotsByLabel();
+        expect(slots.keys, ['B']);
+        expect(slots['B']!['timezone'], EventTimezone.india);
+        expect(
+          instantOf(slots['B']!, 'startAt'),
+          wallClockToUtc(
+            year: today.year,
+            month: today.month,
+            day: today.day,
+            hour: 9,
+            timezone: EventTimezone.india,
+          ),
+        );
+      });
+
+      testWidgets('saving after moving a slot stores the new order with '
+          'each slot\'s own schedule', (tester) async {
+        await pumpScreen(tester);
+        await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+        await addSlotRow(tester, 0, 'A');
+        await addSlotRow(tester, 1, 'B', timezoneLabel: 'India (IST)');
+        await tester.ensureVisible(find.byTooltip('Move slot down').first);
+        await tester.tap(find.byTooltip('Move slot down').first);
+        await tester.pumpAndSettle();
+
+        await tester.ensureVisible(find.text('Save'));
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        final slots = await savedSlotsByLabel();
+        expect(slots['B']!['sortOrder'], 0);
+        expect(slots['A']!['sortOrder'], 1);
+        expect(slots['B']!['timezone'], EventTimezone.india);
+        expect(slots['A']!['timezone'], EventTimezone.pacific);
+      });
+
+      testWidgets('a failed save keeps the schedule that was entered', (
+        tester,
+      ) async {
+        adminUser = const AdminUser(
+          email: 'admin@test.com',
+          roles: ['group_admin'],
+        ); // no group, so saving fails
+        await pumpScreen(tester);
+        await tester.enterText(find.byKey(const Key('titleEnField')), 'T');
+        await addSlotRow(tester, 0, 'A', timezoneLabel: 'India (IST)');
+        await acceptTime(tester, const Key('slotStartTime_0'));
+
+        await tester.ensureVisible(find.text('Save'));
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Failed to create sign up. Please try again.'),
+          findsOneWidget,
+        );
+        expect(find.text('India (IST)'), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('slotStartTime_0')),
+            matching: find.text('9:00 AM'),
+          ),
+          findsOneWidget,
+        );
+        expect((await firestore.collection('signups').get()).docs, isEmpty);
+      });
+
+      testWidgets('fits a 320 px phone at double text size', (tester) async {
+        tester.view.physicalSize = const Size(320, 900);
+        tester.view.devicePixelRatio = 1.0;
+        tester.platformDispatcher.textScaleFactorTestValue = 2.0;
+        addTearDown(() {
+          tester.view.reset();
+          tester.platformDispatcher.clearTextScaleFactorTestValue();
+        });
+        await tester.pumpWidget(
+          createWidget(
+            AdminCreateSignupScreen(
+              adminUser: adminUser,
+              firestore: firestore,
+              storage: storage,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.text('Add Slot'));
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.byKey(const Key('slotStartDate_0')));
+        await pickSlotDate(tester);
+        await tester.ensureVisible(find.byKey(const Key('slotStartTime_0')));
+        await acceptTime(tester, const Key('slotStartTime_0'));
+        await acceptTime(tester, const Key('slotEndTime_0'));
+
+        expect(tester.takeException(), isNull);
       });
 
       testWidgets('moving a slot keeps its own schedule', (tester) async {

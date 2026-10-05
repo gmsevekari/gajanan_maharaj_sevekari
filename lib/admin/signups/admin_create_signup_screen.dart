@@ -10,6 +10,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/default_timezone.dart';
+import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
 import 'package:gajanan_maharaj_sevekari/utils/form_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
 import 'package:gajanan_maharaj_sevekari/utils/slot_schedule.dart';
@@ -111,7 +112,7 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
   void _addSlot() {
     final timezone = _slots.isEmpty
         ? defaultTimezoneFor(context, widget.adminUser.groupId)
-        : _slots.last.schedule.timezone;
+        : normalizeTimezone(_slots.last.schedule.timezone);
     setState(() {
       _slots.add(_SlotFormRowData(SlotScheduleInput(timezone: timezone)));
       _slotsError = null;
@@ -271,13 +272,30 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
       labelMr: row.labelMrController.text.trim(),
       startAt: schedule.startAt,
       endAt: schedule.endAt,
-      timezone: row.schedule.timezone,
+      timezone: normalizeTimezone(row.schedule.timezone),
       capacity: int.parse(row.capacityController.text.trim()),
       suggestedAmount: double.tryParse(
         row.suggestedAmountController.text.trim(),
       ),
       sortOrder: index,
       createdAt: now,
+    );
+  }
+
+  Widget _buildSlotRow(int i) {
+    final row = _slots[i];
+    return SlotFormRow(
+      key: ObjectKey(row),
+      index: i,
+      labelEnController: row.labelEnController,
+      labelMrController: row.labelMrController,
+      capacityController: row.capacityController,
+      suggestedAmountController: row.suggestedAmountController,
+      schedule: row.schedule,
+      onScheduleChanged: (schedule) => row.schedule = schedule,
+      onRemove: () => _removeSlot(i),
+      onMoveUp: i == 0 ? null : () => _moveSlotUp(i),
+      onMoveDown: i == _slots.length - 1 ? null : () => _moveSlotDown(i),
     );
   }
 
@@ -413,24 +431,7 @@ class _AdminCreateSignupScreenState extends State<AdminCreateSignupScreen> {
                         child: Text(localizations.signupNoSlotsMessage),
                       )
                     else
-                      for (var i = 0; i < _slots.length; i++)
-                        SlotFormRow(
-                          key: ObjectKey(_slots[i]),
-                          index: i,
-                          labelEnController: _slots[i].labelEnController,
-                          labelMrController: _slots[i].labelMrController,
-                          capacityController: _slots[i].capacityController,
-                          suggestedAmountController:
-                              _slots[i].suggestedAmountController,
-                          schedule: _slots[i].schedule,
-                          onScheduleChanged: (schedule) =>
-                              _slots[i].schedule = schedule,
-                          onRemove: () => _removeSlot(i),
-                          onMoveUp: i == 0 ? null : () => _moveSlotUp(i),
-                          onMoveDown: i == _slots.length - 1
-                              ? null
-                              : () => _moveSlotDown(i),
-                        ),
+                      for (var i = 0; i < _slots.length; i++) _buildSlotRow(i),
                     if (_slotsError != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 4, bottom: 8),

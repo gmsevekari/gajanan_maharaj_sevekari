@@ -38,7 +38,7 @@ class SlotFormRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -47,108 +47,119 @@ class SlotFormRow extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    '${localizations.signupSlotHeading} ${index + 1}',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_upward),
-                  tooltip: localizations.signupMoveSlotUpTooltip,
-                  onPressed: onMoveUp,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_downward),
-                  tooltip: localizations.signupMoveSlotDownTooltip,
-                  onPressed: onMoveDown,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  tooltip: localizations.signupRemoveSlotTooltip,
-                  onPressed: onRemove,
-                ),
-              ],
-            ),
-            TextFormField(
-              key: Key('slotLabelEn_$index'),
-              controller: labelEnController,
-              decoration: InputDecoration(
-                labelText: localizations.signupSlotLabelEnLabel,
-                border: const OutlineInputBorder(),
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return localizations.signupSlotLabelEnRequired;
-                }
-                return null;
-              },
-            ),
+            _buildHeader(context, l10n),
+            _buildLabelFields(l10n),
             const SizedBox(height: 12),
-            TextFormField(
-              key: Key('slotLabelMr_$index'),
-              controller: labelMrController,
-              decoration: InputDecoration(
-                labelText: localizations.signupSlotLabelMrLabel,
-                border: const OutlineInputBorder(),
-              ),
-            ),
+            _buildCapacityField(l10n),
             const SizedBox(height: 12),
-            TextFormField(
-              key: Key('slotCapacity_$index'),
-              controller: capacityController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: localizations.signupSlotCapacityLabel,
-                border: const OutlineInputBorder(),
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return localizations.signupSlotCapacityRequired;
-                }
-                final capacity = int.tryParse(value.trim());
-                if (capacity == null || capacity <= 0) {
-                  return localizations.signupSlotCapacityInvalid;
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              key: Key('slotSuggestedAmount_$index'),
-              controller: suggestedAmountController,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              decoration: InputDecoration(
-                labelText: localizations.signupSlotSuggestedAmountLabel,
-                border: const OutlineInputBorder(),
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return null;
-                }
-                final amount = double.tryParse(value.trim());
-                if (amount == null || amount < 0) {
-                  return localizations.signupSlotSuggestedAmountInvalid;
-                }
-                return null;
-              },
-            ),
+            _buildSuggestedAmountField(l10n),
             const SizedBox(height: 12),
             SlotScheduleField(
               index: index,
               initialValue: schedule,
-              dateRequiredMessage: localizations.signupSlotDateRequired,
-              endNotAfterStartMessage:
-                  localizations.signupSlotEndBeforeStartError,
+              dateRequiredMessage: l10n.signupSlotDateRequired,
+              endNotAfterStartMessage: l10n.signupSlotEndBeforeStartError,
               onChanged: onScheduleChanged,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            '${l10n.signupSlotHeading} ${index + 1}',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.arrow_upward),
+          tooltip: l10n.signupMoveSlotUpTooltip,
+          onPressed: onMoveUp,
+        ),
+        IconButton(
+          icon: const Icon(Icons.arrow_downward),
+          tooltip: l10n.signupMoveSlotDownTooltip,
+          onPressed: onMoveDown,
+        ),
+        IconButton(
+          icon: const Icon(Icons.delete_outline),
+          tooltip: l10n.signupRemoveSlotTooltip,
+          onPressed: onRemove,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLabelFields(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextFormField(
+          key: Key('slotLabelEn_$index'),
+          controller: labelEnController,
+          decoration: InputDecoration(
+            labelText: l10n.signupSlotLabelEnLabel,
+            border: const OutlineInputBorder(),
+          ),
+          validator: (value) => value == null || value.trim().isEmpty
+              ? l10n.signupSlotLabelEnRequired
+              : null,
+        ),
+        const SizedBox(height: 12),
+        TextFormField(
+          key: Key('slotLabelMr_$index'),
+          controller: labelMrController,
+          decoration: InputDecoration(
+            labelText: l10n.signupSlotLabelMrLabel,
+            border: const OutlineInputBorder(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCapacityField(AppLocalizations l10n) {
+    return TextFormField(
+      key: Key('slotCapacity_$index'),
+      controller: capacityController,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        labelText: l10n.signupSlotCapacityLabel,
+        border: const OutlineInputBorder(),
+      ),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return l10n.signupSlotCapacityRequired;
+        }
+        final capacity = int.tryParse(value.trim());
+        return capacity == null || capacity <= 0
+            ? l10n.signupSlotCapacityInvalid
+            : null;
+      },
+    );
+  }
+
+  Widget _buildSuggestedAmountField(AppLocalizations l10n) {
+    return TextFormField(
+      key: Key('slotSuggestedAmount_$index'),
+      controller: suggestedAmountController,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      decoration: InputDecoration(
+        labelText: l10n.signupSlotSuggestedAmountLabel,
+        border: const OutlineInputBorder(),
+      ),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) return null;
+        final amount = double.tryParse(value.trim());
+        return amount == null || amount < 0
+            ? l10n.signupSlotSuggestedAmountInvalid
+            : null;
+      },
     );
   }
 }

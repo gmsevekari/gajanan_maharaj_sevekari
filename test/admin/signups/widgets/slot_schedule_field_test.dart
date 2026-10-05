@@ -21,16 +21,27 @@ void main() {
 
   ClockTime at(int hour, [int minute = 0]) => (hour: hour, minute: minute);
 
-  // A fixed date far enough ahead that the date picker opens on a known month.
-  final may10 = DateTime(2030, 5, 10);
+  // A date three years ahead, so the date picker opens on a known month
+  // without drifting out of its selectable range as time passes.
+  final year = DateTime.now().year + 3;
+  final may10 = DateTime(year, 5, 10);
 
   Widget harness({
     SlotScheduleInput initial = const SlotScheduleInput(),
     int index = 0,
     double width = 400,
+    Locale? locale,
+    double textScale = 1.0,
   }) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
+      locale: locale,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: TextScaler.linear(textScale)),
+        child: child!,
+      ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
@@ -64,6 +75,20 @@ void main() {
     final valid = formKey.currentState!.validate();
     await tester.pumpAndSettle();
     return valid;
+  }
+
+  /// Runs [body] with semantics on, always releasing the handle - even if an
+  /// expectation fails - so one failing test can't wedge the rest.
+  Future<void> withSemantics(
+    WidgetTester tester,
+    Future<void> Function() body,
+  ) async {
+    final handle = tester.ensureSemantics();
+    try {
+      await body();
+    } finally {
+      handle.dispose();
+    }
   }
 
   Future<void> confirmPicker(WidgetTester tester) async {
@@ -205,8 +230,8 @@ void main() {
       await tester.tap(find.text('12'));
       await confirmPicker(tester);
 
-      expect(buttonText('slotStartDate_', 'May 12, 2030'), findsOneWidget);
-      expect(buttonText('slotEndDate_', 'May 12, 2030'), findsOneWidget);
+      expect(buttonText('slotStartDate_', 'May 12, $year'), findsOneWidget);
+      expect(buttonText('slotEndDate_', 'May 12, $year'), findsOneWidget);
     });
 
     testWidgets('an end chosen later stops following the start', (
@@ -218,15 +243,15 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('15'));
       await confirmPicker(tester);
-      expect(buttonText('slotEndDate_', 'May 15, 2030'), findsOneWidget);
+      expect(buttonText('slotEndDate_', 'May 15, $year'), findsOneWidget);
 
       await tester.tap(key('slotStartDate_'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('13'));
       await confirmPicker(tester);
 
-      expect(buttonText('slotStartDate_', 'May 13, 2030'), findsOneWidget);
-      expect(buttonText('slotEndDate_', 'May 15, 2030'), findsOneWidget);
+      expect(buttonText('slotStartDate_', 'May 13, $year'), findsOneWidget);
+      expect(buttonText('slotEndDate_', 'May 15, $year'), findsOneWidget);
     });
 
     testWidgets('an end date left empty is filled in from the start', (
@@ -241,7 +266,7 @@ void main() {
       await tester.tap(find.text('12'));
       await confirmPicker(tester);
 
-      expect(buttonText('slotEndDate_', 'May 12, 2030'), findsOneWidget);
+      expect(buttonText('slotEndDate_', 'May 12, $year'), findsOneWidget);
     });
 
     testWidgets('the end picker will not go before the start date', (
@@ -254,7 +279,7 @@ void main() {
       await tester.tap(find.text('8')); // before May 10: not selectable
       await confirmPicker(tester);
 
-      expect(buttonText('slotEndDate_', 'May 10, 2030'), findsOneWidget);
+      expect(buttonText('slotEndDate_', 'May 10, $year'), findsOneWidget);
     });
   });
 
@@ -359,8 +384,8 @@ void main() {
       await tester.pumpWidget(
         harness(
           initial: SlotScheduleInput(
-            startDate: DateTime(2030, 5, 12),
-            endDate: DateTime(2030, 5, 10),
+            startDate: DateTime(year, 5, 12),
+            endDate: DateTime(year, 5, 10),
           ),
         ),
       );
@@ -531,6 +556,321 @@ void main() {
       );
 
       expect(find.text('Seattle (Pacific Time)'), findsOneWidget);
+    });
+  });
+
+  group('the pickers stay in English', () {
+    testWidgets('even when the app language is Marathi', (tester) async {
+      await tester.pumpWidget(harness(locale: const Locale('mr')));
+
+      await tester.tap(key('slotStartDate_'));
+      await tester.pumpAndSettle();
+      // Material's own Marathi wording would be 'ठीक आहे', not 'OK'.
+      expect(find.text('OK'), findsOneWidget);
+      expect(find.text('Cancel'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(key('slotStartTime_'));
+      await tester.pumpAndSettle();
+      expect(find.text('OK'), findsOneWidget);
+      expect(find.text('Cancel'), findsOneWidget);
+    });
+  });
+
+  group('the end date and the start date', () {
+    testWidgets('an end the admin chose different stays put when the start '
+        'later lands on the same day', (tester) async {
+      await tester.pumpWidget(
+        harness(
+          initial: SlotScheduleInput(startDate: may10, endDate: may10),
+        ),
+      );
+      await tester.tap(key('slotEndDate_'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('17'));
+      await confirmPicker(tester);
+
+      // The start catches up to the chosen end, then moves past it.
+      await tester.tap(key('slotStartDate_'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('17'));
+      await confirmPicker(tester);
+      await tester.tap(key('slotStartDate_'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('20'));
+      await confirmPicker(tester);
+
+      expect(buttonText('slotStartDate_', 'May 20, $year'), findsOneWidget);
+      expect(buttonText('slotEndDate_', 'May 17, $year'), findsOneWidget);
+    });
+
+    testWidgets('an end deliberately set equal to the start no longer moves '
+        'with it', (tester) async {
+      await tester.pumpWidget(
+        harness(
+          initial: SlotScheduleInput(startDate: may10, endDate: may10),
+        ),
+      );
+      await tester.tap(key('slotEndDate_'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('10')); // the same day, on purpose
+      await confirmPicker(tester);
+
+      await tester.tap(key('slotStartDate_'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('9'));
+      await confirmPicker(tester);
+
+      expect(buttonText('slotStartDate_', 'May 9, $year'), findsOneWidget);
+      expect(buttonText('slotEndDate_', 'May 10, $year'), findsOneWidget);
+    });
+
+    testWidgets('an end picked before any start is kept when the start is '
+        'picked later', (tester) async {
+      await tester.pumpWidget(harness());
+      await tester.tap(key('slotEndDate_'));
+      await tester.pumpAndSettle();
+      await confirmPicker(tester); // opens on today
+      final end = changes.last.endDate!;
+
+      await tester.tap(key('slotStartDate_'));
+      await tester.pumpAndSettle();
+      await confirmPicker(tester);
+
+      expect(changes.last.endDate, end);
+      expect(changes.last.startDate, isNotNull);
+    });
+
+    testWidgets('an end left alone keeps following every start change', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        harness(
+          initial: SlotScheduleInput(startDate: may10, endDate: may10),
+        ),
+      );
+      for (final day in ['12', '14']) {
+        await tester.tap(key('slotStartDate_'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(day));
+        await confirmPicker(tester);
+      }
+
+      expect(buttonText('slotEndDate_', 'May 14, $year'), findsOneWidget);
+    });
+
+    testWidgets('a differing end the form starts with counts as chosen', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        harness(
+          initial: SlotScheduleInput(
+            startDate: may10,
+            endDate: DateTime(year, 5, 15),
+          ),
+        ),
+      );
+
+      await tester.tap(key('slotStartDate_'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('12'));
+      await confirmPicker(tester);
+
+      expect(buttonText('slotEndDate_', 'May 15, $year'), findsOneWidget);
+    });
+  });
+
+  group('out-of-range input', () {
+    testWidgets('an end picker still opens for a start date beyond what can '
+        'be picked', (tester) async {
+      final far = DateTime.now().add(const Duration(days: 365 * 6));
+      await tester.pumpWidget(
+        harness(
+          initial: SlotScheduleInput(startDate: far, endDate: far),
+        ),
+      );
+
+      await tester.tap(key('slotEndDate_'));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('OK'), findsOneWidget);
+    });
+
+    testWidgets('a start picker opens for a start date older than the '
+        'picker allows', (tester) async {
+      final old = DateTime.now().subtract(const Duration(days: 90));
+      await tester.pumpWidget(
+        harness(
+          initial: SlotScheduleInput(startDate: old, endDate: old),
+        ),
+      );
+
+      await tester.tap(key('slotStartDate_'));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('OK'), findsOneWidget);
+    });
+  });
+
+  group('a picker that outlives the field', () {
+    testWidgets('picking after the field has gone is ignored without '
+        'errors', (tester) async {
+      final show = ValueNotifier<bool>(true);
+      addTearDown(show.dispose);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: ValueListenableBuilder<bool>(
+              valueListenable: show,
+              builder: (context, visible, _) => visible
+                  ? SingleChildScrollView(
+                      child: Form(
+                        child: SlotScheduleField(
+                          index: 0,
+                          initialValue: const SlotScheduleInput(),
+                          dateRequiredMessage: 'Please select a date',
+                          endNotAfterStartMessage:
+                              'End must be after the start',
+                          onChanged: changes.add,
+                        ),
+                      ),
+                    )
+                  : const SizedBox(),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(key('slotStartDate_'));
+      await tester.pumpAndSettle();
+
+      show.value = false; // the field leaves while the picker stays open
+      await tester.pump();
+      await confirmPicker(tester);
+
+      expect(tester.takeException(), isNull);
+      expect(changes, isEmpty);
+    });
+  });
+
+  group('accessibility', () {
+    testWidgets('each button announces what it is, not just its value', (
+      tester,
+    ) async {
+      await withSemantics(tester, () async {
+        await tester.pumpWidget(
+          harness(
+            initial: SlotScheduleInput(
+              startDate: DateTime(2026, 3, 15),
+              startTime: at(18),
+              endDate: DateTime(2026, 3, 16),
+            ),
+          ),
+        );
+
+        void expectButton(String keyName, String label, String value) {
+          final node = tester.getSemantics(key(keyName));
+          expect(node.label, label, reason: keyName);
+          expect(node.value, value, reason: keyName);
+          expect(
+            node.getSemanticsData().flagsCollection.isButton,
+            isTrue,
+            reason: keyName,
+          );
+        }
+
+        expectButton('slotStartDate_', 'Start Date', 'Mar 15, 2026');
+        expectButton('slotStartTime_', 'Start Time', '6:00 PM');
+        expectButton('slotEndDate_', 'End Date', 'Mar 16, 2026');
+        // An unset time says so, instead of sounding like a chosen one.
+        final endTime = tester.getSemantics(key('slotEndTime_'));
+        expect(endTime.label, 'End Time');
+        expect(endTime.value, '11:59 PM');
+        expect(endTime.hint, 'Time (optional)');
+      });
+    });
+
+    testWidgets('the two clear buttons say which time they clear', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        harness(
+          initial: SlotScheduleInput(
+            startDate: may10,
+            startTime: at(18),
+            endTime: at(19),
+          ),
+        ),
+      );
+
+      expect(find.byTooltip('Clear Time: Start Time'), findsOneWidget);
+      expect(find.byTooltip('Clear Time: End Time'), findsOneWidget);
+    });
+
+    testWidgets('a validation error is a live region', (tester) async {
+      await withSemantics(tester, () async {
+        await tester.pumpWidget(harness());
+        await validate(tester);
+
+        final error = tester.getSemantics(find.text('Please select a date'));
+        expect(error.label, 'Please select a date');
+        expect(error.getSemanticsData().flagsCollection.isLiveRegion, isTrue);
+      });
+    });
+  });
+
+  group('layout', () {
+    testWidgets('the error sits with the date and time inputs, above the '
+        'timezone', (tester) async {
+      await tester.pumpWidget(harness());
+      await validate(tester);
+
+      expect(
+        tester.getTopLeft(find.text('Please select a date')).dy,
+        lessThan(tester.getTopLeft(key('slotTimezone_')).dy),
+      );
+      expect(
+        tester.getTopLeft(find.text('Please select a date')).dy,
+        greaterThan(tester.getBottomLeft(key('slotEndDate_')).dy),
+      );
+    });
+
+    testWidgets('large text shrinks the date and time text to fit instead of '
+        'cutting it off', (tester) async {
+      await tester.pumpWidget(
+        harness(
+          width: 264,
+          textScale: 2.0,
+          initial: SlotScheduleInput(
+            startDate: DateTime(2026, 12, 28),
+            startTime: at(23, 59),
+            endDate: DateTime(2026, 12, 31),
+            endTime: at(23, 59),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      for (final name in ['slotStartTime_', 'slotEndTime_']) {
+        final fitted = find.descendant(
+          of: key(name),
+          matching: find.byType(FittedBox),
+        );
+        expect(fitted, findsOneWidget, reason: name);
+        expect(tester.widget<FittedBox>(fitted).fit, BoxFit.scaleDown);
+        // At double size the text is wider than its slot, so it is the
+        // FittedBox that makes it fit rather than the text being cut off.
+        final slot = tester.getSize(fitted).width;
+        final natural = tester
+            .getSize(find.descendant(of: fitted, matching: find.byType(Text)))
+            .width;
+        expect(natural, greaterThan(slot), reason: name);
+      }
     });
   });
 }
