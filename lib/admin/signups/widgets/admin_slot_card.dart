@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
-import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/slot_when_view.dart';
 import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
@@ -91,29 +91,12 @@ class AdminSlotCard extends StatelessWidget {
             const SizedBox(height: 6),
 
             // Optional Date & Suggested Amount
-            if (slot.startAt != null || slot.suggestedAmount != null) ...[
+            if (slot.hasSchedule || slot.suggestedAmount != null) ...[
               Wrap(
                 spacing: 12,
                 runSpacing: 4,
                 children: [
-                  if (slot.startAt != null)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.calendar_today,
-                          size: 14,
-                          color: theme.appColors.secondaryText,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          formatDateShortWithDay(slot.startAt!, langCode),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.appColors.secondaryText,
-                          ),
-                        ),
-                      ],
-                    ),
+                  if (slot.hasSchedule) SlotWhenView(slot: slot),
                   if (slot.suggestedAmount != null)
                     Row(
                       mainAxisSize: MainAxisSize.min,

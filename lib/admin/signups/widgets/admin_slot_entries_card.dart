@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_entry_tile.dart';
-import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
-import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/slot_when_view.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 /// The entries signed up for one slot, under the slot's title and date. Used
@@ -43,25 +42,9 @@ class AdminSlotEntriesCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            if (slot.startAt != null) ...[
+            if (slot.hasSchedule) ...[
               const SizedBox(height: 4),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.calendar_today,
-                    size: 14,
-                    color: theme.appColors.secondaryText,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    formatDateShort(slot.startAt!, 'en'),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.appColors.secondaryText,
-                    ),
-                  ),
-                ],
-              ),
+              SlotWhenView(slot: slot),
             ],
             const SizedBox(height: 12),
             for (final entry in entries)

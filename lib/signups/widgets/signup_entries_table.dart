@@ -3,7 +3,7 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
-import 'package:gajanan_maharaj_sevekari/utils/date_time_utils.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/slot_when_view.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 /// Every entry in [entries] as a table row (Date, Title, Name), sorted by
@@ -126,10 +126,12 @@ class SignupEntriesTable extends StatelessWidget {
                           children: [
                             // Date and title are the slot's, so they show
                             // once, on its first row.
-                            _cell(
-                              j == 0 ? _dateText(slotsById, groups[i][j]) : '',
-                              cellStyle,
-                            ),
+                            j == 0
+                                ? _dateCell(
+                                    slotsById[groups[i][j].slotId],
+                                    cellStyle,
+                                  )
+                                : _cell('', cellStyle),
                             _cell(
                               j == 0
                                   ? _slotLabel(
@@ -159,14 +161,18 @@ class SignupEntriesTable extends StatelessWidget {
   };
 
   Widget _cell(String text, TextStyle? style, {double vertical = 12}) =>
-      Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: vertical),
-        child: Text(text, style: style),
-      );
+      _padded(Text(text, style: style), vertical: vertical);
 
-  String _dateText(Map<String?, SignupSlot> slotsById, SignupEntry entry) {
-    final date = slotsById[entry.slotId]?.startAt;
-    return date != null ? formatDateShort(date, 'en') : '-';
+  Widget _padded(Widget child, {double vertical = 12}) => Padding(
+    padding: EdgeInsets.symmetric(horizontal: 12, vertical: vertical),
+    child: child,
+  );
+
+  /// The slot's date, with its time range under it when it has one; a dash
+  /// when the slot has no schedule.
+  Widget _dateCell(SignupSlot? slot, TextStyle? style) {
+    if (slot == null || !slot.hasSchedule) return _cell('-', style);
+    return _padded(SlotWhenView(slot: slot, showIcon: false, style: style));
   }
 
   String _slotLabel(SignupSlot? slot, bool isMarathi) {

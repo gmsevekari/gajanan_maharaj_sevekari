@@ -5,14 +5,23 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
+
+import '../../../helpers/slot_fixtures.dart';
 
 void main() {
-  SignupSlot slot({String labelMr = 'आठवडा १', DateTime? date}) => SignupSlot(
+  SignupSlot slot({
+    String labelMr = 'आठवडा १',
+    DateTime? start,
+    DateTime? end,
+    String timezone = EventTimezone.pacific,
+  }) => SignupSlot(
     id: 'slot_1',
     labelEn: 'Week 1 - Cooking',
     labelMr: labelMr,
-    startAt: date,
-    endAt: date?.add(const Duration(hours: 23, minutes: 59)),
+    startAt: start,
+    endAt: end,
+    timezone: timezone,
     capacity: 5,
     claimedCount: 1,
     sortOrder: 0,
@@ -64,10 +73,12 @@ void main() {
   testWidgets('shows the slot label and date above its entries', (
     tester,
   ) async {
-    await tester.pumpWidget(wrap(slot(date: DateTime(2026, 3, 15)), [entry()]));
+    await tester.pumpWidget(
+      wrap(allDaySlot(2026, 3, 15, labelEn: 'Week 1 - Cooking'), [entry()]),
+    );
 
     expect(find.text('Week 1 - Cooking'), findsOneWidget);
-    expect(find.text('March 15'), findsOneWidget);
+    expect(find.text('Sunday, March 15'), findsOneWidget);
     expect(find.text('Jane Doe'), findsOneWidget);
   });
 
@@ -121,5 +132,110 @@ void main() {
     );
 
     expect(find.text('Week 1 - Cooking'), findsOneWidget);
+  });
+
+  group('slot time range', () {
+    testWidgets('shows the time range under the date for a timed slot', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrap(
+          slot(
+            start: wallClock(2030, 7, 3, 18),
+            end: wallClock(2030, 7, 3, 19, 30),
+          ),
+          [entry()],
+        ),
+      );
+
+      expect(find.text('Wednesday, July 3'), findsOneWidget);
+      expect(find.text('6:00 PM – 7:30 PM PT'), findsOneWidget);
+    });
+
+    testWidgets('shows a multi-day timed range with the zone label', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrap(
+          slot(
+            start: wallClock(2030, 7, 1, 18),
+            end: wallClock(2030, 7, 3, 12),
+          ),
+          [entry()],
+        ),
+      );
+
+      expect(find.text('Jul 1, 6:00 PM – Jul 3, 12:00 PM PT'), findsOneWidget);
+    });
+
+    testWidgets('shows a multi-day all-day range', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          slot(
+            start: wallClock(2030, 7, 1),
+            end: wallClock(2030, 7, 3, 23, 59),
+          ),
+          [entry()],
+        ),
+      );
+
+      expect(find.text('July 1 – July 3'), findsOneWidget);
+    });
+
+    testWidgets('shows the time in the slot\'s own zone', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          slot(
+            timezone: EventTimezone.india,
+            start: wallClock(2030, 7, 3, 18, 0, EventTimezone.india),
+            end: wallClock(2030, 7, 3, 19, 30, EventTimezone.india),
+          ),
+          [entry()],
+        ),
+      );
+
+      expect(find.text('6:00 PM – 7:30 PM IST'), findsOneWidget);
+    });
+
+    testWidgets('wraps a long multi-day range at 360px without overflow', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        wrap(
+          slot(
+            start: wallClock(2030, 12, 28, 18),
+            end: wallClock(2031, 1, 3, 12),
+          ),
+          [entry()],
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(
+        find.text('Dec 28, 2030, 6:00 PM – Jan 3, 2031, 12:00 PM PT'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('shows the time range in English under a Marathi locale', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrap(
+          slot(
+            start: wallClock(2030, 7, 3, 18),
+            end: wallClock(2030, 7, 3, 19, 30),
+          ),
+          locale: const Locale('mr'),
+          [entry()],
+        ),
+      );
+
+      expect(find.text('6:00 PM – 7:30 PM PT'), findsOneWidget);
+    });
   });
 }

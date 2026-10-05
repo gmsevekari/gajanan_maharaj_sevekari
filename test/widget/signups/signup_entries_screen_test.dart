@@ -9,7 +9,10 @@ import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signup_entries_screen.dart';
+import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
 import 'package:provider/provider.dart';
+
+import '../../helpers/slot_fixtures.dart';
 
 void main() {
   late FakeFirebaseFirestore firestore;
@@ -74,15 +77,29 @@ void main() {
     String labelEn = 'Week 1',
     String labelMr = 'आठवडा १',
     DateTime? date,
+    DateTime? start,
+    DateTime? end,
+    String timezone = EventTimezone.pacific,
     int capacity = 3,
   }) {
+    // [date] is an all-day slot on that calendar day; [start] and [end] give
+    // an exact range.
+    final from =
+        start ??
+        (date == null ? null : wallClock(date.year, date.month, date.day));
+    final to =
+        end ??
+        (date == null
+            ? null
+            : wallClock(date.year, date.month, date.day, 23, 59));
     return service.addSlot(
       signupId,
       SignupSlot(
         labelEn: labelEn,
         labelMr: labelMr,
-        startAt: date,
-        endAt: date?.add(const Duration(hours: 23, minutes: 59)),
+        startAt: from,
+        endAt: to,
+        timezone: timezone,
         capacity: capacity,
         sortOrder: nextSortOrder++,
         createdAt: DateTime.now(),
@@ -90,15 +107,20 @@ void main() {
     );
   }
 
-  /// The cells of every entry row. The first Table is the header; each slot
-  /// then gets a Table of its own, so rows are collected across them.
+  /// The cells of every entry row, a cell's lines joined with newlines. The
+  /// first Table is the header; each slot then gets a Table of its own, so
+  /// rows are collected across them.
   List<List<String?>> tableRows(WidgetTester tester) {
+    String cellText(Widget cell) => tester
+        .widgetList<Text>(
+          find.descendant(of: find.byWidget(cell), matching: find.byType(Text)),
+        )
+        .map((text) => text.data)
+        .join('\n');
+
     return [
       for (final table in tester.widgetList<Table>(find.byType(Table)).skip(1))
-        for (final row in table.children)
-          row.children
-              .map((cell) => ((cell as Padding).child! as Text).data)
-              .toList(),
+        for (final row in table.children) row.children.map(cellText).toList(),
     ];
   }
 
@@ -142,9 +164,9 @@ void main() {
     // Sorted by slot date (slot3's null date sorts last); slot1 and slot4
     // tie on date and fall back to the slots' own order.
     expect(tableRows(tester), [
-      ['March 15', 'Week 1', 'Jane'],
-      ['March 15', 'Week 4', 'Anil'],
-      ['April 1', 'Week 2', 'Amit'],
+      ['Sunday, March 15', 'Week 1', 'Jane'],
+      ['Sunday, March 15', 'Week 4', 'Anil'],
+      ['Wednesday, April 1', 'Week 2', 'Amit'],
       ['-', 'Week 3', 'Priya'],
     ]);
   });
@@ -164,12 +186,124 @@ void main() {
 
       // The date and title appear once per slot, on its first row only.
       expect(tableRows(tester), [
-        ['March 15', 'Morning', 'Bob'],
+        ['Sunday, March 15', 'Morning', 'Bob'],
         ['', '', 'Zoe'],
-        ['March 15', 'Evening', 'Amy'],
+        ['Sunday, March 15', 'Evening', 'Amy'],
       ]);
     },
   );
+
+  group('date cell time range', () {
+    Future<void> claimAndShow(
+      WidgetTester tester,
+      String slotId, {
+      List<String> names = const ['Jane'],
+    }) async {
+      for (final name in names) {
+        await service.claimSlot(signupId: signupId, slotId: slotId, name: name);
+      }
+      await tester.pumpWidget(screen());
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('shows the time range under the date for a timed slot', (
+      tester,
+    ) async {
+      final slotId = await addSlot(
+        start: wallClock(2099, 7, 3, 18),
+        end: wallClock(2099, 7, 3, 19, 30),
+      );
+      await claimAndShow(tester, slotId);
+
+      expect(tableRows(tester), [
+        ['Friday, July 3\n6:00 PM – 7:30 PM PT', 'Week 1', 'Jane'],
+      ]);
+      // A table cell, not a card: no calendar icon.
+      expect(find.byIcon(Icons.calendar_today), findsNothing);
+    });
+
+    testWidgets('shows a multi-day timed range on one line', (tester) async {
+      final slotId = await addSlot(
+        start: wallClock(2099, 7, 1, 18),
+        end: wallClock(2099, 7, 3, 12),
+      );
+      await claimAndShow(tester, slotId);
+
+      expect(tableRows(tester), [
+        ['Jul 1, 6:00 PM – Jul 3, 12:00 PM PT', 'Week 1', 'Jane'],
+      ]);
+    });
+
+    testWidgets('shows the time in the slot\'s own zone', (tester) async {
+      final slotId = await addSlot(
+        timezone: EventTimezone.india,
+        start: wallClock(2099, 7, 3, 18, 0, EventTimezone.india),
+        end: wallClock(2099, 7, 3, 19, 30, EventTimezone.india),
+      );
+      await claimAndShow(tester, slotId);
+
+      expect(tableRows(tester), [
+        ['Friday, July 3\n6:00 PM – 7:30 PM IST', 'Week 1', 'Jane'],
+      ]);
+    });
+
+    testWidgets('shows the date and time only on a slot\'s first row', (
+      tester,
+    ) async {
+      final slotId = await addSlot(
+        start: wallClock(2099, 7, 3, 18),
+        end: wallClock(2099, 7, 3, 19, 30),
+      );
+      await claimAndShow(tester, slotId, names: ['Amy', 'Bob']);
+
+      expect(tableRows(tester), [
+        ['Friday, July 3\n6:00 PM – 7:30 PM PT', 'Week 1', 'Amy'],
+        ['', '', 'Bob'],
+      ]);
+      expect(find.text('6:00 PM – 7:30 PM PT'), findsOneWidget);
+    });
+
+    testWidgets('shows a dash for a slot with no schedule', (tester) async {
+      final slotId = await addSlot();
+      await claimAndShow(tester, slotId);
+
+      expect(tableRows(tester), [
+        ['-', 'Week 1', 'Jane'],
+      ]);
+    });
+
+    testWidgets('wraps a long multi-day range at 360px without overflow', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final slotId = await addSlot(
+        start: wallClock(2099, 12, 28, 18),
+        end: wallClock(2100, 1, 3, 12),
+      );
+      await claimAndShow(tester, slotId);
+
+      expect(tester.takeException(), isNull);
+      expect(
+        find.text('Dec 28, 2099, 6:00 PM – Jan 3, 2100, 12:00 PM PT'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('stays English under a Marathi locale', (tester) async {
+      final slotId = await addSlot(
+        start: wallClock(2099, 7, 3, 18),
+        end: wallClock(2099, 7, 3, 19, 30),
+      );
+      await service.claimSlot(signupId: signupId, slotId: slotId, name: 'Jane');
+
+      await tester.pumpWidget(screen(locale: const Locale('mr')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('6:00 PM – 7:30 PM PT'), findsOneWidget);
+    });
+  });
 
   testWidgets('gives each slot one background and alternates between slots', (
     tester,
@@ -247,7 +381,7 @@ void main() {
     expect(find.text('Past Person'), findsOneWidget);
     expect(find.text('Future Person'), findsNothing);
     expect(tableRows(tester), [
-      ['January 10', 'Old Week', 'Past Person'],
+      ['Friday, January 10', 'Old Week', 'Past Person'],
     ]);
   });
 
@@ -324,7 +458,7 @@ void main() {
       expect(find.text('Upcoming'), findsOneWidget);
       expect(find.text('Date'), findsOneWidget);
       expect(find.text('Available Slots'), findsNothing);
-      expect(find.text('March 15'), findsOneWidget);
+      expect(find.text('Sunday, March 15'), findsOneWidget);
       expect(find.text('आठवडा १'), findsOneWidget);
     },
   );
