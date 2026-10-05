@@ -4,7 +4,7 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_slot_tile.dart';
-
+import 'package:gajanan_maharaj_sevekari/signups/widgets/slot_when_view.dart';
 import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
 
 import '../../../helpers/slot_fixtures.dart';
@@ -189,6 +189,15 @@ void main() {
       await show(tester, buildSlot());
 
       expect(find.byIcon(Icons.calendar_today), findsNothing);
+      expect(find.byType(SlotWhenView), findsNothing);
+    });
+
+    testWidgets('shows no date row for a slot with a start but no end', (
+      tester,
+    ) async {
+      await show(tester, buildSlot(start: wallClock(2030, 7, 3, 18)));
+
+      expect(find.byType(SlotWhenView), findsNothing);
     });
 
     testWidgets('wraps a long multi-day range at 360px without overflow', (
@@ -207,10 +216,13 @@ void main() {
       );
 
       expect(tester.takeException(), isNull);
-      expect(
-        find.text('Dec 28, 2030, 6:00 PM – Jan 3, 2031, 12:00 PM PT'),
-        findsOneWidget,
+      final range = find.text(
+        'Dec 28, 2030, 6:00 PM – Jan 3, 2031, 12:00 PM PT',
       );
+      expect(range, findsOneWidget);
+      // Wrapped onto several lines and kept inside the screen.
+      expect(tester.getSize(range).height, greaterThan(20));
+      expect(tester.getRect(range).right, lessThanOrEqualTo(360));
     });
 
     testWidgets('shows the time range in English under a Marathi locale', (

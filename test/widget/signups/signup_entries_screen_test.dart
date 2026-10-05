@@ -9,6 +9,7 @@ import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/signups/signup_entries_screen.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/slot_when_view.dart';
 import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
 import 'package:provider/provider.dart';
 
@@ -285,10 +286,40 @@ void main() {
       await claimAndShow(tester, slotId);
 
       expect(tester.takeException(), isNull);
-      expect(
-        find.text('Dec 28, 2099, 6:00 PM – Jan 3, 2100, 12:00 PM PT'),
-        findsOneWidget,
+      final range = find.text(
+        'Dec 28, 2099, 6:00 PM – Jan 3, 2100, 12:00 PM PT',
       );
+      expect(range, findsOneWidget);
+      // Wrapped onto several lines and kept inside the screen.
+      expect(tester.getSize(range).height, greaterThan(20));
+      expect(tester.getRect(range).right, lessThanOrEqualTo(360));
+    });
+
+    testWidgets('gives the Date column more room than Title and Name', (
+      tester,
+    ) async {
+      final slotId = await addSlot(
+        start: wallClock(2099, 7, 3, 18),
+        end: wallClock(2099, 7, 3, 19, 30),
+      );
+      await claimAndShow(tester, slotId);
+
+      // A weekday date and a time range break mid-word in a narrow column.
+      expect(
+        tester.getSize(find.byType(SlotWhenView)).width,
+        greaterThan(tester.getSize(find.text('Jane')).width),
+      );
+    });
+
+    testWidgets('shows a dash for a slot with a start but no end', (
+      tester,
+    ) async {
+      final slotId = await addSlot(start: wallClock(2099, 7, 3, 18));
+      await claimAndShow(tester, slotId);
+
+      expect(tableRows(tester), [
+        ['-', 'Week 1', 'Jane'],
+      ]);
     });
 
     testWidgets('stays English under a Marathi locale', (tester) async {

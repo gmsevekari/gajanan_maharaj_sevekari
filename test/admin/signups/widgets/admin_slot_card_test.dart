@@ -4,6 +4,7 @@ import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_slot_card.d
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/slot_when_view.dart';
 import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
 
 import '../../../helpers/slot_fixtures.dart';
@@ -75,7 +76,16 @@ void main() {
     await tester.pumpWidget(wrap(slot()));
 
     expect(find.byIcon(Icons.calendar_today), findsNothing);
+    expect(find.byType(SlotWhenView), findsNothing);
     expect(find.textContaining('Suggested'), findsNothing);
+  });
+
+  testWidgets('shows no date for a slot with a start but no end', (
+    tester,
+  ) async {
+    await tester.pumpWidget(wrap(slot(start: wallClock(2030, 7, 3, 18))));
+
+    expect(find.byType(SlotWhenView), findsNothing);
   });
 
   testWidgets('does not list entries, only offers to add one', (tester) async {
@@ -180,14 +190,24 @@ void main() {
           slot(
             start: wallClock(2030, 12, 28, 18),
             end: wallClock(2031, 1, 3, 12),
+            suggestedAmount: 50,
           ),
         ),
       );
 
       expect(tester.takeException(), isNull);
+      final range = find.text(
+        'Dec 28, 2030, 6:00 PM – Jan 3, 2031, 12:00 PM PT',
+      );
+      expect(range, findsOneWidget);
+      // Wrapped onto several lines and kept inside the screen.
+      expect(tester.getSize(range).height, greaterThan(20));
+      expect(tester.getRect(range).right, lessThanOrEqualTo(360));
+      // The amount wraps onto its own line beside the long range.
+      expect(find.text('Suggested: 50.0'), findsOneWidget);
       expect(
-        find.text('Dec 28, 2030, 6:00 PM – Jan 3, 2031, 12:00 PM PT'),
-        findsOneWidget,
+        tester.getRect(find.text('Suggested: 50.0')).right,
+        lessThanOrEqualTo(360),
       );
     });
 

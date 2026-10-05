@@ -120,6 +120,14 @@ void main() {
     expect(find.byIcon(Icons.calendar_today), findsNothing);
   });
 
+  testWidgets('shows nothing for a slot with a start but no end', (
+    tester,
+  ) async {
+    await show(tester, scheduledSlot(start: wallClock(2030, 7, 3, 18)));
+
+    expect(find.byType(Text), findsNothing);
+  });
+
   testWidgets('shows a calendar icon unless showIcon is false', (tester) async {
     await show(tester, allDaySlot(2030, 7, 3));
     expect(find.byIcon(Icons.calendar_today), findsOneWidget);
@@ -129,31 +137,30 @@ void main() {
     expect(find.text('Wednesday, July 3'), findsOneWidget);
   });
 
-  testWidgets('wraps a long multi-day timed range at 360px without overflow', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(360, 640);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
+  testWidgets(
+    'wraps a long multi-day timed range in a narrow width without overflow',
+    (tester) async {
+      await show(
+        tester,
+        scheduledSlot(
+          start: wallClock(2030, 12, 28, 18),
+          end: wallClock(2031, 1, 3, 12),
+        ),
+        width: 200,
+      );
 
-    await show(
-      tester,
-      scheduledSlot(
-        start: wallClock(2030, 12, 28, 18),
-        end: wallClock(2031, 1, 3, 12),
-      ),
-      width: 200,
-    );
-
-    expect(tester.takeException(), isNull);
-    final text = find.text('Dec 28, 2030, 6:00 PM – Jan 3, 2031, 12:00 PM PT');
-    expect(text, findsOneWidget);
-    expect(tester.getSize(text).height, greaterThan(20)); // wrapped
-    expect(
-      tester.getSize(find.byType(SlotWhenView)).width,
-      lessThanOrEqualTo(200),
-    );
-  });
+      expect(tester.takeException(), isNull);
+      final text = find.text(
+        'Dec 28, 2030, 6:00 PM – Jan 3, 2031, 12:00 PM PT',
+      );
+      expect(text, findsOneWidget);
+      expect(tester.getSize(text).height, greaterThan(20)); // wrapped
+      expect(
+        tester.getSize(find.byType(SlotWhenView)).width,
+        lessThanOrEqualTo(200),
+      );
+    },
+  );
 
   testWidgets('stays English under a Marathi locale', (tester) async {
     await show(

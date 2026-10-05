@@ -5,7 +5,8 @@ import 'package:gajanan_maharaj_sevekari/utils/slot_format.dart';
 
 /// A slot's date and time range (see [formatSlotWhen]): the date on one line
 /// and, when the slot has times on one day, the time range under it. Shows
-/// nothing for a slot with no schedule. Wraps within the width it is given.
+/// nothing for a slot with no schedule. Wraps within the width it is given,
+/// so with [showIcon] it needs a bounded width (as in a card or table cell).
 class SlotWhenView extends StatelessWidget {
   final SignupSlot slot;
 

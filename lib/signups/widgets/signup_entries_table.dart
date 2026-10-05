@@ -154,10 +154,12 @@ class SignupEntriesTable extends StatelessWidget {
     );
   }
 
+  /// The Date column is the widest: it holds a weekday date and a time range,
+  /// which break mid-word in a narrower column on a phone.
   static const Map<int, TableColumnWidth> _columnWidths = {
-    0: FlexColumnWidth(2),
-    1: FlexColumnWidth(3),
-    2: FlexColumnWidth(3),
+    0: FlexColumnWidth(3),
+    1: FlexColumnWidth(2),
+    2: FlexColumnWidth(2),
   };
 
   Widget _cell(String text, TextStyle? style, {double vertical = 12}) =>
