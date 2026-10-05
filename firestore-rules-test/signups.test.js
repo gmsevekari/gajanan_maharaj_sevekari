@@ -27,6 +27,17 @@ const RULES_PATH = path.resolve(__dirname, '..', 'firestore.rules');
 
 let testEnv;
 
+// A slot's schedule: UTC instants plus the zone its times were entered in.
+// This one is 6-7:30 PM Pacific daylight time on 2026-07-01.
+function schedule(overrides = {}) {
+  return {
+    startAt: Timestamp.fromDate(new Date('2026-07-02T01:00:00Z')),
+    endAt: Timestamp.fromDate(new Date('2026-07-02T02:30:00Z')),
+    timezone: 'America/Los_Angeles',
+    ...overrides,
+  };
+}
+
 before(async () => {
   testEnv = await initializeTestEnvironment({
     projectId: PROJECT_ID,
@@ -57,16 +68,19 @@ beforeEach(async () => {
       labelEn: 'Monday cooking',
       capacity: 5,
       claimedCount: 2,
+      ...schedule(),
     });
     await setDoc(doc(db, 'signups/signup1/slots/fullSlot'), {
       labelEn: 'Full slot',
       capacity: 5,
       claimedCount: 5,
+      ...schedule(),
     });
     await setDoc(doc(db, 'signups/signup1/slots/emptySlot'), {
       labelEn: 'Empty slot',
       capacity: 5,
       claimedCount: 0,
+      ...schedule(),
     });
     await setDoc(doc(db, 'signups/signup1/entries/withDevice'), {
       slotId: 'slot1',
@@ -150,6 +164,28 @@ test('admin can create a slot', async () => {
   );
 });
 
+test('admin can create a slot with a start, end and timezone', async () => {
+  await assertSucceeds(
+    setDoc(doc(adminDb(), 'signups/signup1/slots/scheduled'), {
+      labelEn: 'Scheduled slot',
+      capacity: 1,
+      claimedCount: 0,
+      ...schedule({ timezone: 'Asia/Kolkata' }),
+    }),
+  );
+});
+
+test('non-admin cannot create a slot with a start, end and timezone', async () => {
+  await assertFails(
+    setDoc(doc(unauthedDb(), 'signups/signup1/slots/scheduled'), {
+      labelEn: 'Injected slot',
+      capacity: 1,
+      claimedCount: 0,
+      ...schedule(),
+    }),
+  );
+});
+
 test('admin can delete a slot', async () => {
   await assertSucceeds(
     deleteDoc(doc(adminDb(), 'signups/signup1/slots/slot1')),
@@ -212,6 +248,36 @@ test('non-admin cannot modify label or schedule fields', async () => {
   );
 });
 
+test('non-admin cannot change a slot\'s start, end or timezone', async () => {
+  for (const change of [
+    { startAt: Timestamp.fromDate(new Date('2026-07-03T01:00:00Z')) },
+    { endAt: Timestamp.fromDate(new Date('2026-07-03T02:30:00Z')) },
+    { timezone: 'Asia/Kolkata' },
+  ]) {
+    await assertFails(
+      updateDoc(doc(unauthedDb(), 'signups/signup1/slots/slot1'), change),
+    );
+    // Not even next to an otherwise valid claimedCount change.
+    await assertFails(
+      updateDoc(doc(unauthedDb(), 'signups/signup1/slots/slot1'), {
+        claimedCount: 3,
+        ...change,
+      }),
+    );
+  }
+});
+
+test('non-admin claimedCount change leaves the schedule fields untouched', async () => {
+  const ref = doc(unauthedDb(), 'signups/signup1/slots/slot1');
+  await assertSucceeds(updateDoc(ref, { claimedCount: 3 }));
+
+  const slot = (await getDoc(ref)).data();
+  assert.equal(slot.claimedCount, 3);
+  assert.equal(slot.timezone, 'America/Los_Angeles');
+  assert.deepEqual(slot.startAt, schedule().startAt);
+  assert.deepEqual(slot.endAt, schedule().endAt);
+});
+
 test('non-admin cannot smuggle a capacity change alongside a valid claimedCount change', async () => {
   await assertFails(
     updateDoc(doc(unauthedDb(), 'signups/signup1/slots/slot1'), {
@@ -227,6 +293,16 @@ test('admin can freely modify capacity, label, and claimedCount', async () => {
       capacity: 10,
       labelEn: 'Admin edited label',
       claimedCount: 9,
+    }),
+  );
+});
+
+test('admin can reschedule a slot', async () => {
+  await assertSucceeds(
+    updateDoc(doc(adminDb(), 'signups/signup1/slots/slot1'), {
+      startAt: Timestamp.fromDate(new Date('2026-07-03T01:00:00Z')),
+      endAt: Timestamp.fromDate(new Date('2026-07-04T06:59:00Z')),
+      timezone: 'Asia/Kolkata',
     }),
   );
 });
