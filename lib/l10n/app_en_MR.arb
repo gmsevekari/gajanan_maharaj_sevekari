@@ -816,7 +816,7 @@
   "signupClaimMySignupError": "Sign up claim करता आले नाही. कृपया पुन्हा प्रयत्न करा.",
   "signupReleaseDeviceButton": "Device Link काढा",
   "signupReleaseDeviceConfirmTitle": "Device link काढायची?",
-  "signupReleaseDeviceConfirmMessage": "ही entry यापुढे भक्ताच्या device ची राहणार नाही. ते त्यांच्या phone number ने ती पुन्हा claim करू शकतात.",
+  "signupReleaseDeviceConfirmMessage": "ही entry यापुढे भक्ताच्या device ची राहणार नाही. ते त्यांच्या phone number ने ती पुन्हा claim करू शकतात. या form मधील save न केलेले बदल जातील.",
   "signupReleaseDeviceSuccess": "Device link काढली",
   "signupReleaseDeviceError": "Device link काढण्यात अयशस्वी",
   "signupCancelSignupConfirmTitle": "Sign-up रद्द करायचे?",

@@ -728,7 +728,8 @@ void main() {
         expect(
           find.text(
             'This entry will no longer belong to the devotee\'s device. '
-            'They can claim it again with their phone number.',
+            'They can claim it again with their phone number. '
+            'Unsaved changes in this form will be lost.',
           ),
           findsOneWidget,
         );

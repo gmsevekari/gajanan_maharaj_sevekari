@@ -976,7 +976,7 @@
   "signupClaimMySignupError": "साइन अप क्लेम करता आले नाही. कृपया पुन्हा प्रयत्न करा.",
   "signupReleaseDeviceButton": "डिव्हाइस लिंक काढा",
   "signupReleaseDeviceConfirmTitle": "डिव्हाइस लिंक काढायची?",
-  "signupReleaseDeviceConfirmMessage": "ही एंट्री यापुढे भक्ताच्या डिव्हाइसची राहणार नाही. ते त्यांच्या फोन नंबरने ती पुन्हा क्लेम करू शकतात.",
+  "signupReleaseDeviceConfirmMessage": "ही एंट्री यापुढे भक्ताच्या डिव्हाइसची राहणार नाही. ते त्यांच्या फोन नंबरने ती पुन्हा क्लेम करू शकतात. या फॉर्ममधील सेव्ह न केलेले बदल जातील.",
   "signupReleaseDeviceSuccess": "डिव्हाइस लिंक काढली",
   "signupReleaseDeviceError": "डिव्हाइस लिंक काढण्यात अयशस्वी",
   "signupCancelSignupConfirmTitle": "साइन-अप रद्द करायचे?",

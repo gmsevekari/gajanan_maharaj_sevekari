@@ -2606,7 +2606,7 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get signupReleaseDeviceConfirmMessage =>
-      'ही एंट्री यापुढे भक्ताच्या डिव्हाइसची राहणार नाही. ते त्यांच्या फोन नंबरने ती पुन्हा क्लेम करू शकतात.';
+      'ही एंट्री यापुढे भक्ताच्या डिव्हाइसची राहणार नाही. ते त्यांच्या फोन नंबरने ती पुन्हा क्लेम करू शकतात. या फॉर्ममधील सेव्ह न केलेले बदल जातील.';
 
   @override
   String get signupReleaseDeviceSuccess => 'डिव्हाइस लिंक काढली';

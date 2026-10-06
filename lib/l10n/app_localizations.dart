@@ -4980,7 +4980,7 @@ abstract class AppLocalizations {
   /// No description provided for @signupReleaseDeviceConfirmMessage.
   ///
   /// In en, this message translates to:
-  /// **'This entry will no longer belong to the devotee\'s device. They can claim it again with their phone number.'**
+  /// **'This entry will no longer belong to the devotee\'s device. They can claim it again with their phone number. Unsaved changes in this form will be lost.'**
   String get signupReleaseDeviceConfirmMessage;
 
   /// No description provided for @signupReleaseDeviceSuccess.

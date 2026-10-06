@@ -2592,7 +2592,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signupReleaseDeviceConfirmMessage =>
-      'This entry will no longer belong to the devotee\'s device. They can claim it again with their phone number.';
+      'This entry will no longer belong to the devotee\'s device. They can claim it again with their phone number. Unsaved changes in this form will be lost.';
 
   @override
   String get signupReleaseDeviceSuccess => 'Device link released';
@@ -5255,7 +5255,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupReleaseDeviceConfirmMessage =>
-      'ही entry यापुढे भक्ताच्या device ची राहणार नाही. ते त्यांच्या phone number ने ती पुन्हा claim करू शकतात.';
+      'ही entry यापुढे भक्ताच्या device ची राहणार नाही. ते त्यांच्या phone number ने ती पुन्हा claim करू शकतात. या form मधील save न केलेले बदल जातील.';
 
   @override
   String get signupReleaseDeviceSuccess => 'Device link काढली';

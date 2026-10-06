@@ -993,7 +993,7 @@
   "signupClaimMySignupError": "Couldn't claim your sign up. Please try again.",
   "signupReleaseDeviceButton": "Release Device Link",
   "signupReleaseDeviceConfirmTitle": "Release device link?",
-  "signupReleaseDeviceConfirmMessage": "This entry will no longer belong to the devotee's device. They can claim it again with their phone number.",
+  "signupReleaseDeviceConfirmMessage": "This entry will no longer belong to the devotee's device. They can claim it again with their phone number. Unsaved changes in this form will be lost.",
   "signupReleaseDeviceSuccess": "Device link released",
   "signupReleaseDeviceError": "Failed to release device link",
   "signupCancelSignupConfirmTitle": "Cancel Signup?",
