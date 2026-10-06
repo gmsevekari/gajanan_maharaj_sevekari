@@ -4929,6 +4929,42 @@ abstract class AppLocalizations {
   /// **'Edit'**
   String get signupEditEntryButton;
 
+  /// No description provided for @signupClaimMySignupButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim My Sign Up'**
+  String get signupClaimMySignupButton;
+
+  /// No description provided for @signupClaimMySignupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the phone number you signed up with.'**
+  String get signupClaimMySignupHint;
+
+  /// No description provided for @signupClaimMySignupSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your sign up is now linked to this device.'**
+  String get signupClaimMySignupSuccess;
+
+  /// No description provided for @signupClaimMySignupNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No sign up found for this phone number.'**
+  String get signupClaimMySignupNotFound;
+
+  /// No description provided for @signupClaimMySignupAlreadyClaimed.
+  ///
+  /// In en, this message translates to:
+  /// **'This entry is already claimed by someone else.'**
+  String get signupClaimMySignupAlreadyClaimed;
+
+  /// No description provided for @signupClaimMySignupError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t claim your sign up. Please try again.'**
+  String get signupClaimMySignupError;
+
   /// No description provided for @signupCancelSignupConfirmTitle.
   ///
   /// In en, this message translates to:

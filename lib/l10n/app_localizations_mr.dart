@@ -2576,6 +2576,29 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupEditEntryButton => 'एडिट';
 
   @override
+  String get signupClaimMySignupButton => 'माझे साइन अप क्लेम करा';
+
+  @override
+  String get signupClaimMySignupHint =>
+      'तुम्ही साइन अप करताना दिलेला फोन नंबर टाका.';
+
+  @override
+  String get signupClaimMySignupSuccess =>
+      'तुमचे साइन अप आता या डिव्हाइसशी जोडले गेले आहे.';
+
+  @override
+  String get signupClaimMySignupNotFound =>
+      'या फोन नंबरसाठी साइन अप सापडले नाही.';
+
+  @override
+  String get signupClaimMySignupAlreadyClaimed =>
+      'ही एंट्री आधीच दुसऱ्या कोणीतरी क्लेम केली आहे.';
+
+  @override
+  String get signupClaimMySignupError =>
+      'साइन अप क्लेम करता आले नाही. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
   String get signupCancelSignupConfirmTitle => 'साइन-अप रद्द करायचे?';
 
   @override

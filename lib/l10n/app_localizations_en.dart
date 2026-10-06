@@ -2562,6 +2562,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupEditEntryButton => 'Edit';
 
   @override
+  String get signupClaimMySignupButton => 'Claim My Sign Up';
+
+  @override
+  String get signupClaimMySignupHint =>
+      'Enter the phone number you signed up with.';
+
+  @override
+  String get signupClaimMySignupSuccess =>
+      'Your sign up is now linked to this device.';
+
+  @override
+  String get signupClaimMySignupNotFound =>
+      'No sign up found for this phone number.';
+
+  @override
+  String get signupClaimMySignupAlreadyClaimed =>
+      'This entry is already claimed by someone else.';
+
+  @override
+  String get signupClaimMySignupError =>
+      'Couldn\'t claim your sign up. Please try again.';
+
+  @override
   String get signupCancelSignupConfirmTitle => 'Cancel Signup?';
 
   @override
@@ -5184,6 +5207,29 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupEditEntryButton => 'Edit';
+
+  @override
+  String get signupClaimMySignupButton => 'माझे Sign Up Claim करा';
+
+  @override
+  String get signupClaimMySignupHint =>
+      'तुम्ही sign up करताना दिलेला phone number टाका.';
+
+  @override
+  String get signupClaimMySignupSuccess =>
+      'तुमचे sign up आता या device शी जोडले गेले आहे.';
+
+  @override
+  String get signupClaimMySignupNotFound =>
+      'या phone number साठी sign up सापडले नाही.';
+
+  @override
+  String get signupClaimMySignupAlreadyClaimed =>
+      'ही entry आधीच दुसऱ्या कोणीतरी claim केली आहे.';
+
+  @override
+  String get signupClaimMySignupError =>
+      'Sign up claim करता आले नाही. कृपया पुन्हा प्रयत्न करा.';
 
   @override
   String get signupCancelSignupConfirmTitle => 'Sign-up रद्द करायचे?';
