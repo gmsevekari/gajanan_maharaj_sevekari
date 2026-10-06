@@ -99,12 +99,13 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
     ),
   ];
 
-  void _openMySignups() {
+  void _openMySignups(Signup signup) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => MySignupsScreen(
           signupId: _signupId,
+          groupId: signup.groupId,
           deviceId: _deviceId!,
           firestore: widget.firestore,
           signupService: _service,
@@ -253,7 +254,7 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
               SignupNavCard(
                 icon: Icons.assignment_ind_outlined,
                 label: l10n.signupMySignupsHeading,
-                onTap: _openMySignups,
+                onTap: () => _openMySignups(signup),
               ),
               const SizedBox(height: 12),
               SignupNavCard(

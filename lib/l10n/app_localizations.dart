@@ -4923,6 +4923,12 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get signupCancelSignupButton;
 
+  /// No description provided for @signupEditEntryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get signupEditEntryButton;
+
   /// No description provided for @signupCancelSignupConfirmTitle.
   ///
   /// In en, this message translates to:

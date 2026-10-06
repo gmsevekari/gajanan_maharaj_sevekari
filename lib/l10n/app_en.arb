@@ -984,6 +984,7 @@
   "signupMySignupsHeading": "My Signups",
   "signupNoMySignups": "You haven't signed up for anything yet",
   "signupCancelSignupButton": "Cancel",
+  "signupEditEntryButton": "Edit",
   "signupCancelSignupConfirmTitle": "Cancel Signup?",
   "signupCancelSignupConfirmMessage": "Are you sure you want to cancel this signup?",
   "signupCancelSignupSuccess": "Signup cancelled",

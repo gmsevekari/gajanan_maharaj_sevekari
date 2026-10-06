@@ -41,6 +41,7 @@ void main() {
           entries: const [],
           slots: const [],
           onCancelEntry: (_) {},
+          onEditEntry: (_) {},
           emptyMessage: 'Nothing here yet',
         ),
       ),
@@ -77,6 +78,7 @@ void main() {
           entries: entries,
           slots: slots,
           onCancelEntry: (_) {},
+          onEditEntry: (_) {},
           emptyMessage: 'Nothing here yet',
         ),
       ),
@@ -87,6 +89,7 @@ void main() {
     expect(find.text('John'), findsOneWidget);
     expect(find.text('Week 2'), findsOneWidget);
     expect(find.text('Cancel'), findsNWidgets(2));
+    expect(find.text('Edit'), findsNWidgets(2));
   });
 
   testWidgets('hides the Cancel button when showCancelButton is false', (
@@ -107,6 +110,7 @@ void main() {
           entries: entries,
           slots: [buildSlot()],
           onCancelEntry: (_) {},
+          onEditEntry: (_) {},
           emptyMessage: 'Nothing here yet',
           showCancelButton: false,
         ),
@@ -136,6 +140,7 @@ void main() {
           entries: entries,
           slots: slots,
           onCancelEntry: (_) {},
+          onEditEntry: (_) {},
           emptyMessage: 'Nothing here yet',
         ),
         locale: const Locale('mr'),
@@ -160,6 +165,7 @@ void main() {
           entries: [entry],
           slots: [buildSlot()],
           onCancelEntry: (e) => cancelled = e,
+          onEditEntry: (_) {},
           emptyMessage: 'Nothing here yet',
         ),
       ),
@@ -169,5 +175,153 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(cancelled, equals(entry));
+  });
+
+  testWidgets('invokes onEditEntry with the tapped entry', (tester) async {
+    final entry = SignupEntry(
+      id: 'e1',
+      slotId: 's1',
+      name: 'Jane',
+      joinedAt: DateTime.now(),
+    );
+    SignupEntry? edited;
+
+    await tester.pumpWidget(
+      wrap(
+        MySignupsSection(
+          entries: [entry],
+          slots: [buildSlot()],
+          onCancelEntry: (_) {},
+          onEditEntry: (e) => edited = e,
+          emptyMessage: 'Nothing here yet',
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Edit'));
+    await tester.pumpAndSettle();
+
+    expect(edited, equals(entry));
+  });
+
+  testWidgets('hides the Edit button when showEditButton is false', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrap(
+        MySignupsSection(
+          entries: [
+            SignupEntry(
+              id: 'e1',
+              slotId: 's1',
+              name: 'Jane',
+              joinedAt: DateTime.now(),
+            ),
+          ],
+          slots: [buildSlot()],
+          onCancelEntry: (_) {},
+          onEditEntry: (_) {},
+          emptyMessage: 'Nothing here yet',
+          showEditButton: false,
+        ),
+      ),
+    );
+
+    expect(find.text('Jane'), findsOneWidget);
+    expect(find.text('Edit'), findsNothing);
+    expect(find.text('Cancel'), findsOneWidget);
+  });
+
+  testWidgets('shows the entry\'s phone and email under the slot label', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrap(
+        MySignupsSection(
+          entries: [
+            SignupEntry(
+              id: 'e1',
+              slotId: 's1',
+              name: 'Jane',
+              phone: '+14255551234',
+              email: 'jane@example.com',
+              joinedAt: DateTime.now(),
+            ),
+          ],
+          slots: [buildSlot()],
+          onCancelEntry: (_) {},
+          onEditEntry: (_) {},
+          emptyMessage: 'Nothing here yet',
+        ),
+      ),
+    );
+
+    expect(find.text('+14255551234'), findsOneWidget);
+    expect(find.text('jane@example.com'), findsOneWidget);
+  });
+
+  testWidgets('shows no phone or email line when the entry has none', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrap(
+        MySignupsSection(
+          entries: [
+            SignupEntry(
+              id: 'e1',
+              slotId: 's1',
+              name: 'Jane',
+              phone: '',
+              email: '  ',
+              joinedAt: DateTime.now(),
+            ),
+          ],
+          slots: [buildSlot()],
+          onCancelEntry: (_) {},
+          onEditEntry: (_) {},
+          emptyMessage: 'Nothing here yet',
+        ),
+      ),
+    );
+
+    // Name and slot label only.
+    expect(find.byType(Text), findsNWidgets(4)); // name, slot, Edit, Cancel
+  });
+
+  testWidgets('keeps both buttons on screen at 360px with large text and '
+      'long details', (tester) async {
+    tester.view.physicalSize = const Size(360, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+    await tester.pumpWidget(
+      wrap(
+        MySignupsSection(
+          entries: [
+            SignupEntry(
+              id: 'e1',
+              slotId: 's1',
+              name: 'Jane Elizabeth Devotee-Kulkarni',
+              phone: '+14255551234',
+              email: 'jane.elizabeth.devotee.kulkarni@example.com',
+              joinedAt: DateTime.now(),
+            ),
+          ],
+          slots: [
+            buildSlot(labelEn: 'Week 1 - Cooking and serving the prasad'),
+          ],
+          onCancelEntry: (_) {},
+          onEditEntry: (_) {},
+          emptyMessage: 'Nothing here yet',
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    for (final label in ['Edit', 'Cancel']) {
+      expect(tester.getRect(find.text(label)).right, lessThanOrEqualTo(360));
+    }
   });
 }

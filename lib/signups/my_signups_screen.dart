@@ -6,7 +6,9 @@ import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/my_signups_section.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_entry_edit_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/widgets/phone_number_field.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
@@ -14,10 +16,15 @@ import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 /// [SignupDetailScreen]'s "My Sign Ups" card. Splits entries into
 /// Upcoming/Past by their slot's date, matching [SignupSlotsScreen]'s own
 /// split - an entry whose slot has no date is treated as upcoming, since
-/// there's no basis to call it past.
+/// there's no basis to call it past. Upcoming entries can be edited
+/// (name, phone, email, pledge, note) or cancelled.
 class MySignupsScreen extends StatefulWidget {
   final String signupId;
   final String deviceId;
+
+  /// The sign-up's group, used for the country code a new phone number
+  /// starts with when editing an entry.
+  final String? groupId;
 
   /// Injected for testing; defaults to [FirebaseFirestore.instance].
   @visibleForTesting
@@ -31,6 +38,7 @@ class MySignupsScreen extends StatefulWidget {
     super.key,
     required this.signupId,
     required this.deviceId,
+    this.groupId,
     this.firestore,
     this.signupService,
   });
@@ -89,6 +97,53 @@ class _MySignupsScreenState extends State<MySignupsScreen>
         ],
       ),
     );
+  }
+
+  void _editEntry(SignupEntry entry, AppLocalizations l10n) {
+    showEnglishDialog(
+      context: context,
+      builder: (_) => SignupEntryEditDialog(
+        entry: entry,
+        showContactActions: false,
+        defaultCountryCode: defaultCountryCodeFor(context, widget.groupId),
+        onSave: (name, phone, email, pledge, note) =>
+            _saveEntry(entry, name, phone, email, pledge, note, l10n),
+      ),
+    );
+  }
+
+  Future<void> _saveEntry(
+    SignupEntry entry,
+    String name,
+    String? phone,
+    String? email,
+    double? pledge,
+    String? note,
+    AppLocalizations l10n,
+  ) async {
+    String message;
+    try {
+      final result = await _service.updateOwnEntry(
+        signupId: widget.signupId,
+        entryId: entry.id!,
+        name: name,
+        phone: phone,
+        email: email,
+        pledgeAmount: pledge,
+        note: note,
+      );
+      message = switch (result['error']) {
+        null => l10n.signupEntryEditSuccess,
+        'duplicate_entry' => l10n.signupDuplicateEntryError,
+        _ => l10n.signupEntryEditError,
+      };
+    } catch (_) {
+      message = l10n.signupEntryEditError;
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _cancelEntry(SignupEntry entry, AppLocalizations l10n) async {
@@ -180,14 +235,17 @@ class _MySignupsScreenState extends State<MySignupsScreen>
                     entries: upcoming,
                     slots: slots,
                     onCancelEntry: (entry) => _confirmCancelEntry(entry, l10n),
+                    onEditEntry: (entry) => _editEntry(entry, l10n),
                     emptyMessage: l10n.signupNoMySignups,
                   ),
                   MySignupsSection(
                     entries: past,
                     slots: slots,
-                    // No Cancel button on this tab, so this is never called.
+                    // No Cancel or Edit button on this tab, so neither is called.
                     onCancelEntry: (_) {},
+                    onEditEntry: (_) {},
                     showCancelButton: false,
+                    showEditButton: false,
                     emptyMessage: l10n.signupNoMySignups,
                   ),
                 ],

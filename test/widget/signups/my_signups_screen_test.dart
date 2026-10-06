@@ -10,6 +10,8 @@ import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/signups/my_signups_screen.dart';
+import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
+import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
 
@@ -498,4 +500,280 @@ void main() {
       await expectOnUpcoming(tester);
     });
   });
+
+  group('editing an entry', () {
+    Future<String> claimUpcoming({
+      String name = 'Jane',
+      String? phone,
+      String? email,
+      DateTime? date,
+    }) async {
+      final slotId = await addSlot(
+        date: date ?? DateTime.now().add(const Duration(days: 3)),
+      );
+      final result = await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: name,
+        phone: phone,
+        email: email,
+        deviceId: 'device_1',
+      );
+      return result['entryId'] as String;
+    }
+
+    Future<void> openScreen(WidgetTester tester) async {
+      await tester.pumpWidget(
+        wrap(
+          MySignupsScreen(
+            signupId: signupId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('shows Edit on an upcoming entry but not on a past one', (
+      tester,
+    ) async {
+      await claimUpcoming();
+      await claimUpcoming(
+        name: 'Old Jane',
+        date: DateTime.now().subtract(const Duration(days: 3)),
+      );
+      await openScreen(tester);
+
+      expect(find.text('Edit'), findsOneWidget);
+
+      await tester.tap(find.text('Past'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Old Jane'), findsOneWidget);
+      expect(find.text('Edit'), findsNothing);
+    });
+
+    testWidgets('opens the edit dialog filled in, without contact buttons', (
+      tester,
+    ) async {
+      await claimUpcoming(phone: '+14255551234', email: 'jane@example.com');
+      await openScreen(tester);
+
+      await tester.tap(find.text('Edit'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Edit Entry'), findsOneWidget);
+      expect(find.text('Jane'), findsWidgets);
+      expect(
+        tester
+            .widget<TextFormField>(find.byKey(const Key('entryPhoneField')))
+            .controller!
+            .text,
+        '4255551234',
+      );
+      expect(
+        tester
+            .widget<TextFormField>(find.byKey(const Key('entryEmailField')))
+            .controller!
+            .text,
+        'jane@example.com',
+      );
+      expect(find.byTooltip('WhatsApp'), findsNothing);
+      expect(find.text('Remove Entry'), findsNothing);
+    });
+
+    testWidgets('saves the changes and shows them in the list', (tester) async {
+      final entryId = await claimUpcoming(phone: '+14255551234');
+      await openScreen(tester);
+
+      await tester.tap(find.text('Edit'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('entryNameField')),
+        'Jane Smith',
+      );
+      await tester.enterText(
+        find.byKey(const Key('entryEmailField')),
+        'jane@example.com',
+      );
+      await tester.enterText(find.byKey(const Key('entryNoteField')), 'Sweets');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Entry updated successfully'), findsOneWidget);
+      expect(find.text('Jane Smith'), findsOneWidget);
+      expect(find.text('jane@example.com'), findsOneWidget);
+      final saved = (await service.getAllEntries(signupId).first).firstWhere(
+        (e) => e.id == entryId,
+      );
+      expect(saved.name, 'Jane Smith');
+      expect(saved.note, 'Sweets');
+      expect(saved.phone, '+14255551234');
+      expect(saved.deviceId, 'device_1');
+    });
+
+    testWidgets('cancelling the dialog changes nothing', (tester) async {
+      await claimUpcoming();
+      await openScreen(tester);
+
+      await tester.tap(find.text('Edit'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('entryNameField')),
+        'Someone Else',
+      );
+      await tester.tap(find.text('Cancel').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Jane'), findsOneWidget);
+      expect(find.text('Entry updated successfully'), findsNothing);
+    });
+
+    testWidgets('refuses a phone another entry in the slot already has', (
+      tester,
+    ) async {
+      final slotId = await addSlot(
+        date: DateTime.now().add(const Duration(days: 3)),
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Amit',
+        phone: '+14255559999',
+        deviceId: 'device_2',
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+        phone: '+14255551234',
+        deviceId: 'device_1',
+      );
+      await openScreen(tester);
+
+      await tester.tap(find.text('Edit'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('entryPhoneField')),
+        '4255559999',
+      );
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          "You've already signed up for this slot with this email or phone "
+          'number.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Entry updated successfully'), findsNothing);
+      final entries = await service.getAllEntries(signupId).first;
+      expect(entries.firstWhere((e) => e.name == 'Jane').phone, '+14255551234');
+    });
+
+    testWidgets('shows an error snackbar when the update fails', (
+      tester,
+    ) async {
+      final entry = SignupEntry(
+        id: 'entry_1',
+        slotId: 'slot_1',
+        name: 'Jane',
+        deviceId: 'device_1',
+        joinedAt: DateTime.now(),
+      );
+      final mockService = MockSignupService();
+      when(
+        () => mockService.getSlots(signupId),
+      ).thenAnswer((_) => Stream.value(const []));
+      when(
+        () => mockService.getEntriesByDevice(signupId, 'device_1'),
+      ).thenAnswer((_) => Stream.value([entry]));
+      when(
+        () => mockService.updateOwnEntry(
+          signupId: any(named: 'signupId'),
+          entryId: any(named: 'entryId'),
+          name: any(named: 'name'),
+          phone: any(named: 'phone'),
+          email: any(named: 'email'),
+          pledgeAmount: any(named: 'pledgeAmount'),
+          note: any(named: 'note'),
+        ),
+      ).thenThrow(Exception('permission-denied: secret details'));
+
+      await tester.pumpWidget(
+        wrap(
+          MySignupsScreen(
+            signupId: signupId,
+            deviceId: 'device_1',
+            signupService: mockService,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Edit'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Failed to update entry'), findsOneWidget);
+      expect(find.textContaining('secret details'), findsNothing);
+    });
+
+    testWidgets('prefills the group\'s default country code for a new number', (
+      tester,
+    ) async {
+      await claimUpcoming();
+      final provider = _MockAppConfigProvider();
+      when(() => provider.appConfig).thenReturn(
+        AppConfig(
+          deities: const [],
+          gajananMaharajGroups: [
+            GajananMaharajGroup(
+              id: 'group_1',
+              nameEn: 'Group',
+              nameMr: 'गट',
+              defaultCountryCode: '+91',
+            ),
+          ],
+          socialMediaLinks: const [],
+          appName: const {},
+          updateMessage: const {},
+          latestVersion: '1.0.0',
+          forceUpdate: 'false',
+          playStoreUrl: '',
+          appStoreUrl: '',
+        ),
+      );
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<AppConfigProvider>.value(
+          value: provider,
+          child: wrap(
+            MySignupsScreen(
+              signupId: signupId,
+              groupId: 'group_1',
+              deviceId: 'device_1',
+              firestore: firestore,
+              signupService: service,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Edit'));
+      await tester.pumpAndSettle();
+
+      final code = tester.widget<TextFormField>(
+        find.byKey(const Key('entryCountryCodeField')),
+      );
+      expect(code.controller!.text, '+91');
+    });
+  });
 }
+
+class _MockAppConfigProvider extends Mock implements AppConfigProvider {}

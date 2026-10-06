@@ -2559,6 +2559,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupCancelSignupButton => 'Cancel';
 
   @override
+  String get signupEditEntryButton => 'Edit';
+
+  @override
   String get signupCancelSignupConfirmTitle => 'Cancel Signup?';
 
   @override
@@ -5178,6 +5181,9 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupCancelSignupButton => 'रद्द करा';
+
+  @override
+  String get signupEditEntryButton => 'Edit';
 
   @override
   String get signupCancelSignupConfirmTitle => 'Sign-up रद्द करायचे?';

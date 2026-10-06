@@ -807,6 +807,7 @@
   "signupMySignupsHeading": "माझे Sign-ups",
   "signupNoMySignups": "आपण अद्याप कशासाठीही sign up केलेले नाही",
   "signupCancelSignupButton": "रद्द करा",
+  "signupEditEntryButton": "Edit",
   "signupCancelSignupConfirmTitle": "Sign-up रद्द करायचे?",
   "signupCancelSignupConfirmMessage": "आपल्याला हे sign-up रद्द करायचे आहे याची खात्री आहे का?",
   "signupCancelSignupSuccess": "Sign-up रद्द केले",

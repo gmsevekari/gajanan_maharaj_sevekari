@@ -222,6 +222,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(MySignupsScreen), findsOneWidget);
+      // So an edited phone number starts with the group's country code.
+      expect(
+        tester.widget<MySignupsScreen>(find.byType(MySignupsScreen)).groupId,
+        'group_1',
+      );
     });
 
     testWidgets('tapping the Slots card opens SignupSlotsScreen', (

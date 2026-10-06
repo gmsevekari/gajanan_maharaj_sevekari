@@ -2573,6 +2573,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupCancelSignupButton => 'रद्द करा';
 
   @override
+  String get signupEditEntryButton => 'एडिट';
+
+  @override
   String get signupCancelSignupConfirmTitle => 'साइन-अप रद्द करायचे?';
 
   @override
