@@ -2,6 +2,12 @@
 // images. Needs BOTH the Storage and Firestore emulators running, since
 // storage.rules's isAdmin() does a cross-service firestore.exists() read
 // against admin_allowlist (Storage Rules v2), exactly like the real rule.
+//
+// Run it with `npm run test:emulators` (or pass the same --project to
+// `firebase emulators:exec`): the Storage emulator does that Firestore lookup
+// in the project id the emulators were started with, so without
+// --project demo-signup-signups-rules-test it looks in the wrong (empty)
+// project and every admin write is refused.
 'use strict';
 
 const assert = require('node:assert/strict');

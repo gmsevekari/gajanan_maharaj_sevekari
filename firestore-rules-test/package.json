@@ -4,7 +4,8 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "test": "node --test --test-concurrency=1"
+    "test": "node --test --test-concurrency=1",
+    "test:emulators": "firebase emulators:exec --project demo-signup-signups-rules-test --only firestore,storage \"npm test\""
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",
