@@ -1021,6 +1021,198 @@ void main() {
     );
   });
 
+  group('SignupService updateOwnEntry', () {
+    late String signupId;
+    late String slotId;
+
+    /// A device's own entry in [slot] (defaults to the shared slot).
+    Future<String> claim({
+      String name = 'Jane Doe',
+      String? phone,
+      String? email,
+      String? slot,
+      double? pledgeAmount,
+      String? note,
+    }) async {
+      final result = await service.claimSlot(
+        signupId: signupId,
+        slotId: slot ?? slotId,
+        name: name,
+        phone: phone,
+        email: email,
+        deviceId: 'device_1',
+        pledgeAmount: pledgeAmount,
+        note: note,
+      );
+      expect(result['success'], true);
+      return result['entryId'] as String;
+    }
+
+    Future<SignupEntry> entry(String id) async =>
+        (await service.getAllEntries(signupId).first).firstWhere(
+          (e) => e.id == id,
+        );
+
+    setUp(() async {
+      signupId = await service.createSignup(buildSignup());
+      slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
+    });
+
+    test('updates name, phone, email, pledge and note', () async {
+      final id = await claim(phone: '+14255550000');
+
+      final result = await service.updateOwnEntry(
+        signupId: signupId,
+        entryId: id,
+        name: 'Jane Smith',
+        phone: '+14255551234',
+        email: 'jane@example.com',
+        pledgeAmount: 25,
+        note: 'Bringing sweets',
+      );
+
+      expect(result, {'success': true});
+      final saved = await entry(id);
+      expect(saved.name, 'Jane Smith');
+      expect(saved.phone, '+14255551234');
+      expect(saved.email, 'jane@example.com');
+      expect(saved.pledgeAmount, 25);
+      expect(saved.note, 'Bringing sweets');
+    });
+
+    test('leaves the slot, device, join time and slot count alone', () async {
+      final id = await claim();
+      final before = await entry(id);
+
+      await service.updateOwnEntry(
+        signupId: signupId,
+        entryId: id,
+        name: 'Jane Smith',
+      );
+
+      final after = await entry(id);
+      expect(after.slotId, before.slotId);
+      expect(after.deviceId, 'device_1');
+      expect(after.joinedAt, before.joinedAt);
+      final slot = (await service.getSlots(signupId).first).single;
+      expect(slot.claimedCount, 1);
+    });
+
+    test('trims text and stores blank phone, email and note as null', () async {
+      final id = await claim(
+        phone: '+14255550000',
+        email: 'jane@example.com',
+        note: 'old',
+      );
+
+      await service.updateOwnEntry(
+        signupId: signupId,
+        entryId: id,
+        name: '  Jane Smith  ',
+        phone: '   ',
+        email: '',
+        note: ' ',
+      );
+
+      final saved = await entry(id);
+      expect(saved.name, 'Jane Smith');
+      expect(saved.phone, isNull);
+      expect(saved.email, isNull);
+      expect(saved.note, isNull);
+    });
+
+    test('clears the pledge when none is given', () async {
+      final id = await claim(pledgeAmount: 50);
+
+      await service.updateOwnEntry(
+        signupId: signupId,
+        entryId: id,
+        name: 'Jane Doe',
+      );
+
+      expect((await entry(id)).pledgeAmount, isNull);
+    });
+
+    test('is not a duplicate of the entry\'s own phone and email', () async {
+      final id = await claim(phone: '+14255550000', email: 'jane@example.com');
+
+      final result = await service.updateOwnEntry(
+        signupId: signupId,
+        entryId: id,
+        name: 'Jane Smith',
+        phone: '+14255550000',
+        email: 'JANE@example.com',
+      );
+
+      expect(result, {'success': true});
+    });
+
+    test('rejects a phone another entry in the same slot already has, '
+        'even without a country code, and changes nothing', () async {
+      await claim(name: 'Amit', phone: '4255551234');
+      final id = await claim(phone: '+14255550000');
+
+      final result = await service.updateOwnEntry(
+        signupId: signupId,
+        entryId: id,
+        name: 'Jane Smith',
+        phone: '+14255551234',
+      );
+
+      expect(result, {'success': false, 'error': 'duplicate_entry'});
+      final saved = await entry(id);
+      expect(saved.name, 'Jane Doe');
+      expect(saved.phone, '+14255550000');
+    });
+
+    test('rejects an email another entry in the same slot already has '
+        '(ignoring case)', () async {
+      await claim(name: 'Amit', email: 'amit@example.com');
+      final id = await claim(email: 'jane@example.com');
+
+      final result = await service.updateOwnEntry(
+        signupId: signupId,
+        entryId: id,
+        name: 'Jane Doe',
+        email: ' AMIT@example.com ',
+      );
+
+      expect(result, {'success': false, 'error': 'duplicate_entry'});
+    });
+
+    test('allows a phone another entry has in a different slot', () async {
+      final otherSlot = await service.addSlot(
+        signupId,
+        buildSlot(labelEn: 'Week 2', capacity: 5),
+      );
+      await claim(name: 'Amit', phone: '+14255551234', slot: otherSlot);
+      final id = await claim();
+
+      final result = await service.updateOwnEntry(
+        signupId: signupId,
+        entryId: id,
+        name: 'Jane Doe',
+        phone: '+14255551234',
+      );
+
+      expect(result, {'success': true});
+    });
+
+    test('returns not_found when the entry no longer exists', () async {
+      final id = await claim();
+      await service.cancelEntry(signupId, id);
+
+      final result = await service.updateOwnEntry(
+        signupId: signupId,
+        entryId: id,
+        name: 'Jane Smith',
+      );
+
+      expect(result, {'success': false, 'error': 'not_found'});
+      expect(await service.getAllEntries(signupId).first, isEmpty);
+    });
+  });
+
   group('SignupService header image', () {
     test(
       'uploadHeaderImage stores the bytes and returns a download URL',

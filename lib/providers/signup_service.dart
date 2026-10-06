@@ -324,8 +324,60 @@ class SignupService {
     await _entriesRef(signupId).doc(entry.id).update(fields);
   }
 
+  /// A devotee correcting their own entry: name, phone, email, pledge amount
+  /// and note. Only those five fields are written - never `slotId`,
+  /// `deviceId` or `joinedAt` (Firestore rules enforce the same limit) - so
+  /// the entry stays in its slot and the slot's `claimedCount` is untouched.
+  /// Text is trimmed; a blank phone, email or note is stored as null.
+  ///
+  /// Returns `{'success': true}` or `{'success': false, 'error':
+  /// 'not_found' | 'duplicate_entry'}`; the latter when another entry in the
+  /// same slot already has the new phone or email (a best-effort guard, like
+  /// [claimSlot]'s).
+  Future<Map<String, dynamic>> updateOwnEntry({
+    required String signupId,
+    required String entryId,
+    required String name,
+    String? phone,
+    String? email,
+    double? pledgeAmount,
+    String? note,
+  }) async {
+    final entryRef = _entriesRef(signupId).doc(entryId);
+    final snapshot = await entryRef.get();
+    if (!snapshot.exists) return {'success': false, 'error': 'not_found'};
+
+    final cleanPhone = _blankToNull(phone);
+    final cleanEmail = _blankToNull(email);
+    final slotId = SignupEntry.fromMap(snapshot.id, snapshot.data()!).slotId;
+    if (await _hasDuplicateEntry(
+      signupId: signupId,
+      slotId: slotId,
+      email: cleanEmail,
+      phone: cleanPhone,
+      excludeEntryId: entryId,
+    )) {
+      return {'success': false, 'error': 'duplicate_entry'};
+    }
+
+    await entryRef.update({
+      'name': name.trim(),
+      'phone': cleanPhone,
+      'email': cleanEmail,
+      'pledgeAmount': pledgeAmount,
+      'note': _blankToNull(note),
+    });
+    return {'success': true};
+  }
+
+  String? _blankToNull(String? value) {
+    final trimmed = value?.trim();
+    return trimmed == null || trimmed.isEmpty ? null : trimmed;
+  }
+
   /// True if [slotId] already has an entry matching [email] or [phone]
-  /// (case/format-insensitive). Checked before [claimSlot] opens its
+  /// (case/format-insensitive), ignoring the entry [excludeEntryId] (the one
+  /// being edited). Checked before [claimSlot] opens its
   /// transaction, since Firestore transactions can't run queries - this is
   /// a best-effort UX guard against accidental double sign-up, not a hard
   /// security boundary, so a race between two near-simultaneous claims with
@@ -335,6 +387,7 @@ class SignupService {
     required String slotId,
     String? email,
     String? phone,
+    String? excludeEntryId,
   }) async {
     final normalizedEmail = email?.trim().toLowerCase();
     final hasEmail = normalizedEmail != null && normalizedEmail.isNotEmpty;
@@ -346,6 +399,7 @@ class SignupService {
     ).where('slotId', isEqualTo: slotId).get();
 
     for (final doc in snapshot.docs) {
+      if (doc.id == excludeEntryId) continue;
       final data = doc.data();
       final existingEmail = (data['email'] as String?)?.trim().toLowerCase();
       if (hasEmail && existingEmail == normalizedEmail) return true;
