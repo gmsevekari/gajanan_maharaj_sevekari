@@ -32,6 +32,18 @@ service cloud.firestore {
              after.totalDistance - before.totalDistance <= maxDistancePerSubmission;
     }
 
+    // The fields of a sign-up entry that a devotee fills in (and may edit
+    // later), checked against the document as it would be saved. A missing
+    // or null optional field is fine.
+    function isValidEntryDetails(entry) {
+      return entry.name is string
+        && entry.name.size() > 0 && entry.name.size() < 100
+        && (entry.get('phone', null) == null || (entry.get('phone', '') is string && entry.get('phone', '').size() < 30))
+        && (entry.get('email', null) == null || (entry.get('email', '') is string && entry.get('email', '').size() < 200))
+        && (entry.get('pledgeAmount', null) == null || (entry.get('pledgeAmount', 0) is number && entry.get('pledgeAmount', 0) >= 0 && entry.get('pledgeAmount', 0) <= 1000000))
+        && (entry.get('note', null) == null || (entry.get('note', '') is string && entry.get('note', '').size() < 500));
+    }
+
     // App Config: Publicly readable; Admin writable
     match /app_config/{document} {
       allow read: if true;
@@ -288,15 +300,20 @@ service cloud.firestore {
         allow create: if request.resource.data.keys().hasAll(['slotId', 'name', 'joinedAt'])
           && request.resource.data.keys().hasOnly(['slotId', 'name', 'phone', 'email', 'deviceId', 'pledgeAmount', 'note', 'joinedAt'])
           && request.resource.data.slotId is string
-          && request.resource.data.name is string
-          && request.resource.data.name.size() > 0 && request.resource.data.name.size() < 100
           && request.resource.data.joinedAt is timestamp
-          && (request.resource.data.get('phone', null) == null || (request.resource.data.get('phone', '') is string && request.resource.data.get('phone', '').size() < 30))
-          && (request.resource.data.get('email', null) == null || (request.resource.data.get('email', '') is string && request.resource.data.get('email', '').size() < 200))
-          && (request.resource.data.get('deviceId', null) == null || (request.resource.data.get('deviceId', '') is string && request.resource.data.get('deviceId', '').size() < 200))
-          && (request.resource.data.get('pledgeAmount', null) == null || (request.resource.data.get('pledgeAmount', 0) is number && request.resource.data.get('pledgeAmount', 0) >= 0 && request.resource.data.get('pledgeAmount', 0) <= 1000000))
-          && (request.resource.data.get('note', null) == null || (request.resource.data.get('note', '') is string && request.resource.data.get('note', '').size() < 500));
-        allow update: if isAdmin();
+          && isValidEntryDetails(request.resource.data)
+          && (request.resource.data.get('deviceId', null) == null || (request.resource.data.get('deviceId', '') is string && request.resource.data.get('deviceId', '').size() < 200));
+        // A devotee may correct their own entry's details, but only the
+        // fields they filled in and only while the entry belongs to a
+        // device. slotId, deviceId and joinedAt can never be changed by a
+        // non-admin, so an entry can't be moved to another slot or
+        // reassigned (that is done by the claim function / an admin).
+        // Same trust model as delete below: rules can't tell which device
+        // is asking, only that the entry has one.
+        allow update: if isAdmin()
+          || (resource.data.deviceId != null
+              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone', 'email', 'pledgeAmount', 'note'])
+              && isValidEntryDetails(request.resource.data));
         // Same trust model as Parayan/Group Namjap/Vaari participants:
         // devotees aren't authenticated in this app, so rules can't verify
         // "this device really owns this entry" — only that the entry has

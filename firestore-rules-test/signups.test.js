@@ -379,10 +379,86 @@ test('non-admin cannot create an entry with an excessive pledge amount', async (
   );
 });
 
-test('non-admin cannot update an entry', async () => {
-  await assertFails(
-    updateDoc(doc(unauthedDb(), 'signups/signup1/entries/withDevice'), {
-      name: 'Edited Name',
+const withDeviceRef = () =>
+  doc(unauthedDb(), 'signups/signup1/entries/withDevice');
+const noDeviceRef = () => doc(unauthedDb(), 'signups/signup1/entries/noDevice');
+
+test('non-admin can edit the name, phone, email, pledge and note of an entry that has a deviceId', async () => {
+  await assertSucceeds(
+    updateDoc(withDeviceRef(), {
+      name: 'Jane Edited',
+      phone: '+14255551234',
+      email: 'jane@example.com',
+      pledgeAmount: 25,
+      note: 'Bringing sweets',
+    }),
+  );
+
+  const entry = (await getDoc(withDeviceRef())).data();
+  assert.equal(entry.name, 'Jane Edited');
+  assert.equal(entry.deviceId, 'device_abc');
+  assert.equal(entry.slotId, 'slot1');
+});
+
+test('non-admin can clear an entry\'s phone, email, pledge and note', async () => {
+  await assertSucceeds(
+    updateDoc(withDeviceRef(), {
+      phone: null,
+      email: null,
+      pledgeAmount: null,
+      note: null,
+    }),
+  );
+});
+
+test('non-admin cannot edit an entry that has no deviceId', async () => {
+  await assertFails(updateDoc(noDeviceRef(), { name: 'Edited Name' }));
+});
+
+test('non-admin cannot change an entry\'s deviceId, slotId or joinedAt', async () => {
+  for (const change of [
+    { deviceId: 'device_thief' },
+    { deviceId: null },
+    { slotId: 'emptySlot' },
+    { joinedAt: Timestamp.fromDate(new Date('2020-01-01T00:00:00Z')) },
+  ]) {
+    await assertFails(updateDoc(withDeviceRef(), change));
+    // Not even next to an otherwise valid edit.
+    await assertFails(updateDoc(withDeviceRef(), { name: 'Jane', ...change }));
+  }
+});
+
+test('non-admin cannot add an unexpected field to an entry', async () => {
+  await assertFails(updateDoc(withDeviceRef(), { isAdmin: true }));
+});
+
+test('non-admin cannot edit an entry into an invalid one', async () => {
+  for (const change of [
+    { name: '' },
+    { name: 'x'.repeat(100) },
+    { name: 42 },
+    { phone: 'x'.repeat(30) },
+    { phone: 12345 },
+    { email: 'x'.repeat(200) },
+    { email: 12345 },
+    { pledgeAmount: -5 },
+    { pledgeAmount: 1000001 },
+    { pledgeAmount: '25' },
+    { note: 'x'.repeat(500) },
+    { note: 12345 },
+  ]) {
+    await assertFails(updateDoc(withDeviceRef(), change));
+  }
+});
+
+test('non-admin can edit an entry to the largest allowed values', async () => {
+  await assertSucceeds(
+    updateDoc(withDeviceRef(), {
+      name: 'x'.repeat(99),
+      phone: '1'.repeat(29),
+      email: 'x'.repeat(199),
+      pledgeAmount: 1000000,
+      note: 'x'.repeat(499),
     }),
   );
 });
