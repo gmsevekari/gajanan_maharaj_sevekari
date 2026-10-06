@@ -98,6 +98,16 @@ This document summarizes the key architectural patterns, design principles, and 
         -   On completion of all household members for a day, the device unsubscribes from that day's topic.
         -   Topic subscription respects the user's `parayanRemindersPrefKey` preference in `SharedPreferences`.
         -   Event completion unsubscribes from all event topics via `NotificationServiceHelper.unsubscribeFromEventTopics`.
+-   **Sign-Ups (`signups/{id}` with `slots` and `entries` subcollections):**
+    -   **Models:** `Signup`, `SignupSlot` (`lib/models/signup_slot.dart`: `startAt`/`endAt` UTC instants plus a per-slot `timezone`, shown in the slot's own zone, PT/IST only), `SignupEntry` (`lib/models/signup_entry.dart`: `slotId`, `name`, `phone`, `email`, `deviceId`, `pledgeAmount`, `note`, `joinedAt`; `max*` constants mirror the Firestore rule limits). An admin-added entry has `deviceId == null`; an empty `deviceId` also counts as "no device".
+    -   **Service:** `SignupService` (`lib/providers/signup_service.dart`): `claimSlot` / `adminAddEntry` (capacity transaction, duplicate guard), `cancelEntry`, `updateEntry` (admin; never writes `slotId`, `deviceId` or `joinedAt`), `updateOwnEntry` (devotee; writes only name/phone/email/pledge/note and only checks a phone/email for duplicates in the slot when it *changed*), `claimMyEntries` (calls the Cloud Function below), `releaseEntryDevice` (admin).
+    -   **My Sign Ups (`lib/signups/my_signups_screen.dart`):** Upcoming/Past tabs of the device's entries (`getEntriesByDevice`).
+        -   **Edit** (Upcoming only) opens the shared `SignupEntryEditDialog` (`lib/signups/widgets/`, also used by admins) with `requirePhone: true` and `showContactActions: false`. `onSave` returns an error string, which keeps the dialog open with the input.
+        -   **Claim My Sign Up** button above the tabs opens `ClaimMySignupDialog`: country code + phone, plus the join code only when the sign-up `requiresJoinCode`. Refusals (not found, already claimed, wrong join code, failure) show inline; the dialog can't be dismissed mid-claim.
+    -   **Cloud Function `claimSignupEntries` (`functions/signups.js`):** links entries to a device. Phone must match **exactly** (leading `+` and digits only; formatting ignored; no tolerance for a missing country code). Join code checked server-side. If **any** matching entry belongs to a different device the whole claim is refused (`ALREADY_CLAIMED`) and nothing is written. Runs in a transaction; returns only `status` (`SUCCESS` + `count`, `NOT_FOUND`, `ALREADY_CLAIMED`, `INVALID_JOIN_CODE`); sets `deviceId` and `claimedAt`. Capped at 10 instances.
+    -   **Admin "Release Device Link"** (in the admin edit dialog, only for entries with a non-empty `deviceId`) clears `deviceId` and `claimedAt` so the devotee can claim the entry again from another device.
+    -   **Firestore rules for `entries`:** `create` is validated (`isValidEntryDetails`); a non-admin may `update` only `name`, `phone`, `email`, `pledgeAmount`, `note`, and only on an entry with a non-empty `deviceId`; `slotId`, `deviceId`, `joinedAt` are admin/function-only. `delete` is allowed for any entry with a `deviceId`. Rules tests: `firestore-rules-test/signups.test.js` (run with `firebase emulators:exec --only firestore`).
+    -   **Trust model:** devotees aren't authenticated, so rules can only see "the entry has a device", not which one. `signups/*` (including `joinCode`) and entries (phone, email, `deviceId`) are publicly readable, so the join code and phone number are friction, not secrets.
 -   **Generic List & Detail Screens:**
     -   `ContentListScreen`: A single, powerful, reusable screen that displays lists of content (stotras, bhajans, aartis, etc.). It is driven entirely by configuration.
     -   `ContentDetailScreen`: A highly reusable screen for displaying text and video content. It now uses a strict data contract and expects `title` and `content` keys to be present in the JSON.
@@ -142,6 +152,7 @@ This document summarizes the key architectural patterns, design principles, and 
 -   **Firebase Cloud Functions:**
     -   Node.js functions (v2) handle triggered notifications on Firestore document creation.
     -   APNS payloads are configured with `contentAvailable: true` and specific background priority headers to ensure reliable delivery to backgrounded iOS devices.
+    -   **Deploy order for sign-up changes:** `firebase deploy --only firestore:rules`, then `firebase deploy --only functions:claimSignupEntries`, then ship the app build; without them Edit / Claim show an error message. Function tests: `cd functions && npm test` (mocha + sinon, `test/signups.test.js`).
 
 ---
 
@@ -191,4 +202,6 @@ This document summarizes the key architectural patterns, design principles, and 
 -   **Flutter `Color` API Breaking Change (`_createMaterialColor`):** In Flutter 3.27+, `Color.r`, `.g`, `.b` return **normalized doubles** (0.0–1.0). **CRITICAL:** Multiplying by 255 and rounding is mandatory before using these values as integer channel inputs; otherwise, themes will render as pure black.
 -   **Firestore Document Format Consistency:** Enrollment documents must use the **flattened format**. Nested maps are deprecated and unsupported by the current query architecture.
 -   **Deep Link Race Conditions:** Never attempt to navigate based on an incoming link during the first frame of `main()`. Always wait for the `MaterialApp` to be fully built and providers to be initialized.
+-   **Never write `deviceId` from an admin edit:** a devotee's claim and an admin's release both change `deviceId`; an admin form opened earlier would silently undo them. `SignupService.updateEntry` therefore drops `deviceId` and `joinedAt` from its write.
+-   **Keep input limits in step with the rules:** Firestore rejects name ≥ 100, email ≥ 200, note ≥ 500, phone ≥ 30 characters and pledges outside 0–1,000,000. Use `SignupEntry.maxNameLength` etc. and `parsePledgeAmount` (rejects NaN/Infinity) so a form never passes input the rules will refuse.
 -   **`??` vs `.isEmpty`:** Always remember that `??` only catches `null`. Firestore fields that exist but are empty (`""`) will bypass null-coalescing fallbacks. Use `.trim().isEmpty` checks for robust UI text handling.
