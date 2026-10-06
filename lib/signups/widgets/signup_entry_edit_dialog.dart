@@ -8,7 +8,11 @@ import 'package:gajanan_maharaj_sevekari/utils/phone_utils.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/phone_number_field.dart';
 
-class AdminEntryEditDialog extends StatefulWidget {
+/// Add or edit a sign-up entry's details (name, phone, email, pledge amount,
+/// note). Used by admins on the Entries screen and by devotees on
+/// [MySignupsScreen]; devotees pass `showContactActions: false` and no
+/// `onDelete`.
+class SignupEntryEditDialog extends StatefulWidget {
   final SignupEntry? entry;
   final void Function(
     String name,
@@ -20,23 +24,28 @@ class AdminEntryEditDialog extends StatefulWidget {
   onSave;
   final VoidCallback? onDelete;
 
+  /// Show the entry's phone with Text / WhatsApp buttons above the form.
+  /// For admins reaching a devotee; off when devotees edit their own entry.
+  final bool showContactActions;
+
   /// Country code prefilled for a new number (and for an existing one saved
   /// without a code). The caller resolves it from the sign-up's group.
   final String? defaultCountryCode;
 
-  const AdminEntryEditDialog({
+  const SignupEntryEditDialog({
     super.key,
     this.entry,
     required this.onSave,
     this.onDelete,
+    this.showContactActions = true,
     this.defaultCountryCode,
   });
 
   @override
-  State<AdminEntryEditDialog> createState() => _AdminEntryEditDialogState();
+  State<SignupEntryEditDialog> createState() => _SignupEntryEditDialogState();
 }
 
-class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
+class _SignupEntryEditDialogState extends State<SignupEntryEditDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _countryCodeController;
@@ -138,7 +147,8 @@ class _AdminEntryEditDialogState extends State<AdminEntryEditDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (isEditing &&
+              if (widget.showContactActions &&
+                  isEditing &&
                   widget.entry?.phone != null &&
                   widget.entry!.phone!.isNotEmpty) ...[
                 Row(

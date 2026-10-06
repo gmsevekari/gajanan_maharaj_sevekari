@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_entry_edit_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_entry_edit_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/phone_number_field.dart';
 
@@ -28,7 +28,7 @@ class AdminEntryActions {
     final l10n = AppLocalizations.of(context)!;
     showEnglishDialog(
       context: context,
-      builder: (_) => AdminEntryEditDialog(
+      builder: (_) => SignupEntryEditDialog(
         defaultCountryCode: defaultCountryCodeFor(context, signup.groupId),
         onSave: (name, phone, email, pledge, note) async {
           try {
@@ -62,7 +62,7 @@ class AdminEntryActions {
     final l10n = AppLocalizations.of(context)!;
     showEnglishDialog(
       context: context,
-      builder: (_) => AdminEntryEditDialog(
+      builder: (_) => SignupEntryEditDialog(
         defaultCountryCode: defaultCountryCodeFor(context, signup.groupId),
         entry: entry,
         onSave: (name, phone, email, pledge, note) async {
