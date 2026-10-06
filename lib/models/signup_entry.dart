@@ -3,6 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// A devotee's claim on one [SignupSlot], stored in the signup's flat
 /// `entries` subcollection.
 class SignupEntry {
+  /// The longest values the Firestore rules accept (they require `< 100`,
+  /// `< 200` and `< 500` characters), so input fields can stop a user before
+  /// the write is refused.
+  static const int maxNameLength = 99;
+  static const int maxEmailLength = 199;
+  static const int maxNoteLength = 499;
+  static const double maxPledgeAmount = 1000000;
+
   final String? id;
   final String slotId;
   final String name;

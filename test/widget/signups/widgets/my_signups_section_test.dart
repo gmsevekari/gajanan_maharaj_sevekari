@@ -92,7 +92,7 @@ void main() {
     expect(find.text('Edit'), findsNWidgets(2));
   });
 
-  testWidgets('hides the Cancel button when showCancelButton is false', (
+  testWidgets('leaves out the Cancel button when there is no onCancelEntry', (
     tester,
   ) async {
     final entries = [
@@ -109,16 +109,15 @@ void main() {
         MySignupsSection(
           entries: entries,
           slots: [buildSlot()],
-          onCancelEntry: (_) {},
           onEditEntry: (_) {},
           emptyMessage: 'Nothing here yet',
-          showCancelButton: false,
         ),
       ),
     );
 
     expect(find.text('Jane'), findsOneWidget);
     expect(find.text('Cancel'), findsNothing);
+    expect(find.text('Edit'), findsOneWidget);
   });
 
   testWidgets('falls back to the Marathi slot label when locale is mr', (
@@ -204,7 +203,7 @@ void main() {
     expect(edited, equals(entry));
   });
 
-  testWidgets('hides the Edit button when showEditButton is false', (
+  testWidgets('leaves out the Edit button when there is no onEditEntry', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -220,9 +219,7 @@ void main() {
           ],
           slots: [buildSlot()],
           onCancelEntry: (_) {},
-          onEditEntry: (_) {},
           emptyMessage: 'Nothing here yet',
-          showEditButton: false,
         ),
       ),
     );
@@ -323,5 +320,65 @@ void main() {
     for (final label in ['Edit', 'Cancel']) {
       expect(tester.getRect(find.text(label)).right, lessThanOrEqualTo(360));
     }
+  });
+
+  testWidgets('shows no buttons or empty gap when neither callback is given', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrap(
+        MySignupsSection(
+          entries: [
+            SignupEntry(
+              id: 'e1',
+              slotId: 's1',
+              name: 'Jane',
+              joinedAt: DateTime.now(),
+            ),
+          ],
+          slots: [buildSlot()],
+          emptyMessage: 'Nothing here yet',
+        ),
+      ),
+    );
+
+    expect(find.byType(TextButton), findsNothing);
+    expect(find.byType(Wrap), findsNothing);
+    expect(find.text('Jane'), findsOneWidget);
+  });
+
+  testWidgets('gives a long name the full card width at 360px', (tester) async {
+    tester.view.physicalSize = const Size(360, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      wrap(
+        MySignupsSection(
+          entries: [
+            SignupEntry(
+              id: 'e1',
+              slotId: 's1',
+              name: 'Jane Elizabeth Devotee-Kulkarni',
+              joinedAt: DateTime.now(),
+            ),
+          ],
+          slots: [buildSlot()],
+          onCancelEntry: (_) {},
+          onEditEntry: (_) {},
+          emptyMessage: 'Nothing here yet',
+        ),
+      ),
+    );
+
+    // The buttons sit under the details, so they don't squeeze the name:
+    // it can use the card (360 less 16 list padding each side, 16 + 8 card
+    // padding) rather than losing the width of two buttons.
+    final name = find.text('Jane Elizabeth Devotee-Kulkarni');
+    expect(tester.getSize(name).width, greaterThan(250));
+    expect(
+      tester.getTopLeft(find.text('Edit')).dy,
+      greaterThan(tester.getBottomLeft(name).dy),
+    );
   });
 }

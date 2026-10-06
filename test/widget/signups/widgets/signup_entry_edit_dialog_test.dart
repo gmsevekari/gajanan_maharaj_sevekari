@@ -1,25 +1,37 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_entry_details.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_entry_edit_dialog.dart';
 
 void main() {
   Widget createDialogWidget({
     SignupEntry? entry,
-    required void Function(
+    void Function(
       String name,
       String? phone,
       String? email,
       double? pledge,
       String? note,
-    )
+    )?
     onSave,
+    Future<String?> Function(SignupEntryDetails details)? onSaveAsync,
     VoidCallback? onDelete,
     bool showContactActions = true,
+    bool requirePhone = false,
     String? defaultCountryCode,
   }) {
+    // Most tests only care about the values that were saved.
+    final save =
+        onSaveAsync ??
+        (SignupEntryDetails d) async {
+          onSave?.call(d.name, d.phone, d.email, d.pledgeAmount, d.note);
+          return null;
+        };
     return MaterialApp(
       theme: AppTheme.lightTheme,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -33,9 +45,10 @@ void main() {
                   context: context,
                   builder: (_) => SignupEntryEditDialog(
                     entry: entry,
-                    onSave: onSave,
+                    onSave: save,
                     onDelete: onDelete,
                     showContactActions: showContactActions,
+                    requirePhone: requirePhone,
                     defaultCountryCode: defaultCountryCode,
                   ),
                 );
@@ -342,12 +355,15 @@ void main() {
       Future<void> open(
         WidgetTester tester, {
         void Function(String, String?, String?, double?, String?)? onSave,
+        Future<String?> Function(SignupEntryDetails)? onSaveAsync,
       }) async {
         await tester.pumpWidget(
           createDialogWidget(
             entry: entry,
-            onSave: onSave ?? (_, _, _, _, _) {},
+            onSave: onSave,
+            onSaveAsync: onSaveAsync,
             showContactActions: false,
+            requirePhone: true,
           ),
         );
         await tester.tap(find.text('Open Dialog'));
@@ -401,7 +417,10 @@ void main() {
           find.byKey(const Key('entryNameField')),
           '  Jane Smith ',
         );
-        await tester.enterText(find.byKey(const Key('entryPhoneField')), '');
+        await tester.enterText(
+          find.byKey(const Key('entryPhoneField')),
+          '4255559999',
+        );
         await tester.enterText(find.byKey(const Key('entryEmailField')), ' ');
         await tester.enterText(find.byKey(const Key('entryPledgeField')), '');
         await tester.enterText(find.byKey(const Key('entryNoteField')), '');
@@ -409,7 +428,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(name, 'Jane Smith');
-        expect(phone, isNull);
+        expect(phone, '+14255559999');
         expect(email, isNull);
         expect(pledge, isNull);
         expect(note, isNull);
@@ -440,6 +459,77 @@ void main() {
 
         expect(tester.takeException(), isNull);
       });
+
+      testWidgets('keeps the dialog open and the input when saving fails, '
+          'showing the message under the form', (tester) async {
+        var calls = 0;
+        await open(
+          tester,
+          onSaveAsync: (d) async {
+            calls++;
+            return calls == 1 ? 'That number is taken' : null;
+          },
+        );
+
+        await tester.enterText(
+          find.byKey(const Key('entryNameField')),
+          'Jane Smith',
+        );
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('That number is taken'), findsOneWidget);
+        expect(find.text('Edit Entry'), findsOneWidget);
+        expect(find.text('Jane Smith'), findsOneWidget);
+        // Save can be pressed again, and success closes the dialog and
+        // clears the message.
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(calls, 2);
+        expect(find.text('Edit Entry'), findsNothing);
+      });
+
+      testWidgets('disables Save and Cancel while the save is in flight', (
+        tester,
+      ) async {
+        final done = Completer<String?>();
+        await open(tester, onSaveAsync: (_) => done.future);
+
+        await tester.tap(find.text('Save'));
+        await tester.pump();
+
+        expect(
+          tester
+              .widget<ElevatedButton>(
+                find.widgetWithText(ElevatedButton, 'Save'),
+              )
+              .onPressed,
+          isNull,
+        );
+        expect(
+          tester
+              .widget<TextButton>(find.widgetWithText(TextButton, 'Cancel'))
+              .onPressed,
+          isNull,
+        );
+
+        done.complete(null);
+        await tester.pumpAndSettle();
+        expect(find.text('Edit Entry'), findsNothing);
+      });
+
+      testWidgets('requires a phone number', (tester) async {
+        var saved = false;
+        await open(tester, onSave: (_, _, _, _, _) => saved = true);
+
+        await tester.enterText(find.byKey(const Key('entryPhoneField')), '');
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Phone number is required'), findsOneWidget);
+        expect(saved, isFalse);
+      });
     });
 
     testWidgets('pre-fills a fractional pledge amount without trimming it', (
@@ -460,6 +550,108 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('50.5'), findsOneWidget);
+    });
+
+    group('input limits', () {
+      int? maxLengthOf(WidgetTester tester, String key) => tester
+          .widget<TextField>(
+            find.descendant(
+              of: find.byKey(Key(key)),
+              matching: find.byType(TextField),
+            ),
+          )
+          .maxLength;
+
+      Future<void> openAdd(WidgetTester tester) async {
+        await tester.pumpWidget(createDialogWidget(onSave: (_, _, _, _, _) {}));
+        await tester.tap(find.text('Open Dialog'));
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('stops name, email and note at what Firestore accepts', (
+        tester,
+      ) async {
+        await openAdd(tester);
+
+        expect(maxLengthOf(tester, 'entryNameField'), 99);
+        expect(maxLengthOf(tester, 'entryEmailField'), 199);
+        expect(maxLengthOf(tester, 'entryNoteField'), 499);
+        // The counters are hidden to keep the form compact.
+        expect(find.text('0/99'), findsNothing);
+      });
+
+      testWidgets('rejects a pledge that is not a finite amount up to the '
+          'limit', (tester) async {
+        var saved = false;
+        await tester.pumpWidget(
+          createDialogWidget(onSave: (_, _, _, _, _) => saved = true),
+        );
+        await tester.tap(find.text('Open Dialog'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const Key('entryNameField')), 'Jane');
+
+        for (final bad in ['NaN', 'Infinity', '-1', '1000001', 'abc']) {
+          await tester.enterText(
+            find.byKey(const Key('entryPledgeField')),
+            bad,
+          );
+          await tester.tap(find.text('Save'));
+          await tester.pumpAndSettle();
+          expect(
+            find.text('Please enter a valid amount'),
+            findsOneWidget,
+            reason: bad,
+          );
+        }
+        expect(saved, isFalse);
+
+        await tester.enterText(
+          find.byKey(const Key('entryPledgeField')),
+          '1000000',
+        );
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+        expect(saved, isTrue);
+      });
+
+      testWidgets('rejects an email that is not an address but allows a '
+          'blank one', (tester) async {
+        var saved = false;
+        await tester.pumpWidget(
+          createDialogWidget(onSave: (_, _, _, _, _) => saved = true),
+        );
+        await tester.tap(find.text('Open Dialog'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const Key('entryNameField')), 'Jane');
+        await tester.enterText(
+          find.byKey(const Key('entryEmailField')),
+          'not-an-email',
+        );
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Please enter a valid email address'), findsOneWidget);
+        expect(saved, isFalse);
+
+        await tester.enterText(find.byKey(const Key('entryEmailField')), '');
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+        expect(saved, isTrue);
+      });
+
+      testWidgets('lets an admin leave the phone blank', (tester) async {
+        var saved = false;
+        await tester.pumpWidget(
+          createDialogWidget(onSave: (_, _, _, _, _) => saved = true),
+        );
+        await tester.tap(find.text('Open Dialog'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const Key('entryNameField')), 'Jane');
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(saved, isTrue);
+      });
     });
   });
 }

@@ -1180,6 +1180,56 @@ void main() {
       expect(result, {'success': false, 'error': 'duplicate_entry'});
     });
 
+    test('lets an entry that shares an unchanged phone with another entry '
+        'in its slot still save other changes', () async {
+      // An admin can add two entries with the same phone to one slot, and
+      // numbers saved without a country code can collide with ones that
+      // have one; the devotee must still be able to fix their own name.
+      final id = await claim(
+        phone: '+14255551234',
+        email: 'shared@example.com',
+      );
+      await service.adminAddEntry(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Amit',
+        phone: '4255551234',
+        email: 'shared@example.com',
+      );
+
+      final result = await service.updateOwnEntry(
+        signupId: signupId,
+        entryId: id,
+        name: 'Jane Smith',
+        phone: '+14255551234',
+        email: ' Shared@Example.com ',
+        pledgeAmount: 10,
+        note: 'Sweets',
+      );
+
+      expect(result, {'success': true});
+      final saved = await entry(id);
+      expect(saved.name, 'Jane Smith');
+      expect(saved.pledgeAmount, 10);
+      expect(saved.note, 'Sweets');
+    });
+
+    test('still refuses changing only the phone to a taken one when the '
+        'email is shared and unchanged', () async {
+      await claim(name: 'Amit', phone: '+14255559999');
+      final id = await claim(phone: '+14255550000', email: 'jane@example.com');
+
+      final result = await service.updateOwnEntry(
+        signupId: signupId,
+        entryId: id,
+        name: 'Jane Doe',
+        phone: '+14255559999',
+        email: 'jane@example.com',
+      );
+
+      expect(result, {'success': false, 'error': 'duplicate_entry'});
+    });
+
     test('allows a phone another entry has in a different slot', () async {
       final otherSlot = await service.addSlot(
         signupId,

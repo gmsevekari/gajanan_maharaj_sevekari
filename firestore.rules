@@ -311,7 +311,7 @@ service cloud.firestore {
         // Same trust model as delete below: rules can't tell which device
         // is asking, only that the entry has one.
         allow update: if isAdmin()
-          || (resource.data.deviceId != null
+          || (resource.data.get('deviceId', null) != null
               && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone', 'email', 'pledgeAmount', 'note'])
               && isValidEntryDetails(request.resource.data));
         // Same trust model as Parayan/Group Namjap/Vaari participants:

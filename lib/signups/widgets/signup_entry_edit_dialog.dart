@@ -3,6 +3,9 @@ import 'package:gajanan_maharaj_sevekari/admin/widgets/participant_contact_actio
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_entry_details.dart';
+import 'package:gajanan_maharaj_sevekari/utils/entry_validators.dart';
+import 'package:gajanan_maharaj_sevekari/utils/form_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/phone_utils.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
@@ -10,23 +13,24 @@ import 'package:gajanan_maharaj_sevekari/widgets/phone_number_field.dart';
 
 /// Add or edit a sign-up entry's details (name, phone, email, pledge amount,
 /// note). Used by admins on the Entries screen and by devotees on
-/// [MySignupsScreen]; devotees pass `showContactActions: false` and no
-/// `onDelete`.
+/// [MySignupsScreen]; devotees pass `showContactActions: false`,
+/// `requirePhone: true` and no `onDelete`.
+///
+/// [onSave] returns null once the details are saved, which closes the dialog,
+/// or a message to show under the form, which keeps the dialog open with
+/// everything typed so far so it can be corrected and saved again.
 class SignupEntryEditDialog extends StatefulWidget {
   final SignupEntry? entry;
-  final void Function(
-    String name,
-    String? phone,
-    String? email,
-    double? pledge,
-    String? note,
-  )
-  onSave;
+  final Future<String?> Function(SignupEntryDetails details) onSave;
   final VoidCallback? onDelete;
 
   /// Show the entry's phone with Text / WhatsApp buttons above the form.
   /// For admins reaching a devotee; off when devotees edit their own entry.
   final bool showContactActions;
+
+  /// Require a phone number. Devotees can't clear theirs: claiming an entry
+  /// later finds it by phone. Admins often add phoned-in entries without one.
+  final bool requirePhone;
 
   /// Country code prefilled for a new number (and for an existing one saved
   /// without a code). The caller resolves it from the sign-up's group.
@@ -38,6 +42,7 @@ class SignupEntryEditDialog extends StatefulWidget {
     required this.onSave,
     this.onDelete,
     this.showContactActions = true,
+    this.requirePhone = false,
     this.defaultCountryCode,
   });
 
@@ -53,6 +58,8 @@ class _SignupEntryEditDialogState extends State<SignupEntryEditDialog> {
   late final TextEditingController _emailController;
   late final TextEditingController _pledgeController;
   late final TextEditingController _noteController;
+  bool _saving = false;
+  String? _saveError;
 
   @override
   void initState() {
@@ -85,22 +92,40 @@ class _SignupEntryEditDialogState extends State<SignupEntryEditDialog> {
     super.dispose();
   }
 
-  void _handleSave() {
-    if (!_formKey.currentState!.validate()) return;
+  String? _textOrNull(TextEditingController controller) {
+    final text = controller.text.trim();
+    return text.isEmpty ? null : text;
+  }
 
-    final name = _nameController.text.trim();
-    final phone = joinPhone(_countryCodeController.text, _phoneController.text);
-    final email = _emailController.text.trim().isEmpty
-        ? null
-        : _emailController.text.trim();
-    final note = _noteController.text.trim().isEmpty
-        ? null
-        : _noteController.text.trim();
+  Future<void> _handleSave() async {
+    if (!_formKey.currentState!.validate()) {
+      revealFirstInvalidField(_formKey.currentContext);
+      return;
+    }
+
     final pledgeText = _pledgeController.text.trim();
-    final pledge = pledgeText.isNotEmpty ? double.tryParse(pledgeText) : null;
+    final details = SignupEntryDetails(
+      name: _nameController.text.trim(),
+      phone: joinPhone(_countryCodeController.text, _phoneController.text),
+      email: _textOrNull(_emailController),
+      pledgeAmount: pledgeText.isEmpty ? null : parsePledgeAmount(pledgeText),
+      note: _textOrNull(_noteController),
+    );
 
-    widget.onSave(name, phone, email, pledge, note);
-    Navigator.of(context).pop();
+    setState(() {
+      _saving = true;
+      _saveError = null;
+    });
+    final error = await widget.onSave(details);
+    if (!mounted) return;
+    if (error == null) {
+      Navigator.of(context).pop();
+      return;
+    }
+    setState(() {
+      _saving = false;
+      _saveError = error;
+    });
   }
 
   void _confirmDelete(BuildContext context, AppLocalizations l10n) {
@@ -129,6 +154,14 @@ class _SignupEntryEditDialogState extends State<SignupEntryEditDialog> {
       ),
     );
   }
+
+  /// Field styling with the maxLength counter hidden: the limit is still
+  /// enforced, and a stacked form fits above the keyboard on a phone.
+  InputDecoration _decoration(String label) => InputDecoration(
+    labelText: label,
+    counterText: '',
+    border: const OutlineInputBorder(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -174,10 +207,8 @@ class _SignupEntryEditDialogState extends State<SignupEntryEditDialog> {
               TextFormField(
                 key: const Key('entryNameField'),
                 controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: l10n.signupEntryNameLabel,
-                  border: const OutlineInputBorder(),
-                ),
+                maxLength: SignupEntry.maxNameLength,
+                decoration: _decoration(l10n.signupEntryNameLabel),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
                     return l10n.signupEntryNameRequired;
@@ -192,8 +223,7 @@ class _SignupEntryEditDialogState extends State<SignupEntryEditDialog> {
                 codeController: _countryCodeController,
                 numberController: _phoneController,
                 label: l10n.signupEntryPhoneLabel,
-                // Admins often add phoned-in entries without a number.
-                required: false,
+                required: widget.requirePhone,
                 requiredMessage: l10n.phoneRequired,
                 invalidMessage: l10n.invalidPhoneError,
               ),
@@ -202,10 +232,12 @@ class _SignupEntryEditDialogState extends State<SignupEntryEditDialog> {
                 key: const Key('entryEmailField'),
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: l10n.signupEntryEmailLabel,
-                  border: const OutlineInputBorder(),
-                ),
+                maxLength: SignupEntry.maxEmailLength,
+                decoration: _decoration(l10n.signupEntryEmailLabel),
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) return null;
+                  return isValidEmail(val) ? null : l10n.invalidEmail;
+                },
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -214,17 +246,12 @@ class _SignupEntryEditDialogState extends State<SignupEntryEditDialog> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: InputDecoration(
-                  labelText: l10n.signupEntryPledgeLabel,
-                  border: const OutlineInputBorder(),
-                ),
+                decoration: _decoration(l10n.signupEntryPledgeLabel),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return null;
-                  final parsed = double.tryParse(val.trim());
-                  if (parsed == null || parsed < 0) {
-                    return l10n.signupSlotSuggestedAmountInvalid;
-                  }
-                  return null;
+                  return parsePledgeAmount(val) == null
+                      ? l10n.signupSlotSuggestedAmountInvalid
+                      : null;
                 },
               ),
               const SizedBox(height: 12),
@@ -232,11 +259,22 @@ class _SignupEntryEditDialogState extends State<SignupEntryEditDialog> {
                 key: const Key('entryNoteField'),
                 controller: _noteController,
                 maxLines: 2,
-                decoration: InputDecoration(
-                  labelText: l10n.signupEntryNoteLabel,
-                  border: const OutlineInputBorder(),
-                ),
+                maxLength: SignupEntry.maxNoteLength,
+                decoration: _decoration(l10n.signupEntryNoteLabel),
               ),
+              if (_saveError != null) ...[
+                const SizedBox(height: 12),
+                Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    _saveError!,
+                    key: const Key('entrySaveError'),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -244,18 +282,18 @@ class _SignupEntryEditDialogState extends State<SignupEntryEditDialog> {
       actions: [
         if (isEditing && widget.onDelete != null)
           TextButton(
-            onPressed: () => _confirmDelete(context, l10n),
+            onPressed: _saving ? null : () => _confirmDelete(context, l10n),
             child: Text(
               l10n.signupRemoveEntryTitle,
               style: TextStyle(color: theme.colorScheme.error),
             ),
           ),
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: _saving ? null : () => Navigator.of(context).pop(),
           child: Text(l10n.cancel),
         ),
         ElevatedButton(
-          onPressed: _handleSave,
+          onPressed: _saving ? null : _handleSave,
           child: Text(l10n.signupSaveButton),
         ),
       ],

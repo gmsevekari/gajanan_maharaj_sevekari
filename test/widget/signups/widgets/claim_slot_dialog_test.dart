@@ -671,10 +671,10 @@ void main() {
             .maxLength;
       }
 
-      expect(maxLengthOf(const Key('claimNameField')), 100);
+      expect(maxLengthOf(const Key('claimNameField')), 99);
       expect(maxLengthOf(const Key('claimPhoneField')), 30);
-      expect(maxLengthOf(const Key('claimEmailField')), 200);
-      expect(maxLengthOf(const Key('claimNoteField')), 500);
+      expect(maxLengthOf(const Key('claimEmailField')), 199);
+      expect(maxLengthOf(const Key('claimNoteField')), 499);
     });
 
     testWidgets('shows a generic error message for an unexpected failure', (
@@ -824,8 +824,8 @@ void main() {
       // Name, phone, email, note and join code stacked: was ~450px with
       // counters and loose spacing.
       expect(contentHeight, lessThanOrEqualTo(330));
-      expect(find.text('0/100'), findsNothing);
-      expect(find.text('0/500'), findsNothing);
+      expect(find.text('0/99'), findsNothing);
+      expect(find.text('0/499'), findsNothing);
     });
 
     testWidgets('still limits the length of name and note', (tester) async {
@@ -846,8 +846,8 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('x' * 100), findsOneWidget);
-      expect(find.text('y' * 500), findsOneWidget);
+      expect(find.text('x' * 99), findsOneWidget);
+      expect(find.text('y' * 499), findsOneWidget);
     });
 
     testWidgets('scrolls to the join code error when it is left empty', (

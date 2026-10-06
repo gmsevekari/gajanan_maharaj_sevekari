@@ -19,6 +19,7 @@ const {
   setDoc,
   updateDoc,
   deleteDoc,
+  deleteField,
   Timestamp,
 } = require('firebase/firestore');
 
@@ -90,6 +91,13 @@ beforeEach(async () => {
     });
     // Matches SignupEntry.toMap()'s real shape for an admin-added entry:
     // deviceId is always a present key, explicitly null, never omitted.
+    // Not a shape the app writes, but a document with no deviceId key must be
+    // treated like one with a null deviceId.
+    await setDoc(doc(db, 'signups/signup1/entries/noDeviceKey'), {
+      slotId: 'slot1',
+      name: 'Legacy Devotee',
+      joinedAt: Timestamp.now(),
+    });
     await setDoc(doc(db, 'signups/signup1/entries/noDevice'), {
       slotId: 'slot1',
       name: 'Admin-added Devotee',
@@ -415,6 +423,27 @@ test('non-admin cannot edit an entry that has no deviceId', async () => {
   await assertFails(updateDoc(noDeviceRef(), { name: 'Edited Name' }));
 });
 
+test('non-admin cannot edit an entry that has no deviceId key at all', async () => {
+  await assertFails(
+    updateDoc(doc(unauthedDb(), 'signups/signup1/entries/noDeviceKey'), {
+      name: 'Edited Name',
+    }),
+  );
+});
+
+test('non-admin can edit a pledge of exactly 0', async () => {
+  await assertSucceeds(updateDoc(withDeviceRef(), { pledgeAmount: 0 }));
+});
+
+test('non-admin cannot set a NaN pledge', async () => {
+  await assertFails(updateDoc(withDeviceRef(), { pledgeAmount: NaN }));
+});
+
+test('non-admin cannot delete the name or deviceId field of an entry', async () => {
+  await assertFails(updateDoc(withDeviceRef(), { name: deleteField() }));
+  await assertFails(updateDoc(withDeviceRef(), { deviceId: deleteField() }));
+});
+
 test('non-admin cannot change an entry\'s deviceId, slotId or joinedAt', async () => {
   for (const change of [
     { deviceId: 'device_thief' },
@@ -467,6 +496,26 @@ test('admin can update an entry', async () => {
   await assertSucceeds(
     updateDoc(doc(adminDb(), 'signups/signup1/entries/withDevice'), {
       name: 'Admin Edited Name',
+    }),
+  );
+});
+
+test('admin can change any field of an entry, including its slot and device', async () => {
+  const ref = doc(adminDb(), 'signups/signup1/entries/withDevice');
+  await assertSucceeds(
+    updateDoc(ref, {
+      slotId: 'emptySlot',
+      deviceId: 'device_new',
+      joinedAt: Timestamp.fromDate(new Date('2020-01-01T00:00:00Z')),
+    }),
+  );
+  await assertSucceeds(updateDoc(ref, { deviceId: null }));
+});
+
+test('admin can edit an entry that has no deviceId', async () => {
+  await assertSucceeds(
+    updateDoc(doc(adminDb(), 'signups/signup1/entries/noDevice'), {
+      name: 'Edited By Admin',
     }),
   );
 });

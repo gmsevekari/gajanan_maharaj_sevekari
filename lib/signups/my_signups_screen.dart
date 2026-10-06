@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_entry_details.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/my_signups_section.dart';
@@ -105,45 +106,49 @@ class _MySignupsScreenState extends State<MySignupsScreen>
       builder: (_) => SignupEntryEditDialog(
         entry: entry,
         showContactActions: false,
+        requirePhone: true,
         defaultCountryCode: defaultCountryCodeFor(context, widget.groupId),
-        onSave: (name, phone, email, pledge, note) =>
-            _saveEntry(entry, name, phone, email, pledge, note, l10n),
+        onSave: (details) => _saveEntry(entry, details, l10n),
       ),
     );
   }
 
-  Future<void> _saveEntry(
+  /// Saves the edit. Returns null on success (and says so in a snackbar), or
+  /// the message for the dialog to show so the devotee can fix the input.
+  Future<String?> _saveEntry(
     SignupEntry entry,
-    String name,
-    String? phone,
-    String? email,
-    double? pledge,
-    String? note,
+    SignupEntryDetails details,
     AppLocalizations l10n,
   ) async {
-    String message;
     try {
       final result = await _service.updateOwnEntry(
         signupId: widget.signupId,
         entryId: entry.id!,
-        name: name,
-        phone: phone,
-        email: email,
-        pledgeAmount: pledge,
-        note: note,
+        name: details.name,
+        phone: details.phone,
+        email: details.email,
+        pledgeAmount: details.pledgeAmount,
+        note: details.note,
       );
-      message = switch (result['error']) {
-        null => l10n.signupEntryEditSuccess,
-        'duplicate_entry' => l10n.signupDuplicateEntryError,
-        _ => l10n.signupEntryEditError,
-      };
-    } catch (_) {
-      message = l10n.signupEntryEditError;
+      switch (result['error']) {
+        case null:
+          if (mounted) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(content: Text(l10n.signupEntryEditSuccess)),
+              );
+          }
+          return null;
+        case 'duplicate_entry':
+          return l10n.signupDuplicateEntryError;
+        default:
+          return l10n.signupEntryEditError;
+      }
+    } catch (error) {
+      debugPrint('MySignupsScreen._saveEntry error: $error');
+      return l10n.signupEntryEditError;
     }
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _cancelEntry(SignupEntry entry, AppLocalizations l10n) async {
@@ -241,11 +246,6 @@ class _MySignupsScreenState extends State<MySignupsScreen>
                   MySignupsSection(
                     entries: past,
                     slots: slots,
-                    // No Cancel or Edit button on this tab, so neither is called.
-                    onCancelEntry: (_) {},
-                    onEditEntry: (_) {},
-                    showCancelButton: false,
-                    showEditButton: false,
                     emptyMessage: l10n.signupNoMySignups,
                   ),
                 ],

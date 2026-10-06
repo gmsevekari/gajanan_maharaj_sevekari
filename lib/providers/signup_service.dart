@@ -333,7 +333,9 @@ class SignupService {
   /// Returns `{'success': true}` or `{'success': false, 'error':
   /// 'not_found' | 'duplicate_entry'}`; the latter when another entry in the
   /// same slot already has the new phone or email (a best-effort guard, like
-  /// [claimSlot]'s).
+  /// [claimSlot]'s). Only a phone or email that actually changed is checked,
+  /// so an entry that already shares a number with another (an admin can add
+  /// such pairs) can still have its name, pledge or note fixed.
   Future<Map<String, dynamic>> updateOwnEntry({
     required String signupId,
     required String entryId,
@@ -349,12 +351,15 @@ class SignupService {
 
     final cleanPhone = _blankToNull(phone);
     final cleanEmail = _blankToNull(email);
-    final slotId = SignupEntry.fromMap(snapshot.id, snapshot.data()!).slotId;
+    final current = SignupEntry.fromMap(snapshot.id, snapshot.data()!);
+    final phoneChanged = _digits(cleanPhone) != _digits(current.phone);
+    final emailChanged =
+        _normalizedEmail(cleanEmail) != _normalizedEmail(current.email);
     if (await _hasDuplicateEntry(
       signupId: signupId,
-      slotId: slotId,
-      email: cleanEmail,
-      phone: cleanPhone,
+      slotId: current.slotId,
+      email: emailChanged ? cleanEmail : null,
+      phone: phoneChanged ? cleanPhone : null,
       excludeEntryId: entryId,
     )) {
       return {'success': false, 'error': 'duplicate_entry'};
@@ -369,6 +374,10 @@ class SignupService {
     });
     return {'success': true};
   }
+
+  String _digits(String? phone) => phone?.replaceAll(RegExp(r'\D'), '') ?? '';
+
+  String _normalizedEmail(String? email) => email?.trim().toLowerCase() ?? '';
 
   String? _blankToNull(String? value) {
     final trimmed = value?.trim();

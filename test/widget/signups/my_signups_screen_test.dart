@@ -502,6 +502,36 @@ void main() {
   });
 
   group('editing an entry', () {
+    MockSignupService mockServiceWithOneEntry() {
+      final entry = SignupEntry(
+        id: 'entry_1',
+        slotId: 'slot_1',
+        name: 'Jane',
+        phone: '+14255551234',
+        deviceId: 'device_1',
+        joinedAt: DateTime.now(),
+      );
+      final mockService = MockSignupService();
+      when(
+        () => mockService.getSlots(signupId),
+      ).thenAnswer((_) => Stream.value(const []));
+      when(
+        () => mockService.getEntriesByDevice(signupId, 'device_1'),
+      ).thenAnswer((_) => Stream.value([entry]));
+      return mockService;
+    }
+
+    Future<Map<String, dynamic>> _update(MockSignupService service) =>
+        service.updateOwnEntry(
+          signupId: any(named: 'signupId'),
+          entryId: any(named: 'entryId'),
+          name: any(named: 'name'),
+          phone: any(named: 'phone'),
+          email: any(named: 'email'),
+          pledgeAmount: any(named: 'pledgeAmount'),
+          note: any(named: 'note'),
+        );
+
     Future<String> claimUpcoming({
       String name = 'Jane',
       String? phone,
@@ -670,37 +700,20 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Entry updated successfully'), findsNothing);
+      // The dialog stays open with what was typed, so it can be corrected.
+      expect(find.text('Edit Entry'), findsOneWidget);
+      expect(find.byKey(const Key('entrySaveError')), findsOneWidget);
+      expect(find.text('4255559999'), findsOneWidget);
       final entries = await service.getAllEntries(signupId).first;
       expect(entries.firstWhere((e) => e.name == 'Jane').phone, '+14255551234');
     });
 
-    testWidgets('shows an error snackbar when the update fails', (
+    testWidgets('shows a plain error in the dialog when the update fails', (
       tester,
     ) async {
-      final entry = SignupEntry(
-        id: 'entry_1',
-        slotId: 'slot_1',
-        name: 'Jane',
-        deviceId: 'device_1',
-        joinedAt: DateTime.now(),
-      );
-      final mockService = MockSignupService();
+      final mockService = mockServiceWithOneEntry();
       when(
-        () => mockService.getSlots(signupId),
-      ).thenAnswer((_) => Stream.value(const []));
-      when(
-        () => mockService.getEntriesByDevice(signupId, 'device_1'),
-      ).thenAnswer((_) => Stream.value([entry]));
-      when(
-        () => mockService.updateOwnEntry(
-          signupId: any(named: 'signupId'),
-          entryId: any(named: 'entryId'),
-          name: any(named: 'name'),
-          phone: any(named: 'phone'),
-          email: any(named: 'email'),
-          pledgeAmount: any(named: 'pledgeAmount'),
-          note: any(named: 'note'),
-        ),
+        () => _update(mockService),
       ).thenThrow(Exception('permission-denied: secret details'));
 
       await tester.pumpWidget(
@@ -721,6 +734,48 @@ void main() {
 
       expect(find.text('Failed to update entry'), findsOneWidget);
       expect(find.textContaining('secret details'), findsNothing);
+      // Still open, so nothing typed is lost.
+      expect(find.text('Edit Entry'), findsOneWidget);
+    });
+
+    testWidgets('shows the plain error when the entry no longer exists', (
+      tester,
+    ) async {
+      final mockService = mockServiceWithOneEntry();
+      when(
+        () => _update(mockService),
+      ).thenAnswer((_) async => {'success': false, 'error': 'not_found'});
+
+      await tester.pumpWidget(
+        wrap(
+          MySignupsScreen(
+            signupId: signupId,
+            deviceId: 'device_1',
+            signupService: mockService,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Edit'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Failed to update entry'), findsOneWidget);
+      expect(find.text('Edit Entry'), findsOneWidget);
+    });
+
+    testWidgets('asks an entry saved without a phone for one', (tester) async {
+      await claimUpcoming();
+      await openScreen(tester);
+
+      await tester.tap(find.text('Edit'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Phone number is required'), findsOneWidget);
+      expect(find.text('Edit Entry'), findsOneWidget);
     });
 
     testWidgets('prefills the group\'s default country code for a new number', (

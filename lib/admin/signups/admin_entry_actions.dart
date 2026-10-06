@@ -30,18 +30,18 @@ class AdminEntryActions {
       context: context,
       builder: (_) => SignupEntryEditDialog(
         defaultCountryCode: defaultCountryCodeFor(context, signup.groupId),
-        onSave: (name, phone, email, pledge, note) async {
+        onSave: (details) async {
           try {
             final res = await service.adminAddEntry(
               signupId: signup.id!,
               slotId: slot.id!,
-              name: name,
-              phone: phone,
-              email: email,
-              pledgeAmount: pledge,
-              note: note,
+              name: details.name,
+              phone: details.phone,
+              email: details.email,
+              pledgeAmount: details.pledgeAmount,
+              note: details.note,
             );
-            if (!context.mounted) return;
+            if (!context.mounted) return null;
             if (res['success'] == true) {
               _snack(context, l10n.signupEntryAddSuccess);
             } else if (res['error'] == 'slot_full') {
@@ -50,9 +50,10 @@ class AdminEntryActions {
               _snack(context, l10n.signupEntryAddError);
             }
           } catch (_) {
-            if (!context.mounted) return;
+            if (!context.mounted) return null;
             _snack(context, l10n.signupEntryAddError);
           }
+          return null;
         },
       ),
     );
@@ -65,24 +66,25 @@ class AdminEntryActions {
       builder: (_) => SignupEntryEditDialog(
         defaultCountryCode: defaultCountryCodeFor(context, signup.groupId),
         entry: entry,
-        onSave: (name, phone, email, pledge, note) async {
+        onSave: (details) async {
           try {
             await service.updateEntry(
               signup.id!,
               entry.copyWith(
-                name: name,
-                phone: phone,
-                email: email,
-                pledgeAmount: pledge,
-                note: note,
+                name: details.name,
+                phone: details.phone,
+                email: details.email,
+                pledgeAmount: details.pledgeAmount,
+                note: details.note,
               ),
             );
-            if (!context.mounted) return;
+            if (!context.mounted) return null;
             _snack(context, l10n.signupEntryEditSuccess);
           } catch (_) {
-            if (!context.mounted) return;
+            if (!context.mounted) return null;
             _snack(context, l10n.signupEntryEditError);
           }
+          return null;
         },
         onDelete: () => _remove(context, signup, entry, l10n),
       ),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:gajanan_maharaj_sevekari/utils/entry_validators.dart';
 import 'package:gajanan_maharaj_sevekari/utils/form_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
 import 'package:gajanan_maharaj_sevekari/utils/phone_utils.dart';
@@ -149,7 +151,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
         name: _nameController.text.trim(),
         phone: joinPhone(_countryCodeController.text, _phoneController.text),
         email: _emailController.text.trim(),
-        pledgeAmount: pledgeText.isEmpty ? null : double.tryParse(pledgeText),
+        pledgeAmount: pledgeText.isEmpty ? null : parsePledgeAmount(pledgeText),
         note: _noteController.text.trim().isEmpty
             ? null
             : _noteController.text.trim(),
@@ -221,7 +223,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
               TextFormField(
                 key: const Key('claimNameField'),
                 controller: _nameController,
-                maxLength: 100,
+                maxLength: SignupEntry.maxNameLength,
                 decoration: _decoration(l10n.signupEntryNameLabel),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -245,19 +247,13 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 key: const Key('claimEmailField'),
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                maxLength: 200,
+                maxLength: SignupEntry.maxEmailLength,
                 decoration: _decoration(l10n.signupEntryEmailLabel),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return l10n.emailRequired;
                   }
-                  final emailRegex = RegExp(
-                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                  );
-                  if (!emailRegex.hasMatch(value.trim())) {
-                    return l10n.invalidEmail;
-                  }
-                  return null;
+                  return isValidEmail(value) ? null : l10n.invalidEmail;
                 },
               ),
               if (showPledge) ...[
@@ -271,11 +267,9 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                   decoration: _decoration(l10n.signupEntryPledgeLabel),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) return null;
-                    final amount = double.tryParse(value.trim());
-                    if (amount == null || amount < 0) {
-                      return l10n.signupSlotSuggestedAmountInvalid;
-                    }
-                    return null;
+                    return parsePledgeAmount(value) == null
+                        ? l10n.signupSlotSuggestedAmountInvalid
+                        : null;
                   },
                 ),
               ],
@@ -284,7 +278,7 @@ class _ClaimSlotDialogState extends State<ClaimSlotDialog> {
                 key: const Key('claimNoteField'),
                 controller: _noteController,
                 maxLines: 2,
-                maxLength: 500,
+                maxLength: SignupEntry.maxNoteLength,
                 decoration: _decoration(l10n.signupEntryNoteLabel),
               ),
               if (widget.requiresJoinCode) ...[

@@ -7,29 +7,25 @@ import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 /// A list of the devotee's own claimed entries, each showing which [slots]
 /// it belongs to - an entry's own `slotId` would otherwise be the only
-/// hint - and the phone and email it was made with, with optional Edit and
-/// Cancel actions. Used as each tab's body on [MySignupsScreen];
-/// [showCancelButton] and [showEditButton] are false on the Past tab, since
-/// changing or cancelling a signup whose slot has already happened doesn't
-/// apply.
+/// hint - and the phone and email it was made with, with Edit and Cancel
+/// actions. Used as each tab's body on [MySignupsScreen]; the Past tab passes
+/// no [onEditEntry] or [onCancelEntry], since changing or cancelling a signup
+/// whose slot has already happened doesn't apply, and the buttons are left
+/// out.
 class MySignupsSection extends StatelessWidget {
   final List<SignupEntry> entries;
   final List<SignupSlot> slots;
-  final void Function(SignupEntry entry) onCancelEntry;
-  final void Function(SignupEntry entry) onEditEntry;
-  final bool showCancelButton;
-  final bool showEditButton;
+  final void Function(SignupEntry entry)? onCancelEntry;
+  final void Function(SignupEntry entry)? onEditEntry;
   final String emptyMessage;
 
   const MySignupsSection({
     super.key,
     required this.entries,
     required this.slots,
-    required this.onCancelEntry,
-    required this.onEditEntry,
     required this.emptyMessage,
-    this.showCancelButton = true,
-    this.showEditButton = true,
+    this.onCancelEntry,
+    this.onEditEntry,
   });
 
   @override
@@ -67,32 +63,43 @@ class MySignupsSection extends StatelessWidget {
         for (final entry in entries)
           Card(
             margin: const EdgeInsets.only(bottom: 8),
-            child: ListTile(
-              title: Text(entry.name),
-              subtitle: Column(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(entry.name, style: theme.textTheme.titleMedium),
                   Text(slotLabelFor(entry.slotId)),
-                  for (final detail in _details(entry)) Text(detail),
+                  for (final detail in _details(entry))
+                    Text(
+                      detail,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.appColors.secondaryText,
+                      ),
+                    ),
+                  // Under the details, not beside the name, so a long name
+                  // keeps the full card width.
+                  if (onEditEntry != null || onCancelEntry != null)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Wrap(
+                        alignment: WrapAlignment.end,
+                        children: [
+                          if (onEditEntry != null)
+                            TextButton(
+                              onPressed: () => onEditEntry!(entry),
+                              child: Text(l10n.signupEditEntryButton),
+                            ),
+                          if (onCancelEntry != null)
+                            TextButton(
+                              onPressed: () => onCancelEntry!(entry),
+                              child: Text(l10n.signupCancelSignupButton),
+                            ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
-              trailing: showEditButton || showCancelButton
-                  ? Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        if (showEditButton)
-                          TextButton(
-                            onPressed: () => onEditEntry(entry),
-                            child: Text(l10n.signupEditEntryButton),
-                          ),
-                        if (showCancelButton)
-                          TextButton(
-                            onPressed: () => onCancelEntry(entry),
-                            child: Text(l10n.signupCancelSignupButton),
-                          ),
-                      ],
-                    )
-                  : null,
             ),
           ),
       ],
