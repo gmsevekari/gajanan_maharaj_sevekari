@@ -229,6 +229,34 @@ void main() {
       );
     });
 
+    testWidgets('My Sign Ups asks for the join code only when the sign-up '
+        'requires one', (tester) async {
+      for (final requires in [false, true]) {
+        final signupId = await createOpenSignup(requiresJoinCode: requires);
+        await tester.pumpWidget(
+          wrap(
+            SignupDetailScreen(
+              signupId: signupId,
+              deviceId: 'device_1',
+              firestore: firestore,
+              signupService: service,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('My Signups'));
+        await tester.pumpAndSettle();
+
+        expect(
+          tester
+              .widget<MySignupsScreen>(find.byType(MySignupsScreen))
+              .requiresJoinCode,
+          requires,
+        );
+        await tester.pumpWidget(const SizedBox());
+      }
+    });
+
     testWidgets('tapping the Slots card opens SignupSlotsScreen', (
       tester,
     ) async {

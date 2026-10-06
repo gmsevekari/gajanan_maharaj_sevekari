@@ -106,6 +106,7 @@ class _SignupDetailScreenState extends State<SignupDetailScreen> {
         builder: (_) => MySignupsScreen(
           signupId: _signupId,
           groupId: signup.groupId,
+          requiresJoinCode: signup.requiresJoinCode,
           deviceId: _deviceId!,
           firestore: widget.firestore,
           signupService: _service,

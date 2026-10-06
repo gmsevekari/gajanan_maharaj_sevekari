@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/models/claim_entries_result.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
@@ -498,6 +501,335 @@ void main() {
         startAt: now.subtract(const Duration(days: 10)),
       );
       await expectOnUpcoming(tester);
+    });
+  });
+
+  group('claiming my sign up', () {
+    MySignupsScreen screenWith(
+      SignupService signupService, {
+      bool requiresJoinCode = false,
+      String? groupId,
+    }) => MySignupsScreen(
+      signupId: signupId,
+      groupId: groupId,
+      requiresJoinCode: requiresJoinCode,
+      deviceId: 'device_1',
+      signupService: signupService,
+    );
+
+    /// A mock service whose entries stream can be pushed to.
+    (MockSignupService, StreamController<List<SignupEntry>>) mockService() {
+      final entries = StreamController<List<SignupEntry>>.broadcast();
+      final mock = MockSignupService();
+      when(
+        () => mock.getSlots(signupId),
+      ).thenAnswer((_) => Stream.value(const []));
+      when(
+        () => mock.getEntriesByDevice(signupId, 'device_1'),
+      ).thenAnswer((_) => entries.stream.asBroadcastStream());
+      return (mock, entries);
+    }
+
+    void stubClaim(MockSignupService mock, ClaimEntriesResult result) {
+      when(
+        () => mock.claimMyEntries(
+          signupId: any(named: 'signupId'),
+          phone: any(named: 'phone'),
+          deviceId: any(named: 'deviceId'),
+          joinCode: any(named: 'joinCode'),
+        ),
+      ).thenAnswer((_) async => result);
+    }
+
+    testWidgets('shows the button even when there are no entries, on both '
+        'tabs', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          MySignupsScreen(
+            signupId: signupId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Claim My Sign Up'), findsOneWidget);
+
+      await tester.tap(find.text('Past'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Claim My Sign Up'), findsOneWidget);
+    });
+
+    testWidgets('shows the button above the entries too', (tester) async {
+      final slotId = await addSlot(
+        date: DateTime.now().add(const Duration(days: 3)),
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+        deviceId: 'device_1',
+      );
+      await tester.pumpWidget(
+        wrap(
+          MySignupsScreen(
+            signupId: signupId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Jane'), findsOneWidget);
+      expect(
+        tester.getTopLeft(find.text('Claim My Sign Up')).dy,
+        lessThan(tester.getTopLeft(find.text('Jane')).dy),
+      );
+    });
+
+    testWidgets('opens the claim dialog, asking for the join code only when '
+        'the sign-up needs one', (tester) async {
+      final (mock, entries) = mockService();
+      addTearDown(entries.close);
+
+      await tester.pumpWidget(wrap(screenWith(mock)));
+      await tester.pump();
+      entries.add(const []);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Claim My Sign Up'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Enter the phone number you signed up with.'),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('claimMyJoinCodeField')), findsNothing);
+    });
+
+    testWidgets('asks for the join code when the sign-up requires one', (
+      tester,
+    ) async {
+      final (mock, entries) = mockService();
+      addTearDown(entries.close);
+
+      await tester.pumpWidget(wrap(screenWith(mock, requiresJoinCode: true)));
+      await tester.pump();
+      entries.add(const []);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Claim My Sign Up'));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('claimMyJoinCodeField')), findsOneWidget);
+    });
+
+    testWidgets('a successful claim confirms, and the entries appear', (
+      tester,
+    ) async {
+      final (mock, entries) = mockService();
+      addTearDown(entries.close);
+      stubClaim(
+        mock,
+        const ClaimEntriesResult(ClaimEntriesStatus.success, count: 1),
+      );
+
+      await tester.pumpWidget(wrap(screenWith(mock)));
+      await tester.pump();
+      entries.add(const []);
+      await tester.pumpAndSettle();
+      expect(find.text('Jane'), findsNothing);
+
+      await tester.tap(find.text('Claim My Sign Up'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('claimMyPhoneField')),
+        '4255551234',
+      );
+      await tester.tap(find.text('Submit'));
+      await tester.pump();
+      entries.add([
+        SignupEntry(
+          id: 'e1',
+          slotId: 's1',
+          name: 'Jane',
+          phone: '+14255551234',
+          deviceId: 'device_1',
+          joinedAt: DateTime.now(),
+        ),
+      ]);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Your sign up is now linked to this device.'),
+        findsOneWidget,
+      );
+      expect(find.text('Jane'), findsOneWidget);
+      verify(
+        () => mock.claimMyEntries(
+          signupId: signupId,
+          phone: '+14255551234',
+          deviceId: 'device_1',
+          joinCode: null,
+        ),
+      ).called(1);
+    });
+
+    testWidgets('cancelling the dialog shows no confirmation', (tester) async {
+      final (mock, entries) = mockService();
+      addTearDown(entries.close);
+
+      await tester.pumpWidget(wrap(screenWith(mock)));
+      await tester.pump();
+      entries.add(const []);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Claim My Sign Up'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Enter the phone number you signed up with.'),
+        findsNothing,
+      );
+      expect(
+        find.text('Your sign up is now linked to this device.'),
+        findsNothing,
+      );
+    });
+
+    testWidgets('a refused claim shows the reason in the dialog and no '
+        'confirmation', (tester) async {
+      final (mock, entries) = mockService();
+      addTearDown(entries.close);
+      stubClaim(
+        mock,
+        const ClaimEntriesResult(ClaimEntriesStatus.alreadyClaimed),
+      );
+
+      await tester.pumpWidget(wrap(screenWith(mock)));
+      await tester.pump();
+      entries.add(const []);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Claim My Sign Up'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('claimMyPhoneField')),
+        '4255551234',
+      );
+      await tester.tap(find.text('Submit'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('This entry is already claimed by someone else.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Your sign up is now linked to this device.'),
+        findsNothing,
+      );
+    });
+
+    testWidgets('starts the number with the group\'s country code', (
+      tester,
+    ) async {
+      final (mock, entries) = mockService();
+      addTearDown(entries.close);
+      final provider = _MockAppConfigProvider();
+      when(() => provider.appConfig).thenReturn(
+        AppConfig(
+          deities: const [],
+          gajananMaharajGroups: [
+            GajananMaharajGroup(
+              id: 'group_1',
+              nameEn: 'Group',
+              nameMr: 'गट',
+              defaultCountryCode: '+91',
+            ),
+          ],
+          socialMediaLinks: const [],
+          appName: const {},
+          updateMessage: const {},
+          latestVersion: '1.0.0',
+          forceUpdate: 'false',
+          playStoreUrl: '',
+          appStoreUrl: '',
+        ),
+      );
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<AppConfigProvider>.value(
+          value: provider,
+          child: wrap(screenWith(mock, groupId: 'group_1')),
+        ),
+      );
+      await tester.pump();
+      entries.add(const []);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Claim My Sign Up'));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester
+            .widget<TextFormField>(
+              find.byKey(const Key('claimMyCountryCodeField')),
+            )
+            .controller!
+            .text,
+        '+91',
+      );
+    });
+
+    testWidgets('stays in English under a Marathi locale', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          MySignupsScreen(
+            signupId: signupId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+          locale: const Locale('mr'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Claim My Sign Up'), findsOneWidget);
+      await tester.tap(find.text('Claim My Sign Up'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Enter the phone number you signed up with.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('fits a 360px screen at large text', (tester) async {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+      await tester.pumpWidget(
+        wrap(
+          MySignupsScreen(
+            signupId: signupId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(
+        tester.getRect(find.text('Claim My Sign Up')).right,
+        lessThanOrEqualTo(360),
+      );
     });
   });
 

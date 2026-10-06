@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry_details.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_my_signup_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/my_signups_section.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_entry_edit_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
@@ -18,7 +19,9 @@ import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 /// Upcoming/Past by their slot's date, matching [SignupSlotsScreen]'s own
 /// split - an entry whose slot has no date is treated as upcoming, since
 /// there's no basis to call it past. Upcoming entries can be edited
-/// (name, phone, email, pledge, note) or cancelled.
+/// (name, phone, email, pledge, note) or cancelled. "Claim My Sign Up" links
+/// entries made with a phone number (by an admin, or on another device) to
+/// this device.
 class MySignupsScreen extends StatefulWidget {
   final String signupId;
   final String deviceId;
@@ -26,6 +29,9 @@ class MySignupsScreen extends StatefulWidget {
   /// The sign-up's group, used for the country code a new phone number
   /// starts with when editing an entry.
   final String? groupId;
+
+  /// Whether claiming entries needs the sign-up's join code.
+  final bool requiresJoinCode;
 
   /// Injected for testing; defaults to [FirebaseFirestore.instance].
   @visibleForTesting
@@ -40,6 +46,7 @@ class MySignupsScreen extends StatefulWidget {
     required this.signupId,
     required this.deviceId,
     this.groupId,
+    this.requiresJoinCode = false,
     this.firestore,
     this.signupService,
   });
@@ -98,6 +105,23 @@ class _MySignupsScreenState extends State<MySignupsScreen>
         ],
       ),
     );
+  }
+
+  Future<void> _claimMine(AppLocalizations l10n) async {
+    final claimed = await showEnglishDialog<bool>(
+      context: context,
+      builder: (_) => ClaimMySignupDialog(
+        signupId: widget.signupId,
+        deviceId: widget.deviceId,
+        requiresJoinCode: widget.requiresJoinCode,
+        signupService: _service,
+        defaultCountryCode: defaultCountryCodeFor(context, widget.groupId),
+      ),
+    );
+    if (claimed != true || !mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(l10n.signupClaimMySignupSuccess)));
   }
 
   void _editEntry(SignupEntry entry, AppLocalizations l10n) {
@@ -205,54 +229,74 @@ class _MySignupsScreenState extends State<MySignupsScreen>
           ),
         ],
       ),
-      body: StreamBuilder<List<SignupSlot>>(
-        stream: _slotsStream,
-        builder: (context, slotsSnapshot) {
-          final slots = slotsSnapshot.data ?? const [];
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                key: const Key('claimMySignupButton'),
+                icon: const Icon(Icons.link),
+                label: Text(l10n.signupClaimMySignupButton),
+                onPressed: () => _claimMine(l10n),
+              ),
+            ),
+          ),
+          Expanded(
+            child: StreamBuilder<List<SignupSlot>>(
+              stream: _slotsStream,
+              builder: (context, slotsSnapshot) {
+                final slots = slotsSnapshot.data ?? const [];
 
-          return StreamBuilder<List<SignupEntry>>(
-            stream: _entriesStream,
-            builder: (context, entriesSnapshot) {
-              if (entriesSnapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+                return StreamBuilder<List<SignupEntry>>(
+                  stream: _entriesStream,
+                  builder: (context, entriesSnapshot) {
+                    if (entriesSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-              final entries = entriesSnapshot.data ?? const [];
-              final now = DateTime.now();
-              final upcoming = <SignupEntry>[];
-              final past = <SignupEntry>[];
-              for (final entry in entries) {
-                final slot = slots
-                    .where((s) => s.id == entry.slotId)
-                    .firstOrNull;
-                if (slot?.isPast(now) ?? false) {
-                  past.add(entry);
-                } else {
-                  upcoming.add(entry);
-                }
-              }
+                    final entries = entriesSnapshot.data ?? const [];
+                    final now = DateTime.now();
+                    final upcoming = <SignupEntry>[];
+                    final past = <SignupEntry>[];
+                    for (final entry in entries) {
+                      final slot = slots
+                          .where((s) => s.id == entry.slotId)
+                          .firstOrNull;
+                      if (slot?.isPast(now) ?? false) {
+                        past.add(entry);
+                      } else {
+                        upcoming.add(entry);
+                      }
+                    }
 
-              return TabBarView(
-                physics: const NeverScrollableScrollPhysics(),
-                controller: _tabController,
-                children: [
-                  MySignupsSection(
-                    entries: upcoming,
-                    slots: slots,
-                    onCancelEntry: (entry) => _confirmCancelEntry(entry, l10n),
-                    onEditEntry: (entry) => _editEntry(entry, l10n),
-                    emptyMessage: l10n.signupNoMySignups,
-                  ),
-                  MySignupsSection(
-                    entries: past,
-                    slots: slots,
-                    emptyMessage: l10n.signupNoMySignups,
-                  ),
-                ],
-              );
-            },
-          );
-        },
+                    return TabBarView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      controller: _tabController,
+                      children: [
+                        MySignupsSection(
+                          entries: upcoming,
+                          slots: slots,
+                          onCancelEntry: (entry) =>
+                              _confirmCancelEntry(entry, l10n),
+                          onEditEntry: (entry) => _editEntry(entry, l10n),
+                          emptyMessage: l10n.signupNoMySignups,
+                        ),
+                        MySignupsSection(
+                          entries: past,
+                          slots: slots,
+                          emptyMessage: l10n.signupNoMySignups,
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
