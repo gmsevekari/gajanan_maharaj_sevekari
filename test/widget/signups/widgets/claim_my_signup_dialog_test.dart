@@ -412,6 +412,32 @@ void main() {
       expect(dialogResult, isTrue);
     });
 
+    testWidgets('cannot be dismissed while claiming, but can afterwards', (
+      tester,
+    ) async {
+      final done = Completer<ClaimEntriesResult>();
+      stubClaim(() => done.future);
+      await open(tester);
+      await enterPhone(tester, '4255551234');
+      await tester.tap(find.text('Submit'));
+      await tester.pump();
+
+      // Tapping outside the dialog and the back button do nothing.
+      await tester.tapAt(const Offset(5, 5));
+      await tester.pump();
+      await tester.binding.handlePopRoute();
+      await tester.pump();
+      expect(find.text('Claim My Sign Up'), findsOneWidget);
+
+      done.complete(const ClaimEntriesResult(ClaimEntriesStatus.notFound));
+      await tester.pumpAndSettle();
+      expect(find.text('Claim My Sign Up'), findsOneWidget);
+
+      await tester.tapAt(const Offset(5, 5));
+      await tester.pumpAndSettle();
+      expect(find.text('Claim My Sign Up'), findsNothing);
+    });
+
     testWidgets('Cancel closes without claiming', (tester) async {
       await open(tester);
 

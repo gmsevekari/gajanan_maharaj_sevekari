@@ -392,6 +392,15 @@ void main() {
         expect(find.text('Release Device Link'), findsNothing);
       });
 
+      testWidgets('does not offer it for an entry with an empty device', (
+        tester,
+      ) async {
+        final (blank, _) = await seed(deviceId: '');
+        await pumpScreen(tester, signupId: blank.id);
+        await openEdit(tester);
+        expect(find.text('Release Device Link'), findsNothing);
+      });
+
       testWidgets('clears the device, keeps the entry, and says so', (
         tester,
       ) async {

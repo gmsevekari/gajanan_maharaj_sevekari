@@ -731,7 +731,7 @@ void main() {
         expect(find.text('Edit Entry'), findsNothing);
       });
 
-      testWidgets('sits with Remove without crowding the buttons at 360px', (
+      testWidgets('fits alongside Remove at 360px and large text', (
         tester,
       ) async {
         tester.view.physicalSize = const Size(360, 640);

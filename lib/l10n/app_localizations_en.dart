@@ -5255,7 +5255,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupReleaseDeviceConfirmMessage =>
-      'ही entry यापुढे devotee च्या device ची राहणार नाही. ते त्यांच्या phone number ने ती पुन्हा claim करू शकतात.';
+      'ही entry यापुढे भक्ताच्या device ची राहणार नाही. ते त्यांच्या phone number ने ती पुन्हा claim करू शकतात.';
 
   @override
   String get signupReleaseDeviceSuccess => 'Device link काढली';

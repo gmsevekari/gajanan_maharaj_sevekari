@@ -98,6 +98,8 @@ class _ClaimMySignupDialogState extends State<ClaimMySignupDialog> {
         ClaimEntriesStatus.invalidJoinCode => l10n.invalidJoinCode,
         ClaimEntriesStatus.success => null,
       };
+      // Any failure, including a response the app doesn't understand (a
+      // StateError), shows the same plain message.
     } catch (exception) {
       debugPrint('ClaimMySignupDialog claim failed: $exception');
       if (!mounted) return;
@@ -129,76 +131,81 @@ class _ClaimMySignupDialogState extends State<ClaimMySignupDialog> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return AlertDialog(
-      title: Text(l10n.signupClaimMySignupButton),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                l10n.signupClaimMySignupHint,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.appColors.secondaryText,
-                ),
-              ),
-              const SizedBox(height: 12),
-              PhoneNumberField(
-                codeKey: const Key('claimMyCountryCodeField'),
-                numberKey: const Key('claimMyPhoneField'),
-                codeController: _countryCodeController,
-                numberController: _phoneController,
-                label: l10n.phoneNumberHint,
-                requiredMessage: l10n.phoneRequired,
-                invalidMessage: l10n.invalidPhoneError,
-              ),
-              if (widget.requiresJoinCode) ...[
-                const SizedBox(height: 8),
-                TextFormField(
-                  key: const Key('claimMyJoinCodeField'),
-                  controller: _joinCodeController,
-                  textCapitalization: TextCapitalization.characters,
-                  decoration: _decoration(
-                    l10n.joinCodeLabel,
-                    hint: l10n.joinCodeHint,
-                    prefixIcon: const Icon(Icons.vpn_key_outlined),
+    // Can't be dismissed (back button or tapping outside) while a claim is in
+    // flight, or its outcome would be lost.
+    return PopScope(
+      canPop: !_isLoading,
+      child: AlertDialog(
+        title: Text(l10n.signupClaimMySignupButton),
+        content: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l10n.signupClaimMySignupHint,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.appColors.secondaryText,
                   ),
-                  validator: (value) => value == null || value.trim().isEmpty
-                      ? l10n.joinCodeHint
-                      : null,
                 ),
-              ],
-              if (_errorText != null) ...[
                 const SizedBox(height: 12),
-                Semantics(
-                  liveRegion: true,
-                  child: Text(
-                    _errorText!,
-                    style: TextStyle(color: theme.appColors.error),
+                PhoneNumberField(
+                  codeKey: const Key('claimMyCountryCodeField'),
+                  numberKey: const Key('claimMyPhoneField'),
+                  codeController: _countryCodeController,
+                  numberController: _phoneController,
+                  label: l10n.phoneNumberHint,
+                  requiredMessage: l10n.phoneRequired,
+                  invalidMessage: l10n.invalidPhoneError,
+                ),
+                if (widget.requiresJoinCode) ...[
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    key: const Key('claimMyJoinCodeField'),
+                    controller: _joinCodeController,
+                    textCapitalization: TextCapitalization.characters,
+                    decoration: _decoration(
+                      l10n.joinCodeLabel,
+                      hint: l10n.joinCodeHint,
+                      prefixIcon: const Icon(Icons.vpn_key_outlined),
+                    ),
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? l10n.joinCodeHint
+                        : null,
                   ),
-                ),
+                ],
+                if (_errorText != null) ...[
+                  const SizedBox(height: 12),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      _errorText!,
+                      style: TextStyle(color: theme.appColors.error),
+                    ),
+                  ),
+                ],
+                if (_isLoading)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 12),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
               ],
-              if (_isLoading)
-                const Padding(
-                  padding: EdgeInsets.only(top: 12),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-            ],
+            ),
           ),
         ),
+        actions: [
+          TextButton(
+            onPressed: _isLoading ? null : () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: _isLoading ? null : _handleSubmit,
+            child: Text(l10n.submitLabel),
+          ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: _isLoading ? null : () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-        ElevatedButton(
-          onPressed: _isLoading ? null : _handleSubmit,
-          child: Text(l10n.submitLabel),
-        ),
-      ],
     );
   }
 }

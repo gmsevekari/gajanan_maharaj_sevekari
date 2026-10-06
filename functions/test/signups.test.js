@@ -126,6 +126,14 @@ describe("Sign-up Cloud Functions", () => {
       expect(result).to.deep.equal({status: "ALREADY_CLAIMED"});
     });
 
+    it("treats an empty deviceId like no device", () => {
+      const result = plan({entries: [entry("e1", "+14255551234", "")]});
+
+      expect(result).to.deep.equal({
+        status: "SUCCESS", count: 1, entryIds: ["e1"],
+      });
+    });
+
     it("succeeds without rewriting entries already on this device", () => {
       const result = plan({
         entries: [
@@ -169,6 +177,15 @@ describe("Sign-up Cloud Functions", () => {
 
             expect(result.status).to.equal("INVALID_JOIN_CODE");
           });
+
+      it("never accepts an empty code, even if the stored one is empty", () => {
+        const emptyCode = {requiresJoinCode: true, joinCode: ""};
+
+        for (const joinCode of ["", undefined, null]) {
+          expect(plan({signup: emptyCode, entries, joinCode}).status)
+              .to.equal("INVALID_JOIN_CODE");
+        }
+      });
 
       it("lets the claim through when right", () => {
         const result = plan({signup: needsCode, entries, joinCode: "ABC123"});
@@ -224,7 +241,7 @@ describe("Sign-up Cloud Functions", () => {
       };
       sinon.stub(admin, "firestore").get(() => {
         const f = () => firestoreMock;
-        f.Timestamp = {now: () => "NOW"};
+        f.FieldValue = {serverTimestamp: () => "SERVER_TIME"};
         return f;
       });
     });
@@ -264,7 +281,7 @@ describe("Sign-up Cloud Functions", () => {
       expect(result).to.deep.equal({status: "SUCCESS", count: 2});
       expect(txMock.update.callCount).to.equal(2);
       expect(txMock.update.getCall(0).args[1])
-          .to.deep.equal({deviceId: "device_a", claimedAt: "NOW"});
+          .to.deep.equal({deviceId: "device_a", claimedAt: "SERVER_TIME"});
       expect(txMock.update.getCall(0).args[0].id).to.equal("e1");
       expect(txMock.update.getCall(1).args[0].id).to.equal("e2");
     });

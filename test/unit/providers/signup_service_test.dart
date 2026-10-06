@@ -976,6 +976,71 @@ void main() {
       expect(fetched.phone, '1234567890');
     });
 
+    test(
+      'does not undo a claim made while the admin had the entry open',
+      () async {
+        final signupId = await service.createSignup(buildSignup());
+        final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
+        final added = await service.adminAddEntry(
+          signupId: signupId,
+          slotId: slotId,
+          name: 'Jane Doe',
+          phone: '+14255551234',
+        );
+        final stale = (await service.getAllEntries(signupId).first).single;
+        // The devotee claims it (the Cloud Function sets deviceId) ...
+        await fakeFirestore
+            .doc('signups/$signupId/entries/${added['entryId']}')
+            .update({'deviceId': 'device_a'});
+
+        // ... and the admin then saves the form they opened before that.
+        await service.updateEntry(signupId, stale.copyWith(name: 'Jane Smith'));
+
+        final saved = (await service.getAllEntries(signupId).first).single;
+        expect(saved.name, 'Jane Smith');
+        expect(saved.deviceId, 'device_a');
+      },
+    );
+
+    test('does not restore a link released while the admin had the entry '
+        'open', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
+      final claimed = await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane Doe',
+        deviceId: 'device_a',
+      );
+      final stale = (await service.getAllEntries(signupId).first).single;
+      await service.releaseEntryDevice(signupId, claimed['entryId'] as String);
+
+      await service.updateEntry(signupId, stale.copyWith(name: 'Jane Smith'));
+
+      final saved = (await service.getAllEntries(signupId).first).single;
+      expect(saved.name, 'Jane Smith');
+      expect(saved.deviceId, isNull);
+    });
+
+    test('never rewrites the join time', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
+      await service.adminAddEntry(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane Doe',
+      );
+      final original = (await service.getAllEntries(signupId).first).single;
+
+      await service.updateEntry(
+        signupId,
+        original.copyWith(joinedAt: DateTime.utc(2000)),
+      );
+
+      final saved = (await service.getAllEntries(signupId).first).single;
+      expect(saved.joinedAt, original.joinedAt);
+    });
+
     test('throws ArgumentError when entry.id is null', () async {
       final entry = SignupEntry(
         slotId: 'slot_1',

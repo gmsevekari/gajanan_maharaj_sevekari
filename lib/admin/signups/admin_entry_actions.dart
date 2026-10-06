@@ -87,7 +87,7 @@ class AdminEntryActions {
           return null;
         },
         onDelete: () => _remove(context, signup, entry, l10n),
-        onReleaseDevice: entry.deviceId == null
+        onReleaseDevice: (entry.deviceId ?? '').isEmpty
             ? null
             : () => _releaseDevice(context, signup, entry, l10n),
       ),

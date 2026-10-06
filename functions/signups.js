@@ -8,6 +8,10 @@ const MAX_ID_LENGTH = 128;
 const MAX_DEVICE_ID_LENGTH = 200;
 const MAX_JOIN_CODE_LENGTH = 100;
 
+// Every claim reads one sign-up's whole entries collection inside a
+// transaction, so cap how many run at once.
+const MAX_INSTANCES = 10;
+
 /**
  * A phone number reduced to an optional leading "+" and its digits, so
  * "+1 (425) 555-1234" and "+14255551234" compare equal. Country code and
@@ -31,7 +35,8 @@ function normalizePhone(value) {
  */
 function joinCodeAccepted(signup, joinCode) {
   if (!signup.requiresJoinCode) return true;
-  return typeof joinCode === "string" && joinCode === signup.joinCode;
+  return typeof joinCode === "string" && joinCode !== "" &&
+      joinCode === signup.joinCode;
 }
 
 /**
@@ -106,10 +111,21 @@ function validateClaimRequest(data) {
  * belongs to another device, nothing changes (ALREADY_CLAIMED) - an admin can
  * release an entry first. Runs in a transaction so two devices claiming the
  * same number at once can't both win.
+ *
+ * Note: sign-ups and their entries (join code, phones, device ids) are
+ * publicly readable by the Firestore rules, so neither the join code nor the
+ * phone number is a secret; they are friction, as everywhere else in the app.
  */
-exports.claimSignupEntries = onCall(async (request) => {
-  validateClaimRequest(request.data);
-  const {signupId, phone, deviceId, joinCode} = request.data;
+exports.claimSignupEntries = onCall({maxInstances: MAX_INSTANCES},
+    (request) => claimSignupEntries(request.data));
+
+/**
+ * @param {Object} data The callable's request data.
+ * @return {Promise<Object>} {status, count?} - see planClaim.
+ */
+async function claimSignupEntries(data) {
+  validateClaimRequest(data);
+  const {signupId, phone, deviceId, joinCode} = data;
 
   try {
     const db = admin.firestore();
@@ -130,7 +146,7 @@ exports.claimSignupEntries = onCall(async (request) => {
       const plan = planClaim({signup, entries, phone, deviceId, joinCode});
       if (plan.status !== "SUCCESS") return {status: plan.status};
 
-      const claimedAt = admin.firestore.Timestamp.now();
+      const claimedAt = admin.firestore.FieldValue.serverTimestamp();
       for (const entry of entries) {
         if (plan.entryIds.includes(entry.id)) {
           transaction.update(entry.ref, {deviceId, claimedAt});
@@ -141,10 +157,10 @@ exports.claimSignupEntries = onCall(async (request) => {
     logger.info(`Claim on ${signupId}: ${result.status}`);
     return result;
   } catch (error) {
-    logger.error(`Error in claimSignupEntries: ${error}`);
+    logger.error("Error in claimSignupEntries", error);
     throw new HttpsError("internal", "Could not claim entries.");
   }
-});
+}
 
 exports.normalizePhone = normalizePhone;
 exports.planClaim = planClaim;

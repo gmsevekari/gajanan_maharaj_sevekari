@@ -326,12 +326,18 @@ class SignupService {
   /// an entry to a different slot would need the same capacity check and
   /// claimedCount transaction as [claimSlot], which this method doesn't
   /// perform, so the entry's original slot is always preserved regardless
-  /// of what [entry.slotId] holds. Throws if [entry.id] is null.
+  /// of what [entry.slotId] holds. `deviceId` is left alone too, because a
+  /// devotee's claim (or an admin's release) may have changed it since the
+  /// admin opened the entry, and `joinedAt` is never rewritten. Throws if
+  /// [entry.id] is null.
   Future<void> updateEntry(String signupId, SignupEntry entry) async {
     if (entry.id == null) {
       throw ArgumentError.value(entry.id, 'entry.id', 'must not be null');
     }
-    final fields = entry.toMap()..remove('slotId');
+    final fields = entry.toMap()
+      ..remove('slotId')
+      ..remove('deviceId')
+      ..remove('joinedAt');
     await _entriesRef(signupId).doc(entry.id).update(fields);
   }
 

@@ -98,6 +98,13 @@ beforeEach(async () => {
       name: 'Legacy Devotee',
       joinedAt: Timestamp.now(),
     });
+    // An empty deviceId is not a device either.
+    await setDoc(doc(db, 'signups/signup1/entries/emptyDevice'), {
+      slotId: 'slot1',
+      name: 'Empty Device Devotee',
+      deviceId: '',
+      joinedAt: Timestamp.now(),
+    });
     await setDoc(doc(db, 'signups/signup1/entries/noDevice'), {
       slotId: 'slot1',
       name: 'Admin-added Devotee',
@@ -426,6 +433,14 @@ test('non-admin cannot edit an entry that has no deviceId', async () => {
 test('non-admin cannot edit an entry that has no deviceId key at all', async () => {
   await assertFails(
     updateDoc(doc(unauthedDb(), 'signups/signup1/entries/noDeviceKey'), {
+      name: 'Edited Name',
+    }),
+  );
+});
+
+test('non-admin cannot edit an entry whose deviceId is empty', async () => {
+  await assertFails(
+    updateDoc(doc(unauthedDb(), 'signups/signup1/entries/emptyDevice'), {
       name: 'Edited Name',
     }),
   );
