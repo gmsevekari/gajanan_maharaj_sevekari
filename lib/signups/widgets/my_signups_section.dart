@@ -3,12 +3,15 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/slot_when_view.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
-/// A list of the devotee's own claimed entries, each showing which [slots]
-/// it belongs to - an entry's own `slotId` would otherwise be the only
-/// hint - and the phone and email it was made with, with Edit and Cancel
-/// actions. Used as each tab's body on [MySignupsScreen]; the Past tab passes
+/// A list of the devotee's own claimed entries. Each card shows the name, the
+/// title of the slot it belongs to (an entry's own `slotId` would otherwise be
+/// the only hint) and that slot's date, with the time when the slot isn't a
+/// full day - not the phone or email, which are for the Edit dialog. Cards
+/// have Edit and Cancel actions. Used as each tab's body on
+/// [MySignupsScreen]; the Past tab passes
 /// no [onEditEntry] or [onCancelEntry], since changing or cancelling a signup
 /// whose slot has already happened doesn't apply, and the buttons are left
 /// out.
@@ -34,8 +37,10 @@ class MySignupsSection extends StatelessWidget {
     final theme = Theme.of(context);
     final isMarathi = contentIsMarathi(context);
 
-    String slotLabelFor(String slotId) {
-      final slot = slots.where((s) => s.id == slotId).firstOrNull;
+    SignupSlot? slotFor(String slotId) =>
+        slots.where((s) => s.id == slotId).firstOrNull;
+
+    String slotLabelFor(SignupSlot? slot) {
       if (slot == null) return '';
       return isMarathi
           ? (slot.labelMr.isNotEmpty ? slot.labelMr : slot.labelEn)
@@ -69,14 +74,11 @@ class MySignupsSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(entry.name, style: theme.textTheme.titleMedium),
-                  Text(slotLabelFor(entry.slotId)),
-                  for (final detail in _details(entry))
-                    Text(
-                      detail,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.appColors.secondaryText,
-                      ),
-                    ),
+                  Text(slotLabelFor(slotFor(entry.slotId))),
+                  if (slotFor(entry.slotId)?.hasSchedule ?? false) ...[
+                    const SizedBox(height: 2),
+                    SlotWhenView(slot: slotFor(entry.slotId)!),
+                  ],
                   // Under the details, not beside the name, so a long name
                   // keeps the full card width.
                   if (onEditEntry != null || onCancelEntry != null)
@@ -105,10 +107,4 @@ class MySignupsSection extends StatelessWidget {
       ],
     );
   }
-
-  /// The entry's phone and email, whichever it has.
-  static List<String> _details(SignupEntry entry) => [
-    for (final value in [entry.phone, entry.email])
-      if (value != null && value.trim().isNotEmpty) value.trim(),
-  ];
 }

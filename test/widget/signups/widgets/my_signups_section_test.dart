@@ -5,6 +5,10 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/my_signups_section.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/slot_when_view.dart';
+import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
+
+import '../../../helpers/slot_fixtures.dart';
 
 void main() {
   Widget wrap(Widget child, {Locale locale = const Locale('en')}) {
@@ -229,64 +233,139 @@ void main() {
     expect(find.text('Cancel'), findsOneWidget);
   });
 
-  testWidgets('shows the entry\'s phone and email under the slot label', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
+  group('what each card shows', () {
+    SignupEntry entry({String? phone, String? email}) => SignupEntry(
+      id: 'e1',
+      slotId: 's1',
+      name: 'Jane',
+      phone: phone,
+      email: email,
+      joinedAt: DateTime.now(),
+    );
+
+    Future<void> show(
+      WidgetTester tester,
+      SignupEntry e,
+      List<SignupSlot> slots, {
+      Locale locale = const Locale('en'),
+    }) => tester.pumpWidget(
       wrap(
         MySignupsSection(
-          entries: [
-            SignupEntry(
-              id: 'e1',
-              slotId: 's1',
-              name: 'Jane',
-              phone: '+14255551234',
-              email: 'jane@example.com',
-              joinedAt: DateTime.now(),
-            ),
-          ],
-          slots: [buildSlot()],
+          entries: [e],
+          slots: slots,
           onCancelEntry: (_) {},
           onEditEntry: (_) {},
           emptyMessage: 'Nothing here yet',
         ),
+        locale: locale,
       ),
     );
 
-    expect(find.text('+14255551234'), findsOneWidget);
-    expect(find.text('jane@example.com'), findsOneWidget);
-  });
-
-  testWidgets('shows no phone or email line when the entry has none', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      wrap(
-        MySignupsSection(
-          entries: [
-            SignupEntry(
-              id: 'e1',
-              slotId: 's1',
-              name: 'Jane',
-              phone: '',
-              email: '  ',
-              joinedAt: DateTime.now(),
-            ),
-          ],
-          slots: [buildSlot()],
-          onCancelEntry: (_) {},
-          onEditEntry: (_) {},
-          emptyMessage: 'Nothing here yet',
+    testWidgets('shows the name, slot title and date for a full-day slot, '
+        'with no time', (tester) async {
+      await show(tester, entry(), [
+        scheduledSlot(
+          id: 's1',
+          labelEn: 'Morning Seva',
+          start: wallClock(2030, 7, 3),
+          end: wallClock(2030, 7, 3, 23, 59),
         ),
-      ),
-    );
+      ]);
 
-    // Name and slot label only.
-    expect(find.byType(Text), findsNWidgets(4)); // name, slot, Edit, Cancel
+      expect(find.text('Jane'), findsOneWidget);
+      expect(find.text('Morning Seva'), findsOneWidget);
+      expect(find.text('Wednesday, July 3'), findsOneWidget);
+      expect(find.textContaining(' PT'), findsNothing);
+      // name, title, date, Edit, Cancel
+      expect(find.byType(Text), findsNWidgets(5));
+    });
+
+    testWidgets('adds the time for a slot that is not a full day', (
+      tester,
+    ) async {
+      await show(tester, entry(), [
+        scheduledSlot(
+          id: 's1',
+          start: wallClock(2030, 7, 3, 18),
+          end: wallClock(2030, 7, 3, 19, 30),
+        ),
+      ]);
+
+      expect(find.text('Wednesday, July 3'), findsOneWidget);
+      expect(find.text('6:00 PM – 7:30 PM PT'), findsOneWidget);
+    });
+
+    testWidgets('shows a range for a slot that spans days', (tester) async {
+      await show(tester, entry(), [
+        scheduledSlot(
+          id: 's1',
+          start: wallClock(2030, 7, 1, 18),
+          end: wallClock(2030, 7, 3, 12),
+        ),
+      ]);
+
+      expect(find.text('Jul 1, 6:00 PM – Jul 3, 12:00 PM PT'), findsOneWidget);
+    });
+
+    testWidgets('shows the time in the slot\'s own zone', (tester) async {
+      await show(tester, entry(), [
+        scheduledSlot(
+          id: 's1',
+          timezone: EventTimezone.india,
+          start: wallClock(2030, 7, 3, 18, 0, EventTimezone.india),
+          end: wallClock(2030, 7, 3, 19, 30, EventTimezone.india),
+        ),
+      ]);
+
+      expect(find.text('6:00 PM – 7:30 PM IST'), findsOneWidget);
+    });
+
+    testWidgets('keeps the date in English under a Marathi locale', (
+      tester,
+    ) async {
+      await show(tester, entry(), [
+        scheduledSlot(
+          id: 's1',
+          start: wallClock(2030, 7, 3, 18),
+          end: wallClock(2030, 7, 3, 19, 30),
+        ),
+      ], locale: const Locale('mr'));
+
+      expect(find.text('Wednesday, July 3'), findsOneWidget);
+      expect(find.text('6:00 PM – 7:30 PM PT'), findsOneWidget);
+    });
+
+    testWidgets('shows no date for a slot with no schedule or a slot that is '
+        'gone', (tester) async {
+      await show(tester, entry(), [buildSlot()]);
+      expect(find.byType(SlotWhenView), findsNothing);
+
+      await show(tester, entry(), const []);
+      expect(find.byType(SlotWhenView), findsNothing);
+      expect(find.text('Jane'), findsOneWidget);
+    });
+
+    testWidgets('never shows the phone number or email', (tester) async {
+      await show(
+        tester,
+        entry(phone: '14255551234', email: 'jane@example.com'),
+        [
+          scheduledSlot(
+            id: 's1',
+            start: wallClock(2030, 7, 3),
+            end: wallClock(2030, 7, 3, 23, 59),
+          ),
+        ],
+      );
+
+      expect(find.textContaining('4255551234'), findsNothing);
+      expect(find.textContaining('jane@example.com'), findsNothing);
+      expect(find.textContaining('@'), findsNothing);
+    });
   });
 
   testWidgets('keeps both buttons on screen at 360px with large text and '
-      'long details', (tester) async {
+      'a long date range', (tester) async {
     tester.view.physicalSize = const Size(360, 640);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -301,13 +380,16 @@ void main() {
               id: 'e1',
               slotId: 's1',
               name: 'Jane Elizabeth Devotee-Kulkarni',
-              phone: '+14255551234',
-              email: 'jane.elizabeth.devotee.kulkarni@example.com',
               joinedAt: DateTime.now(),
             ),
           ],
           slots: [
-            buildSlot(labelEn: 'Week 1 - Cooking and serving the prasad'),
+            scheduledSlot(
+              id: 's1',
+              labelEn: 'Week 1 - Cooking and serving the prasad',
+              start: wallClock(2030, 12, 28, 18),
+              end: wallClock(2031, 1, 3, 12),
+            ),
           ],
           onCancelEntry: (_) {},
           onEditEntry: (_) {},

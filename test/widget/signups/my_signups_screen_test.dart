@@ -13,6 +13,7 @@ import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
 import 'package:gajanan_maharaj_sevekari/signups/my_signups_screen.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/slot_when_view.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:mocktail/mocktail.dart';
@@ -124,6 +125,39 @@ void main() {
     expect(find.text('Jane'), findsOneWidget);
     expect(find.text('Week 1'), findsOneWidget);
     expect(find.text('Cancel'), findsOneWidget);
+  });
+
+  testWidgets('shows the slot\'s date on the entry card, and no phone or '
+      'email', (tester) async {
+    final slotId = await addSlot(
+      date: DateTime.now().add(const Duration(days: 3)),
+    );
+    await service.claimSlot(
+      signupId: signupId,
+      slotId: slotId,
+      name: 'Jane',
+      phone: '14255551234',
+      email: 'jane@example.com',
+      deviceId: 'device_1',
+    );
+
+    await tester.pumpWidget(
+      wrap(
+        MySignupsScreen(
+          signupId: signupId,
+          deviceId: 'device_1',
+          firestore: firestore,
+          signupService: service,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Jane'), findsOneWidget);
+    expect(find.text('Week 1'), findsOneWidget);
+    expect(find.byType(SlotWhenView), findsOneWidget);
+    expect(find.textContaining('4255551234'), findsNothing);
+    expect(find.textContaining('jane@example.com'), findsNothing);
   });
 
   testWidgets('lists an entry for a past slot on the Past tab, without a '
@@ -966,7 +1000,8 @@ void main() {
 
       expect(find.text('Entry updated successfully'), findsOneWidget);
       expect(find.text('Jane Smith'), findsOneWidget);
-      expect(find.text('jane@example.com'), findsOneWidget);
+      // The card doesn't show contact details.
+      expect(find.text('jane@example.com'), findsNothing);
       final saved = (await service.getAllEntries(signupId).first).firstWhere(
         (e) => e.id == entryId,
       );
