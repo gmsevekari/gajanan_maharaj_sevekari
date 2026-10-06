@@ -364,6 +364,94 @@ void main() {
     });
   });
 
+  group('card layout', () {
+    Future<void> showCard(WidgetTester tester, {bool withActions = true}) =>
+        tester.pumpWidget(
+          wrap(
+            MySignupsSection(
+              entries: [
+                SignupEntry(
+                  id: 'e1',
+                  slotId: 's1',
+                  name: 'Abhishek',
+                  joinedAt: DateTime.now(),
+                ),
+              ],
+              slots: [
+                scheduledSlot(
+                  id: 's1',
+                  labelEn: 'Day 4: Royal Blue',
+                  start: wallClock(2030, 7, 3),
+                  end: wallClock(2030, 7, 3, 23, 59),
+                ),
+              ],
+              onCancelEntry: withActions ? (_) {} : null,
+              onEditEntry: withActions ? (_) {} : null,
+              emptyMessage: 'Nothing here yet',
+            ),
+          ),
+        );
+
+    testWidgets('lines up the name, title and date on the same left edge and '
+        'spaces them evenly', (tester) async {
+      await showCard(tester);
+
+      final name = tester.getRect(find.text('Abhishek'));
+      final title = tester.getRect(find.text('Day 4: Royal Blue'));
+      final date = tester.getRect(find.byIcon(Icons.calendar_today));
+      final dateText = tester.getRect(find.text('Wednesday, July 3'));
+
+      expect(title.left, name.left);
+      expect(date.left, name.left);
+      // The same gap between name and title as between title and date.
+      expect(
+        title.top - name.bottom,
+        closeTo(dateText.top - title.bottom, 0.5),
+      );
+    });
+
+    testWidgets('gives the card equal space left and right of its text', (
+      tester,
+    ) async {
+      await showCard(tester);
+
+      final card = tester.getRect(find.byType(Card));
+      final name = tester.getRect(find.text('Abhishek'));
+      final cancel = tester.getRect(find.text('Cancel'));
+
+      expect(name.left - card.left, 16);
+      expect(card.right - cancel.right, closeTo(16, 0.5));
+    });
+
+    testWidgets('keeps the same space above the name as below the last '
+        'content, with or without buttons', (tester) async {
+      await showCard(tester, withActions: false);
+
+      // The card's own surface, without the 8px margin the Card adds around it.
+      final card = tester.getRect(
+        find
+            .descendant(of: find.byType(Card), matching: find.byType(Material))
+            .first,
+      );
+      final name = tester.getRect(find.text('Abhishek'));
+      final date = tester.getRect(find.byType(SlotWhenView));
+
+      expect(name.top - card.top, 16);
+      expect(card.bottom - date.bottom, closeTo(16, 0.5));
+    });
+
+    testWidgets('puts the buttons a clear step below the details', (
+      tester,
+    ) async {
+      await showCard(tester);
+
+      final date = tester.getRect(find.byType(SlotWhenView));
+      final edit = tester.getRect(find.byType(TextButton).first);
+
+      expect(edit.top - date.bottom, greaterThanOrEqualTo(4));
+    });
+  });
+
   testWidgets('keeps both buttons on screen at 360px with large text and '
       'a long date range', (tester) async {
     tester.view.physicalSize = const Size(360, 640);

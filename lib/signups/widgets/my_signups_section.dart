@@ -37,6 +37,8 @@ class MySignupsSection extends StatelessWidget {
     final theme = Theme.of(context);
     final isMarathi = contentIsMarathi(context);
 
+    final hasActions = onEditEntry != null || onCancelEntry != null;
+
     SignupSlot? slotFor(String slotId) =>
         slots.where((s) => s.id == slotId).firstOrNull;
 
@@ -69,19 +71,29 @@ class MySignupsSection extends StatelessWidget {
           Card(
             margin: const EdgeInsets.only(bottom: 8),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
+              // 16 all round. With buttons the right and bottom edges are 4:
+              // a text button adds 12 beside its label and its own height
+              // around it, which brings the label back to 16 from the edge.
+              padding: hasActions
+                  ? const EdgeInsets.fromLTRB(16, 16, 4, 4)
+                  : const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(entry.name, style: theme.textTheme.titleMedium),
-                  Text(slotLabelFor(slotFor(entry.slotId))),
+                  const SizedBox(height: 4),
+                  Text(
+                    slotLabelFor(slotFor(entry.slotId)),
+                    style: theme.textTheme.bodyMedium,
+                  ),
                   if (slotFor(entry.slotId)?.hasSchedule ?? false) ...[
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     SlotWhenView(slot: slotFor(entry.slotId)!),
                   ],
                   // Under the details, not beside the name, so a long name
                   // keeps the full card width.
-                  if (onEditEntry != null || onCancelEntry != null)
+                  if (hasActions) ...[
+                    const SizedBox(height: 4),
                     Align(
                       alignment: Alignment.centerRight,
                       child: Wrap(
@@ -100,6 +112,7 @@ class MySignupsSection extends StatelessWidget {
                         ],
                       ),
                     ),
+                  ],
                 ],
               ),
             ),
