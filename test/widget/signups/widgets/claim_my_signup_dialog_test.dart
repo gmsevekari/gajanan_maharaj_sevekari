@@ -215,7 +215,7 @@ void main() {
       verify(
         () => service.claimMyEntries(
           signupId: 'signup_1',
-          phone: '+1425 555 1234',
+          phone: '14255551234',
           deviceId: 'device_a',
           joinCode: null,
         ),
@@ -243,7 +243,7 @@ void main() {
       verify(
         () => service.claimMyEntries(
           signupId: 'signup_1',
-          phone: '+919876543210',
+          phone: '919876543210',
           deviceId: 'device_a',
           joinCode: 'AB12CD',
         ),

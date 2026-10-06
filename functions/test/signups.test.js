@@ -22,16 +22,17 @@ describe("Sign-up Cloud Functions", () => {
   });
 
   describe("normalizePhone", () => {
-    it("keeps a leading + and the digits, dropping formatting", () => {
+    it("keeps only the digits, so a plus and formatting don't matter", () => {
       expect(signups.normalizePhone("+1 (425) 555-1234"))
-          .to.equal("+14255551234");
+          .to.equal("14255551234");
       expect(signups.normalizePhone("  +91-98765 43210 "))
-          .to.equal("+919876543210");
+          .to.equal("919876543210");
+      expect(signups.normalizePhone("14255551234")).to.equal("14255551234");
     });
 
-    it("keeps no + when there is none, and ignores a + elsewhere", () => {
-      expect(signups.normalizePhone("425 555 1234")).to.equal("4255551234");
-      expect(signups.normalizePhone("1+4255551234")).to.equal("14255551234");
+    it("gives the same result with and without the plus", () => {
+      expect(signups.normalizePhone("+14255551234"))
+          .to.equal(signups.normalizePhone("14255551234"));
     });
 
     it("returns an empty string for anything that is not text", () => {
@@ -39,6 +40,7 @@ describe("Sign-up Cloud Functions", () => {
       expect(signups.normalizePhone(null)).to.equal("");
       expect(signups.normalizePhone(14255551234)).to.equal("");
       expect(signups.normalizePhone("")).to.equal("");
+      expect(signups.normalizePhone("+")).to.equal("");
     });
   });
 
@@ -79,6 +81,29 @@ describe("Sign-up Cloud Functions", () => {
             expect(result.status, String(phone)).to.equal("NOT_FOUND");
           }
         });
+
+    it("matches entries stored with or without a plus, whatever the " +
+        "typed form", () => {
+      const result = plan({
+        phone: "14255551234",
+        entries: [
+          entry("e1", "+14255551234", null),
+          entry("e2", "14255551234", null),
+          entry("e3", "1 (425) 555-1234", null),
+        ],
+      });
+
+      expect(result.entryIds).to.deep.equal(["e1", "e2", "e3"]);
+    });
+
+    it("matches a typed number that still has a plus", () => {
+      const result = plan({
+        phone: "+14255551234",
+        entries: [entry("e1", "14255551234", null)],
+      });
+
+      expect(result.status).to.equal("SUCCESS");
+    });
 
     it("claims every unclaimed entry with that phone and no others", () => {
       const result = plan({

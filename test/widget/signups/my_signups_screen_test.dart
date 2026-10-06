@@ -671,7 +671,7 @@ void main() {
       verify(
         () => mock.claimMyEntries(
           signupId: signupId,
-          phone: '+14255551234',
+          phone: '14255551234',
           deviceId: 'device_1',
           joinCode: null,
         ),
@@ -972,7 +972,8 @@ void main() {
       );
       expect(saved.name, 'Jane Smith');
       expect(saved.note, 'Sweets');
-      expect(saved.phone, '+14255551234');
+      // Saved without the plus.
+      expect(saved.phone, '14255551234');
       expect(saved.deviceId, 'device_1');
     });
 

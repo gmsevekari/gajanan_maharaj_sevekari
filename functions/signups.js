@@ -13,17 +13,16 @@ const MAX_JOIN_CODE_LENGTH = 100;
 const MAX_INSTANCES = 10;
 
 /**
- * A phone number reduced to an optional leading "+" and its digits, so
- * "+1 (425) 555-1234" and "+14255551234" compare equal. Country code and
- * number must then match exactly: "4255551234" is a different number.
+ * A phone number reduced to its digits (country code then number, no plus),
+ * so "+1 (425) 555-1234", "+14255551234" and "14255551234" all compare equal.
+ * Country code and number must then match exactly: "4255551234" is a
+ * different number.
  * @param {*} value The stored or typed phone number.
- * @return {string} The normalized number, or "" if value is not text.
+ * @return {string} The digits, or "" if value is not text.
  */
 function normalizePhone(value) {
   if (typeof value !== "string") return "";
-  const trimmed = value.trim();
-  const digits = trimmed.replace(/\D/g, "");
-  return (trimmed.startsWith("+") ? "+" : "") + digits;
+  return value.replace(/\D/g, "");
 }
 
 /**

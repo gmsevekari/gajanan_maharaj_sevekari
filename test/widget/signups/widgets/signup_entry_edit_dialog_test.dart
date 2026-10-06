@@ -133,7 +133,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(savedName, 'Devotee Name');
-      expect(savedPhone, '+11234567890');
+      expect(savedPhone, '11234567890');
       expect(savedEmail, 'test@example.com');
       expect(savedPledge, 101.0);
       expect(savedNote, 'Special seva');
@@ -191,7 +191,7 @@ void main() {
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
 
-        expect(savedPhone, '+919876543210');
+        expect(savedPhone, '919876543210');
       });
 
       testWidgets('saves no phone when the number is left blank', (
@@ -264,6 +264,31 @@ void main() {
         expect(numberText(tester), '1234567890');
       });
 
+      testWidgets('splits a number stored as digits only into its code and '
+          'number, and saves it back the same way', (tester) async {
+        final entry = SignupEntry(
+          id: 'e',
+          slotId: 's',
+          name: 'Existing',
+          phone: '14255551234',
+          joinedAt: DateTime.now(),
+        );
+        String? savedPhone;
+        await open(
+          tester,
+          entry: entry,
+          defaultCountryCode: '+91',
+          onSave: (_, phone, _, _, _) => savedPhone = phone,
+        );
+
+        expect(codeText(tester), '+1');
+        expect(numberText(tester), '4255551234');
+
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+        expect(savedPhone, '14255551234');
+      });
+
       testWidgets('keeps a number saved without a code under the default '
           'code when editing', (tester) async {
         final entry = SignupEntry(
@@ -286,7 +311,7 @@ void main() {
 
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
-        expect(savedPhone, '+919876543210');
+        expect(savedPhone, '919876543210');
       });
     });
 
@@ -430,7 +455,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(name, 'Jane Smith');
-        expect(phone, '+14255559999');
+        expect(phone, '14255559999');
         expect(email, isNull);
         expect(pledge, isNull);
         expect(note, isNull);

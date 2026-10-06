@@ -27,9 +27,13 @@ bool isValidCountryCode(String? code) =>
 /// entry can be edited in a code field plus a number field.
 ///
 /// A number that starts with a [knownCountryCodes] entry is split there
-/// (longest code first). Anything else - a number saved before country codes
-/// existed, or one with a code the app doesn't know - keeps its whole text as
-/// the number under [defaultCode], so nothing the admin typed is lost.
+/// (longest code first). A number stored as digits only - the current format,
+/// see [joinPhone] - is split on a known code's digits when more than ten
+/// digits are stored, since a ten-digit number saved before country codes
+/// existed (`4255551234`) can start with the same digits as a code (`6505551234`
+/// starts with Singapore's 65). Anything else - such a number, or one with a
+/// code the app doesn't know - keeps its whole text as the number under
+/// [defaultCode], so nothing the admin typed is lost.
 ({String code, String number}) splitPhone(String? phone, String defaultCode) {
   final value = phone?.trim() ?? '';
   if (value.isEmpty) return (code: defaultCode, number: '');
@@ -40,15 +44,29 @@ bool isValidCountryCode(String? code) =>
       return (code: code, number: value.substring(code.length).trim());
     }
   }
+  if (RegExp(r'^\d+$').hasMatch(value) && value.length > _legacyNumberLength) {
+    for (final code in codes) {
+      final digits = code.substring(1);
+      if (value.startsWith(digits) &&
+          value.length - digits.length >= minPhoneDigits(code)) {
+        return (code: code, number: value.substring(digits.length));
+      }
+    }
+  }
   return (code: defaultCode, number: value);
 }
 
-/// Joins a code and number for storage, or `null` when the number is blank
-/// (a lone prefilled code isn't a phone number).
+/// Numbers saved before country codes were added are ten digits.
+const int _legacyNumberLength = 10;
+
+/// Joins a country code and number for storage as digits only - the code's
+/// digits then the number's, with no plus, spaces, dashes or brackets (so
+/// `+1` and `(425) 555-1234` store as `14255551234`) - or `null` when the
+/// number has no digits (a lone prefilled code isn't a phone number).
 String? joinPhone(String code, String number) {
-  final digits = number.trim();
-  if (digits.isEmpty) return null;
-  return '${code.trim()}$digits';
+  final numberDigits = number.replaceAll(RegExp(r'\D'), '');
+  if (numberDigits.isEmpty) return null;
+  return '${code.replaceAll(RegExp(r'\D'), '')}$numberDigits';
 }
 
 /// Whether two stored phone numbers are the same line.

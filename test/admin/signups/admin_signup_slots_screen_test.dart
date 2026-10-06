@@ -187,7 +187,7 @@ void main() {
 
       // The number is saved with the country code (the group's default).
       final entries = await signupRef.collection('entries').get();
-      expect(entries.docs.single.data()['phone'], '+15551234567');
+      expect(entries.docs.single.data()['phone'], '15551234567');
     });
 
     testWidgets('prefills the sign up group\'s default country code in the '

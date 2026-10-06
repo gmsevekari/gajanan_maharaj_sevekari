@@ -406,7 +406,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final entry = (await service.getAllEntries(openSignupId).first).single;
-      expect(entry.phone, '+911234567890');
+      expect(entry.phone, '911234567890');
     });
 
     testWidgets('saves the phone with the country code the devotee typed', (
@@ -429,7 +429,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final entry = (await service.getAllEntries(openSignupId).first).single;
-      expect(entry.phone, '+441234567890');
+      expect(entry.phone, '441234567890');
     });
 
     testWidgets('blocks a country code without a plus', (tester) async {
@@ -474,7 +474,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final entry = (await service.getAllEntries(openSignupId).first).single;
-      expect(entry.phone, '+6591234567');
+      expect(entry.phone, '6591234567');
     });
 
     testWidgets('rejects a 9-digit number for the default +1 code', (
@@ -527,7 +527,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final entry = (await service.getAllEntries(openSignupId).first).single;
-      expect(entry.phone, '+11234567890');
+      expect(entry.phone, '11234567890');
       expect(entry.email, 'jane@example.com');
       expect(entry.note, 'Bringing sweets');
     });

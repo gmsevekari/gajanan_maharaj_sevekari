@@ -35,6 +35,49 @@ void main() {
       expect(splitPhone('  ', '+44'), (code: '+44', number: ''));
     });
 
+    group('a number stored without a plus (country code + number digits)', () {
+      test('splits on a known code when the rest is a full number', () {
+        expect(splitPhone('14255551234', '+91'), (
+          code: '+1',
+          number: '4255551234',
+        ));
+        expect(splitPhone('919876543210', '+1'), (
+          code: '+91',
+          number: '9876543210',
+        ));
+        expect(splitPhone('971501234567', '+1'), (
+          code: '+971',
+          number: '501234567',
+        ));
+        expect(splitPhone('447911123456', '+1'), (
+          code: '+44',
+          number: '7911123456',
+        ));
+      });
+
+      test('keeps a 10-digit number saved before country codes whole, even '
+          'when it starts with a known code', () {
+        for (final legacy in ['4255551234', '6505551234', '9112345678']) {
+          expect(splitPhone(legacy, '+1'), (code: '+1', number: legacy));
+        }
+      });
+
+      test('keeps a number whole when too few digits follow the code', () {
+        // Starts with 91 but only nine digits remain: not an Indian number.
+        expect(splitPhone('91987654321', '+1'), (
+          code: '+1',
+          number: '91987654321',
+        ));
+      });
+
+      test('keeps a number that does not start with a known code whole', () {
+        expect(splitPhone('85212345678', '+1'), (
+          code: '+1',
+          number: '85212345678',
+        ));
+      });
+    });
+
     test('keeps an unknown +code number whole under the default code', () {
       expect(splitPhone('+8801234567890', '+1'), (
         code: '+1',
@@ -44,8 +87,28 @@ void main() {
   });
 
   group('joinPhone', () {
-    test('concatenates the trimmed code and number', () {
-      expect(joinPhone(' +91 ', ' 1234567890 '), '+911234567890');
+    test('concatenates the code and number as digits, with no plus', () {
+      expect(joinPhone(' +91 ', ' 1234567890 '), '911234567890');
+      expect(joinPhone('+1', '4255551234'), '14255551234');
+    });
+
+    test('drops spaces, dashes and brackets', () {
+      expect(joinPhone('+1', '(425) 555-1234'), '14255551234');
+      expect(joinPhone('+91', '98765 43210'), '919876543210');
+    });
+
+    test('splits back into what was joined', () {
+      for (final (code, number) in [
+        ('+1', '4255551234'),
+        ('+91', '9876543210'),
+        ('+971', '501234567'),
+        ('+44', '7911123456'),
+      ]) {
+        expect(splitPhone(joinPhone(code, number), '+1'), (
+          code: code,
+          number: number,
+        ));
+      }
     });
 
     test('returns null when the number has no digits', () {
