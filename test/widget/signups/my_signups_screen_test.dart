@@ -521,7 +521,7 @@ void main() {
       return mockService;
     }
 
-    Future<Map<String, dynamic>> _update(MockSignupService service) =>
+    Future<Map<String, dynamic>> stubUpdate(MockSignupService service) =>
         service.updateOwnEntry(
           signupId: any(named: 'signupId'),
           entryId: any(named: 'entryId'),
@@ -713,7 +713,7 @@ void main() {
     ) async {
       final mockService = mockServiceWithOneEntry();
       when(
-        () => _update(mockService),
+        () => stubUpdate(mockService),
       ).thenThrow(Exception('permission-denied: secret details'));
 
       await tester.pumpWidget(
@@ -743,7 +743,7 @@ void main() {
     ) async {
       final mockService = mockServiceWithOneEntry();
       when(
-        () => _update(mockService),
+        () => stubUpdate(mockService),
       ).thenAnswer((_) async => {'success': false, 'error': 'not_found'});
 
       await tester.pumpWidget(
