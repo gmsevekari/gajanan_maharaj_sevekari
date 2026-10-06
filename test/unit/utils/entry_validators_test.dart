@@ -48,4 +48,17 @@ void main() {
       }
     });
   });
+
+  group('formatPledgeAmount', () {
+    test('shows a whole amount without a trailing .0', () {
+      expect(formatPledgeAmount(51), '51');
+      expect(formatPledgeAmount(0), '0');
+      expect(formatPledgeAmount(1000000), '1000000');
+    });
+
+    test('keeps a fractional amount as it is', () {
+      expect(formatPledgeAmount(50.5), '50.5');
+      expect(formatPledgeAmount(0.25), '0.25');
+    });
+  });
 }

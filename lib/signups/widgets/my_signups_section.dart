@@ -4,13 +4,15 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/slot_when_view.dart';
+import 'package:gajanan_maharaj_sevekari/utils/entry_validators.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 /// A list of the devotee's own claimed entries. Each card shows the name, the
 /// title of the slot it belongs to (an entry's own `slotId` would otherwise be
 /// the only hint) and that slot's date, with the time when the slot isn't a
-/// full day - not the phone or email, which are for the Edit dialog. Cards
-/// have Edit and Cancel actions. Used as each tab's body on
+/// full day, then the pledge amount and note when it has them - not the phone
+/// or email, which are for the Edit dialog. Cards have Edit and Cancel
+/// actions. Used as each tab's body on
 /// [MySignupsScreen]; the Past tab passes
 /// no [onEditEntry] or [onCancelEntry], since changing or cancelling a signup
 /// whose slot has already happened doesn't apply, and the buttons are left
@@ -38,6 +40,9 @@ class MySignupsSection extends StatelessWidget {
     final isMarathi = contentIsMarathi(context);
 
     final hasActions = onEditEntry != null || onCancelEntry != null;
+    final detailStyle = theme.textTheme.bodySmall?.copyWith(
+      color: theme.appColors.secondaryText,
+    );
 
     SignupSlot? slotFor(String slotId) =>
         slots.where((s) => s.id == slotId).firstOrNull;
@@ -89,6 +94,23 @@ class MySignupsSection extends StatelessWidget {
                   if (slotFor(entry.slotId)?.hasSchedule ?? false) ...[
                     const SizedBox(height: 4),
                     SlotWhenView(slot: slotFor(entry.slotId)!),
+                  ],
+                  if (entry.pledgeAmount != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      '${l10n.signupEntryPledgeLabel}: '
+                      '${formatPledgeAmount(entry.pledgeAmount!)}',
+                      style: detailStyle,
+                    ),
+                  ],
+                  if (entry.note?.trim().isNotEmpty ?? false) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      '${l10n.signupEntryNoteLabel}: ${entry.note!.trim()}',
+                      style: detailStyle,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                   // Under the details, not beside the name, so a long name
                   // keeps the full card width.

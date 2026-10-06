@@ -364,6 +364,133 @@ void main() {
     });
   });
 
+  group('pledge amount and note', () {
+    Future<void> show(
+      WidgetTester tester, {
+      double? pledgeAmount,
+      String? note,
+      SignupSlot? slot,
+    }) => tester.pumpWidget(
+      wrap(
+        MySignupsSection(
+          entries: [
+            SignupEntry(
+              id: 'e1',
+              slotId: 's1',
+              name: 'Jane',
+              pledgeAmount: pledgeAmount,
+              note: note,
+              joinedAt: DateTime.now(),
+            ),
+          ],
+          slots: [
+            slot ??
+                scheduledSlot(
+                  id: 's1',
+                  labelEn: 'Morning Seva',
+                  start: wallClock(2030, 7, 3),
+                  end: wallClock(2030, 7, 3, 23, 59),
+                ),
+          ],
+          onCancelEntry: (_) {},
+          onEditEntry: (_) {},
+          emptyMessage: 'Nothing here yet',
+        ),
+      ),
+    );
+
+    testWidgets('shows a whole-number pledge without a trailing .0', (
+      tester,
+    ) async {
+      await show(tester, pledgeAmount: 51);
+
+      expect(find.text('Pledge Amount: 51'), findsOneWidget);
+    });
+
+    testWidgets('keeps a fractional pledge as it is', (tester) async {
+      await show(tester, pledgeAmount: 50.5);
+
+      expect(find.text('Pledge Amount: 50.5'), findsOneWidget);
+    });
+
+    testWidgets('shows a pledge of 0, since one was entered', (tester) async {
+      await show(tester, pledgeAmount: 0);
+
+      expect(find.text('Pledge Amount: 0'), findsOneWidget);
+    });
+
+    testWidgets('shows the note', (tester) async {
+      await show(tester, note: 'Bringing sweets');
+
+      expect(find.text('Note: Bringing sweets'), findsOneWidget);
+    });
+
+    testWidgets('trims the note', (tester) async {
+      await show(tester, note: '  Bringing sweets \n');
+
+      expect(find.text('Note: Bringing sweets'), findsOneWidget);
+    });
+
+    testWidgets('shows neither when the entry has none, or the note is '
+        'blank', (tester) async {
+      await show(tester);
+      expect(find.textContaining('Pledge Amount'), findsNothing);
+      expect(find.textContaining('Note'), findsNothing);
+
+      await show(tester, note: '   ');
+      expect(find.textContaining('Note'), findsNothing);
+    });
+
+    testWidgets('lists them under the date, pledge first, then the note', (
+      tester,
+    ) async {
+      await show(tester, pledgeAmount: 25, note: 'Sweets');
+
+      final date = tester.getRect(find.byType(SlotWhenView));
+      final pledge = tester.getRect(find.text('Pledge Amount: 25'));
+      final note = tester.getRect(find.text('Note: Sweets'));
+      final name = tester.getRect(find.text('Jane'));
+
+      expect(pledge.top, greaterThan(date.bottom - 1));
+      expect(note.top, greaterThan(pledge.bottom - 1));
+      expect(pledge.left, name.left);
+      expect(note.left, name.left);
+      // The same 4px between each line as above.
+      expect(pledge.top - date.bottom, closeTo(4, 0.5));
+      expect(note.top - pledge.bottom, closeTo(4, 0.5));
+    });
+
+    testWidgets('shows them even when the slot has no date', (tester) async {
+      await show(tester, pledgeAmount: 25, note: 'Sweets', slot: buildSlot());
+
+      expect(find.text('Pledge Amount: 25'), findsOneWidget);
+      expect(find.text('Note: Sweets'), findsOneWidget);
+    });
+
+    testWidgets('cuts a long note to three lines', (tester) async {
+      await show(tester, note: 'x ' * 200);
+
+      final text = tester.widget<Text>(find.textContaining('Note: '));
+      expect(text.maxLines, 3);
+      expect(text.overflow, TextOverflow.ellipsis);
+    });
+
+    testWidgets('fits a 360px screen at large text with a long note', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+      await show(tester, pledgeAmount: 1000000, note: 'y ' * 200);
+
+      expect(tester.takeException(), isNull);
+      expect(tester.getRect(find.text('Cancel')).right, lessThanOrEqualTo(360));
+    });
+  });
+
   group('card layout', () {
     Future<void> showCard(WidgetTester tester, {bool withActions = true}) =>
         tester.pumpWidget(
