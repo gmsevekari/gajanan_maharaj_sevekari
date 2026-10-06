@@ -1,14 +1,19 @@
 import 'dart:typed_data';
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
+import 'package:gajanan_maharaj_sevekari/models/claim_entries_result.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:mocktail/mocktail.dart';
+
+import '../../mocks.dart';
 
 /// firebase_storage_mocks' Reference.delete() never throws, so this
 /// stands in for both branches of deleteHeaderImageFile's error handling:
@@ -1260,6 +1265,113 @@ void main() {
 
       expect(result, {'success': false, 'error': 'not_found'});
       expect(await service.getAllEntries(signupId).first, isEmpty);
+    });
+  });
+
+  group('SignupService claimMyEntries', () {
+    late MockFirebaseFunctions functions;
+    late MockHttpsCallable callable;
+    late MockHttpsCallableResult callableResult;
+    late SignupService claimingService;
+
+    setUp(() {
+      functions = MockFirebaseFunctions();
+      callable = MockHttpsCallable();
+      callableResult = MockHttpsCallableResult();
+      when(() => functions.httpsCallable(any())).thenReturn(callable);
+      when(() => callable.call(any())).thenAnswer((_) async => callableResult);
+      when(
+        () => callableResult.data,
+      ).thenReturn({'status': 'SUCCESS', 'count': 2});
+      claimingService = SignupService(
+        firestore: fakeFirestore,
+        storage: mockStorage,
+        functions: functions,
+      );
+    });
+
+    Future<ClaimEntriesResult> claim({String? joinCode}) =>
+        claimingService.claimMyEntries(
+          signupId: 'signup_1',
+          phone: '+14255551234',
+          deviceId: 'device_a',
+          joinCode: joinCode,
+        );
+
+    test('calls claimSignupEntries with the sign-up, phone, device and join '
+        'code', () async {
+      await claim(joinCode: 'ABC123');
+
+      verify(() => functions.httpsCallable('claimSignupEntries')).called(1);
+      verify(
+        () => callable.call({
+          'signupId': 'signup_1',
+          'phone': '+14255551234',
+          'deviceId': 'device_a',
+          'joinCode': 'ABC123',
+        }),
+      ).called(1);
+    });
+
+    test('leaves the join code out when there is none', () async {
+      await claim();
+
+      verify(
+        () => callable.call({
+          'signupId': 'signup_1',
+          'phone': '+14255551234',
+          'deviceId': 'device_a',
+        }),
+      ).called(1);
+    });
+
+    test('maps a success with its count', () async {
+      final result = await claim();
+
+      expect(result.status, ClaimEntriesStatus.success);
+      expect(result.count, 2);
+    });
+
+    test('maps every refusal', () async {
+      for (final (wire, status) in [
+        ('NOT_FOUND', ClaimEntriesStatus.notFound),
+        ('ALREADY_CLAIMED', ClaimEntriesStatus.alreadyClaimed),
+        ('INVALID_JOIN_CODE', ClaimEntriesStatus.invalidJoinCode),
+      ]) {
+        when(() => callableResult.data).thenReturn({'status': wire});
+
+        final result = await claim();
+
+        expect(result.status, status, reason: wire);
+        expect(result.count, 0, reason: wire);
+      }
+    });
+
+    test('treats a missing count on success as zero', () async {
+      when(() => callableResult.data).thenReturn({'status': 'SUCCESS'});
+
+      expect((await claim()).count, 0);
+    });
+
+    test('throws on a status it does not know rather than claiming '
+        'success', () async {
+      when(() => callableResult.data).thenReturn({'status': 'SOMETHING_NEW'});
+
+      expect(claim, throwsStateError);
+    });
+
+    test('throws on a response with no status', () async {
+      when(() => callableResult.data).thenReturn(<String, dynamic>{});
+
+      expect(claim, throwsStateError);
+    });
+
+    test('lets a failed call through', () async {
+      when(() => callable.call(any())).thenThrow(
+        FirebaseFunctionsException(message: 'boom', code: 'internal'),
+      );
+
+      expect(claim, throwsA(isA<FirebaseFunctionsException>()));
     });
   });
 

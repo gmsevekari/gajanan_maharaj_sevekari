@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:gajanan_maharaj_sevekari/models/claim_entries_result.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
@@ -18,16 +20,25 @@ class SignupService {
 
   final FirebaseFirestore _db;
   final FirebaseStorage? _storageOverride;
+  final FirebaseFunctions? _functionsOverride;
 
-  SignupService({FirebaseFirestore? firestore, FirebaseStorage? storage})
-    : _db = firestore ?? FirebaseFirestore.instance,
-      _storageOverride = storage;
+  SignupService({
+    FirebaseFirestore? firestore,
+    FirebaseStorage? storage,
+    FirebaseFunctions? functions,
+  }) : _db = firestore ?? FirebaseFirestore.instance,
+       _storageOverride = storage,
+       _functionsOverride = functions;
 
   /// Resolved lazily (not in the constructor) so that call sites which
   /// never touch header-image methods - including every existing test
   /// that injects only a fake Firestore - don't need Firebase initialized
   /// just to construct a SignupService.
   FirebaseStorage get _storage => _storageOverride ?? FirebaseStorage.instance;
+
+  /// Resolved lazily for the same reason as [_storage].
+  FirebaseFunctions get _functions =>
+      _functionsOverride ?? FirebaseFunctions.instance;
 
   CollectionReference<Map<String, dynamic>> get _signupsRef =>
       _db.collection('signups');
@@ -568,6 +579,43 @@ class SignupService {
 
       return {'success': true, 'entryId': entryRef.id};
     });
+  }
+
+  /// "Claim my sign up": links every entry on [signupId] made with [phone]
+  /// (country code and number must match exactly) to [deviceId], through the
+  /// `claimSignupEntries` Cloud Function, since Firestore rules don't let a
+  /// device write its own `deviceId`. [joinCode] is checked by the function
+  /// when the sign-up requires one. Nothing changes unless the result is
+  /// [ClaimEntriesStatus.success]. A failed call throws, as does a response
+  /// this app doesn't understand - never a made-up success.
+  Future<ClaimEntriesResult> claimMyEntries({
+    required String signupId,
+    required String phone,
+    required String deviceId,
+    String? joinCode,
+  }) async {
+    final response = await _functions.httpsCallable('claimSignupEntries').call({
+      'signupId': signupId,
+      'phone': phone,
+      'deviceId': deviceId,
+      'joinCode': ?joinCode,
+    });
+    final data = response.data;
+    final status = data is Map ? data['status'] : null;
+    return switch (status) {
+      'SUCCESS' => ClaimEntriesResult(
+        ClaimEntriesStatus.success,
+        count: data['count'] is num ? (data['count'] as num).toInt() : 0,
+      ),
+      'NOT_FOUND' => const ClaimEntriesResult(ClaimEntriesStatus.notFound),
+      'ALREADY_CLAIMED' => const ClaimEntriesResult(
+        ClaimEntriesStatus.alreadyClaimed,
+      ),
+      'INVALID_JOIN_CODE' => const ClaimEntriesResult(
+        ClaimEntriesStatus.invalidJoinCode,
+      ),
+      _ => throw StateError('Unexpected claimSignupEntries response: $data'),
+    };
   }
 
   /// Copies a signup's title/description/join-code-requirement and every
