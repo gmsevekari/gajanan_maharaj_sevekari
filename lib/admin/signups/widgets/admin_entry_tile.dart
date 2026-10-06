@@ -3,6 +3,7 @@ import 'package:gajanan_maharaj_sevekari/admin/widgets/participant_contact_actio
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
+import 'package:gajanan_maharaj_sevekari/utils/entry_validators.dart';
 
 /// One devotee's entry: name, contact details with text/WhatsApp actions,
 /// pledge and note, plus edit and remove buttons.
@@ -102,10 +103,12 @@ class AdminEntryTile extends StatelessWidget {
                   color: theme.appColors.secondaryText,
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  entry.email!,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.appColors.secondaryText,
+                Expanded(
+                  child: Text(
+                    entry.email!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.appColors.secondaryText,
+                    ),
                   ),
                 ),
               ],
@@ -121,11 +124,14 @@ class AdminEntryTile extends StatelessWidget {
                   color: theme.appColors.brandAccent,
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  '${entry.pledgeAmount}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.appColors.brandAccent,
-                    fontWeight: FontWeight.w600,
+                Expanded(
+                  child: Text(
+                    '${l10n.signupEntryPledgeLabel}: '
+                    '${formatPledgeAmount(entry.pledgeAmount!)}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.appColors.brandAccent,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -134,7 +140,7 @@ class AdminEntryTile extends StatelessWidget {
           if (entry.note != null && entry.note!.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
-              entry.note!,
+              '${l10n.signupEntryNoteLabel}: ${entry.note!}',
               style: theme.textTheme.bodySmall?.copyWith(
                 fontStyle: FontStyle.italic,
                 color: theme.appColors.secondaryText,

@@ -109,7 +109,8 @@ void main() {
     expect(find.text('Joe Bloggs'), findsOneWidget);
     expect(find.text('+11234567890'), findsOneWidget);
     expect(find.text('jane@example.com'), findsNWidgets(2));
-    expect(find.text('Bringing sweet dish'), findsNWidgets(2));
+    expect(find.text('Note: Bringing sweet dish'), findsNWidgets(2));
+    expect(find.text('Pledge Amount: 50'), findsNWidgets(2));
     expect(find.byTooltip('Text'), findsOneWidget); // only Jane has a phone
     expect(find.byTooltip('WhatsApp'), findsOneWidget);
   });
