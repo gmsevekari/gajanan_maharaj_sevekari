@@ -21,6 +21,7 @@ void main() {
     onSave,
     Future<String?> Function(SignupEntryDetails details)? onSaveAsync,
     VoidCallback? onDelete,
+    VoidCallback? onReleaseDevice,
     bool showContactActions = true,
     bool requirePhone = false,
     String? defaultCountryCode,
@@ -47,6 +48,7 @@ void main() {
                     entry: entry,
                     onSave: save,
                     onDelete: onDelete,
+                    onReleaseDevice: onReleaseDevice,
                     showContactActions: showContactActions,
                     requirePhone: requirePhone,
                     defaultCountryCode: defaultCountryCode,
@@ -651,6 +653,96 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(saved, isTrue);
+      });
+    });
+
+    group('release device link', () {
+      final entry = SignupEntry(
+        id: 'e1',
+        slotId: 's1',
+        name: 'Jane',
+        phone: '+14255551234',
+        deviceId: 'device_a',
+        joinedAt: DateTime.utc(2026),
+      );
+
+      Future<void> open(
+        WidgetTester tester, {
+        VoidCallback? onReleaseDevice,
+        VoidCallback? onDelete,
+      }) async {
+        await tester.pumpWidget(
+          createDialogWidget(
+            entry: entry,
+            onSave: (_, _, _, _, _) {},
+            onReleaseDevice: onReleaseDevice,
+            onDelete: onDelete,
+          ),
+        );
+        await tester.tap(find.text('Open Dialog'));
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('is not offered without a callback', (tester) async {
+        await open(tester);
+
+        expect(find.text('Release Device Link'), findsNothing);
+      });
+
+      testWidgets('asks first, and changes nothing when declined', (
+        tester,
+      ) async {
+        var released = false;
+        await open(tester, onReleaseDevice: () => released = true);
+
+        await tester.ensureVisible(find.text('Release Device Link'));
+        await tester.tap(find.text('Release Device Link'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Release device link?'), findsOneWidget);
+        expect(
+          find.text(
+            'This entry will no longer belong to the devotee\'s device. '
+            'They can claim it again with their phone number.',
+          ),
+          findsOneWidget,
+        );
+
+        await tester.tap(find.text('No'));
+        await tester.pumpAndSettle();
+
+        expect(released, isFalse);
+        expect(find.text('Edit Entry'), findsOneWidget);
+      });
+
+      testWidgets('releases and closes the dialog when confirmed', (
+        tester,
+      ) async {
+        var released = 0;
+        await open(tester, onReleaseDevice: () => released++);
+
+        await tester.ensureVisible(find.text('Release Device Link'));
+        await tester.tap(find.text('Release Device Link'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        expect(released, 1);
+        expect(find.text('Edit Entry'), findsNothing);
+      });
+
+      testWidgets('sits with Remove without crowding the buttons at 360px', (
+        tester,
+      ) async {
+        tester.view.physicalSize = const Size(360, 640);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+        await open(tester, onReleaseDevice: () {}, onDelete: () {});
+
+        expect(tester.takeException(), isNull);
       });
     });
   });

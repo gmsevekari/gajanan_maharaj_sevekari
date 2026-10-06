@@ -581,6 +581,17 @@ class SignupService {
     });
   }
 
+  /// An admin releasing an entry from the device it is linked to, so its
+  /// devotee can claim it again (from a new phone, say) with
+  /// [claimMyEntries]. Clears `deviceId` and the claim time; the entry stays
+  /// in its slot, so `claimedCount` is untouched. Throws if the entry doesn't
+  /// exist.
+  Future<void> releaseEntryDevice(String signupId, String entryId) {
+    return _entriesRef(
+      signupId,
+    ).doc(entryId).update({'deviceId': null, 'claimedAt': FieldValue.delete()});
+  }
+
   /// "Claim my sign up": links every entry on [signupId] made with [phone]
   /// (country code and number must match exactly) to [deviceId], through the
   /// `claimSignupEntries` Cloud Function, since Firestore rules don't let a

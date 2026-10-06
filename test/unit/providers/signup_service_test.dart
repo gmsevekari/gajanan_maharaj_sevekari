@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -1372,6 +1373,97 @@ void main() {
       );
 
       expect(claim, throwsA(isA<FirebaseFunctionsException>()));
+    });
+  });
+
+  group('SignupService releaseEntryDevice', () {
+    late String signupId;
+    late String slotId;
+
+    setUp(() async {
+      signupId = await service.createSignup(buildSignup());
+      slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
+    });
+
+    DocumentReference<Map<String, dynamic>> entryRef(String id) =>
+        fakeFirestore.doc('signups/$signupId/entries/$id');
+
+    test('clears the device and the claim time, and nothing else', () async {
+      final claimed = await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+        phone: '+14255551234',
+        email: 'jane@example.com',
+        deviceId: 'device_a',
+        pledgeAmount: 10,
+        note: 'Sweets',
+      );
+      final id = claimed['entryId'] as String;
+      await entryRef(id).update({'claimedAt': Timestamp.now()});
+
+      await service.releaseEntryDevice(signupId, id);
+
+      final data = (await entryRef(id).get()).data()!;
+      expect(data['deviceId'], isNull);
+      expect(data.containsKey('claimedAt'), isFalse);
+      expect(data['name'], 'Jane');
+      expect(data['phone'], '+14255551234');
+      expect(data['email'], 'jane@example.com');
+      expect(data['pledgeAmount'], 10);
+      expect(data['note'], 'Sweets');
+      expect(data['slotId'], slotId);
+    });
+
+    test('keeps the entry in its slot, so claimedCount is unchanged', () async {
+      final claimed = await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+        deviceId: 'device_a',
+      );
+
+      await service.releaseEntryDevice(signupId, claimed['entryId'] as String);
+
+      final slot = (await service.getSlots(signupId).first).single;
+      expect(slot.claimedCount, 1);
+    });
+
+    test('is a no-op on an entry that has no device', () async {
+      final added = await service.adminAddEntry(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Amit',
+      );
+      final id = added['entryId'] as String;
+
+      await service.releaseEntryDevice(signupId, id);
+
+      final data = (await entryRef(id).get()).data()!;
+      expect(data['deviceId'], isNull);
+      expect(data['name'], 'Amit');
+    });
+
+    test('takes the entry off the old device\'s My Sign Ups', () async {
+      final claimed = await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+        deviceId: 'device_a',
+      );
+      final id = claimed['entryId'] as String;
+
+      await service.releaseEntryDevice(signupId, id);
+
+      final mine = await service.getEntriesByDevice(signupId, 'device_a').first;
+      expect(mine, isEmpty);
+    });
+
+    test('throws when the entry does not exist', () async {
+      expect(
+        () => service.releaseEntryDevice(signupId, 'missing'),
+        throwsA(isA<FirebaseException>()),
+      );
     });
   });
 

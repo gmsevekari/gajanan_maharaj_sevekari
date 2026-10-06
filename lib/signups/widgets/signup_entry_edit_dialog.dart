@@ -24,6 +24,11 @@ class SignupEntryEditDialog extends StatefulWidget {
   final Future<String?> Function(SignupEntryDetails details) onSave;
   final VoidCallback? onDelete;
 
+  /// Offers "Release Device Link" (after a confirmation): for an admin
+  /// editing an entry that belongs to a device, so its devotee can claim it
+  /// again from another one. Null leaves the action out.
+  final VoidCallback? onReleaseDevice;
+
   /// Show the entry's phone with Text / WhatsApp buttons above the form.
   /// For admins reaching a devotee; off when devotees edit their own entry.
   final bool showContactActions;
@@ -41,6 +46,7 @@ class SignupEntryEditDialog extends StatefulWidget {
     this.entry,
     required this.onSave,
     this.onDelete,
+    this.onReleaseDevice,
     this.showContactActions = true,
     this.requirePhone = false,
     this.defaultCountryCode,
@@ -126,6 +132,30 @@ class _SignupEntryEditDialogState extends State<SignupEntryEditDialog> {
       _saving = false;
       _saveError = error;
     });
+  }
+
+  void _confirmRelease(BuildContext context, AppLocalizations l10n) {
+    showEnglishDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: Text(l10n.signupReleaseDeviceConfirmTitle),
+        content: Text(l10n.signupReleaseDeviceConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: Text(l10n.no),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogCtx).pop(); // close confirm dialog
+              Navigator.of(context).pop(); // close edit dialog
+              widget.onReleaseDevice?.call();
+            },
+            child: Text(l10n.yes),
+          ),
+        ],
+      ),
+    );
   }
 
   void _confirmDelete(BuildContext context, AppLocalizations l10n) {
@@ -262,6 +292,19 @@ class _SignupEntryEditDialogState extends State<SignupEntryEditDialog> {
                 maxLength: SignupEntry.maxNoteLength,
                 decoration: _decoration(l10n.signupEntryNoteLabel),
               ),
+              if (widget.onReleaseDevice != null) ...[
+                const SizedBox(height: 4),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton.icon(
+                    onPressed: _saving
+                        ? null
+                        : () => _confirmRelease(context, l10n),
+                    icon: const Icon(Icons.link_off),
+                    label: Text(l10n.signupReleaseDeviceButton),
+                  ),
+                ),
+              ],
               if (_saveError != null) ...[
                 const SizedBox(height: 12),
                 Semantics(

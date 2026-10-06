@@ -4965,6 +4965,36 @@ abstract class AppLocalizations {
   /// **'Couldn\'t claim your sign up. Please try again.'**
   String get signupClaimMySignupError;
 
+  /// No description provided for @signupReleaseDeviceButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Release Device Link'**
+  String get signupReleaseDeviceButton;
+
+  /// No description provided for @signupReleaseDeviceConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Release device link?'**
+  String get signupReleaseDeviceConfirmTitle;
+
+  /// No description provided for @signupReleaseDeviceConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This entry will no longer belong to the devotee\'s device. They can claim it again with their phone number.'**
+  String get signupReleaseDeviceConfirmMessage;
+
+  /// No description provided for @signupReleaseDeviceSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Device link released'**
+  String get signupReleaseDeviceSuccess;
+
+  /// No description provided for @signupReleaseDeviceError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to release device link'**
+  String get signupReleaseDeviceError;
+
   /// No description provided for @signupCancelSignupConfirmTitle.
   ///
   /// In en, this message translates to:

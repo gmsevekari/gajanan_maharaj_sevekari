@@ -335,6 +335,168 @@ void main() {
       expect(find.text('Failed to remove entry'), findsOneWidget);
     });
 
+    group('releasing a device link', () {
+      Future<(DocumentReference<Map<String, dynamic>>, String)> seed({
+        String? deviceId,
+      }) async {
+        final now = DateTime.now();
+        final signupRef = await firestore.collection('signups').add({
+          'titleEn': 'Signup',
+          'titleMr': '',
+          'groupId': 'gajanan_maharaj_seattle',
+          'status': SignupStatus.published.name,
+          'requiresJoinCode': false,
+          'createdAt': Timestamp.fromDate(now),
+          'updatedAt': Timestamp.fromDate(now),
+          'createdBy': 'admin@test.com',
+        });
+        final slotRef = await signupRef.collection('slots').add({
+          'labelEn': 'Morning Seva',
+          'labelMr': '',
+          'capacity': 3,
+          'claimedCount': 1,
+          'sortOrder': 0,
+          'createdAt': Timestamp.fromDate(now),
+        });
+        final entryRef = await signupRef.collection('entries').add({
+          'slotId': slotRef.id,
+          'name': 'Jane',
+          'phone': '+14255551234',
+          'deviceId': deviceId,
+          'joinedAt': Timestamp.fromDate(now),
+        });
+        return (signupRef, entryRef.id);
+      }
+
+      Future<void> openEdit(WidgetTester tester) async {
+        await tester.tap(find.byTooltip('Edit Entry'));
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('offers it only for an entry that belongs to a device', (
+        tester,
+      ) async {
+        final (linked, _) = await seed(deviceId: 'device_a');
+        await pumpScreen(tester, signupId: linked.id);
+        await openEdit(tester);
+        expect(find.text('Release Device Link'), findsOneWidget);
+      });
+
+      testWidgets('does not offer it for an entry with no device', (
+        tester,
+      ) async {
+        final (unlinked, _) = await seed();
+        await pumpScreen(tester, signupId: unlinked.id);
+        await openEdit(tester);
+        expect(find.text('Edit Entry'), findsOneWidget);
+        expect(find.text('Release Device Link'), findsNothing);
+      });
+
+      testWidgets('clears the device, keeps the entry, and says so', (
+        tester,
+      ) async {
+        final (signupRef, entryId) = await seed(deviceId: 'device_a');
+        await pumpScreen(tester, signupId: signupRef.id);
+        await openEdit(tester);
+
+        await tester.tap(find.text('Release Device Link'));
+        await tester.pumpAndSettle();
+        expect(find.text('Release device link?'), findsOneWidget);
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Device link released'), findsOneWidget);
+        expect(find.text('Jane'), findsOneWidget);
+        final entry = await signupRef.collection('entries').doc(entryId).get();
+        expect(entry.data()!['deviceId'], isNull);
+        expect(entry.data()!['name'], 'Jane');
+        final slot = (await signupRef.collection('slots').get()).docs.single;
+        expect(slot.data()['claimedCount'], 1);
+      });
+
+      testWidgets('leaves the link alone when declined', (tester) async {
+        final (signupRef, entryId) = await seed(deviceId: 'device_a');
+        await pumpScreen(tester, signupId: signupRef.id);
+        await openEdit(tester);
+
+        await tester.tap(find.text('Release Device Link'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('No'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Device link released'), findsNothing);
+        final entry = await signupRef.collection('entries').doc(entryId).get();
+        expect(entry.data()!['deviceId'], 'device_a');
+      });
+
+      testWidgets('shows an error snackbar when releasing fails', (
+        tester,
+      ) async {
+        final now = DateTime.now();
+        const signupId = 'release_fail_signup';
+        final signup = Signup(
+          id: signupId,
+          titleEn: 'Signup',
+          titleMr: '',
+          groupId: 'gajanan_maharaj_seattle',
+          status: SignupStatus.published,
+          createdAt: now,
+          updatedAt: now,
+          createdBy: 'admin@test.com',
+        );
+        final slot = SignupSlot(
+          id: 'slot_1',
+          labelEn: 'Slot 1',
+          labelMr: '',
+          capacity: 5,
+          sortOrder: 0,
+          createdAt: now,
+        );
+        final entry = SignupEntry(
+          id: 'entry_1',
+          slotId: 'slot_1',
+          name: 'Jane',
+          phone: '+14255551234',
+          deviceId: 'device_a',
+          joinedAt: now,
+        );
+        final mockService = MockSignupService();
+        when(
+          () => mockService.getSignupById(signupId),
+        ).thenAnswer((_) => Stream.value(signup));
+        when(
+          () => mockService.getSlots(signupId),
+        ).thenAnswer((_) => Stream.value([slot]));
+        when(
+          () => mockService.getAllEntries(signupId),
+        ).thenAnswer((_) => Stream.value([entry]));
+        when(
+          () => mockService.releaseEntryDevice(signupId, 'entry_1'),
+        ).thenThrow(Exception('secret'));
+        setLargeScreen(tester);
+        addTearDown(() => resetScreen(tester));
+
+        await tester.pumpWidget(
+          createWidget(
+            child: AdminSignupEntriesScreen(
+              signupId: signupId,
+              signup: stubSignup(signupId),
+              signupService: mockService,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await openEdit(tester);
+        await tester.tap(find.text('Release Device Link'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Failed to release device link'), findsOneWidget);
+        expect(find.textContaining('secret'), findsNothing);
+      });
+    });
+
     testWidgets('shows error snackbar when updateEntry fails', (tester) async {
       final now = DateTime.now();
       const signupId = 'fail_update_signup';

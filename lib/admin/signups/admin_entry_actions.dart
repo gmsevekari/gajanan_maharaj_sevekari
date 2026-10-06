@@ -87,8 +87,27 @@ class AdminEntryActions {
           return null;
         },
         onDelete: () => _remove(context, signup, entry, l10n),
+        onReleaseDevice: entry.deviceId == null
+            ? null
+            : () => _releaseDevice(context, signup, entry, l10n),
       ),
     );
+  }
+
+  Future<void> _releaseDevice(
+    BuildContext context,
+    Signup signup,
+    SignupEntry entry,
+    AppLocalizations l10n,
+  ) async {
+    try {
+      await service.releaseEntryDevice(signup.id!, entry.id!);
+      if (!context.mounted) return;
+      _snack(context, l10n.signupReleaseDeviceSuccess);
+    } catch (_) {
+      if (!context.mounted) return;
+      _snack(context, l10n.signupReleaseDeviceError);
+    }
   }
 
   Future<void> _remove(

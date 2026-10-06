@@ -2599,6 +2599,22 @@ class AppLocalizationsMr extends AppLocalizations {
       'साइन अप क्लेम करता आले नाही. कृपया पुन्हा प्रयत्न करा.';
 
   @override
+  String get signupReleaseDeviceButton => 'डिव्हाइस लिंक काढा';
+
+  @override
+  String get signupReleaseDeviceConfirmTitle => 'डिव्हाइस लिंक काढायची?';
+
+  @override
+  String get signupReleaseDeviceConfirmMessage =>
+      'ही एंट्री यापुढे भक्ताच्या डिव्हाइसची राहणार नाही. ते त्यांच्या फोन नंबरने ती पुन्हा क्लेम करू शकतात.';
+
+  @override
+  String get signupReleaseDeviceSuccess => 'डिव्हाइस लिंक काढली';
+
+  @override
+  String get signupReleaseDeviceError => 'डिव्हाइस लिंक काढण्यात अयशस्वी';
+
+  @override
   String get signupCancelSignupConfirmTitle => 'साइन-अप रद्द करायचे?';
 
   @override

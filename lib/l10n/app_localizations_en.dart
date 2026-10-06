@@ -2585,6 +2585,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'Couldn\'t claim your sign up. Please try again.';
 
   @override
+  String get signupReleaseDeviceButton => 'Release Device Link';
+
+  @override
+  String get signupReleaseDeviceConfirmTitle => 'Release device link?';
+
+  @override
+  String get signupReleaseDeviceConfirmMessage =>
+      'This entry will no longer belong to the devotee\'s device. They can claim it again with their phone number.';
+
+  @override
+  String get signupReleaseDeviceSuccess => 'Device link released';
+
+  @override
+  String get signupReleaseDeviceError => 'Failed to release device link';
+
+  @override
   String get signupCancelSignupConfirmTitle => 'Cancel Signup?';
 
   @override
@@ -5230,6 +5246,22 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   @override
   String get signupClaimMySignupError =>
       'Sign up claim करता आले नाही. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get signupReleaseDeviceButton => 'Device Link काढा';
+
+  @override
+  String get signupReleaseDeviceConfirmTitle => 'Device link काढायची?';
+
+  @override
+  String get signupReleaseDeviceConfirmMessage =>
+      'ही entry यापुढे devotee च्या device ची राहणार नाही. ते त्यांच्या phone number ने ती पुन्हा claim करू शकतात.';
+
+  @override
+  String get signupReleaseDeviceSuccess => 'Device link काढली';
+
+  @override
+  String get signupReleaseDeviceError => 'Device link काढण्यात अयशस्वी';
 
   @override
   String get signupCancelSignupConfirmTitle => 'Sign-up रद्द करायचे?';
