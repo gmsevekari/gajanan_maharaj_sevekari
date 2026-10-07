@@ -13,9 +13,13 @@ void main() {
     busy = false;
   });
 
-  Future<void> open(WidgetTester tester) async {
+  Future<void> open(
+    WidgetTester tester, {
+    Locale locale = const Locale('en'),
+  }) async {
     await tester.pumpWidget(
       MaterialApp(
+        locale: locale,
         theme: AppTheme.lightTheme,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -156,5 +160,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Editor'), findsOneWidget);
+  });
+
+  testWidgets('asks in English even under a Marathi locale', (tester) async {
+    await open(tester, locale: const Locale('mr'));
+    await tester.tap(find.text('Change'));
+    await tester.pump();
+
+    // pageBack() looks the button up by its English tooltip.
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Discard changes?'), findsOneWidget);
+    expect(find.text('Keep Editing'), findsOneWidget);
   });
 }

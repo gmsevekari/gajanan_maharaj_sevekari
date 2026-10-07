@@ -232,18 +232,32 @@ void main() {
       });
     });
 
-    Future<Map<String, dynamic>> stored() async =>
-        (await fakeFirestore.doc('signups/$id').get()).data()!;
+    DocumentReference<Map<String, dynamic>> ref() =>
+        fakeFirestore.doc('signups/$id');
 
-    test('changes the title, description and join-code requirement', () async {
+    Future<Map<String, dynamic>> stored() async => (await ref().get()).data()!;
+
+    /// What another admin does while a form is open.
+    Future<void> elsewhere(Map<String, dynamic> change) => ref().update(change);
+
+    test('writes only the fields it is given', () async {
+      await service.updateSignupDetails(id, titleEn: 'New title');
+
+      final data = await stored();
+      expect(data['titleEn'], 'New title');
+      expect(data['titleMr'], 'जुने');
+      expect(data['descriptionEn'], 'Old description');
+      expect(data['descriptionMr'], 'जुने वर्णन');
+      expect(data['requiresJoinCode'], false);
+    });
+
+    test('can write all four text fields', () async {
       await service.updateSignupDetails(
         id,
         titleEn: 'New title',
         titleMr: 'नवे',
         descriptionEn: 'New description',
         descriptionMr: 'नवे वर्णन',
-        requiresJoinCode: true,
-        joinCode: 'ABC123',
       );
 
       final data = await stored();
@@ -251,46 +265,51 @@ void main() {
       expect(data['titleMr'], 'नवे');
       expect(data['descriptionEn'], 'New description');
       expect(data['descriptionMr'], 'नवे वर्णन');
-      expect(data['requiresJoinCode'], true);
-      expect(data['joinCode'], 'ABC123');
     });
 
-    test('leaves the status, group, image, creator and creation time alone, '
-        'whatever a stale form held', () async {
-      final before = await stored();
+    test('can empty a field, which is different from leaving it', () async {
+      await service.updateSignupDetails(id, titleMr: '', descriptionEn: '');
 
-      await service.updateSignupDetails(
-        id,
-        titleEn: 'New title',
-        titleMr: '',
-        descriptionEn: '',
-        descriptionMr: '',
-        requiresJoinCode: false,
-      );
-
-      final after = await stored();
-      for (final key in [
-        'status',
-        'groupId',
-        'headerImageUrl',
-        'createdBy',
-        'createdAt',
-      ]) {
-        expect(after[key], before[key], reason: key);
-      }
-      expect(after['status'], 'published');
-      expect(after['headerImageUrl'], 'https://example.com/header.png');
+      final data = await stored();
+      expect(data['titleMr'], '');
+      expect(data['descriptionEn'], '');
+      expect(data['titleEn'], 'Old title');
     });
 
-    test('stamps updatedAt', () async {
-      await service.updateSignupDetails(
-        id,
-        titleEn: 'T',
-        titleMr: '',
-        descriptionEn: '',
-        descriptionMr: '',
-        requiresJoinCode: false,
-      );
+    test('does not undo what another admin changed in a field it was not '
+        'given', () async {
+      await elsewhere({'titleMr': 'दुसऱ्याचे', 'descriptionEn': 'Theirs'});
+
+      await service.updateSignupDetails(id, titleEn: 'Mine');
+
+      final data = await stored();
+      expect(data['titleEn'], 'Mine');
+      expect(data['titleMr'], 'दुसऱ्याचे');
+      expect(data['descriptionEn'], 'Theirs');
+    });
+
+    test(
+      'leaves the status, group, image, creator and creation time alone',
+      () async {
+        final before = await stored();
+
+        await service.updateSignupDetails(id, titleEn: 'New title');
+
+        final after = await stored();
+        for (final key in [
+          'status',
+          'groupId',
+          'headerImageUrl',
+          'createdBy',
+          'createdAt',
+        ]) {
+          expect(after[key], before[key], reason: key);
+        }
+      },
+    );
+
+    test('stamps updatedAt when it writes something', () async {
+      await service.updateSignupDetails(id, titleEn: 'New title');
 
       final updatedAt = ((await stored())['updatedAt'] as Timestamp).toDate();
       expect(
@@ -299,78 +318,169 @@ void main() {
       );
     });
 
-    test('removes the join code when it is no longer required', () async {
-      await service.updateSignupDetails(
-        id,
-        titleEn: 'T',
-        titleMr: '',
-        descriptionEn: '',
-        descriptionMr: '',
-        requiresJoinCode: true,
-        joinCode: 'ABC123',
-      );
+    test('writes nothing, not even updatedAt, when given nothing', () async {
+      await service.updateSignupDetails(id);
 
-      await service.updateSignupDetails(
-        id,
-        titleEn: 'T',
-        titleMr: '',
-        descriptionEn: '',
-        descriptionMr: '',
-        requiresJoinCode: false,
-        joinCode: 'IGNORED',
+      expect(
+        (await stored())['updatedAt'],
+        Timestamp.fromDate(DateTime.utc(2000)),
       );
-
-      final data = await stored();
-      expect(data['requiresJoinCode'], false);
-      expect(data['joinCode'], isNull);
     });
 
-    test('refuses a required join code that is missing or empty, writing '
-        'nothing', () async {
-      for (final code in [null, '', '  ']) {
-        await expectLater(
-          service.updateSignupDetails(
-            id,
-            titleEn: 'Changed',
-            titleMr: '',
-            descriptionEn: '',
-            descriptionMr: '',
-            requiresJoinCode: true,
-            joinCode: code,
-          ),
-          throwsArgumentError,
+    group('join code', () {
+      test('is not touched when the requirement is not given, even if '
+          'another admin changed it', () async {
+        await elsewhere({'requiresJoinCode': true, 'joinCode': 'THEIRS1'});
+
+        await service.updateSignupDetails(id, titleEn: 'Mine');
+
+        final data = await stored();
+        expect(data['requiresJoinCode'], true);
+        expect(data['joinCode'], 'THEIRS1');
+      });
+
+      test('is made when the requirement is switched on', () async {
+        await service.updateSignupDetails(
+          id,
+          requiresJoinCode: true,
+          newJoinCode: 'ABC123',
         );
-      }
-      expect((await stored())['titleEn'], 'Old title');
-    });
 
-    test('is read back as a valid Signup', () async {
-      await service.updateSignupDetails(
-        id,
-        titleEn: 'New title',
-        titleMr: '',
-        descriptionEn: '',
-        descriptionMr: '',
-        requiresJoinCode: true,
-        joinCode: 'ABC123',
+        final data = await stored();
+        expect(data['requiresJoinCode'], true);
+        expect(data['joinCode'], 'ABC123');
+      });
+
+      test(
+        'keeps the code another admin already made when switched on',
+        () async {
+          await elsewhere({'requiresJoinCode': true, 'joinCode': 'THEIRS1'});
+
+          await service.updateSignupDetails(
+            id,
+            requiresJoinCode: true,
+            newJoinCode: 'ABC123',
+          );
+
+          expect((await stored())['joinCode'], 'THEIRS1');
+        },
       );
 
-      final signup = await service.getSignupById(id).first;
-      expect(signup!.titleEn, 'New title');
-      expect(signup.requiresJoinCode, isTrue);
-      expect(signup.joinCode, 'ABC123');
-      expect(signup.status, SignupStatus.published);
+      test('does not bring back a code left behind from before the requirement '
+          'was switched off', () async {
+        await elsewhere({'requiresJoinCode': false, 'joinCode': 'LEFT999'});
+
+        await service.updateSignupDetails(
+          id,
+          requiresJoinCode: true,
+          newJoinCode: 'ABC123',
+        );
+
+        expect((await stored())['joinCode'], 'ABC123');
+      });
+
+      test(
+        'replaces a blank code when switched on over a broken one',
+        () async {
+          await elsewhere({'requiresJoinCode': true, 'joinCode': ''});
+
+          await service.updateSignupDetails(
+            id,
+            requiresJoinCode: true,
+            newJoinCode: 'ABC123',
+          );
+
+          expect((await stored())['joinCode'], 'ABC123');
+        },
+      );
+
+      test('is removed when the requirement is switched off', () async {
+        await elsewhere({'requiresJoinCode': true, 'joinCode': 'ABC123'});
+
+        await service.updateSignupDetails(id, requiresJoinCode: false);
+
+        final data = await stored();
+        expect(data['requiresJoinCode'], false);
+        expect(data['joinCode'], isNull);
+      });
+
+      test('can be switched on and off together with text changes', () async {
+        await service.updateSignupDetails(
+          id,
+          titleEn: 'Both',
+          requiresJoinCode: true,
+          newJoinCode: 'ABC123',
+        );
+
+        final data = await stored();
+        expect(data['titleEn'], 'Both');
+        expect(data['joinCode'], 'ABC123');
+        expect(
+          data['updatedAt'],
+          isNot(Timestamp.fromDate(DateTime.utc(2000))),
+        );
+      });
+
+      test('refuses to switch on without a code, writing nothing', () async {
+        for (final code in [null, '', '  ']) {
+          await expectLater(
+            service.updateSignupDetails(
+              id,
+              titleEn: 'Changed',
+              requiresJoinCode: true,
+              newJoinCode: code,
+            ),
+            throwsArgumentError,
+          );
+        }
+        expect((await stored())['titleEn'], 'Old title');
+      });
+
+      test(
+        'refuses a code when the requirement is not being switched on',
+        () async {
+          await expectLater(
+            service.updateSignupDetails(id, newJoinCode: 'ABC123'),
+            throwsArgumentError,
+          );
+          await expectLater(
+            service.updateSignupDetails(
+              id,
+              requiresJoinCode: false,
+              newJoinCode: 'ABC123',
+            ),
+            throwsArgumentError,
+          );
+        },
+      );
+
+      test('reads back as a valid Signup', () async {
+        await service.updateSignupDetails(
+          id,
+          titleEn: 'New title',
+          requiresJoinCode: true,
+          newJoinCode: 'ABC123',
+        );
+
+        // Read with get(): the fake's snapshot stream can lag a transaction.
+        final signup = Signup.fromMap(id, (await stored()));
+        expect(signup.titleEn, 'New title');
+        expect(signup.requiresJoinCode, isTrue);
+        expect(signup.joinCode, 'ABC123');
+        expect(signup.status, SignupStatus.published);
+      });
     });
 
     test('throws when the signup no longer exists', () async {
       await expectLater(
+        service.updateSignupDetails('missing', titleEn: 'T'),
+        throwsA(isA<FirebaseException>()),
+      );
+      await expectLater(
         service.updateSignupDetails(
           'missing',
-          titleEn: 'T',
-          titleMr: '',
-          descriptionEn: '',
-          descriptionMr: '',
-          requiresJoinCode: false,
+          requiresJoinCode: true,
+          newJoinCode: 'ABC123',
         ),
         throwsA(isA<FirebaseException>()),
       );

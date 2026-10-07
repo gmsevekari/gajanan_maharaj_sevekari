@@ -218,38 +218,80 @@ class SignupService {
   }
 
   /// Changes a signup's title, description and join-code requirement - and
-  /// nothing else. Only those fields are written (plus `updatedAt`), so a
-  /// form opened before the signup's status, header image or anything else
-  /// changed can't undo that, unlike [updateSignup], which overwrites the
-  /// whole document.
+  /// nothing else. Only the fields given are written (plus `updatedAt`), so a
+  /// form opened before another admin changed something, or before the status
+  /// or header image changed, can't undo it; unlike [updateSignup], which
+  /// overwrites the whole document. A null field is left as it is; an empty
+  /// string empties it. Given nothing, nothing is written.
   ///
-  /// When [requiresJoinCode] is true a non-blank [joinCode] must be given
-  /// (else [ArgumentError], writing nothing); when it is false the join code
-  /// is cleared whatever [joinCode] holds. Throws if the signup is gone.
+  /// [requiresJoinCode] null leaves the join code alone. True switches it on:
+  /// [newJoinCode] (required, non-blank) becomes the code - unless the signup
+  /// already requires a non-blank code, which is kept, so two admins switching
+  /// it on don't replace each other's code. False switches it off and clears
+  /// the code. The requirement is read in the same transaction as the write.
+  /// [newJoinCode] is refused unless the requirement is being switched on.
+  /// Throws if the signup is gone.
   Future<void> updateSignupDetails(
     String signupId, {
-    required String titleEn,
-    required String titleMr,
-    required String descriptionEn,
-    required String descriptionMr,
-    required bool requiresJoinCode,
-    String? joinCode,
+    String? titleEn,
+    String? titleMr,
+    String? descriptionEn,
+    String? descriptionMr,
+    bool? requiresJoinCode,
+    String? newJoinCode,
   }) async {
-    if (requiresJoinCode && (joinCode == null || joinCode.trim().isEmpty)) {
+    final switchingOn = requiresJoinCode == true;
+    if (switchingOn && (newJoinCode == null || newJoinCode.trim().isEmpty)) {
       throw ArgumentError.value(
-        joinCode,
-        'joinCode',
-        'is required when requiresJoinCode is true',
+        newJoinCode,
+        'newJoinCode',
+        'is required when switching the join code on',
       );
     }
-    await _signupsRef.doc(signupId).update({
-      'titleEn': titleEn,
-      'titleMr': titleMr,
-      'descriptionEn': descriptionEn,
-      'descriptionMr': descriptionMr,
-      'requiresJoinCode': requiresJoinCode,
-      'joinCode': requiresJoinCode ? joinCode : null,
-      'updatedAt': Timestamp.now(),
+    if (!switchingOn && newJoinCode != null) {
+      throw ArgumentError.value(
+        newJoinCode,
+        'newJoinCode',
+        'is only for switching the join code on',
+      );
+    }
+
+    final fields = <String, dynamic>{
+      'titleEn': ?titleEn,
+      'titleMr': ?titleMr,
+      'descriptionEn': ?descriptionEn,
+      'descriptionMr': ?descriptionMr,
+    };
+    if (fields.isEmpty && requiresJoinCode == null) return;
+
+    final signupRef = _signupsRef.doc(signupId);
+    if (requiresJoinCode == null) {
+      await signupRef.update({...fields, 'updatedAt': Timestamp.now()});
+      return;
+    }
+
+    await _db.runTransaction((transaction) async {
+      final snapshot = await transaction.get(signupRef);
+      if (!snapshot.exists) {
+        throw FirebaseException(
+          plugin: 'cloud_firestore',
+          code: 'not-found',
+          message: 'Signup $signupId does not exist.',
+        );
+      }
+      final current = snapshot.data()?['joinCode'];
+      final alreadyHasCode =
+          snapshot.data()?['requiresJoinCode'] == true &&
+          current is String &&
+          current.trim().isNotEmpty;
+      transaction.update(signupRef, {
+        ...fields,
+        'requiresJoinCode': requiresJoinCode,
+        'joinCode': switchingOn
+            ? (alreadyHasCode ? current : newJoinCode)
+            : null,
+        'updatedAt': Timestamp.now(),
+      });
     });
   }
 

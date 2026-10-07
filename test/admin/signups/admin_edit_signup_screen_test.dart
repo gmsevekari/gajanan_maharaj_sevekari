@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -249,7 +248,7 @@ void main() {
           descriptionEn: any(named: 'descriptionEn'),
           descriptionMr: any(named: 'descriptionMr'),
           requiresJoinCode: any(named: 'requiresJoinCode'),
-          joinCode: any(named: 'joinCode'),
+          newJoinCode: any(named: 'newJoinCode'),
         ),
       ).thenAnswer((_) async {});
       await open(tester, signup, withService: spy);
@@ -264,7 +263,7 @@ void main() {
           descriptionEn: any(named: 'descriptionEn'),
           descriptionMr: any(named: 'descriptionMr'),
           requiresJoinCode: any(named: 'requiresJoinCode'),
-          joinCode: any(named: 'joinCode'),
+          newJoinCode: any(named: 'newJoinCode'),
         ),
       );
       expect(find.text('Edit Sign Up'), findsNothing);
@@ -418,6 +417,222 @@ void main() {
     });
   });
 
+  group('saving only what changed', () {
+    _MockSignupService spy() {
+      final mock = _MockSignupService();
+      when(
+        () => mock.updateSignupDetails(
+          any(),
+          titleEn: any(named: 'titleEn'),
+          titleMr: any(named: 'titleMr'),
+          descriptionEn: any(named: 'descriptionEn'),
+          descriptionMr: any(named: 'descriptionMr'),
+          requiresJoinCode: any(named: 'requiresJoinCode'),
+          newJoinCode: any(named: 'newJoinCode'),
+        ),
+      ).thenAnswer((_) async {});
+      return mock;
+    }
+
+    testWidgets('sends just the field that changed', (tester) async {
+      final signup = await seed();
+      final mock = spy();
+      await open(tester, signup, withService: mock);
+
+      await tester.enterText(find.byKey(const Key('descEnField')), 'Only this');
+      await save(tester);
+
+      verify(
+        () => mock.updateSignupDetails(
+          signup.id!,
+          titleEn: null,
+          titleMr: null,
+          descriptionEn: 'Only this',
+          descriptionMr: null,
+          requiresJoinCode: null,
+          newJoinCode: null,
+        ),
+      ).called(1);
+    });
+
+    testWidgets('sends the join code only when the switch changed', (
+      tester,
+    ) async {
+      final signup = await seed();
+      final mock = spy();
+      await open(tester, signup, withService: mock);
+
+      await toggleJoinCode(tester);
+      await save(tester);
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
+      await tester.pumpAndSettle();
+
+      final captured = verify(
+        () => mock.updateSignupDetails(
+          signup.id!,
+          titleEn: null,
+          titleMr: null,
+          descriptionEn: null,
+          descriptionMr: null,
+          requiresJoinCode: true,
+          newJoinCode: captureAny(named: 'newJoinCode'),
+        ),
+      ).captured;
+      expect(captured.single, matches(RegExp(r'^[A-Z0-9]{6}$')));
+    });
+
+    testWidgets('sends no code when switching off', (tester) async {
+      final signup = await seed(requiresJoinCode: true, joinCode: 'ABC123');
+      final mock = spy();
+      await open(tester, signup, withService: mock);
+
+      await toggleJoinCode(tester);
+      await save(tester);
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => mock.updateSignupDetails(
+          signup.id!,
+          titleEn: null,
+          titleMr: null,
+          descriptionEn: null,
+          descriptionMr: null,
+          requiresJoinCode: false,
+          newJoinCode: null,
+        ),
+      ).called(1);
+    });
+
+    testWidgets('treats a whitespace-only edit as no edit', (tester) async {
+      final signup = await seed();
+      final mock = spy();
+      await open(tester, signup, withService: mock);
+
+      await tester.enterText(
+        find.byKey(const Key('titleEnField')),
+        '  Sunday Seva  ',
+      );
+      await tester.pump();
+      // No discard prompt either: nothing really changed.
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Discard changes?'), findsNothing);
+      expect(find.text('Edit Sign Up'), findsNothing);
+      verifyNever(
+        () => mock.updateSignupDetails(
+          any(),
+          titleEn: any(named: 'titleEn'),
+          titleMr: any(named: 'titleMr'),
+          descriptionEn: any(named: 'descriptionEn'),
+          descriptionMr: any(named: 'descriptionMr'),
+          requiresJoinCode: any(named: 'requiresJoinCode'),
+          newJoinCode: any(named: 'newJoinCode'),
+        ),
+      );
+    });
+
+    testWidgets('closes without writing on Save after a whitespace-only '
+        'edit', (tester) async {
+      final signup = await seed();
+      final mock = spy();
+      await open(tester, signup, withService: mock);
+
+      await tester.enterText(
+        find.byKey(const Key('titleEnField')),
+        'Sunday Seva ',
+      );
+      await save(tester);
+
+      verifyNever(
+        () => mock.updateSignupDetails(
+          any(),
+          titleEn: any(named: 'titleEn'),
+          titleMr: any(named: 'titleMr'),
+          descriptionEn: any(named: 'descriptionEn'),
+          descriptionMr: any(named: 'descriptionMr'),
+          requiresJoinCode: any(named: 'requiresJoinCode'),
+          newJoinCode: any(named: 'newJoinCode'),
+        ),
+      );
+      expect(find.text('Edit Sign Up'), findsNothing);
+    });
+
+    group('when another admin changed the sign-up meanwhile', () {
+      testWidgets('a title-only edit keeps their join code and description', (
+        tester,
+      ) async {
+        final signup = await seed(); // opened with the code off
+        await open(tester, signup);
+        await firestore.doc('signups/${signup.id}').update({
+          'requiresJoinCode': true,
+          'joinCode': 'THEIRS1',
+          'descriptionEn': 'Their description',
+        });
+
+        await tester.enterText(find.byKey(const Key('titleEnField')), 'Mine');
+        await save(tester);
+
+        final data = await stored(signup);
+        expect(data['titleEn'], 'Mine');
+        expect(data['requiresJoinCode'], true);
+        expect(data['joinCode'], 'THEIRS1');
+        expect(data['descriptionEn'], 'Their description');
+      });
+
+      testWidgets('a title-only edit does not bring back a code they '
+          'switched off', (tester) async {
+        final signup = await seed(requiresJoinCode: true, joinCode: 'ABC123');
+        await open(tester, signup);
+        await firestore.doc('signups/${signup.id}').update({
+          'requiresJoinCode': false,
+          'joinCode': null,
+        });
+
+        await tester.enterText(find.byKey(const Key('titleEnField')), 'Mine');
+        await save(tester);
+
+        final data = await stored(signup);
+        expect(data['requiresJoinCode'], false);
+        expect(data['joinCode'], isNull);
+      });
+
+      testWidgets('a title-only edit keeps the code they regenerated', (
+        tester,
+      ) async {
+        final signup = await seed(requiresJoinCode: true, joinCode: 'ABC123');
+        await open(tester, signup);
+        await firestore.doc('signups/${signup.id}').update({
+          'joinCode': 'NEWER99',
+        });
+
+        await tester.enterText(find.byKey(const Key('titleEnField')), 'Mine');
+        await save(tester);
+
+        expect((await stored(signup))['joinCode'], 'NEWER99');
+      });
+
+      testWidgets('switching the code on keeps the one they already made', (
+        tester,
+      ) async {
+        final signup = await seed();
+        await open(tester, signup);
+        await firestore.doc('signups/${signup.id}').update({
+          'requiresJoinCode': true,
+          'joinCode': 'THEIRS1',
+        });
+
+        await toggleJoinCode(tester);
+        await save(tester);
+        await tester.tap(find.widgetWithText(TextButton, 'Save'));
+        await tester.pumpAndSettle();
+
+        expect((await stored(signup))['joinCode'], 'THEIRS1');
+      });
+    });
+  });
+
   group('when saving goes wrong', () {
     _MockSignupService failing(Object error) {
       final mock = _MockSignupService();
@@ -429,7 +644,7 @@ void main() {
           descriptionEn: any(named: 'descriptionEn'),
           descriptionMr: any(named: 'descriptionMr'),
           requiresJoinCode: any(named: 'requiresJoinCode'),
-          joinCode: any(named: 'joinCode'),
+          newJoinCode: any(named: 'newJoinCode'),
         ),
       ).thenThrow(error);
       return mock;
@@ -478,7 +693,7 @@ void main() {
           descriptionEn: any(named: 'descriptionEn'),
           descriptionMr: any(named: 'descriptionMr'),
           requiresJoinCode: any(named: 'requiresJoinCode'),
-          joinCode: any(named: 'joinCode'),
+          newJoinCode: any(named: 'newJoinCode'),
         ),
       ).thenAnswer((_) async {
         calls++;
@@ -506,7 +721,7 @@ void main() {
           descriptionEn: any(named: 'descriptionEn'),
           descriptionMr: any(named: 'descriptionMr'),
           requiresJoinCode: any(named: 'requiresJoinCode'),
-          joinCode: any(named: 'joinCode'),
+          newJoinCode: any(named: 'newJoinCode'),
         ),
       ).thenAnswer((_) => done.future);
       await open(tester, signup, withService: slow);
@@ -628,6 +843,54 @@ void main() {
 
       expect(find.text('Edit Sign Up'), findsOneWidget);
       expect(find.text('Save'), findsOneWidget);
+    });
+
+    testWidgets('keeps the join code question and the discard prompt in '
+        'English under a Marathi locale', (tester) async {
+      await open(tester, await seed(), locale: const Locale('mr'));
+
+      await toggleJoinCode(tester);
+      await save(tester);
+
+      expect(find.text('Turn on the join code?'), findsOneWidget);
+      await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
+      await tester.pumpAndSettle();
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.text('Discard changes?'), findsOneWidget);
+    });
+
+    testWidgets('fits the join code question and an error at 360px and '
+        'large text', (tester) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      final failing = _MockSignupService();
+      when(
+        () => failing.updateSignupDetails(
+          any(),
+          titleEn: any(named: 'titleEn'),
+          titleMr: any(named: 'titleMr'),
+          descriptionEn: any(named: 'descriptionEn'),
+          descriptionMr: any(named: 'descriptionMr'),
+          requiresJoinCode: any(named: 'requiresJoinCode'),
+          newJoinCode: any(named: 'newJoinCode'),
+        ),
+      ).thenThrow(Exception('down'));
+      await open(tester, await seed(), withService: failing);
+
+      await toggleJoinCode(tester);
+      await save(tester);
+      expect(find.text('Turn on the join code?'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Failed to update sign up'), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('fits a 360px screen at large text', (tester) async {

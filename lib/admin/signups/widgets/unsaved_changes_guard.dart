@@ -32,28 +32,32 @@ class UnsavedChangesGuard extends StatelessWidget {
   }
 
   Future<void> _confirmDiscard(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
     final discard = await showEnglishDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.signupDiscardChangesTitle),
-        content: Text(l10n.signupDiscardChangesMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.signupKeepEditingButton),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(
-              l10n.discardLabel,
-              style: TextStyle(
-                color: Theme.of(dialogContext).colorScheme.error,
+      builder: (dialogContext) {
+        // Resolved in the dialog, which is always English, so the prompt
+        // matches the screens whatever the guard sits under.
+        final l10n = AppLocalizations.of(dialogContext)!;
+        return AlertDialog(
+          title: Text(l10n.signupDiscardChangesTitle),
+          content: Text(l10n.signupDiscardChangesMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.signupKeepEditingButton),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(
+                l10n.discardLabel,
+                style: TextStyle(
+                  color: Theme.of(dialogContext).colorScheme.error,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      },
     );
     if (discard == true && context.mounted) Navigator.pop(context);
   }

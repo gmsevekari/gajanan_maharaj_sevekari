@@ -79,13 +79,21 @@ class _AdminEditSignupScreenState extends State<AdminEditSignupScreen> {
 
   /// Whether anything differs from the sign-up as it was opened. Changing a
   /// field back to what it was clears this again.
-  bool get _hasChanges {
-    final signup = widget.signup;
-    return _titleEn.text != signup.titleEn ||
-        _titleMr.text != signup.titleMr ||
-        _descEn.text != signup.descriptionEn ||
-        _descMr.text != signup.descriptionMr ||
-        _requiresJoinCode != signup.requiresJoinCode;
+  ///
+  /// Text is compared trimmed, as it is saved, so adding or removing only
+  /// spaces is no change.
+  bool get _hasChanges =>
+      _changed(_titleEn, widget.signup.titleEn) != null ||
+      _changed(_titleMr, widget.signup.titleMr) != null ||
+      _changed(_descEn, widget.signup.descriptionEn) != null ||
+      _changed(_descMr, widget.signup.descriptionMr) != null ||
+      _requiresJoinCode != widget.signup.requiresJoinCode;
+
+  /// The trimmed text of [controller] if it differs from [original] (also
+  /// trimmed), else null - so only edited fields are sent.
+  String? _changed(TextEditingController controller, String original) {
+    final text = controller.text.trim();
+    return text == original.trim() ? null : text;
   }
 
   /// Called when anything is edited: refreshes whether there are unsaved
@@ -102,9 +110,11 @@ class _AdminEditSignupScreenState extends State<AdminEditSignupScreen> {
   }
 
   void _setRequiresJoinCode(bool value) {
-    _requiresJoinCode = value;
-    _refreshDirty();
-    setState(() {});
+    setState(() {
+      _requiresJoinCode = value;
+      _dirty = _hasChanges;
+      _errorText = null;
+    });
   }
 
   /// Asks the admin to confirm switching the join code on or off. True if
@@ -138,23 +148,21 @@ class _AdminEditSignupScreenState extends State<AdminEditSignupScreen> {
     return confirmed == true;
   }
 
-  /// Writes the changes. Returns the message to show if they couldn't be
-  /// saved, or null once they are.
+  /// Writes what changed - only that, so a form opened before another admin
+  /// edited the sign-up can't overwrite their changes. Returns the message to
+  /// show if it couldn't be saved, or null once it is.
   Future<String?> _persist(AppLocalizations l10n) async {
     final signup = widget.signup;
+    final switched = _requiresJoinCode != signup.requiresJoinCode;
     try {
       await _service.updateSignupDetails(
         signup.id!,
-        titleEn: _titleEn.text.trim(),
-        titleMr: _titleMr.text.trim(),
-        descriptionEn: _descEn.text.trim(),
-        descriptionMr: _descMr.text.trim(),
-        requiresJoinCode: _requiresJoinCode,
-        joinCode: joinCodeAfterEdit(
-          wasRequired: signup.requiresJoinCode,
-          currentCode: signup.joinCode,
-          nowRequired: _requiresJoinCode,
-        ),
+        titleEn: _changed(_titleEn, signup.titleEn),
+        titleMr: _changed(_titleMr, signup.titleMr),
+        descriptionEn: _changed(_descEn, signup.descriptionEn),
+        descriptionMr: _changed(_descMr, signup.descriptionMr),
+        requiresJoinCode: switched ? _requiresJoinCode : null,
+        newJoinCode: switched && _requiresJoinCode ? generateJoinCode() : null,
       );
       return null;
     } on Exception catch (e) {
@@ -216,27 +224,7 @@ class _AdminEditSignupScreenState extends State<AdminEditSignupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _field(
-                  'titleEnField',
-                  _titleEn,
-                  l10n.signupTitleEnLabel,
-                  validator: (value) => value == null || value.trim().isEmpty
-                      ? l10n.signupTitleEnRequired
-                      : null,
-                ),
-                _field('titleMrField', _titleMr, l10n.signupTitleMrLabel),
-                _field(
-                  'descEnField',
-                  _descEn,
-                  l10n.signupDescEnLabel,
-                  maxLines: 3,
-                ),
-                _field(
-                  'descMrField',
-                  _descMr,
-                  l10n.signupDescMrLabel,
-                  maxLines: 3,
-                ),
+                ..._buildFields(l10n),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   value: _requiresJoinCode,
@@ -253,6 +241,20 @@ class _AdminEditSignupScreenState extends State<AdminEditSignupScreen> {
       ),
     );
   }
+
+  List<Widget> _buildFields(AppLocalizations l10n) => [
+    _field(
+      'titleEnField',
+      _titleEn,
+      l10n.signupTitleEnLabel,
+      validator: (value) => value == null || value.trim().isEmpty
+          ? l10n.signupTitleEnRequired
+          : null,
+    ),
+    _field('titleMrField', _titleMr, l10n.signupTitleMrLabel),
+    _field('descEnField', _descEn, l10n.signupDescEnLabel, maxLines: 3),
+    _field('descMrField', _descMr, l10n.signupDescMrLabel, maxLines: 3),
+  ];
 
   Widget _field(
     String key,
