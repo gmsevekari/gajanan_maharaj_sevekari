@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 
-/// Duplicate/Share/Export/Delete actions for [AdminSignupDetailScreen].
+/// Duplicate, Share and the two exports (the summary image and the table of
+/// sign-ups) for [AdminSignupDetailScreen]. Deleting a sign-up is on the
+/// overview card, beside Edit.
 class SignupActionsRow extends StatelessWidget {
   final VoidCallback onDuplicate;
   final VoidCallback onShare;
   final VoidCallback onExport;
-  final VoidCallback onDelete;
+  final VoidCallback onExportSignups;
 
   const SignupActionsRow({
     super.key,
     required this.onDuplicate,
     required this.onShare,
     required this.onExport,
-    required this.onDelete,
+    required this.onExportSignups,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
 
     final duplicate = ElevatedButton.icon(
       icon: const Icon(Icons.copy, size: 16),
@@ -36,15 +37,11 @@ class SignupActionsRow extends StatelessWidget {
       label: Text(l10n.signupExportButton),
       onPressed: onExport,
     );
-    final delete = ElevatedButton.icon(
-      key: const Key('deleteSignupButton'),
-      icon: const Icon(Icons.delete_outline, size: 16),
-      label: Text(l10n.signupDeleteButton),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: colorScheme.error,
-        foregroundColor: colorScheme.onError,
-      ),
-      onPressed: onDelete,
+    final exportSignups = ElevatedButton.icon(
+      key: const Key('exportSignupsButton'),
+      icon: const Icon(Icons.table_chart_outlined, size: 16),
+      label: Text(l10n.signupExportEntriesButton),
+      onPressed: onExportSignups,
     );
 
     // A 2x2 grid of equal-width buttons, so the actions line up instead of
@@ -53,7 +50,7 @@ class SignupActionsRow extends StatelessWidget {
       children: [
         _buttonPair(duplicate, share),
         const SizedBox(height: _gap),
-        _buttonPair(export, delete),
+        _buttonPair(export, exportSignups),
       ],
     );
   }

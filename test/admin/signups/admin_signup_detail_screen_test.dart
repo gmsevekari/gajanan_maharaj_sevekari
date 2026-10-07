@@ -1,13 +1,15 @@
 import 'dart:async';
-import 'dart:typed_data';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_edit_signup_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_entries_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_slots_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_actions_row.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_status_section.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_header_image_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_join_code_row.dart';
@@ -25,6 +27,7 @@ import 'package:gajanan_maharaj_sevekari/settings/font_provider.dart';
 import 'package:gajanan_maharaj_sevekari/settings/locale_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/slot_when_view.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:mocktail/mocktail.dart';
@@ -72,6 +75,17 @@ class _ThrowingPathProviderPlatform extends PathProviderPlatform {
   Future<String?> getTemporaryPath() async {
     throw Exception('no temp directory in tests');
   }
+}
+
+/// Hands out a real directory as the temp directory, so the export can write
+/// its image.
+class _TempPathProviderPlatform extends PathProviderPlatform {
+  final String path;
+
+  _TempPathProviderPlatform(this.path);
+
+  @override
+  Future<String?> getTemporaryPath() async => path;
 }
 
 void main() {
@@ -1506,16 +1520,86 @@ void main() {
       final signupId = await seedSignupWithSlot();
       await pumpPushedDetailScreen(tester, signupId: signupId);
 
-      await tester.tap(find.text('Delete'));
+      await tester.tap(find.byKey(const Key('deleteSignupButton')));
       await tester.pumpAndSettle();
 
       expect(find.text('Delete Sign Up?'), findsOneWidget);
-      await tester.tap(find.text('No'));
+      // Asking is not deleting: nothing is removed until it is confirmed.
+      expect(
+        (await firestore.collection('signups').doc(signupId).get()).exists,
+        isTrue,
+      );
+      await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
 
+      expect(find.text('Delete Sign Up?'), findsNothing);
       expect(find.byType(AdminSignupDetailScreen), findsOneWidget);
       final doc = await firestore.collection('signups').doc(signupId).get();
       expect(doc.exists, isTrue);
+    });
+
+    testWidgets('keeps the signup when the dialog is dismissed', (
+      tester,
+    ) async {
+      final signupId = await seedSignupWithSlot();
+      await pumpPushedDetailScreen(tester, signupId: signupId);
+
+      await tester.tap(find.byKey(const Key('deleteSignupButton')));
+      await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(5, 5));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Delete Sign Up?'), findsNothing);
+      final doc = await firestore.collection('signups').doc(signupId).get();
+      expect(doc.exists, isTrue);
+    });
+
+    testWidgets('is on the overview card, beside Edit, not in the actions', (
+      tester,
+    ) async {
+      final signupId = await seedSignupWithSlot();
+      await pumpPushedDetailScreen(tester, signupId: signupId);
+
+      expect(
+        find.descendant(
+          of: find.byType(SignupOverviewCard),
+          matching: find.byKey(const Key('deleteSignupButton')),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byType(SignupActionsRow),
+          matching: find.text('Delete'),
+        ),
+        findsNothing,
+      );
+    });
+
+    testWidgets('confirm dialog offers Cancel and a red Delete', (
+      tester,
+    ) async {
+      final signupId = await seedSignupWithSlot();
+      await pumpPushedDetailScreen(tester, signupId: signupId);
+
+      await tester.tap(find.byKey(const Key('deleteSignupButton')));
+      await tester.pumpAndSettle();
+
+      final dialog = find.byType(AlertDialog);
+      expect(
+        find.descendant(of: dialog, matching: find.text('Cancel')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: dialog, matching: find.text('No')),
+        findsNothing,
+      );
+      final delete = find.descendant(of: dialog, matching: find.text('Delete'));
+      expect(delete, findsOneWidget);
+      expect(
+        tester.widget<Text>(delete).style?.color,
+        Theme.of(tester.element(dialog)).colorScheme.error,
+      );
     });
 
     testWidgets('deleting removes the signup and returns to the previous '
@@ -1523,9 +1607,14 @@ void main() {
       final signupId = await seedSignupWithSlot();
       await pumpPushedDetailScreen(tester, signupId: signupId);
 
-      await tester.tap(find.text('Delete'));
+      await tester.tap(find.byKey(const Key('deleteSignupButton')));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Yes'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text('Delete'),
+        ),
+      );
       await tester.pumpAndSettle();
 
       final signupRef = firestore.collection('signups').doc(signupId);
@@ -1568,9 +1657,14 @@ void main() {
         signupId: 'signup_del_err',
         signupService: mockService,
       );
-      await tester.tap(find.text('Delete'));
+      await tester.tap(find.byKey(const Key('deleteSignupButton')));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Yes'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text('Delete'),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(
@@ -1578,6 +1672,524 @@ void main() {
         findsOneWidget,
       );
       expect(find.byType(AdminSignupDetailScreen), findsOneWidget);
+    });
+  });
+
+  group('AdminSignupDetailScreen export sign ups', () {
+    const shareChannel = MethodChannel('dev.fluttercommunity.plus/share');
+    late List<MethodCall> shareCalls;
+    late List<Widget> capturedCards;
+    late List<double> capturedRatios;
+    late Directory tempDir;
+
+    setUp(() {
+      shareCalls = [];
+      capturedCards = [];
+      capturedRatios = [];
+      tempDir = Directory.systemTemp.createTempSync('signup_export_test');
+      final original = PathProviderPlatform.instance;
+      PathProviderPlatform.instance = _TempPathProviderPlatform(tempDir.path);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(shareChannel, (call) async {
+            shareCalls.add(call);
+            return 'dev.fluttercommunity.plus/share/success';
+          });
+      addTearDown(() {
+        PathProviderPlatform.instance = original;
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(shareChannel, null);
+        tempDir.deleteSync(recursive: true);
+      });
+    });
+
+    Future<void> addSlot(
+      DocumentReference<Map<String, dynamic>> signup,
+      String id,
+      String label, {
+      required Duration from,
+      List<String> names = const [],
+    }) async {
+      final start = DateTime.now().add(from);
+      await signup.collection('slots').doc(id).set({
+        'labelEn': label,
+        'labelMr': '',
+        'startAt': Timestamp.fromDate(start),
+        'endAt': Timestamp.fromDate(start.add(const Duration(hours: 2))),
+        'timezone': 'America/Los_Angeles',
+        'capacity': 5,
+        'claimedCount': names.length,
+        'sortOrder': 0,
+        'createdAt': Timestamp.fromDate(DateTime.now()),
+      });
+      for (final name in names) {
+        await signup.collection('entries').add({
+          'slotId': id,
+          'name': name,
+          'phone': '12065550100',
+          'email': '$name@example.com',
+          'joinedAt': Timestamp.fromDate(DateTime.now()),
+        });
+      }
+    }
+
+    Future<String> seed({bool withEntries = true}) async {
+      final now = DateTime.now();
+      final signup = await firestore.collection('signups').add({
+        'titleEn': 'Prasad Seva',
+        'titleMr': '',
+        'groupId': 'gajanan_maharaj_seattle',
+        'status': SignupStatus.published.name,
+        'requiresJoinCode': false,
+        'createdAt': Timestamp.fromDate(now),
+        'updatedAt': Timestamp.fromDate(now),
+        'createdBy': 'admin@test.com',
+      });
+      await addSlot(
+        signup,
+        'soon',
+        'Soon Seva',
+        from: const Duration(days: 3),
+        names: withEntries ? ['Asha'] : [],
+      );
+      await addSlot(
+        signup,
+        'later',
+        'Later Seva',
+        from: const Duration(days: 5),
+        names: withEntries ? ['Bhau', 'Bina'] : [],
+      );
+      await addSlot(
+        signup,
+        'old',
+        'Old Seva',
+        from: const Duration(days: -5),
+        names: withEntries ? ['Pastor'] : [],
+      );
+      await addSlot(
+        signup,
+        'empty',
+        'Empty Seva',
+        from: const Duration(days: 9),
+      );
+      return signup.id;
+    }
+
+    Future<void> pumpScreen(
+      WidgetTester tester,
+      String signupId, {
+      Future<Uint8List> Function(Widget card, double pixelRatio)? capture,
+      bool realCapture = false,
+    }) async {
+      setLargeScreen(tester);
+      addTearDown(() => resetScreen(tester));
+      await tester.pumpWidget(
+        createWidget(
+          child: AdminSignupDetailScreen(
+            signupId: signupId,
+            adminUser: adminUser,
+            firestore: firestore,
+            storage: storage,
+            entriesExportCapture: realCapture
+                ? null
+                : capture ??
+                      (card, pixelRatio) async {
+                        capturedCards.add(card);
+                        capturedRatios.add(pixelRatio);
+                        return Uint8List.fromList([1, 2, 3]);
+                      },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> openPicker(WidgetTester tester) async {
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Export Sign Ups'));
+      await tester.pumpAndSettle();
+    }
+
+    /// Lets the real file write finish. Each step of it completes in real
+    /// time but only continues on the next pump, so alternate the two until
+    /// the progress overlay is gone.
+    Future<void> settleRealIo(WidgetTester tester) async {
+      for (var i = 0; i < 100; i++) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 10)),
+        );
+        await tester.pump(const Duration(milliseconds: 50));
+        if (find.byType(CircularProgressIndicator).evaluate().isEmpty) break;
+      }
+      await tester.pumpAndSettle();
+    }
+
+    /// Taps Export in the picker and waits for the export to finish.
+    Future<void> confirmExport(WidgetTester tester) async {
+      await tester.tap(find.widgetWithText(TextButton, 'Export'));
+      await tester.pump();
+      await settleRealIo(tester);
+    }
+
+    /// The names the captured card shows, built the way the capture builds it.
+    Future<void> showCapturedCard(WidgetTester tester, [int index = 0]) async {
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: capturedCards[index],
+        ),
+      );
+    }
+
+    testWidgets('opens a picker of the upcoming slots only', (tester) async {
+      await pumpScreen(tester, await seed());
+
+      await openPicker(tester);
+
+      expect(find.text('Export Sign Ups'), findsNWidgets(2)); // button + title
+      expect(find.byType(AlertDialog), findsOneWidget);
+      // (The hidden summary image behind the dialog lists every slot.)
+      Finder inDialog(String label) => find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.text(label),
+      );
+      for (final label in ['Soon Seva', 'Later Seva', 'Empty Seva']) {
+        expect(inDialog(label), findsOneWidget, reason: label);
+      }
+      expect(inDialog('Old Seva'), findsNothing);
+    });
+
+    testWidgets('shares an image of the entries of every ticked slot', (
+      tester,
+    ) async {
+      final id = await seed();
+      await pumpScreen(tester, id);
+
+      await openPicker(tester);
+      await confirmExport(tester);
+
+      expect(capturedCards, hasLength(1));
+      await showCapturedCard(tester);
+      expect(find.text('Prasad Seva'), findsOneWidget);
+      for (final name in ['Asha', 'Bhau', 'Bina']) {
+        expect(find.text(name), findsOneWidget, reason: name);
+      }
+      expect(find.text('Soon Seva'), findsOneWidget); // its slot's title ...
+      // ... and when it is (a SlotWhenView per slot; its wording depends on
+      // the clock, so it is not matched here).
+      expect(find.byType(SlotWhenView), findsNWidgets(2));
+      expect(find.text('Pastor'), findsNothing); // a past slot
+      expect(find.textContaining('example.com'), findsNothing);
+      expect(find.textContaining('12065550100'), findsNothing);
+
+      expect(shareCalls, hasLength(1));
+      final args = shareCalls.single.arguments as Map<Object?, Object?>;
+      final paths = (args['paths'] as List).cast<String>();
+      expect(paths.single, endsWith('signup_entries_$id.png'));
+      expect(File(paths.single).readAsBytesSync(), [1, 2, 3]);
+      expect(args['text'], 'Prasad Seva');
+    });
+
+    testWidgets('leaves out the entries of slots that were unticked', (
+      tester,
+    ) async {
+      await pumpScreen(tester, await seed());
+
+      await openPicker(tester);
+      await tester.tap(find.widgetWithText(CheckboxListTile, 'Later Seva'));
+      await tester.pump();
+      await confirmExport(tester);
+
+      await showCapturedCard(tester);
+      expect(find.text('Asha'), findsOneWidget);
+      expect(find.text('Bhau'), findsNothing);
+      expect(find.text('Bina'), findsNothing);
+    });
+
+    /// Upcoming slots with [perSlot] entries each.
+    Future<String> seedBusy({required int slots, required int perSlot}) async {
+      final now = DateTime.now();
+      final signup = await firestore.collection('signups').add({
+        'titleEn': 'Busy Seva',
+        'titleMr': '',
+        'groupId': 'gajanan_maharaj_seattle',
+        'status': SignupStatus.published.name,
+        'requiresJoinCode': false,
+        'createdAt': Timestamp.fromDate(now),
+        'updatedAt': Timestamp.fromDate(now),
+        'createdBy': 'admin@test.com',
+      });
+      for (var i = 0; i < slots; i++) {
+        await addSlot(
+          signup,
+          'slot$i',
+          'Seva $i',
+          from: Duration(days: 3 + i),
+          names: [for (var n = 0; n < perSlot; n++) 'Devotee $i-$n'],
+        );
+      }
+      return signup.id;
+    }
+
+    List<String> sharedPaths() {
+      final args = shareCalls.single.arguments as Map<Object?, Object?>;
+      return (args['paths'] as List).cast<String>();
+    }
+
+    testWidgets('splits a long list over several images, shared together', (
+      tester,
+    ) async {
+      final id = await seedBusy(slots: 3, perSlot: 30);
+      await pumpScreen(tester, id);
+
+      await openPicker(tester);
+      await confirmExport(tester);
+
+      expect(capturedCards.length, greaterThan(1));
+      final total = capturedCards.length;
+      expect(shareCalls, hasLength(1)); // one share sheet for all of them
+      expect(sharedPaths(), [
+        for (var i = 1; i <= total; i++)
+          endsWith('signup_entries_${id}_$i.png'),
+      ]);
+
+      // Every devotee is on exactly one image, and each says which it is.
+      final seen = <String>[];
+      for (var i = 0; i < total; i++) {
+        await showCapturedCard(tester, i);
+        expect(find.text('Entries - Part ${i + 1} of $total'), findsOneWidget);
+        for (final slot in [0, 1, 2]) {
+          for (var n = 0; n < 30; n++) {
+            if (find.text('Devotee $slot-$n').evaluate().isNotEmpty) {
+              seen.add('Devotee $slot-$n');
+            }
+          }
+        }
+      }
+      expect(seen, hasLength(90));
+      expect(seen.toSet(), hasLength(90));
+    });
+
+    testWidgets('stops quietly when the screen is closed part-way through', (
+      tester,
+    ) async {
+      final firstImage = Completer<Uint8List>();
+      final logged = <String?>[];
+      final original = debugPrint;
+      var calls = 0;
+      try {
+        debugPrint = (message, {wrapWidth}) => logged.add(message);
+        await pumpScreen(
+          tester,
+          await seedBusy(slots: 3, perSlot: 30),
+          capture: (card, pixelRatio) {
+            calls++;
+            return calls == 1
+                ? firstImage.future
+                : Future.value(Uint8List.fromList([1]));
+          },
+        );
+
+        await openPicker(tester);
+        await tester.tap(find.widgetWithText(TextButton, 'Export'));
+        await tester.pump();
+        await tester.pumpWidget(const SizedBox()); // the admin leaves
+        firstImage.complete(Uint8List.fromList([1]));
+        // Give anything still going (a file write, a share) time to happen.
+        for (var i = 0; i < 20; i++) {
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 10)),
+          );
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+      } finally {
+        debugPrint = original;
+      }
+
+      expect(tester.takeException(), isNull);
+      expect(logged, isEmpty); // not even a logged failure
+      expect(calls, 1); // no more images drawn for a screen that is gone
+      expect(shareCalls, isEmpty);
+    });
+
+    testWidgets('draws a very long slot less sharply so it still fits', (
+      tester,
+    ) async {
+      await pumpScreen(tester, await seedBusy(slots: 1, perSlot: 100));
+
+      await openPicker(tester);
+      await confirmExport(tester);
+
+      expect(capturedRatios, hasLength(1));
+      expect(capturedRatios.single, lessThan(2));
+      expect(capturedRatios.single, greaterThanOrEqualTo(1));
+    });
+
+    testWidgets('draws a short list at full sharpness', (tester) async {
+      await pumpScreen(tester, await seed());
+
+      await openPicker(tester);
+      await confirmExport(tester);
+
+      expect(capturedRatios, [2]);
+    });
+
+    testWidgets('makes a real PNG of the table when nothing is stubbed', (
+      tester,
+    ) async {
+      final id = await seed();
+      await pumpScreen(tester, id, realCapture: true);
+
+      await openPicker(tester);
+      await confirmExport(tester);
+
+      expect(find.text('Failed to export image'), findsNothing);
+      final bytes = File(sharedPaths().single).readAsBytesSync();
+      expect(bytes.sublist(1, 4), 'PNG'.codeUnits);
+      final header = ByteData.sublistView(Uint8List.fromList(bytes));
+      expect(header.getUint32(16), 840); // 420 dp card at ratio 2
+      expect(header.getUint32(20), greaterThan(200));
+    });
+
+    testWidgets('names the group on the image', (tester) async {
+      await pumpScreen(tester, await seed());
+
+      await openPicker(tester);
+      await confirmExport(tester);
+
+      await showCapturedCard(tester);
+      expect(find.text('Seattle'), findsOneWidget);
+    });
+
+    testWidgets('does nothing when the picker is cancelled', (tester) async {
+      await pumpScreen(tester, await seed());
+
+      await openPicker(tester);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(capturedCards, isEmpty);
+      expect(shareCalls, isEmpty);
+    });
+
+    testWidgets('says so, and shares nothing, when the ticked slots have no '
+        'sign-ups', (tester) async {
+      await pumpScreen(tester, await seed());
+
+      await openPicker(tester);
+      await tester.tap(find.widgetWithText(CheckboxListTile, 'Select all'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(CheckboxListTile, 'Empty Seva'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(TextButton, 'Export'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('The selected slots have no sign-ups yet.'),
+        findsOneWidget,
+      );
+      expect(capturedCards, isEmpty);
+      expect(shareCalls, isEmpty);
+    });
+
+    testWidgets('explains when there are no upcoming slots', (tester) async {
+      final now = DateTime.now();
+      final signup = await firestore.collection('signups').add({
+        'titleEn': 'Done Seva',
+        'titleMr': '',
+        'groupId': 'gajanan_maharaj_seattle',
+        'status': SignupStatus.published.name,
+        'requiresJoinCode': false,
+        'createdAt': Timestamp.fromDate(now),
+        'updatedAt': Timestamp.fromDate(now),
+        'createdBy': 'admin@test.com',
+      });
+      await addSlot(signup, 'old', 'Old Seva', from: const Duration(days: -5));
+      await pumpScreen(tester, signup.id);
+
+      await openPicker(tester);
+
+      expect(
+        find.text('There are no upcoming slots to export.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('shows a progress overlay while the image is made', (
+      tester,
+    ) async {
+      final pending = Completer<Uint8List>();
+      await pumpScreen(
+        tester,
+        await seed(),
+        capture: (card, pixelRatio) => pending.future,
+      );
+
+      await openPicker(tester);
+      await tester.tap(find.widgetWithText(TextButton, 'Export'));
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      pending.complete(Uint8List.fromList([1]));
+      await settleRealIo(tester);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(shareCalls, hasLength(1));
+    });
+
+    testWidgets('logs why making the image failed', (tester) async {
+      final logged = <String?>[];
+      final original = debugPrint;
+      // Put back before the test ends: the framework checks it then.
+      try {
+        debugPrint = (message, {wrapWidth}) => logged.add(message);
+        await pumpScreen(
+          tester,
+          await seed(),
+          capture: (card, pixelRatio) async => throw Exception('render failed'),
+        );
+
+        await openPicker(tester);
+        await tester.tap(find.widgetWithText(TextButton, 'Export'));
+        await tester.pumpAndSettle();
+      } finally {
+        debugPrint = original;
+      }
+
+      expect(logged.join(), contains('render failed'));
+    });
+
+    testWidgets('shows an error, and lets the admin carry on, when making the '
+        'image fails', (tester) async {
+      await pumpScreen(
+        tester,
+        await seed(),
+        capture: (card, pixelRatio) async => throw Exception('render failed'),
+      );
+
+      await openPicker(tester);
+      await tester.tap(find.widgetWithText(TextButton, 'Export'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Failed to export image'), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(shareCalls, isEmpty);
+      // The button works again.
+      await openPicker(tester);
+      expect(find.byType(AlertDialog), findsOneWidget);
+    });
+
+    testWidgets('shows an error when the image cannot be saved', (
+      tester,
+    ) async {
+      PathProviderPlatform.instance = _ThrowingPathProviderPlatform();
+      await pumpScreen(tester, await seed());
+
+      await openPicker(tester);
+      await tester.tap(find.widgetWithText(TextButton, 'Export'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Failed to export image'), findsOneWidget);
+      expect(shareCalls, isEmpty);
     });
   });
 }

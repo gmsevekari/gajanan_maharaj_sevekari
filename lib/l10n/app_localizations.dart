@@ -5240,6 +5240,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No slots here'**
   String get signupNoSlotsInTabMessage;
+
+  /// No description provided for @signupExportEntriesButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Sign Ups'**
+  String get signupExportEntriesButton;
+
+  /// No description provided for @signupExportEntriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Sign Ups'**
+  String get signupExportEntriesTitle;
+
+  /// No description provided for @signupExportEntriesPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the upcoming slots to include.'**
+  String get signupExportEntriesPrompt;
+
+  /// No description provided for @signupExportSelectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get signupExportSelectAll;
+
+  /// No description provided for @signupExportConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get signupExportConfirm;
+
+  /// No description provided for @signupExportNoUpcomingSlots.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no upcoming slots to export.'**
+  String get signupExportNoUpcomingSlots;
+
+  /// No description provided for @signupExportNoEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected slots have no sign-ups yet.'**
+  String get signupExportNoEntries;
+
+  /// No description provided for @signupExportPart.
+  ///
+  /// In en, this message translates to:
+  /// **'Part {part} of {total}'**
+  String signupExportPart(String part, String total);
 }
 
 class _AppLocalizationsDelegate

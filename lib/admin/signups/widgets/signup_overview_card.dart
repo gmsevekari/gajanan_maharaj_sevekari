@@ -6,8 +6,11 @@ import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 
 /// A sign-up's title, group chip, status and (when one is required) join
 /// code, shown at the top of [AdminSignupDetailScreen], with an Edit button
-/// for the title, description and join code. The status here is read-only; it
-/// is changed with [SignupStatusSection].
+/// for the title, description and join code and a Delete button for the whole
+/// sign-up. The status here is read-only; it is changed with
+/// [SignupStatusSection].
+///
+/// Delete only asks [onDelete] to start; confirming it is the caller's job.
 class SignupOverviewCard extends StatelessWidget {
   final String title;
   final String groupName;
@@ -16,6 +19,7 @@ class SignupOverviewCard extends StatelessWidget {
   /// Null when the signup doesn't require a join code.
   final String? joinCode;
   final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   const SignupOverviewCard({
     super.key,
@@ -23,6 +27,7 @@ class SignupOverviewCard extends StatelessWidget {
     required this.groupName,
     required this.status,
     required this.onEdit,
+    required this.onDelete,
     this.joinCode,
   });
 
@@ -59,23 +64,44 @@ class SignupOverviewCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: _StatusChip(status: status),
+            // Wraps, not a Row: at large text the status and the two buttons
+            // no longer fit on one line, and the buttons drop below it (and,
+            // if need be, below each other).
+            SizedBox(
+              // Full width, or the Wrap shrinks to its content and the buttons
+              // sit beside the status instead of at the card's edge.
+              width: double.infinity,
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  _StatusChip(status: status),
+                  Wrap(
+                    spacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      TextButton.icon(
+                        key: const Key('deleteSignupButton'),
+                        icon: const Icon(Icons.delete_outline, size: 16),
+                        label: Text(l10n.signupDeleteButton),
+                        onPressed: onDelete,
+                        style: TextButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          foregroundColor: theme.colorScheme.error,
+                        ),
+                      ),
+                      TextButton.icon(
+                        icon: const Icon(Icons.edit_outlined, size: 16),
+                        label: Text(l10n.signupEditSignupButton),
+                        onPressed: onEdit,
+                        style: TextButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                TextButton.icon(
-                  icon: const Icon(Icons.edit_outlined, size: 16),
-                  label: Text(l10n.signupEditSignupButton),
-                  onPressed: onEdit,
-                  style: TextButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
             if (code != null) ...[
               const SizedBox(height: 8),

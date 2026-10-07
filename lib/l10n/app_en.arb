@@ -1057,5 +1057,23 @@
   "signupEntriesHeading": "Entries",
   "signupEntriesEmptyMessage": "No one has signed up yet",
   "signupEntriesTitleColumn": "Title",
-  "signupNoSlotsInTabMessage": "No slots here"
+  "signupNoSlotsInTabMessage": "No slots here",
+  "signupExportEntriesButton": "Export Sign Ups",
+  "signupExportEntriesTitle": "Export Sign Ups",
+  "signupExportEntriesPrompt": "Choose the upcoming slots to include.",
+  "signupExportSelectAll": "Select all",
+  "signupExportConfirm": "Export",
+  "signupExportNoUpcomingSlots": "There are no upcoming slots to export.",
+  "signupExportNoEntries": "The selected slots have no sign-ups yet.",
+  "signupExportPart": "Part {part} of {total}",
+  "@signupExportPart": {
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  }
 }

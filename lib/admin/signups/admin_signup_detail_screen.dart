@@ -7,7 +7,10 @@ import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_edit_signup_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_entries_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_slots_screen.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/signup_entries_export_pages.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/export_slots_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_actions_row.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_entries_export_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_export_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_header_image_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_overview_card.dart';
@@ -55,6 +58,13 @@ class AdminSignupDetailScreen extends StatefulWidget {
   @visibleForTesting
   final Future<Uint8List?> Function()? exportCapture;
 
+  /// Overrides how a sign-ups image is rendered from its card and pixel
+  /// ratio; injected for testing. Defaults to
+  /// [ScreenshotController.captureFromLongWidget].
+  @visibleForTesting
+  final Future<Uint8List> Function(Widget card, double pixelRatio)?
+  entriesExportCapture;
+
   const AdminSignupDetailScreen({
     super.key,
     this.signupId,
@@ -63,6 +73,7 @@ class AdminSignupDetailScreen extends StatefulWidget {
     this.signupService,
     this.storage,
     this.exportCapture,
+    this.entriesExportCapture,
   });
 
   @override
@@ -72,6 +83,8 @@ class AdminSignupDetailScreen extends StatefulWidget {
 
 class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
   static const double _offscreenExportOffset = 9999;
+
+  static const Duration _entriesExportDelay = Duration(milliseconds: 200);
 
   late final SignupService _service;
   final ScreenshotController _exportController = ScreenshotController();
@@ -201,7 +214,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: Text(l10n.no),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -209,7 +222,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
               _deleteSignup(signup, l10n);
             },
             child: Text(
-              l10n.yes,
+              l10n.delete,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
@@ -271,17 +284,9 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
       final imageBytes = await capture();
       if (imageBytes == null) return;
 
-      final tempDir = await getTemporaryDirectory();
-      final file = await File(
-        '${tempDir.path}/signup_${signup.id ?? "summary"}.png',
-      ).writeAsBytes(imageBytes);
-
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(file.path)],
-          text: l10n.signupExportSummaryTitle,
-        ),
-      );
+      await _shareImages({
+        'signup_${signup.id ?? "summary"}.png': imageBytes,
+      }, text: l10n.signupExportSummaryTitle);
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
@@ -289,6 +294,107 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
         ..showSnackBar(SnackBar(content: Text(l10n.signupExportFailed)));
     }
   }
+
+  /// Saves each of [images] (PNG bytes by file name) and opens the share
+  /// sheet with all of them.
+  Future<void> _shareImages(
+    Map<String, Uint8List> images, {
+    required String text,
+  }) async {
+    final tempDir = await getTemporaryDirectory();
+    final files = [
+      for (final image in images.entries)
+        XFile(
+          (await File(
+            '${tempDir.path}/${image.key}',
+          ).writeAsBytes(image.value)).path,
+        ),
+    ];
+    await SharePlus.instance.share(ShareParams(files: files, text: text));
+  }
+
+  /// Asks which upcoming slots to include, then shares an image of the
+  /// entries table for them: the same Date / Title / Name table devotees see.
+  /// A long list is split over several images (see [paginateSignupExport]).
+  Future<void> _exportSignupEntries(
+    Signup signup,
+    String title,
+    String groupName,
+    List<SignupSlot> slots,
+    List<SignupEntry> entries,
+    AppLocalizations l10n,
+  ) async {
+    if (_isProcessing) return;
+    final chosen = await showExportSlotsDialog(
+      context: context,
+      slots: slots,
+      now: DateTime.now(),
+    );
+    if (chosen == null || !mounted) return;
+
+    final pages = paginateSignupExport(slots: chosen, entries: entries);
+    if (pages.isEmpty) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(l10n.signupExportNoEntries)));
+      return;
+    }
+
+    setState(() => _isProcessing = true);
+    try {
+      final id = signup.id ?? 'export';
+      final images = await _renderEntryPages(pages, title, groupName);
+      if (!mounted) return;
+      await _shareImages({
+        for (var i = 0; i < images.length; i++)
+          'signup_entries_$id${images.length > 1 ? '_${i + 1}' : ''}.png':
+              images[i],
+      }, text: title);
+    } catch (e) {
+      debugPrint('Sign-ups export failed: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(l10n.signupExportFailed)));
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
+    }
+  }
+
+  /// One PNG per page, in order.
+  Future<List<Uint8List>> _renderEntryPages(
+    List<SignupExportPage> pages,
+    String title,
+    String groupName,
+  ) async {
+    final capture = widget.entriesExportCapture ?? _captureEntriesCard;
+    final images = <Uint8List>[];
+    for (var i = 0; i < pages.length; i++) {
+      // The screen may have been closed while an earlier image was drawn.
+      if (!mounted) return images;
+      final card = SignupEntriesExportCard.scoped(
+        context,
+        SignupEntriesExportCard(
+          title: title,
+          groupName: groupName,
+          entries: pages[i].entries,
+          slots: pages[i].slots,
+          part: i + 1,
+          totalParts: pages.length,
+        ),
+      );
+      images.add(await capture(card, pages[i].pixelRatio));
+    }
+    return images;
+  }
+
+  Future<Uint8List> _captureEntriesCard(Widget card, double pixelRatio) =>
+      ScreenshotController().captureFromLongWidget(
+        card,
+        context: context,
+        pixelRatio: pixelRatio,
+        delay: _entriesExportDelay,
+      );
 
   Future<void> _pickAndUploadImage(Signup signup, AppLocalizations l10n) async {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -505,6 +611,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
                                 ? signup.joinCode
                                 : null,
                             onEdit: () => _editSignup(signup),
+                            onDelete: () => _confirmDeleteSignup(signup, l10n),
                           ),
                           const SizedBox(height: 12),
                           SignupHeaderImageCard(
@@ -541,9 +648,16 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
                                 _duplicateSignup(signup, adminUser, l10n),
                             onShare: () =>
                                 _shareDeepLink(signup, l10n, isMarathi),
-                            onDelete: () => _confirmDeleteSignup(signup, l10n),
                             onExport: () => _exportSummaryImage(
                               signup,
+                              slots,
+                              entries,
+                              l10n,
+                            ),
+                            onExportSignups: () => _exportSignupEntries(
+                              signup,
+                              title,
+                              groupName,
                               slots,
                               entries,
                               l10n,

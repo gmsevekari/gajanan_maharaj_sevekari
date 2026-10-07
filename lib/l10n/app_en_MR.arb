@@ -859,5 +859,13 @@
   "signupEntriesHeading": "Entries",
   "signupEntriesEmptyMessage": "अद्याप कोणीही sign up केलेले नाही",
   "signupEntriesTitleColumn": "Title",
-  "signupNoSlotsInTabMessage": "इथे कोणतेही slots नाहीत"
+  "signupNoSlotsInTabMessage": "इथे कोणतेही slots नाहीत",
+  "signupExportEntriesButton": "Sign Ups Export करा",
+  "signupExportEntriesTitle": "Sign Ups Export करा",
+  "signupExportEntriesPrompt": "समाविष्ट करायचे upcoming slots निवडा.",
+  "signupExportSelectAll": "सर्व निवडा",
+  "signupExportConfirm": "Export करा",
+  "signupExportNoUpcomingSlots": "Export करण्यासाठी upcoming slots नाहीत.",
+  "signupExportNoEntries": "निवडलेल्या slots वर अजून कोणीही sign up केलेले नाही.",
+  "signupExportPart": "Part {part} / {total}"
 }

@@ -21,12 +21,14 @@ void main() {
     SignupStatus status = SignupStatus.draft,
     String? joinCode,
     VoidCallback? onEdit,
+    VoidCallback? onDelete,
   }) => SignupOverviewCard(
     title: title,
     groupName: groupName,
     status: status,
     joinCode: joinCode,
     onEdit: onEdit ?? () {},
+    onDelete: onDelete ?? () {},
   );
 
   testWidgets('renders the title', (tester) async {
@@ -87,12 +89,12 @@ void main() {
   testWidgets('has no description', (tester) async {
     await tester.pumpWidget(wrap(card()));
 
-    // Title is the only body text besides the status chip and Edit.
+    // Title is the only body text besides the status chip and the buttons.
     final texts = tester
         .widgetList<Text>(find.byType(Text))
         .map((t) => t.data)
         .toList();
-    expect(texts, ['Sunday Prasad Seva', 'Draft', 'Edit']);
+    expect(texts, ['Sunday Prasad Seva', 'Draft', 'Delete', 'Edit']);
   });
 
   group('edit button', () {
@@ -147,7 +149,127 @@ void main() {
       );
 
       expect(tester.takeException(), isNull);
-      expect(tester.getRect(find.text('Edit')).right, lessThanOrEqualTo(360));
+      final cardRect = tester.getRect(find.byType(Card));
+      for (final label in ['Edit', 'Delete']) {
+        final rect = tester.getRect(find.text(label));
+        expect(
+          rect.left,
+          greaterThanOrEqualTo(cardRect.left + 16),
+          reason: label,
+        );
+        expect(
+          rect.right,
+          lessThanOrEqualTo(cardRect.right - 16),
+          reason: label,
+        );
+      }
+    });
+  });
+
+  group('delete button', () {
+    testWidgets('is labelled Delete', (tester) async {
+      await tester.pumpWidget(wrap(card()));
+
+      expect(find.byKey(const Key('deleteSignupButton')), findsOneWidget);
+      expect(find.text('Delete'), findsOneWidget);
+    });
+
+    testWidgets('calls onDelete, and only onDelete, when tapped', (
+      tester,
+    ) async {
+      var deletes = 0;
+      var edits = 0;
+      await tester.pumpWidget(
+        wrap(card(onDelete: () => deletes++, onEdit: () => edits++)),
+      );
+
+      await tester.tap(find.byKey(const Key('deleteSignupButton')));
+      await tester.pump();
+
+      expect(deletes, 1);
+      expect(edits, 0);
+    });
+
+    testWidgets('sits next to Edit on the status row', (tester) async {
+      await tester.pumpWidget(wrap(card(status: SignupStatus.published)));
+
+      final chip = tester.getRect(find.text('Published'));
+      final delete = tester.getRect(find.text('Delete'));
+      final edit = tester.getRect(find.text('Edit'));
+      expect(delete.left, greaterThan(chip.right));
+      expect(edit.left, greaterThan(delete.right));
+      expect((delete.center.dy - edit.center.dy).abs(), lessThan(2));
+      expect((delete.center.dy - chip.center.dy).abs(), lessThan(8));
+    });
+
+    testWidgets('leaves a gap between Delete and Edit against a mis-tap', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrap(card()));
+
+      final delete = tester.getRect(
+        find.byKey(const Key('deleteSignupButton')),
+      );
+      final edit = tester.getRect(
+        find.ancestor(of: find.text('Edit'), matching: find.byType(TextButton)),
+      );
+      expect(edit.left - delete.right, greaterThanOrEqualTo(4));
+    });
+
+    testWidgets('keeps Edit at the right edge of the card', (tester) async {
+      await tester.pumpWidget(wrap(card(status: SignupStatus.published)));
+
+      final cardRect = tester.getRect(find.byType(Card));
+      final edit = tester.getRect(find.text('Edit'));
+      // Only the card's padding and the button's own padding are to its right.
+      expect(cardRect.right - edit.right, lessThan(40));
+    });
+
+    testWidgets('is drawn in the error colour so it reads as destructive', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrap(card()));
+
+      final context = tester.element(find.text('Delete'));
+      final style = tester
+          .widget<TextButton>(find.byKey(const Key('deleteSignupButton')))
+          .style!;
+      expect(
+        style.foregroundColor!.resolve({}),
+        Theme.of(context).colorScheme.error,
+      );
+    });
+
+    testWidgets('wraps below the status instead of overflowing at 320px and '
+        'large text', (tester) async {
+      tester.view.physicalSize = const Size(320, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+      await tester.pumpWidget(
+        wrap(
+          SingleChildScrollView(
+            child: card(status: SignupStatus.published, joinCode: 'ABC123'),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      final chip = tester.getRect(find.text('Published'));
+      final delete = tester.getRect(find.text('Delete'));
+      final edit = tester.getRect(find.text('Edit'));
+      final cardRect = tester.getRect(find.byType(Card));
+      // They really did drop below the status (a Wrap never overflows, so
+      // this is what shows the layout adapted) ...
+      expect(delete.top, greaterThan(chip.bottom));
+      expect(edit.top, greaterThan(chip.bottom));
+      // ... and stay inside the card's padding.
+      for (final rect in [delete, edit]) {
+        expect(rect.left, greaterThanOrEqualTo(cardRect.left + 16));
+        expect(rect.right, lessThanOrEqualTo(cardRect.right - 16));
+      }
     });
   });
 }

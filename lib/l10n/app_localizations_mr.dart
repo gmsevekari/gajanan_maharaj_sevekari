@@ -2748,4 +2748,32 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get signupNoSlotsInTabMessage => 'इथे कोणतेही स्लॉट्स नाहीत';
+
+  @override
+  String get signupExportEntriesButton => 'साइन अप्स एक्सपोर्ट करा';
+
+  @override
+  String get signupExportEntriesTitle => 'साइन अप्स एक्सपोर्ट करा';
+
+  @override
+  String get signupExportEntriesPrompt => 'समाविष्ट करायचे आगामी स्लॉट निवडा.';
+
+  @override
+  String get signupExportSelectAll => 'सर्व निवडा';
+
+  @override
+  String get signupExportConfirm => 'एक्सपोर्ट करा';
+
+  @override
+  String get signupExportNoUpcomingSlots =>
+      'एक्सपोर्ट करण्यासाठी आगामी स्लॉट नाहीत.';
+
+  @override
+  String get signupExportNoEntries =>
+      'निवडलेल्या स्लॉटवर अजून कोणीही साइन अप केलेले नाही.';
+
+  @override
+  String signupExportPart(String part, String total) {
+    return 'भाग $part / $total';
+  }
 }

@@ -14,31 +14,33 @@ void main() {
     );
   }
 
-  testWidgets('renders duplicate, share, export, and delete buttons', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      wrap(
-        SignupActionsRow(
-          onDuplicate: () {},
-          onShare: () {},
-          onExport: () {},
-          onDelete: () {},
+  testWidgets(
+    'renders duplicate, share, export summary and export sign ups buttons',
+    (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          SignupActionsRow(
+            onDuplicate: () {},
+            onShare: () {},
+            onExport: () {},
+            onExportSignups: () {},
+          ),
         ),
-      ),
-    );
+      );
 
-    expect(find.text('Duplicate'), findsOneWidget);
-    expect(find.text('Share'), findsOneWidget);
-    expect(find.text('Export Summary'), findsOneWidget);
-    expect(find.text('Delete'), findsOneWidget);
-  });
+      expect(find.text('Duplicate'), findsOneWidget);
+      expect(find.text('Share'), findsOneWidget);
+      expect(find.text('Export Summary'), findsOneWidget);
+      expect(find.text('Export Sign Ups'), findsOneWidget);
+      expect(find.text('Delete'), findsNothing);
+    },
+  );
 
   testWidgets('invokes the matching callback for each button', (tester) async {
     var duplicated = false;
     var shared = false;
     var exported = false;
-    var deleted = false;
+    var exportedSignups = false;
 
     await tester.pumpWidget(
       wrap(
@@ -46,7 +48,7 @@ void main() {
           onDuplicate: () => duplicated = true,
           onShare: () => shared = true,
           onExport: () => exported = true,
-          onDelete: () => deleted = true,
+          onExportSignups: () => exportedSignups = true,
         ),
       ),
     );
@@ -54,13 +56,13 @@ void main() {
     await tester.tap(find.text('Duplicate'));
     await tester.tap(find.text('Share'));
     await tester.tap(find.text('Export Summary'));
-    await tester.tap(find.text('Delete'));
+    await tester.tap(find.text('Export Sign Ups'));
     await tester.pumpAndSettle();
 
     expect(duplicated, isTrue);
     expect(shared, isTrue);
     expect(exported, isTrue);
-    expect(deleted, isTrue);
+    expect(exportedSignups, isTrue);
   });
 
   testWidgets('lays the buttons out as an equal-width 2x2 grid', (
@@ -72,7 +74,7 @@ void main() {
           onDuplicate: () {},
           onShare: () {},
           onExport: () {},
-          onDelete: () {},
+          onExportSignups: () {},
         ),
       ),
     );
@@ -86,16 +88,16 @@ void main() {
     final duplicate = rectOf('Duplicate');
     final share = rectOf('Share');
     final export = rectOf('Export Summary');
-    final delete = rectOf('Delete');
+    final exportSignups = rectOf('Export Sign Ups');
 
     expect(duplicate.width, share.width);
     expect(duplicate.width, export.width);
-    expect(duplicate.width, delete.width);
+    expect(duplicate.width, exportSignups.width);
     expect(duplicate.top, share.top);
-    expect(export.top, delete.top);
+    expect(export.top, exportSignups.top);
     expect(export.top, greaterThan(duplicate.bottom));
     expect(duplicate.left, export.left);
-    expect(share.left, delete.left);
+    expect(share.left, exportSignups.left);
     expect(share.left, greaterThan(duplicate.right));
   });
 
@@ -112,7 +114,7 @@ void main() {
             onDuplicate: () {},
             onShare: () {},
             onExport: () {},
-            onDelete: () {},
+            onExportSignups: () {},
           ),
         ),
       ),

@@ -2739,6 +2739,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signupNoSlotsInTabMessage => 'No slots here';
+
+  @override
+  String get signupExportEntriesButton => 'Export Sign Ups';
+
+  @override
+  String get signupExportEntriesTitle => 'Export Sign Ups';
+
+  @override
+  String get signupExportEntriesPrompt =>
+      'Choose the upcoming slots to include.';
+
+  @override
+  String get signupExportSelectAll => 'Select all';
+
+  @override
+  String get signupExportConfirm => 'Export';
+
+  @override
+  String get signupExportNoUpcomingSlots =>
+      'There are no upcoming slots to export.';
+
+  @override
+  String get signupExportNoEntries =>
+      'The selected slots have no sign-ups yet.';
+
+  @override
+  String signupExportPart(String part, String total) {
+    return 'Part $part of $total';
+  }
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).
@@ -5486,4 +5515,33 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupNoSlotsInTabMessage => 'इथे कोणतेही slots नाहीत';
+
+  @override
+  String get signupExportEntriesButton => 'Sign Ups Export करा';
+
+  @override
+  String get signupExportEntriesTitle => 'Sign Ups Export करा';
+
+  @override
+  String get signupExportEntriesPrompt =>
+      'समाविष्ट करायचे upcoming slots निवडा.';
+
+  @override
+  String get signupExportSelectAll => 'सर्व निवडा';
+
+  @override
+  String get signupExportConfirm => 'Export करा';
+
+  @override
+  String get signupExportNoUpcomingSlots =>
+      'Export करण्यासाठी upcoming slots नाहीत.';
+
+  @override
+  String get signupExportNoEntries =>
+      'निवडलेल्या slots वर अजून कोणीही sign up केलेले नाही.';
+
+  @override
+  String signupExportPart(String part, String total) {
+    return 'Part $part / $total';
+  }
 }

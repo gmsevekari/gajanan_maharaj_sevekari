@@ -1019,5 +1019,13 @@
   "signupEntriesHeading": "एंट्रीज",
   "signupEntriesEmptyMessage": "अद्याप कोणीही साइन अप केलेले नाही",
   "signupEntriesTitleColumn": "टायटल",
-  "signupNoSlotsInTabMessage": "इथे कोणतेही स्लॉट्स नाहीत"
+  "signupNoSlotsInTabMessage": "इथे कोणतेही स्लॉट्स नाहीत",
+  "signupExportEntriesButton": "साइन अप्स एक्सपोर्ट करा",
+  "signupExportEntriesTitle": "साइन अप्स एक्सपोर्ट करा",
+  "signupExportEntriesPrompt": "समाविष्ट करायचे आगामी स्लॉट निवडा.",
+  "signupExportSelectAll": "सर्व निवडा",
+  "signupExportConfirm": "एक्सपोर्ट करा",
+  "signupExportNoUpcomingSlots": "एक्सपोर्ट करण्यासाठी आगामी स्लॉट नाहीत.",
+  "signupExportNoEntries": "निवडलेल्या स्लॉटवर अजून कोणीही साइन अप केलेले नाही.",
+  "signupExportPart": "भाग {part} / {total}"
 }
