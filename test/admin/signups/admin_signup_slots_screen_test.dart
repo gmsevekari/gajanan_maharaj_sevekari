@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -492,6 +494,337 @@ void main() {
 
     TabController tabController(WidgetTester tester) =>
         tester.widget<TabBar>(find.byType(TabBar)).controller!;
+
+    group('adding a slot', () {
+      final soon = DateTime.now().add(const Duration(days: 5));
+
+      Future<void> fillAndSave(
+        WidgetTester tester, {
+        String label = 'New Slot',
+      }) async {
+        await tester.enterText(find.byKey(const Key('slotLabelEn_0')), label);
+        await tester.enterText(find.byKey(const Key('slotCapacity_0')), '4');
+        await tester.tap(find.byKey(const Key('slotStartDate_0')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('OK'));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.text('Save'));
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('offers Add Slot even when there are no slots yet, on both '
+          'tabs', (tester) async {
+        final signup = await seedSignup();
+        await pumpScreen(tester, signupId: signup.id);
+
+        expect(find.text('Add Slot'), findsOneWidget);
+        await tester.tap(find.text('Past'));
+        await tester.pumpAndSettle();
+        expect(find.text('Add Slot'), findsOneWidget);
+      });
+
+      testWidgets('hides Add Slot while the slots are still loading', (
+        tester,
+      ) async {
+        const signupId = 'loading_signup';
+        final mock = MockSignupService();
+        when(
+          () => mock.getSlots(signupId),
+        ).thenAnswer((_) => StreamController<List<SignupSlot>>().stream);
+        setLargeScreen(tester);
+        addTearDown(() => resetScreen(tester));
+
+        await tester.pumpWidget(
+          createWidget(
+            child: AdminSignupSlotsScreen(
+              signupId: signupId,
+              signup: stubSignup(signupId),
+              signupService: mock,
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(find.text('Add Slot'), findsNothing);
+      });
+
+      testWidgets('adds the slot to the list and confirms', (tester) async {
+        final signup = await seedSignup();
+        await pumpScreen(tester, signupId: signup.id);
+
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+        expect(find.text('Select Date'), findsWidgets);
+        await fillAndSave(tester, label: 'Brand New');
+
+        expect(find.text('Slot added successfully'), findsOneWidget);
+        expect(find.text('Brand New'), findsOneWidget);
+        expect(find.text('0 of 4 claimed'), findsOneWidget);
+      });
+
+      testWidgets('puts the new slot after every existing one, past or '
+          'upcoming', (tester) async {
+        final signup = await seedSignup();
+        await addSlot(signup, 'Old', date: DateTime(2020, 1, 10), sortOrder: 4);
+        await addSlot(signup, 'Next', date: soon, sortOrder: 1);
+        await pumpScreen(tester, signupId: signup.id);
+
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+        await fillAndSave(tester);
+
+        final added = (await signup.collection('slots').get()).docs.firstWhere(
+          (d) => d.data()['labelEn'] == 'New Slot',
+        );
+        expect(added.data()['sortOrder'], 5);
+      });
+
+      testWidgets('starts the first slot in the group\'s default zone', (
+        tester,
+      ) async {
+        final signup = await seedSignup();
+        await pumpScreen(tester, signupId: signup.id);
+
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Seattle (Pacific Time)'), findsOneWidget);
+      });
+
+      testWidgets('starts a later slot in the zone of the last one', (
+        tester,
+      ) async {
+        final signup = await seedSignup();
+        final ref = await signup.collection('slots').add({
+          'labelEn': 'Indian slot',
+          'labelMr': '',
+          'capacity': 3,
+          'claimedCount': 0,
+          'sortOrder': 0,
+          'startAt': Timestamp.fromDate(soon),
+          'endAt': Timestamp.fromDate(soon.add(const Duration(hours: 5))),
+          'timezone': 'Asia/Kolkata',
+          'createdAt': Timestamp.fromDate(DateTime.now()),
+        });
+        expect(ref.id, isNotEmpty);
+        await pumpScreen(tester, signupId: signup.id);
+
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('India (IST)'), findsOneWidget);
+      });
+
+      testWidgets('shows no confirmation when adding is abandoned', (
+        tester,
+      ) async {
+        final signup = await seedSignup();
+        await pumpScreen(tester, signupId: signup.id);
+
+        await tester.tap(find.text('Add Slot'));
+        await tester.pumpAndSettle();
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+
+        expect(find.text('Slot added successfully'), findsNothing);
+        expect((await signup.collection('slots').get()).docs, isEmpty);
+      });
+
+      testWidgets('keeps the last card clear of the button', (tester) async {
+        final signup = await seedSignup();
+        await addSlot(signup, 'Only', date: soon);
+        await pumpScreen(tester, signupId: signup.id);
+
+        final list = tester.widget<ListView>(find.byType(ListView).first);
+        expect((list.padding! as EdgeInsets).bottom, greaterThanOrEqualTo(80));
+      });
+    });
+
+    group('deleting a slot', () {
+      final soon = DateTime.now().add(const Duration(days: 5));
+      final earlier = DateTime.now().subtract(const Duration(days: 5));
+
+      Future<void> tapDeleteOn(WidgetTester tester, String label) async {
+        final card = find.ancestor(
+          of: find.text(label),
+          matching: find.byType(Card),
+        );
+        final del = find.descendant(of: card, matching: find.text('Delete'));
+        await tester.ensureVisible(del);
+        await tester.tap(del);
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('asks first, naming the slot, then removes it', (
+        tester,
+      ) async {
+        final signup = await seedSignup();
+        await addSlot(signup, 'Slot A', date: soon);
+        await addSlot(signup, 'Slot B', date: soon, sortOrder: 1);
+        await pumpScreen(tester, signupId: signup.id);
+
+        await tapDeleteOn(tester, 'Slot A');
+        expect(find.text('Delete this slot?'), findsOneWidget);
+        expect(
+          find.text('"Slot A" will be removed. This can\'t be undone.'),
+          findsOneWidget,
+        );
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Slot deleted'), findsOneWidget);
+        expect(find.text('Slot A'), findsNothing);
+        expect(find.text('Slot B'), findsOneWidget);
+        final left = (await signup.collection('slots').get()).docs;
+        expect(left.map((d) => d.data()['labelEn']), ['Slot B']);
+      });
+
+      testWidgets('keeps the slot when the admin says No', (tester) async {
+        final signup = await seedSignup();
+        await addSlot(signup, 'Slot A', date: soon);
+        await pumpScreen(tester, signupId: signup.id);
+
+        await tapDeleteOn(tester, 'Slot A');
+        await tester.tap(find.text('No'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Slot deleted'), findsNothing);
+        expect(find.text('Slot A'), findsOneWidget);
+        expect((await signup.collection('slots').get()).docs, hasLength(1));
+      });
+
+      testWidgets('explains instead of deleting when people have signed up', (
+        tester,
+      ) async {
+        final signup = await seedSignup();
+        final slotId = await addSlot(signup, 'Slot A', date: soon, claimed: 2);
+        await addEntry(signup, slotId, 'Jane');
+        await addEntry(signup, slotId, 'Amit');
+        await pumpScreen(tester, signupId: signup.id);
+
+        await tapDeleteOn(tester, 'Slot A');
+
+        expect(find.text("Can't delete this slot"), findsOneWidget);
+        expect(
+          find.text(
+            '2 sign-ups are on this slot. Remove their entries first, then '
+            'delete the slot.',
+          ),
+          findsOneWidget,
+        );
+        expect(find.text('Delete this slot?'), findsNothing);
+        await tester.tap(find.text('OK'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Slot A'), findsOneWidget);
+        expect((await signup.collection('slots').get()).docs, hasLength(1));
+        expect((await signup.collection('entries').get()).docs, hasLength(2));
+      });
+
+      testWidgets('works on the Past tab too', (tester) async {
+        final signup = await seedSignup();
+        await addSlot(signup, 'Old Slot', date: earlier);
+        await pumpScreen(tester, signupId: signup.id);
+        await tester.tap(find.text('Past'));
+        await tester.pumpAndSettle();
+
+        await tapDeleteOn(tester, 'Old Slot');
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Old Slot'), findsNothing);
+        expect(find.text('Slot deleted'), findsOneWidget);
+      });
+
+      testWidgets('explains with the live count when someone signed up after '
+          'the page loaded', (tester) async {
+        final now = DateTime.now();
+        const signupId = 'race_signup';
+        final slot = SignupSlot(
+          id: 'slot_1',
+          labelEn: 'Slot A',
+          labelMr: '',
+          startAt: soon,
+          endAt: soon.add(const Duration(hours: 23)),
+          capacity: 5,
+          sortOrder: 0,
+          createdAt: now,
+        );
+        final mock = MockSignupService();
+        when(
+          () => mock.getSlots(signupId),
+        ).thenAnswer((_) => Stream.value([slot]));
+        when(
+          () => mock.deleteSlot(signupId, 'slot_1'),
+        ).thenThrow(SlotHasClaimedEntriesException('slot_1', 3));
+        setLargeScreen(tester);
+        addTearDown(() => resetScreen(tester));
+        await tester.pumpWidget(
+          createWidget(
+            child: AdminSignupSlotsScreen(
+              signupId: signupId,
+              signup: stubSignup(signupId),
+              signupService: mock,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tapDeleteOn(tester, 'Slot A');
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        expect(find.text("Can't delete this slot"), findsOneWidget);
+        expect(
+          find.textContaining('3 sign-ups are on this slot'),
+          findsOneWidget,
+        );
+        expect(find.text('Slot deleted'), findsNothing);
+      });
+
+      testWidgets('says plainly when deleting fails', (tester) async {
+        final now = DateTime.now();
+        const signupId = 'fail_signup';
+        final slot = SignupSlot(
+          id: 'slot_1',
+          labelEn: 'Slot A',
+          labelMr: '',
+          startAt: soon,
+          endAt: soon.add(const Duration(hours: 23)),
+          capacity: 5,
+          sortOrder: 0,
+          createdAt: now,
+        );
+        final mock = MockSignupService();
+        when(
+          () => mock.getSlots(signupId),
+        ).thenAnswer((_) => Stream.value([slot]));
+        when(
+          () => mock.deleteSlot(signupId, 'slot_1'),
+        ).thenThrow(Exception('permission-denied: secret'));
+        setLargeScreen(tester);
+        addTearDown(() => resetScreen(tester));
+        await tester.pumpWidget(
+          createWidget(
+            child: AdminSignupSlotsScreen(
+              signupId: signupId,
+              signup: stubSignup(signupId),
+              signupService: mock,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tapDeleteOn(tester, 'Slot A');
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Failed to delete slot'), findsOneWidget);
+        expect(find.textContaining('secret'), findsNothing);
+        expect(find.text('Slot A'), findsOneWidget);
+      });
+    });
 
     group('editing a slot', () {
       final soon = DateTime.now().add(const Duration(days: 5));

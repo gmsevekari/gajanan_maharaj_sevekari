@@ -7,18 +7,20 @@ import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 /// A slot's summary - label, date, suggested amount and how full it is -
-/// with Edit and "Add Devotee" actions. Used on [AdminSignupSlotsScreen]; the
+/// with Delete, Edit and "Add Devotee" actions. Used on [AdminSignupSlotsScreen]; the
 /// slot's entries are listed on the Entries screen instead.
 class AdminSlotCard extends StatelessWidget {
   final SignupSlot slot;
   final void Function(SignupSlot slot) onAddEntry;
   final void Function(SignupSlot slot) onEdit;
+  final void Function(SignupSlot slot) onDelete;
 
   const AdminSlotCard({
     super.key,
     required this.slot,
     required this.onAddEntry,
     required this.onEdit,
+    required this.onDelete,
   });
 
   @override
@@ -177,6 +179,15 @@ class AdminSlotCard extends StatelessWidget {
                 spacing: 8,
                 runSpacing: 4,
                 children: [
+                  TextButton.icon(
+                    icon: const Icon(Icons.delete_outline, size: 16),
+                    label: Text(l10n.signupDeleteSlotButton),
+                    onPressed: () => onDelete(slot),
+                    style: TextButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      foregroundColor: theme.appColors.error,
+                    ),
+                  ),
                   TextButton.icon(
                     icon: const Icon(Icons.edit_outlined, size: 16),
                     label: Text(l10n.signupEditSlotButton),

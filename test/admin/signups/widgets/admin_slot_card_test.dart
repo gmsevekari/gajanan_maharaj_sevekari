@@ -37,6 +37,7 @@ void main() {
     SignupSlot s, {
     void Function(SignupSlot)? onAdd,
     void Function(SignupSlot)? onEdit,
+    void Function(SignupSlot)? onDelete,
     Locale? locale,
   }) {
     return MaterialApp(
@@ -49,6 +50,7 @@ void main() {
           slot: s,
           onAddEntry: onAdd ?? (_) {},
           onEdit: onEdit ?? (_) {},
+          onDelete: onDelete ?? (_) {},
         ),
       ),
     );
@@ -287,6 +289,69 @@ void main() {
       await tester.pumpWidget(wrap(slot(claimedCount: 2, suggestedAmount: 25)));
       expect(tester.takeException(), isNull);
       for (final label in ['Edit', 'Add Devotee']) {
+        expect(tester.getRect(find.text(label)).right, lessThanOrEqualTo(360));
+      }
+    });
+  });
+
+  group('delete button', () {
+    testWidgets('is labelled Delete', (tester) async {
+      await tester.pumpWidget(wrap(slot()));
+
+      expect(find.text('Delete'), findsOneWidget);
+    });
+
+    testWidgets('is in the error colour, so it reads as destructive', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrap(slot()));
+
+      final style = tester
+          .widget<TextButton>(find.widgetWithText(TextButton, 'Delete'))
+          .style!;
+      expect(
+        style.foregroundColor!.resolve({}),
+        AppTheme.lightTheme.appColors.error,
+      );
+    });
+
+    testWidgets('reports the slot when tapped, and nothing else does', (
+      tester,
+    ) async {
+      SignupSlot? deleted;
+      SignupSlot? edited;
+      final s = slot(labelEn: 'Week 9');
+      await tester.pumpWidget(
+        wrap(s, onDelete: (v) => deleted = v, onEdit: (v) => edited = v),
+      );
+
+      await tester.tap(find.text('Delete'));
+      await tester.pump();
+
+      expect(deleted, same(s));
+      expect(edited, isNull);
+    });
+
+    testWidgets('is offered even when people have signed up (the page '
+        'explains why it can\'t be done)', (tester) async {
+      await tester.pumpWidget(wrap(slot(claimedCount: 3)));
+
+      expect(find.text('Delete'), findsOneWidget);
+    });
+
+    testWidgets('keeps all three buttons on a 360px screen at large text', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+      await tester.pumpWidget(wrap(slot(claimedCount: 2)));
+
+      expect(tester.takeException(), isNull);
+      for (final label in ['Delete', 'Edit', 'Add Devotee']) {
         expect(tester.getRect(find.text(label)).right, lessThanOrEqualTo(360));
       }
     });

@@ -6,12 +6,14 @@ import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 /// The admin sign-up sub-screens' shared frame: a title, home and settings
 /// buttons, and Upcoming / Past tabs that can't be swiped between (the tab
-/// bar is the only way to switch).
+/// bar is the only way to switch). An optional [floatingActionButton] floats
+/// over both tabs.
 class AdminSignupTabbedScaffold extends StatelessWidget {
   final String title;
   final TabController controller;
   final Widget upcoming;
   final Widget past;
+  final Widget? floatingActionButton;
 
   const AdminSignupTabbedScaffold({
     super.key,
@@ -19,6 +21,7 @@ class AdminSignupTabbedScaffold extends StatelessWidget {
     required this.controller,
     required this.upcoming,
     required this.past,
+    this.floatingActionButton,
   });
 
   @override
@@ -55,6 +58,7 @@ class AdminSignupTabbedScaffold extends StatelessWidget {
           ),
         ],
       ),
+      floatingActionButton: floatingActionButton,
       body: TabBarView(
         physics: const NeverScrollableScrollPhysics(),
         controller: controller,

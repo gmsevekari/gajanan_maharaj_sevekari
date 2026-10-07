@@ -8,10 +8,13 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:gajanan_maharaj_sevekari/utils/default_timezone.dart';
+import 'package:gajanan_maharaj_sevekari/utils/event_timezone.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
-/// Every slot on a sign-up with how full it is and Edit and "Add Devotee"
-/// actions, reached from [AdminSignupDetailScreen]'s "Slots" card. Splits slots into
+/// Every slot on a sign-up with how full it is and Delete, Edit and "Add
+/// Devotee" actions, plus an Add Slot button, reached from
+/// [AdminSignupDetailScreen]'s "Slots" card. Splits slots into
 /// Upcoming/Past by their own date - a slot with no date counts as upcoming,
 /// since there's no basis to call it past. Who has signed up is listed on
 /// [AdminSignupEntriesScreen].
@@ -75,9 +78,98 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
       ),
     );
     if (saved != true || !mounted) return;
+    _snack(l10n.signupSlotUpdateSuccess);
+  }
+
+  /// Adds a slot after all the existing ones (past or upcoming), in the zone
+  /// of the last one - or, for the first, the group's default zone.
+  Future<void> _addSlot(List<SignupSlot> slots) async {
+    final l10n = lookupAppLocalizations(const Locale('en'));
+    final ordered = [...slots]
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    final nextSortOrder = ordered.isEmpty ? 0 : ordered.last.sortOrder + 1;
+    final timezone = ordered.isEmpty
+        ? defaultTimezoneFor(context, widget.signup.groupId)
+        : normalizeTimezone(ordered.last.timezone);
+    final saved = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AdminEditSlotScreen.add(
+          signupId: widget.signupId,
+          nextSortOrder: nextSortOrder,
+          defaultTimezone: timezone,
+          signupService: _service,
+        ),
+      ),
+    );
+    if (saved != true || !mounted) return;
+    _snack(l10n.signupSlotAddSuccess);
+  }
+
+  /// Deletes [slot] after confirming - or explains why it can't be: people
+  /// have signed up for it, and deleting it would orphan their entries.
+  Future<void> _deleteSlot(SignupSlot slot) async {
+    final l10n = lookupAppLocalizations(const Locale('en'));
+    if (slot.claimedCount > 0) return _explainHasEntries(slot.claimedCount);
+
+    final label = slot.labelEn.isNotEmpty ? slot.labelEn : slot.labelMr;
+    final confirmed = await showEnglishDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.signupDeleteSlotConfirmTitle),
+        content: Text(l10n.signupDeleteSlotConfirmMessage(label)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.no),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(
+              l10n.yes,
+              style: TextStyle(
+                color: Theme.of(dialogContext).colorScheme.error,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await _service.deleteSlot(widget.signupId, slot.id!);
+      if (mounted) _snack(l10n.signupSlotDeleteSuccess);
+    } on SlotHasClaimedEntriesException catch (e) {
+      // Someone signed up after this page loaded.
+      if (mounted) await _explainHasEntries(e.claimedCount);
+    } on Exception catch (e) {
+      debugPrint('AdminSignupSlotsScreen delete failed: $e');
+      if (mounted) _snack(l10n.signupSlotDeleteError);
+    }
+  }
+
+  Future<void> _explainHasEntries(int count) {
+    final l10n = lookupAppLocalizations(const Locale('en'));
+    return showEnglishDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.signupSlotHasEntriesTitle),
+        content: Text(l10n.signupSlotHasEntriesMessage(count.toString())),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.ok),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _snack(String message) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(l10n.signupSlotUpdateSuccess)));
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -104,6 +196,14 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
           controller: _tabController,
           upcoming: tab(upcoming),
           past: tab(past),
+          floatingActionButton: loading
+              ? null
+              : FloatingActionButton.extended(
+                  key: const Key('addSlotButton'),
+                  icon: const Icon(Icons.add),
+                  label: Text(l10n.signupAddSlotButton),
+                  onPressed: () => _addSlot(slots),
+                ),
         );
       },
     );
@@ -123,7 +223,8 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
       );
     }
     return ListView(
-      padding: const EdgeInsets.all(16),
+      // Room under the last card for the floating Add Slot button.
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
       children: [
         for (final slot in slots)
           AdminSlotCard(
@@ -131,6 +232,7 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
             onAddEntry: (s) =>
                 _actions.showAddDialog(context, widget.signup, s),
             onEdit: _editSlot,
+            onDelete: _deleteSlot,
           ),
       ],
     );
