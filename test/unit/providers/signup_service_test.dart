@@ -1104,6 +1104,84 @@ void main() {
       },
     );
 
+    test('says how many entries are on the slot, and keeps the slot and its '
+        'entries', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
+      for (final name in ['Jane', 'Amit']) {
+        await service.claimSlot(signupId: signupId, slotId: slotId, name: name);
+      }
+
+      await expectLater(
+        service.deleteSlot(signupId, slotId),
+        throwsA(
+          isA<SlotHasClaimedEntriesException>().having(
+            (e) => e.claimedCount,
+            'claimedCount',
+            2,
+          ),
+        ),
+      );
+
+      expect(await service.getSlots(signupId).first, hasLength(1));
+      expect(await service.getAllEntries(signupId).first, hasLength(2));
+    });
+
+    test('is still a StateError for callers that catch that', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
+      await service.claimSlot(signupId: signupId, slotId: slotId, name: 'Jane');
+
+      await expectLater(
+        service.deleteSlot(signupId, slotId),
+        throwsA(isA<StateError>()),
+      );
+    });
+
+    test('allows deleting after the entries are removed', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
+      final claimed = await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+      );
+      await service.adminRemoveEntry(signupId, claimed['entryId'] as String);
+
+      await service.deleteSlot(signupId, slotId);
+
+      expect(await service.getSlots(signupId).first, isEmpty);
+    });
+
+    test('treats a claimed count that is not a number as none', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
+      await fakeFirestore.doc('signups/$signupId/slots/$slotId').update({
+        'claimedCount': 'many',
+      });
+
+      await service.deleteSlot(signupId, slotId);
+
+      expect(await service.getSlots(signupId).first, isEmpty);
+    });
+
+    test('does nothing when the slot is already gone', () async {
+      final signupId = await service.createSignup(buildSignup());
+
+      await service.deleteSlot(signupId, 'missing');
+    });
+
+    test('the exception message names the count', () {
+      expect(
+        SlotHasClaimedEntriesException('s1', 1).toString(),
+        allOf(contains('s1'), contains('1 claimed entry')),
+      );
+      expect(
+        SlotHasClaimedEntriesException('s1', 3).toString(),
+        contains('3 claimed entries'),
+      );
+    });
+
     test('succeeds when the slot has no claims', () async {
       final signupId = await service.createSignup(buildSignup());
       final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));

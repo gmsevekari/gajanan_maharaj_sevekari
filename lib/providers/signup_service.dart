@@ -22,6 +22,19 @@ class SlotCapacityBelowClaimedException implements Exception {
       'SlotCapacityBelowClaimedException: $claimedCount already signed up';
 }
 
+/// An admin tried to delete a slot that people have signed up for. Deleting it
+/// would orphan their entries. It is a [StateError], as the check always was.
+class SlotHasClaimedEntriesException extends StateError {
+  final String slotId;
+  final int claimedCount;
+
+  SlotHasClaimedEntriesException(this.slotId, this.claimedCount)
+    : super(
+        'Cannot delete slot $slotId: it still has $claimedCount claimed '
+        'entr${claimedCount == 1 ? 'y' : 'ies'}.',
+      );
+}
+
 class SignupService {
   /// Header images larger than this are rejected before an upload is even
   /// attempted - the UI can check this up front, and storage.rules enforces
@@ -277,20 +290,20 @@ class SignupService {
     });
   }
 
-  /// Deletes a slot, refusing if it still has claimed entries — deleting it
-  /// anyway would orphan those entries (pointing at a missing slot).
+  /// Deletes a slot, refusing with [SlotHasClaimedEntriesException] if it
+  /// still has claimed entries — deleting it anyway would orphan those entries
+  /// (pointing at a missing slot). The count is read in the same transaction as
+  /// the delete, so a claim that lands at the same moment can't be orphaned.
+  /// Deleting a slot that is already gone does nothing.
   Future<void> deleteSlot(String signupId, String slotId) async {
-    final snapshot = await _slotsRef(signupId).doc(slotId).get();
-    if (snapshot.exists) {
-      final claimedCount = (snapshot.data()?['claimedCount'] as num?)?.toInt();
-      if ((claimedCount ?? 0) > 0) {
-        throw StateError(
-          'Cannot delete slot $slotId: it still has $claimedCount claimed '
-          'entr${claimedCount == 1 ? 'y' : 'ies'}.',
-        );
-      }
-    }
-    await _slotsRef(signupId).doc(slotId).delete();
+    final slotRef = _slotsRef(signupId).doc(slotId);
+    await _db.runTransaction((transaction) async {
+      final snapshot = await transaction.get(slotRef);
+      final claimedValue = snapshot.data()?['claimedCount'];
+      final claimed = claimedValue is num ? claimedValue.toInt() : 0;
+      if (claimed > 0) throw SlotHasClaimedEntriesException(slotId, claimed);
+      transaction.delete(slotRef);
+    });
   }
 
   /// Rewrites `sortOrder` on each slot to match its position in
