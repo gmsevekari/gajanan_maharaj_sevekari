@@ -234,19 +234,75 @@ void main() {
       expect((await reload()).suggestedAmount, isNull);
     });
 
-    testWidgets('saves an unchanged slot as it was', (tester) async {
+    testWidgets('closes without writing anything when nothing changed', (
+      tester,
+    ) async {
       final original = await seed(timed(amount: 25));
-      await open(tester, original);
+      final spy = _MockSignupService();
+      when(() => spy.updateSlot(any(), any())).thenAnswer((_) async {});
+      await open(tester, original, withService: spy);
 
       await save(tester);
 
+      verifyNever(() => spy.updateSlot(any(), any()));
+      expect(find.text('Edit Slot'), findsNothing);
+      // Nothing was updated, so the slots page has nothing to confirm.
+      expect(result, isNot(true));
+      expect(await reload(), original);
+    });
+
+    testWidgets('keeps the exact times and timezone of a slot it did not '
+        'create when only the label changes', (tester) async {
+      // Seconds, and a timezone the app doesn't know: both would be lost by
+      // reading them into the form and back.
+      final odd = SignupSlot(
+        labelEn: 'Imported',
+        labelMr: '',
+        startAt: DateTime.utc(2030, 7, 3, 16, 0, 30),
+        endAt: DateTime.utc(2030, 7, 3, 18, 59, 59),
+        timezone: 'Mars/Olympus',
+        capacity: 3,
+        sortOrder: 0,
+        createdAt: DateTime.utc(2026),
+      );
+      final original = await seed(odd);
+      await open(tester, original);
+
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'Renamed');
+      await save(tester);
+
       final saved = await reload();
-      expect(saved.labelEn, original.labelEn);
+      expect(saved.labelEn, 'Renamed');
       expect(saved.startAt, original.startAt);
       expect(saved.endAt, original.endAt);
-      expect(saved.capacity, original.capacity);
-      expect(saved.suggestedAmount, 25);
-      expect(result, isTrue);
+      expect(saved.timezone, 'Mars/Olympus');
+    });
+
+    testWidgets('writes the picked schedule once the schedule is changed', (
+      tester,
+    ) async {
+      final odd = SignupSlot(
+        labelEn: 'Imported',
+        labelMr: '',
+        startAt: DateTime.utc(2030, 7, 3, 16, 0, 30),
+        endAt: DateTime.utc(2030, 7, 3, 18, 59, 59),
+        timezone: 'Mars/Olympus',
+        capacity: 3,
+        sortOrder: 0,
+        createdAt: DateTime.utc(2026),
+      );
+      final original = await seed(odd);
+      await open(tester, original);
+
+      await tester.tap(find.byKey(const Key('slotTimezone_0')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('India (IST)').last);
+      await tester.pumpAndSettle();
+      await save(tester);
+
+      final saved = await reload();
+      expect(saved.timezone, EventTimezone.india);
+      expect(saved.startAt!.second, 0);
     });
 
     testWidgets('changes the date and keeps the times', (tester) async {
@@ -439,6 +495,73 @@ void main() {
       expect(find.text('Edit Slot'), findsOneWidget);
     });
 
+    testWidgets('clears the message once the admin edits something', (
+      tester,
+    ) async {
+      final slot = await seed(timed());
+      final failing = _MockSignupService();
+      when(
+        () => failing.updateSlot(any(), any()),
+      ).thenThrow(Exception('network'));
+      await open(tester, slot, withService: failing);
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'New');
+      await save(tester);
+      expect(find.text('Failed to update slot'), findsOneWidget);
+
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'Newer');
+      await tester.pump();
+
+      expect(find.text('Failed to update slot'), findsNothing);
+    });
+
+    testWidgets('clears the message when the schedule is edited', (
+      tester,
+    ) async {
+      final slot = await seed(timed());
+      final failing = _MockSignupService();
+      when(
+        () => failing.updateSlot(any(), any()),
+      ).thenThrow(Exception('network'));
+      await open(tester, slot, withService: failing);
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'New');
+      await save(tester);
+      expect(find.text('Failed to update slot'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('slotTimezone_0')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('India (IST)').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Failed to update slot'), findsNothing);
+    });
+
+    testWidgets('re-enables Save even when the failure is a programming '
+        'error', (tester) async {
+      final slot = await seed(timed());
+      final broken = _MockSignupService();
+      when(() => broken.updateSlot(any(), any())).thenThrow(ArgumentError('x'));
+      await open(tester, slot, withService: broken);
+
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'New');
+      await tester.ensureVisible(find.text('Save'));
+      final surfaced = <Object>[];
+      await runZonedGuarded(() async {
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+      }, (error, _) => surfaced.add(error));
+
+      // The error is surfaced rather than hidden, but the screen isn't left
+      // spinning.
+      expect(surfaced.single, isA<ArgumentError>());
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(
+        tester
+            .widget<ElevatedButton>(find.byType(ElevatedButton).last)
+            .onPressed,
+        isNotNull,
+      );
+    });
+
     testWidgets('allows trying again after a failure', (tester) async {
       final slot = await seed(timed());
       final flaky = _MockSignupService();
@@ -449,6 +572,7 @@ void main() {
       });
       await open(tester, slot, withService: flaky);
 
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'New');
       await save(tester);
       expect(find.text('Failed to update slot'), findsOneWidget);
       await save(tester);
@@ -464,6 +588,7 @@ void main() {
       when(() => slow.updateSlot(any(), any())).thenAnswer((_) => done.future);
       await open(tester, slot, withService: slow);
 
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'New');
       await tester.ensureVisible(find.text('Save'));
       await tester.tap(find.text('Save'));
       await tester.pump();

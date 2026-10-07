@@ -4981,7 +4981,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get signupSlotUpdateError => 'Slot update करण्यात अयशस्वी';
 
   @override
-  String get signupDiscardChangesTitle => 'बदल Discard करायचे?';
+  String get signupDiscardChangesTitle => 'बदल रद्द करायचे?';
 
   @override
   String get signupDiscardChangesMessage => 'तुमचे बदल save केलेले नाहीत.';

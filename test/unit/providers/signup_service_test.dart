@@ -1024,13 +1024,60 @@ void main() {
       expect((await current()).suggestedAmount, isNull);
     });
 
-    test('throws when the slot no longer exists', () async {
+    test('throws not-found when the slot no longer exists', () async {
       final slot = await current();
       await fakeFirestore.doc('signups/$signupId/slots/$slotId').delete();
 
+      await expectLater(
+        service.updateSlot(signupId, slot.copyWith(capacity: 9)),
+        throwsA(
+          isA<FirebaseException>().having((e) => e.code, 'code', 'not-found'),
+        ),
+      );
+    });
+
+    test('treats a claimed count that is not a number as zero', () async {
+      await fakeFirestore.doc('signups/$signupId/slots/$slotId').update({
+        'claimedCount': 'three',
+      });
+      final slot = await current();
+
+      await service.updateSlot(signupId, slot.copyWith(capacity: 1));
+
+      expect((await current()).capacity, 1);
+    });
+
+    test(
+      'does not undo a reorder made while the slot was being edited',
+      () async {
+        final stale = await current(); // sortOrder as it was when opened
+        await fakeFirestore.doc('signups/$signupId/slots/$slotId').update({
+          'sortOrder': 7,
+        });
+
+        await service.updateSlot(signupId, stale.copyWith(labelEn: 'Renamed'));
+
+        final after = await current();
+        expect(after.labelEn, 'Renamed');
+        expect(after.sortOrder, 7);
+      },
+    );
+
+    test('never rewrites when the slot was created', () async {
+      final slot = await current();
+
+      await service.updateSlot(
+        signupId,
+        slot.copyWith(createdAt: DateTime.utc(2000)),
+      );
+
+      expect((await current()).createdAt, slot.createdAt);
+    });
+
+    test('the exception names how many have signed up', () {
       expect(
-        () => service.updateSlot(signupId, slot.copyWith(capacity: 9)),
-        throwsA(isA<FirebaseException>()),
+        const SlotCapacityBelowClaimedException(4).toString(),
+        contains('4'),
       );
     });
   });

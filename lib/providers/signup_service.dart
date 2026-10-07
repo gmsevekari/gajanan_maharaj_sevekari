@@ -233,11 +233,12 @@ class SignupService {
         );
   }
 
-  /// Overwrites a slot's admin-editable fields (label, start/end, timezone, capacity,
-  /// suggestedAmount, sortOrder). `claimedCount` is deliberately excluded —
+  /// Overwrites a slot's admin-editable fields (label, start/end, timezone,
+  /// capacity, suggestedAmount). `claimedCount` is deliberately excluded —
   /// it's owned by claimSlot/cancelEntry's transactions, so an admin
   /// saving a slot loaded before a concurrent claim/cancel can never
-  /// clobber it. Throws if [slot.id] is null — passing a null id to
+  /// clobber it - and so are `sortOrder` (see [reorderSlots]) and
+  /// `createdAt`. Throws if [slot.id] is null — passing a null id to
   /// Firestore's `.doc()` would silently create a new document instead of
   /// updating the intended one.
   ///
@@ -249,7 +250,13 @@ class SignupService {
     if (slot.id == null) {
       throw ArgumentError.value(slot.id, 'slot.id', 'must not be null');
     }
-    final fields = slot.toMap()..remove('claimedCount');
+    // Not written: claimedCount (owned by the claim transactions), sortOrder
+    // (owned by reorderSlots) and createdAt (never changes) - a form opened
+    // earlier must not undo a claim or a reorder made since.
+    final fields = slot.toMap()
+      ..remove('claimedCount')
+      ..remove('sortOrder')
+      ..remove('createdAt');
     final slotRef = _slotsRef(signupId).doc(slot.id);
 
     await _db.runTransaction((transaction) async {
@@ -261,7 +268,8 @@ class SignupService {
           message: 'Slot ${slot.id} does not exist.',
         );
       }
-      final claimed = (snapshot.data()?['claimedCount'] as num?)?.toInt() ?? 0;
+      final claimedValue = snapshot.data()?['claimedCount'];
+      final claimed = claimedValue is num ? claimedValue.toInt() : 0;
       if (slot.capacity < claimed) {
         throw SlotCapacityBelowClaimedException(claimed);
       }

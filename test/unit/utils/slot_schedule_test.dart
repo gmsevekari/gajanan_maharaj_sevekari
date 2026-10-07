@@ -765,6 +765,28 @@ void main() {
       expect(input.startDate, isNull);
     });
 
+    test('gives a timed multi-day slot for an end at exactly midnight', () {
+      final input = from(wall(2030, 7, 3, 18), wall(2030, 7, 4));
+
+      expect(input.endDate, DateTime(2030, 7, 4));
+      expect(input.endTime, at(0));
+      expect(
+        resolveSlotSchedule(input),
+        SlotScheduleResolved(
+          startAt: wall(2030, 7, 3, 18),
+          endAt: wall(2030, 7, 4),
+        ),
+      );
+    });
+
+    test('keeps a start of 00:00 out and the end time in when the end is '
+        'not 23:59', () {
+      final input = from(wall(2030, 7, 3), wall(2030, 7, 3, 12, 15));
+
+      expect(input.startTime, isNull);
+      expect(input.endTime, at(12, 15));
+    });
+
     test('resolves back to exactly the same instants', () {
       // Whole days and timed ranges, either zone, across both daylight-saving
       // changes and a year end.

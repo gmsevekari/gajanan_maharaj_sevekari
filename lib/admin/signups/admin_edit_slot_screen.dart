@@ -102,9 +102,17 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
         _schedule != _initialSchedule;
   }
 
+  /// Called when anything is edited: refreshes whether there are unsaved
+  /// changes, and drops the message from a failed save, which no longer
+  /// describes what is on screen.
   void _refreshDirty() {
     final dirty = _hasChanges;
-    if (dirty != _dirty) setState(() => _dirty = dirty);
+    if (dirty != _dirty || _errorText != null) {
+      setState(() {
+        _dirty = dirty;
+        _errorText = null;
+      });
+    }
   }
 
   void _onScheduleChanged(SlotScheduleInput schedule) {
@@ -112,53 +120,81 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
     _refreshDirty();
   }
 
-  Future<void> _save(AppLocalizations l10n) async {
-    if (_saving) return;
-    if (!_formKey.currentState!.validate()) {
-      revealFirstInvalidField(_formKey.currentContext);
-      return;
-    }
-    final schedule = resolveSlotSchedule(_schedule);
-    if (schedule is! SlotScheduleResolved) return;
-
+  /// The slot as edited. A schedule the admin didn't touch keeps the saved
+  /// instants and timezone exactly: reading them into the form and back drops
+  /// seconds and rewrites a timezone the app doesn't know.
+  SignupSlot? _editedSlot() {
     final slot = widget.slot;
+    final untouched =
+        _schedule == _initialSchedule &&
+        slot.startAt != null &&
+        slot.endAt != null;
+    var startAt = slot.startAt;
+    var endAt = slot.endAt;
+    var timezone = slot.timezone;
+    if (!untouched) {
+      final schedule = resolveSlotSchedule(_schedule);
+      if (schedule is! SlotScheduleResolved) return null;
+      startAt = schedule.startAt;
+      endAt = schedule.endAt;
+      timezone = normalizeTimezone(_schedule.timezone);
+    }
     final amountText = _amount.text.trim();
-    final updated = SignupSlot(
+    return SignupSlot(
       id: slot.id,
       labelEn: _labelEn.text.trim(),
       labelMr: _labelMr.text.trim(),
-      startAt: schedule.startAt,
-      endAt: schedule.endAt,
-      timezone: normalizeTimezone(_schedule.timezone),
+      startAt: startAt,
+      endAt: endAt,
+      timezone: timezone,
       capacity: int.parse(_capacity.text.trim()),
       claimedCount: slot.claimedCount,
       suggestedAmount: amountText.isEmpty ? null : double.tryParse(amountText),
       sortOrder: slot.sortOrder,
       createdAt: slot.createdAt,
     );
+  }
+
+  Future<void> _save(AppLocalizations l10n) async {
+    if (_saving) return;
+    if (!_hasChanges && widget.slot.hasSchedule) {
+      // Nothing to write; closing without `true` means no confirmation. (A
+      // slot with no schedule still has to be given one.)
+      Navigator.pop(context, false);
+      return;
+    }
+    if (!_formKey.currentState!.validate()) {
+      revealFirstInvalidField(_formKey.currentContext);
+      return;
+    }
+    final updated = _editedSlot();
+    if (updated == null) return;
 
     setState(() {
       _saving = true;
       _errorText = null;
     });
+    var saved = false;
     String? error;
     try {
       await _service.updateSlot(widget.signupId, updated);
+      saved = true;
     } on SlotCapacityBelowClaimedException catch (e) {
       error = l10n.signupSlotCapacityBelowClaimed(e.claimedCount.toString());
     } on Exception catch (e) {
       debugPrint('AdminEditSlotScreen save failed: $e');
       error = l10n.signupSlotUpdateError;
+    } finally {
+      // Also runs when an Error escapes, so the screen is never left
+      // spinning behind a button that can't be pressed.
+      if (mounted && !saved) {
+        setState(() {
+          _saving = false;
+          _errorText = error;
+        });
+      }
     }
-    if (!mounted) return;
-    if (error == null) {
-      Navigator.pop(context, true);
-      return;
-    }
-    setState(() {
-      _saving = false;
-      _errorText = error;
-    });
+    if (saved && mounted) Navigator.pop(context, true);
   }
 
   Future<void> _confirmDiscard(AppLocalizations l10n) async {
@@ -192,7 +228,6 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
 
   Widget _buildScreen(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
     return PopScope(
       // Leaving with unsaved changes asks first; so does leaving mid-save,
@@ -222,37 +257,43 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
                   schedule: _schedule,
                   onScheduleChanged: _onScheduleChanged,
                 ),
-                if (_errorText != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Semantics(
-                      liveRegion: true,
-                      child: Text(
-                        _errorText!,
-                        style: TextStyle(color: theme.appColors.error),
-                      ),
-                    ),
-                  ),
-                ElevatedButton(
-                  onPressed: _saving ? null : () => _save(l10n),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: _saving
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.signupSaveButton),
-                ),
+                if (_errorText != null) _buildError(context),
+                _buildSaveButton(context, l10n),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildError(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Semantics(
+      liveRegion: true,
+      child: Text(
+        _errorText!,
+        style: TextStyle(color: Theme.of(context).appColors.error),
+      ),
+    ),
+  );
+
+  Widget _buildSaveButton(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    return ElevatedButton(
+      onPressed: _saving ? null : () => _save(l10n),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+      ),
+      child: _saving
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Text(l10n.signupSaveButton),
     );
   }
 }

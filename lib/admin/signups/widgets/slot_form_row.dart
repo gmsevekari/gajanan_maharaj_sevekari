@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/slot_schedule_field.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/utils/entry_validators.dart';
 import 'package:gajanan_maharaj_sevekari/utils/slot_schedule.dart';
 
 /// One editable slot row inside [AdminCreateSignupScreen]'s dynamic
@@ -171,8 +172,7 @@ class SlotFormRow extends StatelessWidget {
       ),
       validator: (value) {
         if (value == null || value.trim().isEmpty) return null;
-        final amount = double.tryParse(value.trim());
-        return amount == null || amount < 0
+        return parsePledgeAmount(value) == null
             ? l10n.signupSlotSuggestedAmountInvalid
             : null;
       },

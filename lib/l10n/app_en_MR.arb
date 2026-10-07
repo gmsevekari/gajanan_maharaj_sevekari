@@ -722,7 +722,7 @@
   "signupEditSlotButton": "Edit",
   "signupSlotUpdateSuccess": "Slot यशस्वीरित्या update केला",
   "signupSlotUpdateError": "Slot update करण्यात अयशस्वी",
-  "signupDiscardChangesTitle": "बदल Discard करायचे?",
+  "signupDiscardChangesTitle": "बदल रद्द करायचे?",
   "signupDiscardChangesMessage": "तुमचे बदल save केलेले नाहीत.",
   "signupKeepEditingButton": "Edit करत रहा",
   "signupSlotSuggestedAmountLabel": "सुचवलेली रक्कम (ऐच्छिक)",

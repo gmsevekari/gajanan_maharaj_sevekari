@@ -181,4 +181,50 @@ void main() {
       }
     });
   });
+
+  group('suggested amount', () {
+    Future<void> enter(WidgetTester tester, String value) async {
+      await tester.enterText(
+        find.byKey(const Key('slotSuggestedAmount_0')),
+        value,
+      );
+      formKey.currentState!.validate();
+      await tester.pump();
+    }
+
+    testWidgets('may be left empty, or be a whole or fractional amount', (
+      tester,
+    ) async {
+      await show(tester);
+
+      for (final ok in ['', '0', '25', '25.5', '1000000']) {
+        await enter(tester, ok);
+        expect(
+          find.text('Please enter a valid amount'),
+          findsNothing,
+          reason: ok,
+        );
+      }
+    });
+
+    testWidgets('must be a finite amount from 0 to 1,000,000', (tester) async {
+      await show(tester);
+
+      for (final bad in [
+        '-1',
+        'abc',
+        'NaN',
+        'Infinity',
+        '-Infinity',
+        '1000001',
+      ]) {
+        await enter(tester, bad);
+        expect(
+          find.text('Please enter a valid amount'),
+          findsOneWidget,
+          reason: bad,
+        );
+      }
+    });
+  });
 }
