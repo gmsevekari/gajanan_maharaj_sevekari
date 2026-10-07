@@ -917,6 +917,124 @@ void main() {
     );
   });
 
+  group('SignupService updateSlot capacity guard', () {
+    late String signupId;
+    late String slotId;
+
+    setUp(() async {
+      signupId = await service.createSignup(buildSignup());
+      slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
+      for (final name in ['Jane', 'Amit', 'Priya']) {
+        await service.claimSlot(signupId: signupId, slotId: slotId, name: name);
+      }
+    });
+
+    Future<SignupSlot> current() async =>
+        (await service.getSlots(signupId).first).single;
+
+    test('refuses a capacity below the number already claimed, and writes '
+        'nothing', () async {
+      final slot = await current();
+
+      await expectLater(
+        service.updateSlot(
+          signupId,
+          slot.copyWith(capacity: 2, labelEn: 'Renamed'),
+        ),
+        throwsA(
+          isA<SlotCapacityBelowClaimedException>().having(
+            (e) => e.claimedCount,
+            'claimedCount',
+            3,
+          ),
+        ),
+      );
+
+      final after = await current();
+      expect(after.capacity, 5);
+      expect(after.labelEn, slot.labelEn);
+    });
+
+    test('allows a capacity equal to the number claimed', () async {
+      final slot = await current();
+
+      await service.updateSlot(signupId, slot.copyWith(capacity: 3));
+
+      expect((await current()).capacity, 3);
+    });
+
+    test(
+      'checks the live count, not the count the form was opened with',
+      () async {
+        final stale = await current(); // 3 claimed
+        await service.claimSlot(
+          signupId: signupId,
+          slotId: slotId,
+          name: 'Ravi',
+        );
+        await service.claimSlot(
+          signupId: signupId,
+          slotId: slotId,
+          name: 'Sita',
+        );
+
+        // Fits the 3 claimed when the form opened, not the 5 claimed now.
+        await expectLater(
+          service.updateSlot(signupId, stale.copyWith(capacity: 4)),
+          throwsA(isA<SlotCapacityBelowClaimedException>()),
+        );
+        expect((await current()).capacity, 5);
+      },
+    );
+
+    test('can clear the suggested amount', () async {
+      final slot = await current();
+      await service.updateSlot(
+        signupId,
+        SignupSlot(
+          id: slot.id,
+          labelEn: slot.labelEn,
+          labelMr: slot.labelMr,
+          startAt: slot.startAt,
+          endAt: slot.endAt,
+          timezone: slot.timezone,
+          capacity: slot.capacity,
+          suggestedAmount: 25,
+          sortOrder: slot.sortOrder,
+          createdAt: slot.createdAt,
+        ),
+      );
+      expect((await current()).suggestedAmount, 25);
+
+      await service.updateSlot(
+        signupId,
+        SignupSlot(
+          id: slot.id,
+          labelEn: slot.labelEn,
+          labelMr: slot.labelMr,
+          startAt: slot.startAt,
+          endAt: slot.endAt,
+          timezone: slot.timezone,
+          capacity: slot.capacity,
+          sortOrder: slot.sortOrder,
+          createdAt: slot.createdAt,
+        ),
+      );
+
+      expect((await current()).suggestedAmount, isNull);
+    });
+
+    test('throws when the slot no longer exists', () async {
+      final slot = await current();
+      await fakeFirestore.doc('signups/$signupId/slots/$slotId').delete();
+
+      expect(
+        () => service.updateSlot(signupId, slot.copyWith(capacity: 9)),
+        throwsA(isA<FirebaseException>()),
+      );
+    });
+  });
+
   group('SignupService deleteSlot claimed-entry guard', () {
     test(
       'throws and does not delete when the slot has claimed entries',

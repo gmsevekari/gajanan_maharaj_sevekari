@@ -104,6 +104,45 @@ String? _dayKey(DateTime? date) => date == null
           '${date.month.toString().padLeft(2, '0')}-'
           '${date.day.toString().padLeft(2, '0')}';
 
+/// The form input that [resolveSlotSchedule] turns back into [startAt] and
+/// [endAt], for editing a saved slot. The dates and times are read in the
+/// slot's own [timezone] (an unknown zone counts as the default zone), so the
+/// admin sees the wall-clock times they originally entered.
+///
+/// A field that is only the default is left empty, exactly as when a slot is
+/// created: no start time for 00:00, no end time for 23:59, no end date for
+/// the start's own day. So a full-day slot comes back as a date alone.
+///
+/// A slot without both a start and an end has no schedule to edit: the result
+/// has no dates, and the admin must pick them.
+SlotScheduleInput slotScheduleInputFromInstants({
+  required DateTime? startAt,
+  required DateTime? endAt,
+  required String timezone,
+}) {
+  final zone = normalizeTimezone(timezone);
+  if (startAt == null || endAt == null) {
+    return SlotScheduleInput(timezone: zone);
+  }
+
+  final start = utcToWallClock(startAt, zone);
+  final end = utcToWallClock(endAt, zone);
+  final startTime = (hour: start.hour, minute: start.minute);
+  final endTime = (hour: end.hour, minute: end.minute);
+  final sameDay =
+      start.year == end.year &&
+      start.month == end.month &&
+      start.day == end.day;
+
+  return SlotScheduleInput(
+    startDate: DateTime(start.year, start.month, start.day),
+    startTime: startTime == slotDefaultStartTime ? null : startTime,
+    endDate: sameDay ? null : DateTime(end.year, end.month, end.day),
+    endTime: endTime == slotDefaultEndTime ? null : endTime,
+    timezone: zone,
+  );
+}
+
 enum SlotScheduleError {
   /// No start date was chosen.
   missingStartDate,

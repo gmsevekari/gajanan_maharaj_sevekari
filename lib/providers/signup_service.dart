@@ -10,6 +10,18 @@ import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/utils/join_code_generator.dart';
 import 'package:gajanan_maharaj_sevekari/utils/phone_utils.dart';
 
+/// An admin tried to save a slot with a capacity below the number of people
+/// who have already signed up for it. [claimedCount] is that live number.
+class SlotCapacityBelowClaimedException implements Exception {
+  final int claimedCount;
+
+  const SlotCapacityBelowClaimedException(this.claimedCount);
+
+  @override
+  String toString() =>
+      'SlotCapacityBelowClaimedException: $claimedCount already signed up';
+}
+
 class SignupService {
   /// Header images larger than this are rejected before an upload is even
   /// attempted - the UI can check this up front, and storage.rules enforces
@@ -228,12 +240,33 @@ class SignupService {
   /// clobber it. Throws if [slot.id] is null — passing a null id to
   /// Firestore's `.doc()` would silently create a new document instead of
   /// updating the intended one.
+  ///
+  /// Throws [SlotCapacityBelowClaimedException], writing nothing, if
+  /// [slot.capacity] is below the slot's *current* claimed count - read in the
+  /// same transaction as the write, so a claim that lands while the admin is
+  /// editing can't leave the slot over-full.
   Future<void> updateSlot(String signupId, SignupSlot slot) async {
     if (slot.id == null) {
       throw ArgumentError.value(slot.id, 'slot.id', 'must not be null');
     }
     final fields = slot.toMap()..remove('claimedCount');
-    await _slotsRef(signupId).doc(slot.id).update(fields);
+    final slotRef = _slotsRef(signupId).doc(slot.id);
+
+    await _db.runTransaction((transaction) async {
+      final snapshot = await transaction.get(slotRef);
+      if (!snapshot.exists) {
+        throw FirebaseException(
+          plugin: 'cloud_firestore',
+          code: 'not-found',
+          message: 'Slot ${slot.id} does not exist.',
+        );
+      }
+      final claimed = (snapshot.data()?['claimedCount'] as num?)?.toInt() ?? 0;
+      if (slot.capacity < claimed) {
+        throw SlotCapacityBelowClaimedException(claimed);
+      }
+      transaction.update(slotRef, fields);
+    });
   }
 
   /// Deletes a slot, refusing if it still has claimed entries — deleting it

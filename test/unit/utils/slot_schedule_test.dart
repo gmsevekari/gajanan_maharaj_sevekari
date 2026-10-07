@@ -625,4 +625,168 @@ void main() {
       expect(suggestedSlotEndTime(null), at(10));
     });
   });
+
+  group('slotScheduleInputFromInstants', () {
+    SlotScheduleInput from(
+      DateTime start,
+      DateTime end, [
+      String timezone = pacific,
+    ]) => slotScheduleInputFromInstants(
+      startAt: start,
+      endAt: end,
+      timezone: timezone,
+    );
+
+    DateTime wall(
+      int y,
+      int m,
+      int d, [
+      int h = 0,
+      int min = 0,
+      String timezone = pacific,
+    ]) => wallClockToUtc(
+      year: y,
+      month: m,
+      day: d,
+      hour: h,
+      minute: min,
+      timezone: timezone,
+    );
+
+    test('gives just the date for a full-day slot', () {
+      final input = from(wall(2030, 7, 3), wall(2030, 7, 3, 23, 59));
+
+      expect(input.startDate, DateTime(2030, 7, 3));
+      expect(input.startTime, isNull);
+      expect(input.endDate, isNull);
+      expect(input.endTime, isNull);
+      expect(input.timezone, pacific);
+    });
+
+    test('gives the times for a timed slot on one day', () {
+      final input = from(wall(2030, 7, 3, 18), wall(2030, 7, 3, 19, 30));
+
+      expect(input.startDate, DateTime(2030, 7, 3));
+      expect(input.startTime, at(18));
+      expect(input.endDate, isNull);
+      expect(input.endTime, at(19, 30));
+    });
+
+    test('gives both dates for a slot that spans days', () {
+      final input = from(wall(2030, 7, 1), wall(2030, 7, 3, 23, 59));
+
+      expect(input.startDate, DateTime(2030, 7, 1));
+      expect(input.endDate, DateTime(2030, 7, 3));
+      expect(input.startTime, isNull);
+      expect(input.endTime, isNull);
+    });
+
+    test('keeps an end date that is the same day number in another month '
+        'or year', () {
+      expect(
+        from(wall(2030, 7, 3), wall(2030, 8, 3, 23, 59)).endDate,
+        DateTime(2030, 8, 3),
+      );
+      expect(
+        from(wall(2030, 7, 3), wall(2031, 7, 3, 23, 59)).endDate,
+        DateTime(2031, 7, 3),
+      );
+    });
+
+    test('gives the end date and time for a slot that crosses midnight', () {
+      final input = from(wall(2030, 7, 3, 18), wall(2030, 7, 4, 2));
+
+      expect(input.startDate, DateTime(2030, 7, 3));
+      expect(input.startTime, at(18));
+      expect(input.endDate, DateTime(2030, 7, 4));
+      expect(input.endTime, at(2));
+    });
+
+    test('leaves out a time that is only the default', () {
+      expect(from(wall(2030, 7, 3), wall(2030, 7, 3, 12)).startTime, isNull);
+      expect(
+        from(wall(2030, 7, 3, 9), wall(2030, 7, 3, 23, 59)).endTime,
+        isNull,
+      );
+    });
+
+    test('reads the dates and times in the slot\'s own zone', () {
+      final input = from(
+        wall(2030, 7, 3, 18, 0, india),
+        wall(2030, 7, 3, 19, 30, india),
+        india,
+      );
+
+      expect(input.startDate, DateTime(2030, 7, 3));
+      expect(input.startTime, at(18));
+      expect(input.endTime, at(19, 30));
+      expect(input.timezone, india);
+    });
+
+    test('keeps the day when the UTC date differs from the local one', () {
+      // 6 PM Pacific on 3 July is 01:00 UTC on 4 July.
+      final input = from(wall(2030, 7, 3, 18), wall(2030, 7, 3, 19));
+
+      expect(input.startDate, DateTime(2030, 7, 3));
+    });
+
+    test('treats an unknown timezone as the default zone', () {
+      final input = slotScheduleInputFromInstants(
+        startAt: wall(2030, 7, 3),
+        endAt: wall(2030, 7, 3, 23, 59),
+        timezone: 'Mars/Olympus',
+      );
+
+      expect(input.timezone, pacific);
+    });
+
+    test('gives an empty input, in the slot\'s zone, for a slot with no '
+        'schedule', () {
+      final input = slotScheduleInputFromInstants(
+        startAt: null,
+        endAt: null,
+        timezone: india,
+      );
+
+      expect(input.startDate, isNull);
+      expect(input.endDate, isNull);
+      expect(input.startTime, isNull);
+      expect(input.endTime, isNull);
+      expect(input.timezone, india);
+    });
+
+    test('gives an empty input for a slot with a start but no end', () {
+      final input = slotScheduleInputFromInstants(
+        startAt: wall(2030, 7, 3),
+        endAt: null,
+        timezone: pacific,
+      );
+
+      expect(input.startDate, isNull);
+    });
+
+    test('resolves back to exactly the same instants', () {
+      // Whole days and timed ranges, either zone, across both daylight-saving
+      // changes and a year end.
+      final cases = <(DateTime, DateTime, String)>[
+        (wall(2030, 7, 3), wall(2030, 7, 3, 23, 59), pacific),
+        (wall(2030, 7, 3, 18), wall(2030, 7, 3, 19, 30), pacific),
+        (wall(2030, 3, 10, 1), wall(2030, 3, 10, 4), pacific),
+        (wall(2030, 11, 3, 0), wall(2030, 11, 3, 23, 59), pacific),
+        (wall(2030, 11, 2, 18), wall(2030, 11, 4, 9), pacific),
+        (wall(2030, 12, 31, 20), wall(2031, 1, 1, 2), pacific),
+        (wall(2030, 7, 3, 0, 0, india), wall(2030, 7, 5, 23, 59, india), india),
+        (wall(2030, 7, 3, 21, 0, india), wall(2030, 7, 4, 1, 0, india), india),
+      ];
+      for (final (start, end, zone) in cases) {
+        final result = resolveSlotSchedule(from(start, end, zone));
+
+        expect(
+          result,
+          SlotScheduleResolved(startAt: start, endAt: end),
+          reason: '$start - $end $zone',
+        );
+      }
+    });
+  });
 }
