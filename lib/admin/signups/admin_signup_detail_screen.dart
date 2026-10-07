@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_edit_signup_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_entries_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_slots_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_actions_row.dart';
@@ -141,6 +142,26 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
         '${l10n.signupSharePrefix}: $title$joinCodePart\n\n${l10n.signupShareLinkPrefix}: $url';
 
     await SharePlus.instance.share(ShareParams(text: text));
+  }
+
+  Future<void> _editSignup(Signup signup) async {
+    final saved = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            AdminEditSignupScreen(signup: signup, signupService: _service),
+      ),
+    );
+    if (saved != true || !mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            lookupAppLocalizations(const Locale('en')).signupUpdateSuccess,
+          ),
+        ),
+      );
   }
 
   Future<void> _duplicateSignup(
@@ -483,6 +504,7 @@ class _AdminSignupDetailScreenState extends State<AdminSignupDetailScreen> {
                             joinCode: signup.requiresJoinCode
                                 ? signup.joinCode
                                 : null,
+                            onEdit: () => _editSignup(signup),
                           ),
                           const SizedBox(height: 12),
                           SignupHeaderImageCard(

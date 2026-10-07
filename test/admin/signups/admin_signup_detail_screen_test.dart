@@ -5,10 +5,12 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_edit_signup_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_entries_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_slots_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_status_section.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_header_image_card.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_join_code_row.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/signup_overview_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_signup_detail_screen.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
@@ -371,6 +373,172 @@ void main() {
           tester.getTopLeft(find.text('Entries')).dy,
           greaterThan(tester.getTopLeft(find.text('Slots')).dy),
         );
+      });
+    });
+
+    group('editing the sign up', () {
+      Future<DocumentReference<Map<String, dynamic>>> seedEditable({
+        bool requiresJoinCode = false,
+        String? joinCode,
+      }) {
+        final now = DateTime.now();
+        return firestore.collection('signups').add({
+          'titleEn': 'Prasad Seva',
+          'titleMr': 'प्रसाद सेवा',
+          'descriptionEn': 'Cook and serve',
+          'descriptionMr': '',
+          'groupId': 'gajanan_maharaj_seattle',
+          'status': SignupStatus.published.name,
+          'requiresJoinCode': requiresJoinCode,
+          'joinCode': joinCode,
+          'headerImageUrl': 'https://example.com/h.png',
+          'createdAt': Timestamp.fromDate(now),
+          'updatedAt': Timestamp.fromDate(now),
+          'createdBy': 'admin@test.com',
+        });
+      }
+
+      Future<void> tapEdit(WidgetTester tester) async {
+        final edit = find.widgetWithText(TextButton, 'Edit');
+        await tester.ensureVisible(edit);
+        await tester.tap(edit);
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('offers an Edit button', (tester) async {
+        final ref = await seedEditable();
+        await pumpDetailScreen(tester, signupId: ref.id);
+
+        expect(find.widgetWithText(TextButton, 'Edit'), findsOneWidget);
+      });
+
+      testWidgets('opens the Edit Sign Up screen with the current values', (
+        tester,
+      ) async {
+        final ref = await seedEditable();
+        await pumpDetailScreen(tester, signupId: ref.id);
+
+        await tapEdit(tester);
+
+        expect(find.byType(AdminEditSignupScreen), findsOneWidget);
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('titleEnField')))
+              .controller!
+              .text,
+          'Prasad Seva',
+        );
+      });
+
+      testWidgets('saving shows the new title and description on the page, '
+          'and confirms', (tester) async {
+        final ref = await seedEditable();
+        await pumpDetailScreen(tester, signupId: ref.id);
+
+        await tapEdit(tester);
+        await tester.enterText(
+          find.byKey(const Key('titleEnField')),
+          'Annadanam',
+        );
+        await tester.enterText(
+          find.byKey(const Key('descEnField')),
+          'Serve lunch',
+        );
+        await tester.ensureVisible(find.text('Save'));
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AdminEditSignupScreen), findsNothing);
+        expect(find.text('Sign up updated successfully'), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(AppBar),
+            matching: find.text('Annadanam'),
+          ),
+          findsOneWidget,
+        );
+        final inBody = find.descendant(
+          of: find.byType(ListView),
+          matching: find.text('Serve lunch'),
+        );
+        expect(inBody, findsOneWidget);
+        expect(find.text('Cook and serve'), findsNothing);
+      });
+
+      testWidgets('keeps the status and the header image', (tester) async {
+        final ref = await seedEditable();
+        await pumpDetailScreen(tester, signupId: ref.id);
+
+        await tapEdit(tester);
+        await tester.enterText(find.byKey(const Key('titleEnField')), 'New');
+        await tester.ensureVisible(find.text('Save'));
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        final data = (await ref.get()).data()!;
+        expect(data['status'], 'published');
+        expect(data['headerImageUrl'], 'https://example.com/h.png');
+      });
+
+      testWidgets('turning the join code on shows the new code on the page', (
+        tester,
+      ) async {
+        final ref = await seedEditable();
+        await pumpDetailScreen(tester, signupId: ref.id);
+        expect(find.byType(SignupJoinCodeRow), findsNothing);
+
+        await tapEdit(tester);
+        await tester.ensureVisible(find.byType(SwitchListTile));
+        await tester.tap(find.byType(SwitchListTile));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.text('Save'));
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(TextButton, 'Save'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(SignupJoinCodeRow), findsOneWidget);
+        final code = (await ref.get()).data()!['joinCode'] as String;
+        expect(code, matches(RegExp(r'^[A-Z0-9]{6}$')));
+        expect(find.text(code), findsOneWidget);
+      });
+
+      testWidgets('turning the join code off removes it from the page', (
+        tester,
+      ) async {
+        final ref = await seedEditable(
+          requiresJoinCode: true,
+          joinCode: 'ABC123',
+        );
+        await pumpDetailScreen(tester, signupId: ref.id);
+        expect(find.text('ABC123'), findsOneWidget);
+
+        await tapEdit(tester);
+        await tester.ensureVisible(find.byType(SwitchListTile));
+        await tester.tap(find.byType(SwitchListTile));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.text('Save'));
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(TextButton, 'Save'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('ABC123'), findsNothing);
+        expect(find.byType(SignupJoinCodeRow), findsNothing);
+      });
+
+      testWidgets('shows no confirmation when the edit is abandoned', (
+        tester,
+      ) async {
+        final ref = await seedEditable();
+        await pumpDetailScreen(tester, signupId: ref.id);
+
+        await tapEdit(tester);
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AdminEditSignupScreen), findsNothing);
+        expect(find.text('Sign up updated successfully'), findsNothing);
       });
     });
 

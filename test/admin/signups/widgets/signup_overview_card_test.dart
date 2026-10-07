@@ -16,14 +16,17 @@ void main() {
   }
 
   SignupOverviewCard card({
+    String title = 'Sunday Prasad Seva',
     String groupName = '',
     SignupStatus status = SignupStatus.draft,
     String? joinCode,
+    VoidCallback? onEdit,
   }) => SignupOverviewCard(
-    title: 'Sunday Prasad Seva',
+    title: title,
     groupName: groupName,
     status: status,
     joinCode: joinCode,
+    onEdit: onEdit ?? () {},
   );
 
   testWidgets('renders the title', (tester) async {
@@ -84,11 +87,67 @@ void main() {
   testWidgets('has no description', (tester) async {
     await tester.pumpWidget(wrap(card()));
 
-    // Title is the only body text besides the status chip.
+    // Title is the only body text besides the status chip and Edit.
     final texts = tester
         .widgetList<Text>(find.byType(Text))
         .map((t) => t.data)
         .toList();
-    expect(texts, ['Sunday Prasad Seva', 'Draft']);
+    expect(texts, ['Sunday Prasad Seva', 'Draft', 'Edit']);
+  });
+
+  group('edit button', () {
+    testWidgets('is labelled Edit', (tester) async {
+      await tester.pumpWidget(wrap(card()));
+
+      expect(find.text('Edit'), findsOneWidget);
+    });
+
+    testWidgets('calls onEdit when tapped', (tester) async {
+      var edits = 0;
+      await tester.pumpWidget(wrap(card(onEdit: () => edits++)));
+
+      await tester.tap(find.text('Edit'));
+      await tester.pump();
+
+      expect(edits, 1);
+    });
+
+    testWidgets('sits on the status row, level with the status chip', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrap(card(status: SignupStatus.published)));
+
+      final chip = tester.getRect(find.text('Published'));
+      final edit = tester.getRect(find.text('Edit'));
+      expect(edit.left, greaterThan(chip.right));
+      expect((edit.center.dy - chip.center.dy).abs(), lessThan(8));
+    });
+
+    testWidgets('does not crowd a long title, group and join code at 360px '
+        'and large text', (tester) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+      // In a scroll view, as on the detail page: the wide test font makes the
+      // wrapped title taller than the screen.
+      await tester.pumpWidget(
+        wrap(
+          SingleChildScrollView(
+            child: card(
+              title: 'A very long sign up title that has to wrap on a phone',
+              groupName: 'Gajanan Maharaj Seattle',
+              status: SignupStatus.published,
+              joinCode: 'ABC123',
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(tester.getRect(find.text('Edit')).right, lessThanOrEqualTo(360));
+    });
   });
 }
