@@ -12,15 +12,24 @@ import 'package:gajanan_maharaj_sevekari/utils/slot_schedule.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 
-/// An admin changing an existing slot: its labels, capacity, suggested
-/// amount, dates and times, and timezone. Reached from the Edit button on
-/// [AdminSlotCard]; closes with `true` once the changes are saved.
+/// An admin changing an existing slot - or, with [AdminEditSlotScreen.add],
+/// adding a new one: its labels, capacity, suggested amount, dates and times,
+/// and timezone. Reached from the Slots page; closes with `true` once the
+/// changes are saved.
 ///
-/// Who has signed up is untouched: the slot keeps its entries and its
-/// claimed count, and the capacity can't go below that count.
+/// Editing leaves who has signed up untouched: the slot keeps its entries and
+/// its claimed count, and the capacity can't go below that count.
 class AdminEditSlotScreen extends StatefulWidget {
   final String signupId;
-  final SignupSlot slot;
+
+  /// The slot being edited; null when adding one.
+  final SignupSlot? slot;
+
+  /// Where a new slot goes in the order: after every existing slot.
+  final int nextSortOrder;
+
+  /// The timezone a new slot starts in (the group's default zone).
+  final String defaultTimezone;
 
   /// Injected for testing; defaults to [FirebaseFirestore.instance].
   @visibleForTesting
@@ -33,10 +42,20 @@ class AdminEditSlotScreen extends StatefulWidget {
   const AdminEditSlotScreen({
     super.key,
     required this.signupId,
-    required this.slot,
+    required SignupSlot this.slot,
     this.firestore,
     this.signupService,
-  });
+  }) : nextSortOrder = 0,
+       defaultTimezone = EventTimezone.defaultZone;
+
+  const AdminEditSlotScreen.add({
+    super.key,
+    required this.signupId,
+    required this.nextSortOrder,
+    required this.defaultTimezone,
+    this.firestore,
+    this.signupService,
+  }) : slot = null;
 
   @override
   State<AdminEditSlotScreen> createState() => _AdminEditSlotScreenState();
@@ -52,6 +71,12 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
   late final SlotScheduleInput _initialSchedule;
   late SlotScheduleInput _schedule;
 
+  /// What the fields held when the screen opened, to tell if anything changed.
+  late final ({String labelEn, String labelMr, String capacity, String amount})
+  _initial;
+
+  bool get _isNew => widget.slot == null;
+
   bool _saving = false;
   bool _dirty = false;
   String? _errorText;
@@ -62,19 +87,25 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
     _service =
         widget.signupService ?? SignupService(firestore: widget.firestore);
     final slot = widget.slot;
-    _labelEn = TextEditingController(text: slot.labelEn);
-    _labelMr = TextEditingController(text: slot.labelMr);
-    _capacity = TextEditingController(text: slot.capacity.toString());
-    _amount = TextEditingController(
-      text: slot.suggestedAmount == null
+    _initial = (
+      labelEn: slot?.labelEn ?? '',
+      labelMr: slot?.labelMr ?? '',
+      capacity: slot == null ? '' : slot.capacity.toString(),
+      amount: slot?.suggestedAmount == null
           ? ''
-          : formatPledgeAmount(slot.suggestedAmount!),
+          : formatPledgeAmount(slot!.suggestedAmount!),
     );
-    _initialSchedule = slotScheduleInputFromInstants(
-      startAt: slot.startAt,
-      endAt: slot.endAt,
-      timezone: slot.timezone,
-    );
+    _labelEn = TextEditingController(text: _initial.labelEn);
+    _labelMr = TextEditingController(text: _initial.labelMr);
+    _capacity = TextEditingController(text: _initial.capacity);
+    _amount = TextEditingController(text: _initial.amount);
+    _initialSchedule = slot == null
+        ? SlotScheduleInput(timezone: normalizeTimezone(widget.defaultTimezone))
+        : slotScheduleInputFromInstants(
+            startAt: slot.startAt,
+            endAt: slot.endAt,
+            timezone: slot.timezone,
+          );
     _schedule = _initialSchedule;
     for (final controller in [_labelEn, _labelMr, _capacity, _amount]) {
       controller.addListener(_refreshDirty);
@@ -90,17 +121,14 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
     super.dispose();
   }
 
-  /// Whether anything differs from the slot as it was opened. Changing a
+  /// Whether anything differs from the screen as it was opened. Changing a
   /// field back to what it was clears this again.
-  bool get _hasChanges {
-    final slot = widget.slot;
-    final amount = slot.suggestedAmount;
-    return _labelEn.text != slot.labelEn ||
-        _labelMr.text != slot.labelMr ||
-        _capacity.text != slot.capacity.toString() ||
-        _amount.text != (amount == null ? '' : formatPledgeAmount(amount)) ||
-        _schedule != _initialSchedule;
-  }
+  bool get _hasChanges =>
+      _labelEn.text != _initial.labelEn ||
+      _labelMr.text != _initial.labelMr ||
+      _capacity.text != _initial.capacity ||
+      _amount.text != _initial.amount ||
+      _schedule != _initialSchedule;
 
   /// Called when anything is edited: refreshes whether there are unsaved
   /// changes, and drops the message from a failed save, which no longer
@@ -120,44 +148,46 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
     _refreshDirty();
   }
 
-  /// The slot as edited. A schedule the admin didn't touch keeps the saved
-  /// instants and timezone exactly: reading them into the form and back drops
-  /// seconds and rewrites a timezone the app doesn't know.
-  SignupSlot? _editedSlot() {
+  /// The slot as filled in: the edited slot, or a new one at the end of the
+  /// order with nobody signed up. When editing, a schedule the admin didn't
+  /// touch keeps the saved instants and timezone exactly: reading them into
+  /// the form and back drops seconds and rewrites a timezone the app doesn't
+  /// know.
+  SignupSlot? _filledInSlot() {
     final slot = widget.slot;
-    final untouched =
-        _schedule == _initialSchedule &&
-        slot.startAt != null &&
-        slot.endAt != null;
-    var startAt = slot.startAt;
-    var endAt = slot.endAt;
-    var timezone = slot.timezone;
-    if (!untouched) {
+    DateTime? startAt;
+    DateTime? endAt;
+    var timezone = normalizeTimezone(_schedule.timezone);
+    if (slot != null && _schedule == _initialSchedule && slot.hasSchedule) {
+      startAt = slot.startAt;
+      endAt = slot.endAt;
+      timezone = slot.timezone;
+    } else {
       final schedule = resolveSlotSchedule(_schedule);
       if (schedule is! SlotScheduleResolved) return null;
       startAt = schedule.startAt;
       endAt = schedule.endAt;
-      timezone = normalizeTimezone(_schedule.timezone);
     }
     final amountText = _amount.text.trim();
     return SignupSlot(
-      id: slot.id,
+      id: slot?.id,
       labelEn: _labelEn.text.trim(),
       labelMr: _labelMr.text.trim(),
       startAt: startAt,
       endAt: endAt,
       timezone: timezone,
       capacity: int.parse(_capacity.text.trim()),
-      claimedCount: slot.claimedCount,
+      claimedCount: slot?.claimedCount ?? 0,
       suggestedAmount: amountText.isEmpty ? null : double.tryParse(amountText),
-      sortOrder: slot.sortOrder,
-      createdAt: slot.createdAt,
+      sortOrder: slot?.sortOrder ?? widget.nextSortOrder,
+      createdAt: slot?.createdAt ?? DateTime.now(),
     );
   }
 
   Future<void> _save(AppLocalizations l10n) async {
     if (_saving) return;
-    if (!_hasChanges && widget.slot.hasSchedule) {
+    final existing = widget.slot;
+    if (existing != null && existing.hasSchedule && !_hasChanges) {
       // Nothing to write; closing without `true` means no confirmation. (A
       // slot with no schedule still has to be given one.)
       Navigator.pop(context, false);
@@ -167,8 +197,8 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
       revealFirstInvalidField(_formKey.currentContext);
       return;
     }
-    final updated = _editedSlot();
-    if (updated == null) return;
+    final filledIn = _filledInSlot();
+    if (filledIn == null) return;
 
     setState(() {
       _saving = true;
@@ -177,13 +207,17 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
     var saved = false;
     String? error;
     try {
-      await _service.updateSlot(widget.signupId, updated);
+      if (_isNew) {
+        await _service.addSlot(widget.signupId, filledIn);
+      } else {
+        await _service.updateSlot(widget.signupId, filledIn);
+      }
       saved = true;
     } on SlotCapacityBelowClaimedException catch (e) {
       error = l10n.signupSlotCapacityBelowClaimed(e.claimedCount.toString());
     } on Exception catch (e) {
       debugPrint('AdminEditSlotScreen save failed: $e');
-      error = l10n.signupSlotUpdateError;
+      error = _isNew ? l10n.signupSlotAddError : l10n.signupSlotUpdateError;
     } finally {
       // Also runs when an Error escapes, so the screen is never left
       // spinning behind a button that can't be pressed.
@@ -238,7 +272,11 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
         _confirmDiscard(l10n);
       },
       child: Scaffold(
-        appBar: AppBar(title: FittedAppBarTitle(l10n.signupEditSlotTitle)),
+        appBar: AppBar(
+          title: FittedAppBarTitle(
+            _isNew ? l10n.signupAddSlotButton : l10n.signupEditSlotTitle,
+          ),
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Form(
@@ -253,7 +291,7 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
                   labelMrController: _labelMr,
                   capacityController: _capacity,
                   suggestedAmountController: _amount,
-                  minCapacity: widget.slot.claimedCount,
+                  minCapacity: widget.slot?.claimedCount,
                   schedule: _schedule,
                   onScheduleChanged: _onScheduleChanged,
                 ),

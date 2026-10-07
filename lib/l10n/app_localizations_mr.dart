@@ -2315,6 +2315,37 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupKeepEditingButton => 'एडिट करत रहा';
 
   @override
+  String get signupSlotAddSuccess => 'स्लॉट यशस्वीरित्या जोडला';
+
+  @override
+  String get signupSlotAddError => 'स्लॉट जोडण्यात अयशस्वी';
+
+  @override
+  String get signupDeleteSlotButton => 'डिलीट करा';
+
+  @override
+  String get signupDeleteSlotConfirmTitle => 'हा स्लॉट डिलीट करायचा?';
+
+  @override
+  String signupDeleteSlotConfirmMessage(String label) {
+    return '\"$label\" काढून टाकला जाईल. हे पूर्ववत करता येणार नाही.';
+  }
+
+  @override
+  String get signupSlotHasEntriesTitle => 'हा स्लॉट डिलीट करता येत नाही';
+
+  @override
+  String signupSlotHasEntriesMessage(String count) {
+    return 'या स्लॉटवर $count साइन-अप आहेत. आधी त्यांच्या एंट्री काढा, मग स्लॉट डिलीट करा.';
+  }
+
+  @override
+  String get signupSlotDeleteSuccess => 'स्लॉट डिलीट केला';
+
+  @override
+  String get signupSlotDeleteError => 'स्लॉट डिलीट करण्यात अयशस्वी';
+
+  @override
   String get signupSlotSuggestedAmountLabel => 'सुचवलेली रक्कम (ऐच्छिक)';
 
   @override

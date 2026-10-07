@@ -4431,6 +4431,60 @@ abstract class AppLocalizations {
   /// **'Keep Editing'**
   String get signupKeepEditingButton;
 
+  /// No description provided for @signupSlotAddSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot added successfully'**
+  String get signupSlotAddSuccess;
+
+  /// No description provided for @signupSlotAddError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add slot'**
+  String get signupSlotAddError;
+
+  /// No description provided for @signupDeleteSlotButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get signupDeleteSlotButton;
+
+  /// No description provided for @signupDeleteSlotConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this slot?'**
+  String get signupDeleteSlotConfirmTitle;
+
+  /// No description provided for @signupDeleteSlotConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{label}\" will be removed. This can\'t be undone.'**
+  String signupDeleteSlotConfirmMessage(String label);
+
+  /// No description provided for @signupSlotHasEntriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t delete this slot'**
+  String get signupSlotHasEntriesTitle;
+
+  /// No description provided for @signupSlotHasEntriesMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} sign-ups are on this slot. Remove their entries first, then delete the slot.'**
+  String signupSlotHasEntriesMessage(String count);
+
+  /// No description provided for @signupSlotDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot deleted'**
+  String get signupSlotDeleteSuccess;
+
+  /// No description provided for @signupSlotDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete slot'**
+  String get signupSlotDeleteError;
+
   /// No description provided for @signupSlotSuggestedAmountLabel.
   ///
   /// In en, this message translates to:

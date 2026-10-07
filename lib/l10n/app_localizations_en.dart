@@ -2305,6 +2305,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupKeepEditingButton => 'Keep Editing';
 
   @override
+  String get signupSlotAddSuccess => 'Slot added successfully';
+
+  @override
+  String get signupSlotAddError => 'Failed to add slot';
+
+  @override
+  String get signupDeleteSlotButton => 'Delete';
+
+  @override
+  String get signupDeleteSlotConfirmTitle => 'Delete this slot?';
+
+  @override
+  String signupDeleteSlotConfirmMessage(String label) {
+    return '\"$label\" will be removed. This can\'t be undone.';
+  }
+
+  @override
+  String get signupSlotHasEntriesTitle => 'Can\'t delete this slot';
+
+  @override
+  String signupSlotHasEntriesMessage(String count) {
+    return '$count sign-ups are on this slot. Remove their entries first, then delete the slot.';
+  }
+
+  @override
+  String get signupSlotDeleteSuccess => 'Slot deleted';
+
+  @override
+  String get signupSlotDeleteError => 'Failed to delete slot';
+
+  @override
   String get signupSlotSuggestedAmountLabel => 'Suggested Amount (optional)';
 
   @override
@@ -4988,6 +5019,37 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupKeepEditingButton => 'Edit करत रहा';
+
+  @override
+  String get signupSlotAddSuccess => 'Slot यशस्वीरित्या add केला';
+
+  @override
+  String get signupSlotAddError => 'Slot add करण्यात अयशस्वी';
+
+  @override
+  String get signupDeleteSlotButton => 'Delete करा';
+
+  @override
+  String get signupDeleteSlotConfirmTitle => 'हा slot Delete करायचा?';
+
+  @override
+  String signupDeleteSlotConfirmMessage(String label) {
+    return '\"$label\" काढून टाकला जाईल. हे undo करता येणार नाही.';
+  }
+
+  @override
+  String get signupSlotHasEntriesTitle => 'हा slot delete करता येत नाही';
+
+  @override
+  String signupSlotHasEntriesMessage(String count) {
+    return 'या slot वर $count sign-up आहेत. आधी त्यांच्या entries काढा, मग slot delete करा.';
+  }
+
+  @override
+  String get signupSlotDeleteSuccess => 'Slot delete केला';
+
+  @override
+  String get signupSlotDeleteError => 'Slot delete करण्यात अयशस्वी';
 
   @override
   String get signupSlotSuggestedAmountLabel => 'सुचवलेली रक्कम (ऐच्छिक)';

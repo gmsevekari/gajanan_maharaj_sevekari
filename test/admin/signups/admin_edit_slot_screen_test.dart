@@ -119,6 +119,33 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> openAdd(
+    WidgetTester tester, {
+    SignupService? withService,
+    int nextSortOrder = 3,
+    String defaultTimezone = EventTimezone.pacific,
+  }) async {
+    await tester.pumpWidget(
+      wrap(
+        AdminEditSlotScreen.add(
+          signupId: signupId,
+          nextSortOrder: nextSortOrder,
+          defaultTimezone: defaultTimezone,
+          signupService: withService ?? service,
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> pickStartDate(WidgetTester tester) async {
+    await tester.tap(find.byKey(const Key('slotStartDate_0')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+  }
+
   Future<void> save(WidgetTester tester) async {
     await tester.ensureVisible(find.text('Save'));
     await tester.tap(find.text('Save'));
@@ -771,6 +798,200 @@ void main() {
       await open(tester, slot);
 
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('adding a slot', () {
+    Future<List<SignupSlot>> slots() => service.getSlots(signupId).first;
+
+    Future<void> fillRequired(WidgetTester tester) async {
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'Evening');
+      await tester.enterText(find.byKey(const Key('slotCapacity_0')), '4');
+      await pickStartDate(tester);
+    }
+
+    testWidgets('has an Add Slot title and empty fields in the default zone', (
+      tester,
+    ) async {
+      await openAdd(tester, defaultTimezone: EventTimezone.india);
+
+      expect(find.text('Add Slot'), findsOneWidget);
+      expect(find.text('Edit Slot'), findsNothing);
+      expect(textOf(tester, 'slotLabelEn_0'), '');
+      expect(textOf(tester, 'slotLabelMr_0'), '');
+      expect(textOf(tester, 'slotCapacity_0'), '');
+      expect(textOf(tester, 'slotSuggestedAmount_0'), '');
+      expect(button('slotStartDate_0', 'Select Date'), findsOneWidget);
+      expect(find.text('India (IST)'), findsOneWidget);
+      expect(find.text('Slot 1'), findsNothing);
+    });
+
+    testWidgets('needs a label, a capacity and a date, and writes nothing '
+        'without them', (tester) async {
+      await openAdd(tester);
+
+      await save(tester);
+
+      expect(find.text('Please enter an English label'), findsOneWidget);
+      expect(find.text('Please enter a capacity'), findsOneWidget);
+      expect(find.text('Please select a date'), findsOneWidget);
+      expect(await slots(), isEmpty);
+      expect(result, isNull);
+      expect(find.text('Add Slot'), findsOneWidget);
+    });
+
+    testWidgets('adds an all-day slot at the end of the list and closes with '
+        'true', (tester) async {
+      await openAdd(tester, nextSortOrder: 7);
+      await fillRequired(tester);
+
+      await save(tester);
+
+      final added = (await slots()).single;
+      expect(added.labelEn, 'Evening');
+      expect(added.labelMr, '');
+      expect(added.capacity, 4);
+      expect(added.claimedCount, 0);
+      expect(added.suggestedAmount, isNull);
+      expect(added.sortOrder, 7);
+      expect(added.timezone, EventTimezone.pacific);
+      expect(added.hasSchedule, isTrue);
+      // A whole day: 00:00 to 23:59 on the picked day.
+      expect(added.isAllDay, isTrue);
+      expect(
+        added.createdAt.difference(DateTime.now()).abs(),
+        lessThan(const Duration(minutes: 1)),
+      );
+      expect(result, isTrue);
+      expect(find.text('Add Slot'), findsNothing);
+    });
+
+    testWidgets('saves the optional fields and the default zone', (
+      tester,
+    ) async {
+      await openAdd(tester, defaultTimezone: EventTimezone.india);
+      await fillRequired(tester);
+      await tester.enterText(
+        find.byKey(const Key('slotLabelMr_0')),
+        'संध्याकाळ',
+      );
+      await tester.enterText(
+        find.byKey(const Key('slotSuggestedAmount_0')),
+        ' 12.5 ',
+      );
+
+      await save(tester);
+
+      final added = (await slots()).single;
+      expect(added.labelMr, 'संध्याकाळ');
+      expect(added.suggestedAmount, 12.5);
+      expect(added.timezone, EventTimezone.india);
+    });
+
+    testWidgets('trims the label', (tester) async {
+      await openAdd(tester);
+      await fillRequired(tester);
+      await tester.enterText(
+        find.byKey(const Key('slotLabelEn_0')),
+        '  Morning  ',
+      );
+
+      await save(tester);
+
+      expect((await slots()).single.labelEn, 'Morning');
+    });
+
+    testWidgets('accepts a capacity of 1', (tester) async {
+      await openAdd(tester);
+      await fillRequired(tester);
+      await tester.enterText(find.byKey(const Key('slotCapacity_0')), '1');
+
+      await save(tester);
+
+      expect((await slots()).single.capacity, 1);
+    });
+
+    testWidgets('does not add the same slot twice when Save is tapped again', (
+      tester,
+    ) async {
+      final done = Completer<String>();
+      final slow = _MockSignupService();
+      when(() => slow.addSlot(any(), any())).thenAnswer((_) => done.future);
+      await openAdd(tester, withService: slow);
+      await fillRequired(tester);
+
+      await tester.ensureVisible(find.text('Save'));
+      await tester.tap(find.text('Save'));
+      await tester.pump();
+      expect(
+        tester
+            .widget<ElevatedButton>(find.byType(ElevatedButton).last)
+            .onPressed,
+        isNull,
+      );
+
+      done.complete('new_id');
+      await tester.pumpAndSettle();
+      verify(() => slow.addSlot(any(), any())).called(1);
+      expect(result, isTrue);
+    });
+
+    testWidgets('says so plainly when adding fails, keeping the input', (
+      tester,
+    ) async {
+      final failing = _MockSignupService();
+      when(
+        () => failing.addSlot(any(), any()),
+      ).thenThrow(Exception('permission-denied: secret'));
+      await openAdd(tester, withService: failing);
+      await fillRequired(tester);
+
+      await save(tester);
+
+      expect(find.text('Failed to add slot'), findsOneWidget);
+      expect(find.text('Failed to update slot'), findsNothing);
+      expect(find.textContaining('secret'), findsNothing);
+      expect(textOf(tester, 'slotLabelEn_0'), 'Evening');
+      expect(result, isNull);
+    });
+
+    testWidgets('leaves without asking when nothing was entered', (
+      tester,
+    ) async {
+      await openAdd(tester);
+
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Discard changes?'), findsNothing);
+      expect(find.text('Add Slot'), findsNothing);
+    });
+
+    testWidgets('asks first when something was entered', (tester) async {
+      await openAdd(tester);
+
+      await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'Half');
+      await tester.pump();
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Discard changes?'), findsOneWidget);
+      await tester.tap(find.text('Discard'));
+      await tester.pumpAndSettle();
+      expect(find.text('Add Slot'), findsNothing);
+      expect(await slots(), isEmpty);
+    });
+
+    testWidgets('has no minimum capacity beyond a positive number', (
+      tester,
+    ) async {
+      await openAdd(tester);
+
+      await tester.enterText(find.byKey(const Key('slotCapacity_0')), '0');
+      await save(tester);
+
+      expect(find.text('Capacity must be a positive number'), findsOneWidget);
+      expect(find.textContaining('already signed up'), findsNothing);
     });
   });
 }

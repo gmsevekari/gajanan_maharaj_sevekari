@@ -892,6 +892,29 @@
   "signupDiscardChangesTitle": "Discard changes?",
   "signupDiscardChangesMessage": "Your changes haven't been saved.",
   "signupKeepEditingButton": "Keep Editing",
+  "signupSlotAddSuccess": "Slot added successfully",
+  "signupSlotAddError": "Failed to add slot",
+  "signupDeleteSlotButton": "Delete",
+  "signupDeleteSlotConfirmTitle": "Delete this slot?",
+  "signupDeleteSlotConfirmMessage": "\"{label}\" will be removed. This can't be undone.",
+  "@signupDeleteSlotConfirmMessage": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "signupSlotHasEntriesTitle": "Can't delete this slot",
+  "signupSlotHasEntriesMessage": "{count} sign-ups are on this slot. Remove their entries first, then delete the slot.",
+  "@signupSlotHasEntriesMessage": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "signupSlotDeleteSuccess": "Slot deleted",
+  "signupSlotDeleteError": "Failed to delete slot",
   "signupSlotSuggestedAmountLabel": "Suggested Amount (optional)",
   "signupSlotSuggestedAmountInvalid": "Please enter a valid amount",
   "signupSlotDateRequired": "Please select a date",
