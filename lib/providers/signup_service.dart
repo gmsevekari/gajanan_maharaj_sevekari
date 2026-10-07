@@ -23,16 +23,18 @@ class SlotCapacityBelowClaimedException implements Exception {
 }
 
 /// An admin tried to delete a slot that people have signed up for. Deleting it
-/// would orphan their entries. It is a [StateError], as the check always was.
-class SlotHasClaimedEntriesException extends StateError {
+/// would orphan their entries. [claimedCount] is the larger of the slot's
+/// counter and the entries actually found on it.
+class SlotHasClaimedEntriesException implements Exception {
   final String slotId;
   final int claimedCount;
 
-  SlotHasClaimedEntriesException(this.slotId, this.claimedCount)
-    : super(
-        'Cannot delete slot $slotId: it still has $claimedCount claimed '
-        'entr${claimedCount == 1 ? 'y' : 'ies'}.',
-      );
+  const SlotHasClaimedEntriesException(this.slotId, this.claimedCount);
+
+  @override
+  String toString() =>
+      'SlotHasClaimedEntriesException: cannot delete slot $slotId, it still '
+      'has $claimedCount claimed entr${claimedCount == 1 ? 'y' : 'ies'}.';
 }
 
 class SignupService {
@@ -290,17 +292,27 @@ class SignupService {
     });
   }
 
-  /// Deletes a slot, refusing with [SlotHasClaimedEntriesException] if it
-  /// still has claimed entries — deleting it anyway would orphan those entries
-  /// (pointing at a missing slot). The count is read in the same transaction as
-  /// the delete, so a claim that lands at the same moment can't be orphaned.
-  /// Deleting a slot that is already gone does nothing.
+  /// Deletes a slot, refusing with [SlotHasClaimedEntriesException] if people
+  /// have signed up for it — deleting it anyway would orphan those entries
+  /// (pointing at a missing slot).
+  ///
+  /// The slot's claimed counter is read in the same transaction as the delete,
+  /// so a claim that lands at the same moment can't be orphaned. The counter
+  /// can also drift from the entries (the rules don't tie them together), so
+  /// the entries themselves are looked up first; the client transaction API
+  /// can't run that query, which leaves only a very small window. Deleting a
+  /// slot that is already gone does nothing.
   Future<void> deleteSlot(String signupId, String slotId) async {
+    final entries = await _entriesRef(
+      signupId,
+    ).where('slotId', isEqualTo: slotId).get();
     final slotRef = _slotsRef(signupId).doc(slotId);
+
     await _db.runTransaction((transaction) async {
       final snapshot = await transaction.get(slotRef);
       final claimedValue = snapshot.data()?['claimedCount'];
-      final claimed = claimedValue is num ? claimedValue.toInt() : 0;
+      final counter = claimedValue is num ? claimedValue.toInt() : 0;
+      final claimed = counter > entries.size ? counter : entries.size;
       if (claimed > 0) throw SlotHasClaimedEntriesException(slotId, claimed);
       transaction.delete(slotRef);
     });

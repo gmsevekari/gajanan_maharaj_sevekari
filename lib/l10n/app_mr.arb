@@ -891,7 +891,7 @@
   "signupDeleteSlotConfirmTitle": "हा स्लॉट डिलीट करायचा?",
   "signupDeleteSlotConfirmMessage": "\"{label}\" काढून टाकला जाईल. हे पूर्ववत करता येणार नाही.",
   "signupSlotHasEntriesTitle": "हा स्लॉट डिलीट करता येत नाही",
-  "signupSlotHasEntriesMessage": "या स्लॉटवर {count} साइन-अप आहेत. आधी त्यांच्या एंट्री काढा, मग स्लॉट डिलीट करा.",
+  "signupSlotHasEntriesMessage": "या स्लॉटवर {count} साइन-अप आहेत. आधी एंट्री काढा, मग स्लॉट डिलीट करा.",
   "signupSlotDeleteSuccess": "स्लॉट डिलीट केला",
   "signupSlotDeleteError": "स्लॉट डिलीट करण्यात अयशस्वी",
   "signupSlotSuggestedAmountLabel": "सुचवलेली रक्कम (ऐच्छिक)",

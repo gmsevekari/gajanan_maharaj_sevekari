@@ -905,11 +905,11 @@
     }
   },
   "signupSlotHasEntriesTitle": "Can't delete this slot",
-  "signupSlotHasEntriesMessage": "{count} sign-ups are on this slot. Remove their entries first, then delete the slot.",
+  "signupSlotHasEntriesMessage": "{count, plural, =1{1 sign-up is} other{{count} sign-ups are}} on this slot. Remove the entries first, then delete the slot.",
   "@signupSlotHasEntriesMessage": {
     "placeholders": {
       "count": {
-        "type": "String"
+        "type": "int"
       }
     }
   },

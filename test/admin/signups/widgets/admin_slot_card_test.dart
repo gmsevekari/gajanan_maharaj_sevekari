@@ -351,8 +351,18 @@ void main() {
       await tester.pumpWidget(wrap(slot(claimedCount: 2)));
 
       expect(tester.takeException(), isNull);
-      for (final label in ['Delete', 'Edit', 'Add Devotee']) {
-        expect(tester.getRect(find.text(label)).right, lessThanOrEqualTo(360));
+      final rects = [
+        for (final label in ['Delete', 'Edit', 'Add Devotee'])
+          tester.getRect(find.text(label)),
+      ];
+      for (final rect in rects) {
+        expect(rect.right, lessThanOrEqualTo(360));
+      }
+      // No button sits on top of another.
+      for (var i = 0; i < rects.length; i++) {
+        for (var j = i + 1; j < rects.length; j++) {
+          expect(rects[i].overlaps(rects[j]), isFalse, reason: '$i and $j');
+        }
       }
     });
   });

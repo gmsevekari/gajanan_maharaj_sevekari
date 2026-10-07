@@ -184,6 +184,24 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
     );
   }
 
+  /// Writes [slot]. Returns the message to show if it couldn't be saved, or
+  /// null once it is.
+  Future<String?> _persist(SignupSlot slot, AppLocalizations l10n) async {
+    try {
+      if (_isNew) {
+        await _service.addSlot(widget.signupId, slot);
+      } else {
+        await _service.updateSlot(widget.signupId, slot);
+      }
+      return null;
+    } on SlotCapacityBelowClaimedException catch (e) {
+      return l10n.signupSlotCapacityBelowClaimed(e.claimedCount.toString());
+    } on Exception catch (e) {
+      debugPrint('AdminEditSlotScreen save failed: $e');
+      return _isNew ? l10n.signupSlotAddError : l10n.signupSlotUpdateError;
+    }
+  }
+
   Future<void> _save(AppLocalizations l10n) async {
     if (_saving) return;
     final existing = widget.slot;
@@ -204,31 +222,22 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
       _saving = true;
       _errorText = null;
     });
-    var saved = false;
     String? error;
+    var finished = false;
     try {
-      if (_isNew) {
-        await _service.addSlot(widget.signupId, filledIn);
-      } else {
-        await _service.updateSlot(widget.signupId, filledIn);
-      }
-      saved = true;
-    } on SlotCapacityBelowClaimedException catch (e) {
-      error = l10n.signupSlotCapacityBelowClaimed(e.claimedCount.toString());
-    } on Exception catch (e) {
-      debugPrint('AdminEditSlotScreen save failed: $e');
-      error = _isNew ? l10n.signupSlotAddError : l10n.signupSlotUpdateError;
+      error = await _persist(filledIn, l10n);
+      finished = true;
     } finally {
       // Also runs when an Error escapes, so the screen is never left
       // spinning behind a button that can't be pressed.
-      if (mounted && !saved) {
+      if (mounted && (!finished || error != null)) {
         setState(() {
           _saving = false;
           _errorText = error;
         });
       }
     }
-    if (saved && mounted) Navigator.pop(context, true);
+    if (error == null && mounted) Navigator.pop(context, true);
   }
 
   Future<void> _confirmDiscard(AppLocalizations l10n) async {

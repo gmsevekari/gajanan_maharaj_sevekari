@@ -2335,8 +2335,8 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSlotHasEntriesTitle => 'हा स्लॉट डिलीट करता येत नाही';
 
   @override
-  String signupSlotHasEntriesMessage(String count) {
-    return 'या स्लॉटवर $count साइन-अप आहेत. आधी त्यांच्या एंट्री काढा, मग स्लॉट डिलीट करा.';
+  String signupSlotHasEntriesMessage(int count) {
+    return 'या स्लॉटवर $count साइन-अप आहेत. आधी एंट्री काढा, मग स्लॉट डिलीट करा.';
   }
 
   @override

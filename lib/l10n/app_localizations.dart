@@ -4470,8 +4470,8 @@ abstract class AppLocalizations {
   /// No description provided for @signupSlotHasEntriesMessage.
   ///
   /// In en, this message translates to:
-  /// **'{count} sign-ups are on this slot. Remove their entries first, then delete the slot.'**
-  String signupSlotHasEntriesMessage(String count);
+  /// **'{count, plural, =1{1 sign-up is} other{{count} sign-ups are}} on this slot. Remove the entries first, then delete the slot.'**
+  String signupSlotHasEntriesMessage(int count);
 
   /// No description provided for @signupSlotDeleteSuccess.
   ///

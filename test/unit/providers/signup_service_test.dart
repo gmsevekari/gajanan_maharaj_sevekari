@@ -1096,7 +1096,7 @@ void main() {
 
         await expectLater(
           service.deleteSlot(signupId, slotId),
-          throwsStateError,
+          throwsA(isA<SlotHasClaimedEntriesException>()),
         );
 
         final slots = await service.getSlots(signupId).first;
@@ -1127,15 +1127,85 @@ void main() {
       expect(await service.getAllEntries(signupId).first, hasLength(2));
     });
 
-    test('is still a StateError for callers that catch that', () async {
+    test('is an Exception, not an Error', () async {
       final signupId = await service.createSignup(buildSignup());
       final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
       await service.claimSlot(signupId: signupId, slotId: slotId, name: 'Jane');
 
       await expectLater(
         service.deleteSlot(signupId, slotId),
-        throwsA(isA<StateError>()),
+        throwsA(allOf(isA<Exception>(), isNot(isA<Error>()))),
       );
+    });
+
+    test('refuses when entries exist even though the counter says none, and '
+        'reports the real number', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
+      // The counter drifted to 0 (an old client, a console edit): two
+      // entries are still on the slot.
+      for (final name in ['Jane', 'Amit']) {
+        await fakeFirestore.collection('signups/$signupId/entries').add({
+          'slotId': slotId,
+          'name': name,
+          'joinedAt': Timestamp.now(),
+        });
+      }
+
+      await expectLater(
+        service.deleteSlot(signupId, slotId),
+        throwsA(
+          isA<SlotHasClaimedEntriesException>().having(
+            (e) => e.claimedCount,
+            'claimedCount',
+            2,
+          ),
+        ),
+      );
+      expect(await service.getSlots(signupId).first, hasLength(1));
+    });
+
+    test('reports the larger of the counter and the entries found', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
+      await fakeFirestore.doc('signups/$signupId/slots/$slotId').update({
+        'claimedCount': 4,
+      });
+      await fakeFirestore.collection('signups/$signupId/entries').add({
+        'slotId': slotId,
+        'name': 'Jane',
+        'joinedAt': Timestamp.now(),
+      });
+
+      await expectLater(
+        service.deleteSlot(signupId, slotId),
+        throwsA(
+          isA<SlotHasClaimedEntriesException>().having(
+            (e) => e.claimedCount,
+            'claimedCount',
+            4,
+          ),
+        ),
+      );
+    });
+
+    test('ignores entries that belong to other slots', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
+      final otherId = await service.addSlot(
+        signupId,
+        buildSlot(labelEn: 'Other', capacity: 5),
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: otherId,
+        name: 'Jane',
+      );
+
+      await service.deleteSlot(signupId, slotId);
+
+      final left = await service.getSlots(signupId).first;
+      expect(left.map((s) => s.id), [otherId]);
     });
 
     test('allows deleting after the entries are removed', () async {

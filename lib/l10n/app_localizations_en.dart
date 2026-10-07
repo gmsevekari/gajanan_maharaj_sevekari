@@ -2325,8 +2325,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSlotHasEntriesTitle => 'Can\'t delete this slot';
 
   @override
-  String signupSlotHasEntriesMessage(String count) {
-    return '$count sign-ups are on this slot. Remove their entries first, then delete the slot.';
+  String signupSlotHasEntriesMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sign-ups are',
+      one: '1 sign-up is',
+    );
+    return '$_temp0 on this slot. Remove the entries first, then delete the slot.';
   }
 
   @override
@@ -5012,7 +5018,7 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get signupSlotUpdateError => 'Slot update करण्यात अयशस्वी';
 
   @override
-  String get signupDiscardChangesTitle => 'बदल रद्द करायचे?';
+  String get signupDiscardChangesTitle => 'बदल Discard करायचे?';
 
   @override
   String get signupDiscardChangesMessage => 'तुमचे बदल save केलेले नाहीत.';
@@ -5041,8 +5047,8 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String get signupSlotHasEntriesTitle => 'हा slot delete करता येत नाही';
 
   @override
-  String signupSlotHasEntriesMessage(String count) {
-    return 'या slot वर $count sign-up आहेत. आधी त्यांच्या entries काढा, मग slot delete करा.';
+  String signupSlotHasEntriesMessage(int count) {
+    return 'या slot वर $count sign-up आहेत. आधी entries काढा, मग slot delete करा.';
   }
 
   @override

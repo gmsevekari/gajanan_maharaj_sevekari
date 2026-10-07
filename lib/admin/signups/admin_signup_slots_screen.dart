@@ -44,6 +44,10 @@ class AdminSignupSlotsScreen extends StatefulWidget {
 
 class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
     with SingleTickerProviderStateMixin {
+  /// Room under the last card for the floating Add Slot button (56 high, 16
+  /// above the bottom), before any system inset.
+  static const double _fabClearance = 88;
+
   late final SignupService _service;
   late final AdminEntryActions _actions;
   late final TabController _tabController;
@@ -82,15 +86,17 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
   }
 
   /// Adds a slot after all the existing ones (past or upcoming), in the zone
-  /// of the last one - or, for the first, the group's default zone.
+  /// of the last one - or the group's default zone, for the first slot or
+  /// when the last one's zone isn't one the app knows.
   Future<void> _addSlot(List<SignupSlot> slots) async {
     final l10n = lookupAppLocalizations(const Locale('en'));
     final ordered = [...slots]
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     final nextSortOrder = ordered.isEmpty ? 0 : ordered.last.sortOrder + 1;
-    final timezone = ordered.isEmpty
-        ? defaultTimezoneFor(context, widget.signup.groupId)
-        : normalizeTimezone(ordered.last.timezone);
+    final lastZone = ordered.isEmpty ? null : ordered.last.timezone;
+    final timezone = EventTimezone.supported.contains(lastZone)
+        ? lastZone!
+        : defaultTimezoneFor(context, widget.signup.groupId);
     final saved = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
@@ -112,7 +118,8 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
     final l10n = lookupAppLocalizations(const Locale('en'));
     if (slot.claimedCount > 0) return _explainHasEntries(slot.claimedCount);
 
-    final label = slot.labelEn.isNotEmpty ? slot.labelEn : slot.labelMr;
+    final named = slot.labelEn.isNotEmpty ? slot.labelEn : slot.labelMr;
+    final label = named.isNotEmpty ? named : l10n.signupSlotHeading;
     final confirmed = await showEnglishDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -121,12 +128,12 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.no),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             child: Text(
-              l10n.yes,
+              l10n.signupDeleteSlotButton,
               style: TextStyle(
                 color: Theme.of(dialogContext).colorScheme.error,
               ),
@@ -155,7 +162,7 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.signupSlotHasEntriesTitle),
-        content: Text(l10n.signupSlotHasEntriesMessage(count.toString())),
+        content: Text(l10n.signupSlotHasEntriesMessage(count)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
@@ -183,9 +190,17 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
       builder: (context, snapshot) {
         final loading = snapshot.connectionState == ConnectionState.waiting;
         final slots = snapshot.data ?? const <SignupSlot>[];
+        // By date, as on the Entries page, so a slot added later still lands
+        // where its date puts it.
+        final byDate = [...slots]
+          ..sort((a, b) {
+            final byStart = SignupSlot.compareByStart(a, b);
+            // Slots that tie on start and order still need a fixed order.
+            return byStart != 0 ? byStart : (a.id ?? '').compareTo(b.id ?? '');
+          });
         final now = DateTime.now();
-        final upcoming = slots.where((s) => !s.isPast(now)).toList();
-        final past = slots.where((s) => s.isPast(now)).toList();
+        final upcoming = byDate.where((s) => !s.isPast(now)).toList();
+        final past = byDate.where((s) => s.isPast(now)).toList();
 
         Widget tab(List<SignupSlot> list) => loading
             ? const Center(child: CircularProgressIndicator())
@@ -196,7 +211,9 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
           controller: _tabController,
           upcoming: tab(upcoming),
           past: tab(past),
-          floatingActionButton: loading
+          // Not while loading, or when the slots couldn't be loaded: the new
+          // slot's place in the order comes from the slots on screen.
+          floatingActionButton: loading || snapshot.hasError
               ? null
               : FloatingActionButton.extended(
                   key: const Key('addSlotButton'),
@@ -224,7 +241,12 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
     }
     return ListView(
       // Room under the last card for the floating Add Slot button.
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        _fabClearance + MediaQuery.viewPaddingOf(context).bottom,
+      ),
       children: [
         for (final slot in slots)
           AdminSlotCard(
