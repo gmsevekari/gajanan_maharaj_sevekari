@@ -1092,6 +1092,31 @@ void main() {
       expect(copied.timezone, EventTimezone.india);
     });
 
+    test('does not copy a slot\'s reminder records', () async {
+      // The reminder function records, on the slot, which reminders it has
+      // sent for its start time. A copy keeps that start time, so a copied
+      // record would silence the new sign-up's reminders.
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
+      await fakeFirestore
+          .collection('signups')
+          .doc(signupId)
+          .collection('slots')
+          .doc(slotId)
+          .update({
+            'reminders': {'day': 1, 'hour': 2},
+          });
+
+      final newId = await service.duplicateSignup(signupId);
+
+      final copied = await fakeFirestore
+          .collection('signups')
+          .doc(newId)
+          .collection('slots')
+          .get();
+      expect(copied.docs.single.data().containsKey('reminders'), isFalse);
+    });
+
     test('does not copy entries', () async {
       final signupId = await service.createSignup(buildSignup());
       final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
@@ -1195,6 +1220,28 @@ void main() {
         expect(updated.claimedCount, 1);
       },
     );
+  });
+
+  group('SignupService updateSlot preserves reminder records', () {
+    test('an admin edit does not make reminders go out again', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 3));
+      final slotRef = fakeFirestore
+          .collection('signups')
+          .doc(signupId)
+          .collection('slots')
+          .doc(slotId);
+      await slotRef.update({
+        'reminders': {'day': 1},
+      });
+      final loaded = (await service.getSlots(signupId).first).single;
+
+      await service.updateSlot(signupId, loaded.copyWith(capacity: 4));
+
+      final data = (await slotRef.get()).data()!;
+      expect(data['capacity'], 4);
+      expect(data['reminders'], {'day': 1});
+    });
   });
 
   group('SignupService updateSlot capacity guard', () {

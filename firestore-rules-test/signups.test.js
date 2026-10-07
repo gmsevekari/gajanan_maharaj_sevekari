@@ -322,6 +322,41 @@ test('admin can reschedule a slot', async () => {
   );
 });
 
+// The reminder records (`reminders.day`, `reminders.hour`) are written by the
+// sendSignupReminders Cloud Function through the Admin SDK, which bypasses
+// the rules. Nobody else may touch them: a devotee clearing one would make
+// every subscriber get that reminder twice.
+test('non-admin cannot write a slot\'s reminder records', async () => {
+  await assertFails(
+    updateDoc(doc(unauthedDb(), 'signups/signup1/slots/slot1'), {
+      reminders: { hour: 1 },
+    }),
+  );
+});
+
+test('non-admin cannot sneak reminder records in with a valid claim', async () => {
+  await assertFails(
+    updateDoc(doc(unauthedDb(), 'signups/signup1/slots/slot1'), {
+      claimedCount: 3,
+      reminders: { hour: 1 },
+    }),
+  );
+});
+
+test('non-admin cannot clear a slot\'s reminder records', async () => {
+  await testEnv.withSecurityRulesDisabled(async (context) => {
+    await updateDoc(doc(context.firestore(), 'signups/signup1/slots/slot1'), {
+      reminders: { hour: 1 },
+    });
+  });
+
+  await assertFails(
+    updateDoc(doc(unauthedDb(), 'signups/signup1/slots/slot1'), {
+      reminders: deleteField(),
+    }),
+  );
+});
+
 // --- entries subcollection ---
 
 test('non-admin can read entries', async () => {

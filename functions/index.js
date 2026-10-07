@@ -13,6 +13,7 @@ const notifications = require("./notifications");
 const namjap = require("./namjap");
 const vaari = require("./vaari");
 const signups = require("./signups");
+const signupReminders = require("./signupReminders");
 
 // Parayan Management
 exports.updateParayanStatuses = parayan.updateParayanStatuses;
@@ -33,3 +34,4 @@ exports.claimSignupEntries = signups.claimSignupEntries;
 exports.sendTempleNotification = notifications.sendTempleNotification;
 exports.sendParayanReminders = notifications.sendParayanReminders;
 exports.onTypoReportCreated = notifications.onTypoReportCreated;
+exports.sendSignupReminders = signupReminders.sendSignupReminders;
