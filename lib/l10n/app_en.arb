@@ -877,6 +877,21 @@
   "signupSlotCapacityLabel": "Capacity",
   "signupSlotCapacityRequired": "Please enter a capacity",
   "signupSlotCapacityInvalid": "Capacity must be a positive number",
+  "signupSlotCapacityBelowClaimed": "Capacity can't be less than the {count} already signed up",
+  "@signupSlotCapacityBelowClaimed": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "signupEditSlotTitle": "Edit Slot",
+  "signupEditSlotButton": "Edit",
+  "signupSlotUpdateSuccess": "Slot updated successfully",
+  "signupSlotUpdateError": "Failed to update slot",
+  "signupDiscardChangesTitle": "Discard changes?",
+  "signupDiscardChangesMessage": "Your changes haven't been saved.",
+  "signupKeepEditingButton": "Keep Editing",
   "signupSlotSuggestedAmountLabel": "Suggested Amount (optional)",
   "signupSlotSuggestedAmountInvalid": "Please enter a valid amount",
   "signupSlotDateRequired": "Please select a date",

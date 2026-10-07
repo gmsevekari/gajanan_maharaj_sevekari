@@ -4383,6 +4383,54 @@ abstract class AppLocalizations {
   /// **'Capacity must be a positive number'**
   String get signupSlotCapacityInvalid;
 
+  /// No description provided for @signupSlotCapacityBelowClaimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity can\'t be less than the {count} already signed up'**
+  String signupSlotCapacityBelowClaimed(String count);
+
+  /// No description provided for @signupEditSlotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Slot'**
+  String get signupEditSlotTitle;
+
+  /// No description provided for @signupEditSlotButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get signupEditSlotButton;
+
+  /// No description provided for @signupSlotUpdateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot updated successfully'**
+  String get signupSlotUpdateSuccess;
+
+  /// No description provided for @signupSlotUpdateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update slot'**
+  String get signupSlotUpdateError;
+
+  /// No description provided for @signupDiscardChangesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get signupDiscardChangesTitle;
+
+  /// No description provided for @signupDiscardChangesMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your changes haven\'t been saved.'**
+  String get signupDiscardChangesMessage;
+
+  /// No description provided for @signupKeepEditingButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Editing'**
+  String get signupKeepEditingButton;
+
   /// No description provided for @signupSlotSuggestedAmountLabel.
   ///
   /// In en, this message translates to:

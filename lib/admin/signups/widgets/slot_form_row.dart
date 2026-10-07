@@ -18,7 +18,16 @@ class SlotFormRow extends StatelessWidget {
   /// reports every change through [onScheduleChanged].
   final SlotScheduleInput schedule;
   final ValueChanged<SlotScheduleInput> onScheduleChanged;
-  final VoidCallback onRemove;
+
+  /// Whether to show the "Slot N" heading with the move and remove buttons.
+  /// Off when the row stands alone, as on the edit-slot screen.
+  final bool showHeader;
+
+  /// The fewest the capacity may be - the number already signed up when an
+  /// existing slot is being edited. Null (or 1 or less) adds no limit beyond
+  /// "a positive number".
+  final int? minCapacity;
+  final VoidCallback? onRemove;
   final VoidCallback? onMoveUp;
   final VoidCallback? onMoveDown;
 
@@ -31,9 +40,11 @@ class SlotFormRow extends StatelessWidget {
     required this.suggestedAmountController,
     required this.schedule,
     required this.onScheduleChanged,
-    required this.onRemove,
-    required this.onMoveUp,
-    required this.onMoveDown,
+    this.showHeader = true,
+    this.minCapacity,
+    this.onRemove,
+    this.onMoveUp,
+    this.onMoveDown,
   });
 
   @override
@@ -47,7 +58,7 @@ class SlotFormRow extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildHeader(context, l10n),
+            if (showHeader) _buildHeader(context, l10n),
             _buildLabelFields(l10n),
             const SizedBox(height: 12),
             _buildCapacityField(l10n),
@@ -137,9 +148,14 @@ class SlotFormRow extends StatelessWidget {
           return l10n.signupSlotCapacityRequired;
         }
         final capacity = int.tryParse(value.trim());
-        return capacity == null || capacity <= 0
-            ? l10n.signupSlotCapacityInvalid
-            : null;
+        if (capacity == null || capacity <= 0) {
+          return l10n.signupSlotCapacityInvalid;
+        }
+        final min = minCapacity;
+        if (min != null && capacity < min) {
+          return l10n.signupSlotCapacityBelowClaimed(min.toString());
+        }
+        return null;
       },
     );
   }

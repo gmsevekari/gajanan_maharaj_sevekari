@@ -2289,6 +2289,32 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSlotCapacityInvalid => 'क्षमता ही पॉझिटिव्ह संख्या असावी';
 
   @override
+  String signupSlotCapacityBelowClaimed(String count) {
+    return 'क्षमता आधीच साइन अप केलेल्या $count पेक्षा कमी असू शकत नाही';
+  }
+
+  @override
+  String get signupEditSlotTitle => 'स्लॉट एडिट करा';
+
+  @override
+  String get signupEditSlotButton => 'एडिट';
+
+  @override
+  String get signupSlotUpdateSuccess => 'स्लॉट यशस्वीरित्या अपडेट केला';
+
+  @override
+  String get signupSlotUpdateError => 'स्लॉट अपडेट करण्यात अयशस्वी';
+
+  @override
+  String get signupDiscardChangesTitle => 'बदल रद्द करायचे?';
+
+  @override
+  String get signupDiscardChangesMessage => 'तुमचे बदल सेव्ह केलेले नाहीत.';
+
+  @override
+  String get signupKeepEditingButton => 'एडिट करत रहा';
+
+  @override
   String get signupSlotSuggestedAmountLabel => 'सुचवलेली रक्कम (ऐच्छिक)';
 
   @override

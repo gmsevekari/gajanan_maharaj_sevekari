@@ -2279,6 +2279,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSlotCapacityInvalid => 'Capacity must be a positive number';
 
   @override
+  String signupSlotCapacityBelowClaimed(String count) {
+    return 'Capacity can\'t be less than the $count already signed up';
+  }
+
+  @override
+  String get signupEditSlotTitle => 'Edit Slot';
+
+  @override
+  String get signupEditSlotButton => 'Edit';
+
+  @override
+  String get signupSlotUpdateSuccess => 'Slot updated successfully';
+
+  @override
+  String get signupSlotUpdateError => 'Failed to update slot';
+
+  @override
+  String get signupDiscardChangesTitle => 'Discard changes?';
+
+  @override
+  String get signupDiscardChangesMessage => 'Your changes haven\'t been saved.';
+
+  @override
+  String get signupKeepEditingButton => 'Keep Editing';
+
+  @override
   String get signupSlotSuggestedAmountLabel => 'Suggested Amount (optional)';
 
   @override
@@ -4936,6 +4962,32 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupSlotCapacityInvalid => 'क्षमता ही positive संख्या असावी';
+
+  @override
+  String signupSlotCapacityBelowClaimed(String count) {
+    return 'क्षमता आधीच sign up केलेल्या $count पेक्षा कमी असू शकत नाही';
+  }
+
+  @override
+  String get signupEditSlotTitle => 'Slot Edit करा';
+
+  @override
+  String get signupEditSlotButton => 'Edit';
+
+  @override
+  String get signupSlotUpdateSuccess => 'Slot यशस्वीरित्या update केला';
+
+  @override
+  String get signupSlotUpdateError => 'Slot update करण्यात अयशस्वी';
+
+  @override
+  String get signupDiscardChangesTitle => 'बदल discard करायचे?';
+
+  @override
+  String get signupDiscardChangesMessage => 'तुमचे बदल save केलेले नाहीत.';
+
+  @override
+  String get signupKeepEditingButton => 'Edit करत रहा';
 
   @override
   String get signupSlotSuggestedAmountLabel => 'सुचवलेली रक्कम (ऐच्छिक)';
