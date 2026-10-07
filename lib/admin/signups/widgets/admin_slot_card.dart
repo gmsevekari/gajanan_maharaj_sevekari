@@ -7,16 +7,18 @@ import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
 /// A slot's summary - label, date, suggested amount and how full it is -
-/// with an "Add Devotee" action. Used on [AdminSignupSlotsScreen]; the
+/// with Edit and "Add Devotee" actions. Used on [AdminSignupSlotsScreen]; the
 /// slot's entries are listed on the Entries screen instead.
 class AdminSlotCard extends StatelessWidget {
   final SignupSlot slot;
   final void Function(SignupSlot slot) onAddEntry;
+  final void Function(SignupSlot slot) onEdit;
 
   const AdminSlotCard({
     super.key,
     required this.slot,
     required this.onAddEntry,
+    required this.onEdit,
   });
 
   @override
@@ -107,13 +109,15 @@ class AdminSlotCard extends StatelessWidget {
                           color: theme.colorScheme.primary,
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          l10n.signupSuggestedAmountFormat(
-                            slot.suggestedAmount.toString(),
-                          ),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
+                        Flexible(
+                          child: Text(
+                            l10n.signupSuggestedAmountFormat(
+                              slot.suggestedAmount.toString(),
+                            ),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ],
@@ -127,15 +131,18 @@ class AdminSlotCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  l10n.signupSlotClaimedCount(claimedStr, capacityStr),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: isFull
-                        ? theme.appColors.error
-                        : theme.appColors.secondaryText,
+                Expanded(
+                  child: Text(
+                    l10n.signupSlotClaimedCount(claimedStr, capacityStr),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: isFull
+                          ? theme.appColors.error
+                          : theme.appColors.secondaryText,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 8),
                 Text(
                   '${(progress * 100).round()}%',
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -164,14 +171,30 @@ class AdminSlotCard extends StatelessWidget {
             const SizedBox(height: 12),
             Align(
               alignment: Alignment.centerRight,
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.person_add_alt_1, size: 16),
-                label: Text(l10n.signupAddEntryButton),
-                onPressed: () => onAddEntry(slot),
-                style: OutlinedButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                ),
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  TextButton.icon(
+                    icon: const Icon(Icons.edit_outlined, size: 16),
+                    label: Text(l10n.signupEditSlotButton),
+                    onPressed: () => onEdit(slot),
+                    style: TextButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.person_add_alt_1, size: 16),
+                    label: Text(l10n.signupAddEntryButton),
+                    onPressed: () => onAddEntry(slot),
+                    style: OutlinedButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

@@ -493,6 +493,135 @@ void main() {
     TabController tabController(WidgetTester tester) =>
         tester.widget<TabBar>(find.byType(TabBar)).controller!;
 
+    group('editing a slot', () {
+      final soon = DateTime.now().add(const Duration(days: 5));
+      final earlier = DateTime.now().subtract(const Duration(days: 5));
+
+      Future<void> tapEditOn(WidgetTester tester, String label) async {
+        final card = find.ancestor(
+          of: find.text(label),
+          matching: find.byType(Card),
+        );
+        final edit = find.descendant(of: card, matching: find.text('Edit'));
+        await tester.ensureVisible(edit);
+        await tester.tap(edit);
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('every slot card has an Edit button', (tester) async {
+        final signup = await seedSignup();
+        await addSlot(signup, 'Slot A', date: soon);
+        await addSlot(signup, 'Slot B', date: soon, sortOrder: 1);
+        await pumpScreen(tester, signupId: signup.id);
+
+        expect(find.text('Edit'), findsNWidgets(2));
+      });
+
+      testWidgets('opens that slot on the Edit Slot screen', (tester) async {
+        final signup = await seedSignup();
+        await addSlot(signup, 'Slot A', date: soon);
+        await addSlot(signup, 'Slot B', date: soon, sortOrder: 1);
+        await pumpScreen(tester, signupId: signup.id);
+
+        await tapEditOn(tester, 'Slot B');
+
+        expect(find.text('Edit Slot'), findsOneWidget);
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('slotLabelEn_0')))
+              .controller!
+              .text,
+          'Slot B',
+        );
+      });
+
+      testWidgets('saving shows the change on the card, and confirms', (
+        tester,
+      ) async {
+        final signup = await seedSignup();
+        await addSlot(signup, 'Slot A', date: soon, capacity: 3);
+        await pumpScreen(tester, signupId: signup.id);
+        expect(find.text('0 of 3 claimed'), findsOneWidget);
+
+        await tapEditOn(tester, 'Slot A');
+        await tester.enterText(
+          find.byKey(const Key('slotLabelEn_0')),
+          'Renamed',
+        );
+        await tester.enterText(find.byKey(const Key('slotCapacity_0')), '8');
+        await tester.ensureVisible(find.text('Save'));
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Edit Slot'), findsNothing);
+        expect(find.text('Slot updated successfully'), findsOneWidget);
+        expect(find.text('Renamed'), findsOneWidget);
+        expect(find.text('Slot A'), findsNothing);
+        expect(find.text('0 of 8 claimed'), findsOneWidget);
+      });
+
+      testWidgets('shows no confirmation when the edit is abandoned', (
+        tester,
+      ) async {
+        final signup = await seedSignup();
+        await addSlot(signup, 'Slot A', date: soon);
+        await pumpScreen(tester, signupId: signup.id);
+
+        await tapEditOn(tester, 'Slot A');
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+
+        expect(find.text('Edit Slot'), findsNothing);
+        expect(find.text('Slot updated successfully'), findsNothing);
+        expect(find.text('Slot A'), findsOneWidget);
+      });
+
+      testWidgets('works on the Past tab too', (tester) async {
+        final signup = await seedSignup();
+        await addSlot(signup, 'Old Slot', date: earlier);
+        await pumpScreen(tester, signupId: signup.id);
+        await tester.tap(find.text('Past'));
+        await tester.pumpAndSettle();
+
+        await tapEditOn(tester, 'Old Slot');
+        await tester.enterText(find.byKey(const Key('slotLabelEn_0')), 'Fixed');
+        await tester.ensureVisible(find.text('Save'));
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Fixed'), findsOneWidget);
+        expect(find.text('Slot updated successfully'), findsOneWidget);
+      });
+
+      testWidgets('keeps the entries and the claimed count', (tester) async {
+        final signup = await seedSignup();
+        final slotId = await addSlot(
+          signup,
+          'Slot A',
+          date: soon,
+          capacity: 5,
+          claimed: 2,
+        );
+        await addEntry(signup, slotId, 'Jane');
+        await addEntry(signup, slotId, 'Amit');
+        await pumpScreen(tester, signupId: signup.id);
+
+        await tapEditOn(tester, 'Slot A');
+        await tester.enterText(
+          find.byKey(const Key('slotLabelEn_0')),
+          'Renamed',
+        );
+        await tester.ensureVisible(find.text('Save'));
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('2 of 5 claimed'), findsOneWidget);
+        final slot = await signup.collection('slots').doc(slotId).get();
+        expect(slot.data()!['claimedCount'], 2);
+        expect((await signup.collection('entries').get()).docs, hasLength(2));
+      });
+    });
+
     testWidgets('has Upcoming and Past tabs with visible labels', (
       tester,
     ) async {

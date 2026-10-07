@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/admin_edit_slot_screen.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/admin_entry_actions.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_slot_card.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/admin_signup_tabbed_scaffold.dart';
@@ -9,8 +10,8 @@ import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/english_only.dart';
 
-/// Every slot on a sign-up with how full it is and an "Add Devotee" action,
-/// reached from [AdminSignupDetailScreen]'s "Slots" card. Splits slots into
+/// Every slot on a sign-up with how full it is and Edit and "Add Devotee"
+/// actions, reached from [AdminSignupDetailScreen]'s "Slots" card. Splits slots into
 /// Upcoming/Past by their own date - a slot with no date counts as upcoming,
 /// since there's no basis to call it past. Who has signed up is listed on
 /// [AdminSignupEntriesScreen].
@@ -59,6 +60,24 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> _editSlot(SignupSlot slot) async {
+    final l10n = lookupAppLocalizations(const Locale('en'));
+    final saved = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AdminEditSlotScreen(
+          signupId: widget.signupId,
+          slot: slot,
+          signupService: _service,
+        ),
+      ),
+    );
+    if (saved != true || !mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(l10n.signupSlotUpdateSuccess)));
   }
 
   @override
@@ -111,6 +130,7 @@ class _AdminSignupSlotsScreenState extends State<AdminSignupSlotsScreen>
             slot: slot,
             onAddEntry: (s) =>
                 _actions.showAddDialog(context, widget.signup, s),
+            onEdit: _editSlot,
           ),
       ],
     );

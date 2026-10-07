@@ -36,6 +36,7 @@ void main() {
   Widget wrap(
     SignupSlot s, {
     void Function(SignupSlot)? onAdd,
+    void Function(SignupSlot)? onEdit,
     Locale? locale,
   }) {
     return MaterialApp(
@@ -44,7 +45,11 @@ void main() {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        body: AdminSlotCard(slot: s, onAddEntry: onAdd ?? (_) {}),
+        body: AdminSlotCard(
+          slot: s,
+          onAddEntry: onAdd ?? (_) {},
+          onEdit: onEdit ?? (_) {},
+        ),
       ),
     );
   }
@@ -225,6 +230,65 @@ void main() {
       );
 
       expect(find.text('6:00 PM – 7:30 PM PT'), findsOneWidget);
+    });
+  });
+
+  group('edit button', () {
+    testWidgets('is labelled Edit, next to Add Devotee', (tester) async {
+      await tester.pumpWidget(wrap(slot()));
+
+      expect(find.text('Edit'), findsOneWidget);
+      expect(find.text('Add Devotee'), findsOneWidget);
+    });
+
+    testWidgets('reports the slot when tapped, and only then', (tester) async {
+      SignupSlot? edited;
+      SignupSlot? added;
+      final s = slot(labelEn: 'Week 7');
+      await tester.pumpWidget(
+        wrap(s, onEdit: (v) => edited = v, onAdd: (v) => added = v),
+      );
+
+      await tester.tap(find.text('Edit'));
+      await tester.pump();
+
+      expect(edited, same(s));
+      expect(added, isNull);
+
+      await tester.tap(find.text('Add Devotee'));
+      await tester.pump();
+
+      expect(added, same(s));
+    });
+
+    testWidgets('wraps a long suggested amount at 360px and large text', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+      await tester.pumpWidget(wrap(slot(suggestedAmount: 1234567.5)));
+
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('keeps both buttons on a 360px screen at large text', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+      await tester.pumpWidget(wrap(slot(claimedCount: 2, suggestedAmount: 25)));
+      expect(tester.takeException(), isNull);
+      for (final label in ['Edit', 'Add Devotee']) {
+        expect(tester.getRect(find.text(label)).right, lessThanOrEqualTo(360));
+      }
     });
   });
 }
