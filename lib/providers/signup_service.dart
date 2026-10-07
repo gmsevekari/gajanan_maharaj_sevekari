@@ -217,6 +217,42 @@ class SignupService {
     await _signupsRef.doc(signup.id).set(signup.toMap());
   }
 
+  /// Changes a signup's title, description and join-code requirement - and
+  /// nothing else. Only those fields are written (plus `updatedAt`), so a
+  /// form opened before the signup's status, header image or anything else
+  /// changed can't undo that, unlike [updateSignup], which overwrites the
+  /// whole document.
+  ///
+  /// When [requiresJoinCode] is true a non-blank [joinCode] must be given
+  /// (else [ArgumentError], writing nothing); when it is false the join code
+  /// is cleared whatever [joinCode] holds. Throws if the signup is gone.
+  Future<void> updateSignupDetails(
+    String signupId, {
+    required String titleEn,
+    required String titleMr,
+    required String descriptionEn,
+    required String descriptionMr,
+    required bool requiresJoinCode,
+    String? joinCode,
+  }) async {
+    if (requiresJoinCode && (joinCode == null || joinCode.trim().isEmpty)) {
+      throw ArgumentError.value(
+        joinCode,
+        'joinCode',
+        'is required when requiresJoinCode is true',
+      );
+    }
+    await _signupsRef.doc(signupId).update({
+      'titleEn': titleEn,
+      'titleMr': titleMr,
+      'descriptionEn': descriptionEn,
+      'descriptionMr': descriptionMr,
+      'requiresJoinCode': requiresJoinCode,
+      'joinCode': requiresJoinCode ? joinCode : null,
+      'updatedAt': Timestamp.now(),
+    });
+  }
+
   Future<void> updateSignupStatus(
     String signupId,
     SignupStatus newStatus,

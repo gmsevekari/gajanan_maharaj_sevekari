@@ -211,6 +211,176 @@ void main() {
     });
   });
 
+  group('SignupService updateSignupDetails', () {
+    late String id;
+
+    setUp(() async {
+      id = await service.createSignup(
+        buildSignup(
+          titleEn: 'Old title',
+          titleMr: 'जुने',
+          groupId: 'group_9',
+          status: SignupStatus.published,
+        ).copyWith(
+          descriptionEn: 'Old description',
+          descriptionMr: 'जुने वर्णन',
+        ),
+      );
+      await fakeFirestore.doc('signups/$id').update({
+        'headerImageUrl': 'https://example.com/header.png',
+        'updatedAt': Timestamp.fromDate(DateTime.utc(2000)),
+      });
+    });
+
+    Future<Map<String, dynamic>> stored() async =>
+        (await fakeFirestore.doc('signups/$id').get()).data()!;
+
+    test('changes the title, description and join-code requirement', () async {
+      await service.updateSignupDetails(
+        id,
+        titleEn: 'New title',
+        titleMr: 'नवे',
+        descriptionEn: 'New description',
+        descriptionMr: 'नवे वर्णन',
+        requiresJoinCode: true,
+        joinCode: 'ABC123',
+      );
+
+      final data = await stored();
+      expect(data['titleEn'], 'New title');
+      expect(data['titleMr'], 'नवे');
+      expect(data['descriptionEn'], 'New description');
+      expect(data['descriptionMr'], 'नवे वर्णन');
+      expect(data['requiresJoinCode'], true);
+      expect(data['joinCode'], 'ABC123');
+    });
+
+    test('leaves the status, group, image, creator and creation time alone, '
+        'whatever a stale form held', () async {
+      final before = await stored();
+
+      await service.updateSignupDetails(
+        id,
+        titleEn: 'New title',
+        titleMr: '',
+        descriptionEn: '',
+        descriptionMr: '',
+        requiresJoinCode: false,
+      );
+
+      final after = await stored();
+      for (final key in [
+        'status',
+        'groupId',
+        'headerImageUrl',
+        'createdBy',
+        'createdAt',
+      ]) {
+        expect(after[key], before[key], reason: key);
+      }
+      expect(after['status'], 'published');
+      expect(after['headerImageUrl'], 'https://example.com/header.png');
+    });
+
+    test('stamps updatedAt', () async {
+      await service.updateSignupDetails(
+        id,
+        titleEn: 'T',
+        titleMr: '',
+        descriptionEn: '',
+        descriptionMr: '',
+        requiresJoinCode: false,
+      );
+
+      final updatedAt = ((await stored())['updatedAt'] as Timestamp).toDate();
+      expect(
+        updatedAt.difference(DateTime.now()).abs(),
+        lessThan(const Duration(minutes: 1)),
+      );
+    });
+
+    test('removes the join code when it is no longer required', () async {
+      await service.updateSignupDetails(
+        id,
+        titleEn: 'T',
+        titleMr: '',
+        descriptionEn: '',
+        descriptionMr: '',
+        requiresJoinCode: true,
+        joinCode: 'ABC123',
+      );
+
+      await service.updateSignupDetails(
+        id,
+        titleEn: 'T',
+        titleMr: '',
+        descriptionEn: '',
+        descriptionMr: '',
+        requiresJoinCode: false,
+        joinCode: 'IGNORED',
+      );
+
+      final data = await stored();
+      expect(data['requiresJoinCode'], false);
+      expect(data['joinCode'], isNull);
+    });
+
+    test('refuses a required join code that is missing or empty, writing '
+        'nothing', () async {
+      for (final code in [null, '', '  ']) {
+        await expectLater(
+          service.updateSignupDetails(
+            id,
+            titleEn: 'Changed',
+            titleMr: '',
+            descriptionEn: '',
+            descriptionMr: '',
+            requiresJoinCode: true,
+            joinCode: code,
+          ),
+          throwsArgumentError,
+        );
+      }
+      expect((await stored())['titleEn'], 'Old title');
+    });
+
+    test('is read back as a valid Signup', () async {
+      await service.updateSignupDetails(
+        id,
+        titleEn: 'New title',
+        titleMr: '',
+        descriptionEn: '',
+        descriptionMr: '',
+        requiresJoinCode: true,
+        joinCode: 'ABC123',
+      );
+
+      final signup = await service.getSignupById(id).first;
+      expect(signup!.titleEn, 'New title');
+      expect(signup.requiresJoinCode, isTrue);
+      expect(signup.joinCode, 'ABC123');
+      expect(signup.status, SignupStatus.published);
+    });
+
+    test('throws when the signup no longer exists', () async {
+      await expectLater(
+        service.updateSignupDetails(
+          'missing',
+          titleEn: 'T',
+          titleMr: '',
+          descriptionEn: '',
+          descriptionMr: '',
+          requiresJoinCode: false,
+        ),
+        throwsA(isA<FirebaseException>()),
+      );
+      expect(
+        (await fakeFirestore.doc('signups/missing').get()).exists,
+        isFalse,
+      );
+    });
+  });
+
   group('SignupService slot CRUD', () {
     test(
       'addSlot writes a new slot document and returns its auto-id',
