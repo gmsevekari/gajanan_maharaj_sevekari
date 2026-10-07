@@ -4485,6 +4485,54 @@ abstract class AppLocalizations {
   /// **'Failed to delete slot'**
   String get signupSlotDeleteError;
 
+  /// No description provided for @signupEditSignupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Sign Up'**
+  String get signupEditSignupTitle;
+
+  /// No description provided for @signupEditSignupButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get signupEditSignupButton;
+
+  /// No description provided for @signupUpdateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up updated successfully'**
+  String get signupUpdateSuccess;
+
+  /// No description provided for @signupUpdateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update sign up'**
+  String get signupUpdateError;
+
+  /// No description provided for @signupJoinCodeOnTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on the join code?'**
+  String get signupJoinCodeOnTitle;
+
+  /// No description provided for @signupJoinCodeOnMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A new join code will be made when you save. Links and messages you shared earlier don\'t include it, so share the new link.'**
+  String get signupJoinCodeOnMessage;
+
+  /// No description provided for @signupJoinCodeOffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off the join code?'**
+  String get signupJoinCodeOffTitle;
+
+  /// No description provided for @signupJoinCodeOffMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The join code will be removed. Anyone with the link will be able to sign up without it.'**
+  String get signupJoinCodeOffMessage;
+
   /// No description provided for @signupSlotSuggestedAmountLabel.
   ///
   /// In en, this message translates to:

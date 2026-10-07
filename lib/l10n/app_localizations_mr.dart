@@ -2346,6 +2346,32 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupSlotDeleteError => 'स्लॉट डिलीट करण्यात अयशस्वी';
 
   @override
+  String get signupEditSignupTitle => 'साइन अप एडिट करा';
+
+  @override
+  String get signupEditSignupButton => 'एडिट';
+
+  @override
+  String get signupUpdateSuccess => 'साइन अप यशस्वीरित्या अपडेट केले';
+
+  @override
+  String get signupUpdateError => 'साइन अप अपडेट करण्यात अयशस्वी';
+
+  @override
+  String get signupJoinCodeOnTitle => 'जॉईन कोड चालू करायचा?';
+
+  @override
+  String get signupJoinCodeOnMessage =>
+      'सेव्ह केल्यावर नवीन जॉईन कोड तयार होईल. तुम्ही आधी शेअर केलेल्या लिंक आणि मेसेजमध्ये तो नसेल, म्हणून नवीन लिंक शेअर करा.';
+
+  @override
+  String get signupJoinCodeOffTitle => 'जॉईन कोड बंद करायचा?';
+
+  @override
+  String get signupJoinCodeOffMessage =>
+      'जॉईन कोड काढून टाकला जाईल. लिंक असलेल्या कोणालाही त्याशिवाय साइन अप करता येईल.';
+
+  @override
   String get signupSlotSuggestedAmountLabel => 'सुचवलेली रक्कम (ऐच्छिक)';
 
   @override

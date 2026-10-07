@@ -2342,6 +2342,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupSlotDeleteError => 'Failed to delete slot';
 
   @override
+  String get signupEditSignupTitle => 'Edit Sign Up';
+
+  @override
+  String get signupEditSignupButton => 'Edit';
+
+  @override
+  String get signupUpdateSuccess => 'Sign up updated successfully';
+
+  @override
+  String get signupUpdateError => 'Failed to update sign up';
+
+  @override
+  String get signupJoinCodeOnTitle => 'Turn on the join code?';
+
+  @override
+  String get signupJoinCodeOnMessage =>
+      'A new join code will be made when you save. Links and messages you shared earlier don\'t include it, so share the new link.';
+
+  @override
+  String get signupJoinCodeOffTitle => 'Turn off the join code?';
+
+  @override
+  String get signupJoinCodeOffMessage =>
+      'The join code will be removed. Anyone with the link will be able to sign up without it.';
+
+  @override
   String get signupSlotSuggestedAmountLabel => 'Suggested Amount (optional)';
 
   @override
@@ -5056,6 +5082,32 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupSlotDeleteError => 'Slot delete करण्यात अयशस्वी';
+
+  @override
+  String get signupEditSignupTitle => 'Sign Up Edit करा';
+
+  @override
+  String get signupEditSignupButton => 'Edit';
+
+  @override
+  String get signupUpdateSuccess => 'Sign up यशस्वीरित्या update केले';
+
+  @override
+  String get signupUpdateError => 'Sign up update करण्यात अयशस्वी';
+
+  @override
+  String get signupJoinCodeOnTitle => 'Join code चालू करायचा?';
+
+  @override
+  String get signupJoinCodeOnMessage =>
+      'Save केल्यावर नवीन join code तयार होईल. तुम्ही आधी share केलेल्या link आणि message मध्ये तो नसेल, म्हणून नवीन link share करा.';
+
+  @override
+  String get signupJoinCodeOffTitle => 'Join code बंद करायचा?';
+
+  @override
+  String get signupJoinCodeOffMessage =>
+      'Join code काढून टाकला जाईल. ज्यांच्याकडे link आहे ते कोणीही त्याशिवाय sign up करू शकतील.';
 
   @override
   String get signupSlotSuggestedAmountLabel => 'सुचवलेली रक्कम (ऐच्छिक)';

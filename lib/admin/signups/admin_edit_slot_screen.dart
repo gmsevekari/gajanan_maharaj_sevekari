@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/slot_form_row.dart';
+import 'package:gajanan_maharaj_sevekari/admin/signups/widgets/unsaved_changes_guard.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
@@ -240,46 +241,15 @@ class _AdminEditSlotScreenState extends State<AdminEditSlotScreen> {
     if (error == null && mounted) Navigator.pop(context, true);
   }
 
-  Future<void> _confirmDiscard(AppLocalizations l10n) async {
-    final discard = await showEnglishDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.signupDiscardChangesTitle),
-        content: Text(l10n.signupDiscardChangesMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.signupKeepEditingButton),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(
-              l10n.discardLabel,
-              style: TextStyle(
-                color: Theme.of(dialogContext).colorScheme.error,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-    if (discard == true && mounted) Navigator.pop(context);
-  }
-
   @override
   Widget build(BuildContext context) => EnglishOnly(builder: _buildScreen);
 
   Widget _buildScreen(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return PopScope(
-      // Leaving with unsaved changes asks first; so does leaving mid-save,
-      // which just waits.
-      canPop: !_dirty && !_saving,
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop || _saving) return;
-        _confirmDiscard(l10n);
-      },
+    return UnsavedChangesGuard(
+      hasUnsavedChanges: _dirty,
+      busy: _saving,
       child: Scaffold(
         appBar: AppBar(
           title: FittedAppBarTitle(
