@@ -2768,6 +2768,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String signupExportPart(String part, String total) {
     return 'Part $part of $total';
   }
+
+  @override
+  String get signupReminders => 'Sign-up Reminders';
+
+  @override
+  String get signupRemindersNote =>
+      'A reminder 1 day and 1 hour before each sign-up slot you have signed up for';
+
+  @override
+  String get signupRemindersPermissionHint =>
+      'Turn on notifications to get a reminder before your sign-up.';
+
+  @override
+  String get signupRemindersAllow => 'Allow';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).
@@ -5544,4 +5558,18 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
   String signupExportPart(String part, String total) {
     return 'Part $part / $total';
   }
+
+  @override
+  String get signupReminders => 'Sign-up Reminders';
+
+  @override
+  String get signupRemindersNote =>
+      'तुम्ही sign up केलेल्या प्रत्येक slot च्या १ दिवस आणि १ तास आधी आठवण मिळवा';
+
+  @override
+  String get signupRemindersPermissionHint =>
+      'Sign up ची आठवण मिळण्यासाठी notifications सुरू करा.';
+
+  @override
+  String get signupRemindersAllow => 'परवानगी द्या';
 }

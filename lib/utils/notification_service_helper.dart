@@ -7,7 +7,6 @@ import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_subscriptions.dart';
-import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 
@@ -104,10 +103,7 @@ class NotificationServiceHelper {
     try {
       final reminders =
           overrideSignupReminders ??
-          SignupReminderSubscriptions(
-            signupService: SignupService(),
-            deviceId: UniqueIdService.getUniqueId,
-          );
+          SignupReminderSubscriptions.forThisDevice();
       await reminders.syncAll();
     } catch (e) {
       debugPrint('Error syncing sign-up reminder subscriptions: $e');

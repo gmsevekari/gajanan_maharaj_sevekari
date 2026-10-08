@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_permission_hint.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_subscriptions.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_slot_dialog.dart';
@@ -38,6 +39,11 @@ class SignupSlotsScreen extends StatefulWidget {
   @visibleForTesting
   final SignupReminderSubscriptions? reminders;
 
+  /// Injected for testing; nudges the devotee to allow notifications, once,
+  /// after they sign up.
+  @visibleForTesting
+  final SignupReminderPermissionHint reminderHint;
+
   const SignupSlotsScreen({
     super.key,
     required this.signupId,
@@ -46,6 +52,7 @@ class SignupSlotsScreen extends StatefulWidget {
     this.firestore,
     this.signupService,
     this.reminders,
+    this.reminderHint = const SignupReminderPermissionHint(),
   });
 
   @override
@@ -104,6 +111,7 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.signupClaimSuccess)));
+      unawaited(widget.reminderHint.showIfNeeded(context, l10n));
     }
   }
 

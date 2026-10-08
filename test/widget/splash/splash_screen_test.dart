@@ -11,8 +11,8 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 class MockGroupSelectionProvider extends GroupSelectionProvider {
   final bool _shouldShowOnboarding;
 
-  MockGroupSelectionProvider({bool shouldShowOnboarding = false}) 
-      : _shouldShowOnboarding = shouldShowOnboarding;
+  MockGroupSelectionProvider({bool shouldShowOnboarding = false})
+    : _shouldShowOnboarding = shouldShowOnboarding;
 
   @override
   bool get shouldShowOnboarding => _shouldShowOnboarding;
@@ -37,8 +37,12 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           routes: {
             Routes.home: (context) => const Scaffold(body: Text('Home')),
-            Routes.onboarding: (context) => const Scaffold(body: Text('Onboarding')),
+            Routes.onboarding: (context) =>
+                const Scaffold(body: Text('Onboarding')),
             'test_route': (context) => const Scaffold(body: Text('Test Route')),
+            'args_route': (context) => Scaffold(
+              body: Text('Args: ${ModalRoute.of(context)?.settings.arguments}'),
+            ),
           },
           home: const SplashScreen(),
         ),
@@ -55,7 +59,7 @@ void main() {
 
     testWidgets('redirects to onboarding if required', (tester) async {
       await tester.pumpWidget(createScreen(shouldShowOnboarding: true));
-      
+
       // Wait for timer (500ms)
       await tester.pumpAndSettle(const Duration(milliseconds: 600));
 
@@ -64,7 +68,7 @@ void main() {
 
     testWidgets('redirects to home if no pending routes', (tester) async {
       await tester.pumpWidget(createScreen(shouldShowOnboarding: false));
-      
+
       await tester.pumpAndSettle(const Duration(milliseconds: 600));
 
       expect(find.text('Home'), findsOneWidget);
@@ -72,9 +76,9 @@ void main() {
 
     testWidgets('redirects to deep link if pending', (tester) async {
       DeepLinkManager.setPendingRoute('test_route', null);
-      
+
       await tester.pumpWidget(createScreen(shouldShowOnboarding: false));
-      
+
       await tester.pumpAndSettle(const Duration(milliseconds: 600));
 
       // Should be on test_route
@@ -83,13 +87,26 @@ void main() {
 
     testWidgets('redirects to notification if pending', (tester) async {
       NotificationManager.pendingRoute = 'test_route';
-      
+
       await tester.pumpWidget(createScreen(shouldShowOnboarding: false));
-      
+
       await tester.pumpAndSettle(const Duration(milliseconds: 600));
 
       // Should be on test_route
       expect(find.text('Test Route'), findsOneWidget);
+    });
+
+    testWidgets('hands a notification\'s arguments to its screen', (
+      tester,
+    ) async {
+      NotificationManager.pendingRoute = 'args_route';
+      NotificationManager.pendingRouteArguments = {'signupId': 'sign1'};
+
+      await tester.pumpWidget(createScreen(shouldShowOnboarding: false));
+      await tester.pumpAndSettle(const Duration(milliseconds: 600));
+
+      expect(find.text('Args: {signupId: sign1}'), findsOneWidget);
+      expect(NotificationManager.pendingRouteArguments, isNull);
     });
   });
 }

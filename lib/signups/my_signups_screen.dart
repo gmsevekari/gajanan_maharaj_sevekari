@@ -7,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry_details.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_permission_hint.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_subscriptions.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_my_signup_dialog.dart';
@@ -49,6 +50,11 @@ class MySignupsScreen extends StatefulWidget {
   @visibleForTesting
   final SignupReminderSubscriptions? reminders;
 
+  /// Injected for testing; nudges the devotee to allow notifications, once,
+  /// after they claim their sign-up.
+  @visibleForTesting
+  final SignupReminderPermissionHint reminderHint;
+
   const MySignupsScreen({
     super.key,
     required this.signupId,
@@ -58,6 +64,7 @@ class MySignupsScreen extends StatefulWidget {
     this.firestore,
     this.signupService,
     this.reminders,
+    this.reminderHint = const SignupReminderPermissionHint(),
   });
 
   @override
@@ -143,6 +150,7 @@ class _MySignupsScreenState extends State<MySignupsScreen>
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(l10n.signupClaimMySignupSuccess)));
+    unawaited(widget.reminderHint.showIfNeeded(context, l10n));
   }
 
   void _editEntry(SignupEntry entry, AppLocalizations l10n) {

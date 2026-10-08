@@ -1027,5 +1027,9 @@
   "signupExportConfirm": "एक्सपोर्ट करा",
   "signupExportNoUpcomingSlots": "एक्सपोर्ट करण्यासाठी आगामी स्लॉट नाहीत.",
   "signupExportNoEntries": "निवडलेल्या स्लॉटवर अजून कोणीही साइन अप केलेले नाही.",
-  "signupExportPart": "भाग {part} / {total}"
+  "signupExportPart": "भाग {part} / {total}",
+  "signupReminders": "साइन अप रिमाइंडर",
+  "signupRemindersNote": "तुम्ही साइन अप केलेल्या प्रत्येक स्लॉटच्या १ दिवस आणि १ तास आधी आठवण मिळवा",
+  "signupRemindersPermissionHint": "साइन अपची आठवण मिळण्यासाठी नोटिफिकेशन्स सुरू करा.",
+  "signupRemindersAllow": "परवानगी द्या"
 }

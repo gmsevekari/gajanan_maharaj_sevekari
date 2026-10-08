@@ -1075,5 +1075,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "signupReminders": "Sign-up Reminders",
+  "signupRemindersNote": "A reminder 1 day and 1 hour before each sign-up slot you have signed up for",
+  "signupRemindersPermissionHint": "Turn on notifications to get a reminder before your sign-up.",
+  "signupRemindersAllow": "Allow"
 }

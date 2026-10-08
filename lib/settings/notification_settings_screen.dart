@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_subscriptions.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
@@ -17,7 +19,20 @@ import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
-  const NotificationSettingsScreen({super.key});
+  /// Injected for testing; defaults to this device's real subscriptions.
+  @visibleForTesting
+  final SignupReminderSubscriptions? signupReminders;
+
+  /// Injected for testing; defaults to asking Firebase Messaging whether the
+  /// app may show notifications.
+  @visibleForTesting
+  final Future<bool> Function()? isAuthorized;
+
+  const NotificationSettingsScreen({
+    super.key,
+    this.signupReminders,
+    this.isAuthorized,
+  });
 
   @override
   State<NotificationSettingsScreen> createState() =>
@@ -28,6 +43,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     with WidgetsBindingObserver {
   bool _templeNotifications = true;
   bool _parayanReminders = true;
+  bool _signupReminders = true;
   NotificationStatus _notificationStatus = NotificationStatus.unknown;
 
   @override
@@ -53,20 +69,30 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
     setState(() {
       _templeNotifications =
           prefs.getBool(NotificationConstants.templeNotificationsPrefKey) ??
           true;
       _parayanReminders =
           prefs.getBool(NotificationConstants.parayanRemindersPrefKey) ?? true;
+      _signupReminders =
+          prefs.getBool(NotificationConstants.signupRemindersPrefKey) ?? true;
     });
   }
 
+  Future<bool> _isAuthorized() async {
+    final custom = widget.isAuthorized;
+    if (custom != null) return custom();
+    final settings = await FirebaseMessaging.instance.getNotificationSettings();
+    return settings.authorizationStatus == AuthorizationStatus.authorized;
+  }
+
   Future<void> _checkNotificationStatus() async {
-    final messaging = FirebaseMessaging.instance;
-    final settings = await messaging.getNotificationSettings();
+    final authorized = await _isAuthorized();
+    if (!mounted) return;
     setState(() {
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      if (authorized) {
         _notificationStatus = NotificationStatus.authorized;
       } else {
         _notificationStatus = NotificationStatus.denied;
@@ -109,6 +135,23 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         NotificationConstants.templeNotificationsPrefKey,
         false,
       );
+    }
+  }
+
+  /// Turns this device's sign-up slot reminders on or off. The choice is kept
+  /// even if the subscriptions can't be changed right now: the next start-up
+  /// sync brings them in line.
+  Future<void> _updateSignupReminders(bool enabled) async {
+    // Kept at once, like the other switches: the subscription changes below
+    // can queue behind a start-up sync, and the choice mustn't wait for them.
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(NotificationConstants.signupRemindersPrefKey, enabled);
+    final reminders =
+        widget.signupReminders ?? SignupReminderSubscriptions.forThisDevice();
+    try {
+      await reminders.setEnabled(enabled);
+    } on Exception catch (e) {
+      debugPrint('Failed to update sign-up reminder subscriptions: $e');
     }
   }
 
@@ -276,6 +319,43 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                         _parayanReminders = value;
                       });
                       _updateParayanSubscription(value);
+                    }
+                  : null,
+            ),
+          ),
+          Card(
+            elevation: theme.cardTheme.elevation,
+            color: theme.cardTheme.color,
+            shape: theme.cardTheme.shape,
+            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: SwitchListTile(
+              title: Text(
+                localizations.signupReminders,
+                style: TextStyle(
+                  color: canChangeSubscriptions
+                      ? theme.appColors.primarySwatch[600]
+                      : Colors.grey,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              subtitle: Text(
+                localizations.signupRemindersNote,
+                style: TextStyle(
+                  color: canChangeSubscriptions
+                      ? Colors.grey[600]
+                      : Colors.grey,
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              value: canChangeSubscriptions && _signupReminders,
+              onChanged: canChangeSubscriptions
+                  ? (bool value) {
+                      setState(() {
+                        _signupReminders = value;
+                      });
+                      unawaited(_updateSignupReminders(value));
                     }
                   : null,
             ),

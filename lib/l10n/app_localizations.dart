@@ -5288,6 +5288,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Part {part} of {total}'**
   String signupExportPart(String part, String total);
+
+  /// No description provided for @signupReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-up Reminders'**
+  String get signupReminders;
+
+  /// No description provided for @signupRemindersNote.
+  ///
+  /// In en, this message translates to:
+  /// **'A reminder 1 day and 1 hour before each sign-up slot you have signed up for'**
+  String get signupRemindersNote;
+
+  /// No description provided for @signupRemindersPermissionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on notifications to get a reminder before your sign-up.'**
+  String get signupRemindersPermissionHint;
+
+  /// No description provided for @signupRemindersAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get signupRemindersAllow;
 }
 
 class _AppLocalizationsDelegate

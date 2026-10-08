@@ -9,6 +9,7 @@ import 'package:gajanan_maharaj_sevekari/models/claim_entries_result.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_permission_hint.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_subscriptions.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
@@ -23,6 +24,10 @@ import 'package:provider/provider.dart';
 class MockSignupService extends Mock implements SignupService {}
 
 class MockReminders extends Mock implements SignupReminderSubscriptions {}
+
+class MockHint extends Mock implements SignupReminderPermissionHint {}
+
+class FakeContext extends Fake implements BuildContext {}
 
 void main() {
   late FakeFirebaseFirestore firestore;
@@ -543,10 +548,18 @@ void main() {
 
   group('reminder subscriptions', () {
     late MockReminders reminders;
+    late MockHint hint;
+
+    setUpAll(() {
+      registerFallbackValue(FakeContext());
+      registerFallbackValue(lookupAppLocalizations(const Locale('en')));
+    });
 
     setUp(() {
       reminders = MockReminders();
       when(() => reminders.syncSignup(any())).thenAnswer((_) async {});
+      hint = MockHint();
+      when(() => hint.showIfNeeded(any(), any())).thenAnswer((_) async {});
     });
 
     MySignupsScreen screen(SignupService signupService) => MySignupsScreen(
@@ -554,6 +567,7 @@ void main() {
       deviceId: 'device_1',
       signupService: signupService,
       reminders: reminders,
+      reminderHint: hint,
     );
 
     Future<void> cancelFirstEntry(WidgetTester tester) async {
@@ -725,6 +739,36 @@ void main() {
           find.text('Your sign up is now linked to this device.'),
           findsOneWidget,
         );
+      });
+
+      testWidgets('claiming offers the notification hint afterwards', (
+        tester,
+      ) async {
+        final (mock, entries) = mockService();
+        addTearDown(entries.close);
+
+        await claim(
+          tester,
+          mock,
+          entries,
+          const ClaimEntriesResult(ClaimEntriesStatus.success, count: 1),
+        );
+
+        verify(() => hint.showIfNeeded(any(), any())).called(1);
+      });
+
+      testWidgets('a refused claim offers no hint', (tester) async {
+        final (mock, entries) = mockService();
+        addTearDown(entries.close);
+
+        await claim(
+          tester,
+          mock,
+          entries,
+          const ClaimEntriesResult(ClaimEntriesStatus.alreadyClaimed),
+        );
+
+        verifyNever(() => hint.showIfNeeded(any(), any()));
       });
 
       testWidgets('a refused claim subscribes to nothing', (tester) async {

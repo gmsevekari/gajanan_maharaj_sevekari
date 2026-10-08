@@ -7,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
+import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Keeps this device subscribed to the reminder topic of every upcoming slot
@@ -61,6 +62,14 @@ class SignupReminderSubscriptions {
        _now = now ?? DateTime.now,
        _timeout = timeout,
        _readTimeout = readTimeout;
+
+  /// The reminders for this phone, with the real service and the phone's own
+  /// id. For screens that don't already know the device id.
+  factory SignupReminderSubscriptions.forThisDevice() =>
+      SignupReminderSubscriptions(
+        signupService: SignupService(),
+        deviceId: UniqueIdService.getUniqueId,
+      );
 
   FirebaseMessaging get _fcm => _messaging ?? FirebaseMessaging.instance;
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -6,8 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_channels.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
-import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/notification_routing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
@@ -48,6 +50,9 @@ class NotificationManager {
   /// This prevents the Splash Screen from overwriting the notification navigation.
   static String? pendingRoute;
 
+  /// The arguments for [pendingRoute], if it needs any.
+  static Object? pendingRouteArguments;
+
   static Future<void> initialize(GlobalKey<NavigatorState> navigatorKey) async {
     debugPrint('NotificationManager: Initializing...');
     // 1. Initialize Local Notifications
@@ -70,7 +75,7 @@ class NotificationManager {
     await localNotifications.initialize(
       settings: initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        _handleNotificationResponse(response, navigatorKey);
+        handleNotificationResponse(response, navigatorKey);
       },
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
@@ -98,7 +103,7 @@ class NotificationManager {
 
     // 3. Handle notification tap when app is in background (not terminated)
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      navigatorKey.currentState?.pushNamed(Routes.userNotifications);
+      openFromMessage(message, navigatorKey);
     });
 
     // 4. Handle notification tap when app was terminated
@@ -108,7 +113,7 @@ class NotificationManager {
       debugPrint(
         '[FCM] App launched from terminated state via FCM notification.',
       );
-      pendingRoute = Routes.userNotifications;
+      setPendingTarget(NotificationRouting.forMessageData(initialMessage.data));
     }
 
     // B. Check for Local Notification terminated-state click (Common on Android)
@@ -118,11 +123,30 @@ class NotificationManager {
       debugPrint(
         '[FCM] App launched from terminated state via local notification.',
       );
-      pendingRoute = Routes.userNotifications;
+      setPendingTarget(
+        NotificationRouting.forPayload(
+          localLaunchDetails?.notificationResponse?.payload,
+        ),
+      );
     }
 
     // 5. Ensure topic subscription if already authorized
     _ensureSubscription();
+
+    // 6. Register the sign-up reminders channel. Last, and not waited for, so
+    // nothing above depends on it and a slow call can't hold up the app.
+    unawaited(_createChannels());
+  }
+
+  /// Android needs the sign-up reminders channel to exist before a reminder
+  /// arrives while the app is closed (the system shows it under that channel).
+  static Future<void> _createChannels() async {
+    if (kIsWeb) return;
+    try {
+      await NotificationChannels.createSignupReminders(localNotifications);
+    } on Exception catch (e) {
+      debugPrint('NotificationManager: could not create channel: $e');
+    }
   }
 
   static Future<void> cancelAllNotifications() async {
@@ -181,12 +205,39 @@ class NotificationManager {
     }
   }
 
-  static void _handleNotificationResponse(
+  /// A tap on a notification the app showed itself: a sign-up reminder opens
+  /// its sign-up; anything else, the notifications screen.
+  @visibleForTesting
+  static void handleNotificationResponse(
     NotificationResponse response,
     GlobalKey<NavigatorState> navigatorKey,
-  ) async {
-    // Default tap: Open notifications screen
-    navigatorKey.currentState?.pushNamed(Routes.userNotifications);
+  ) => _open(NotificationRouting.forPayload(response.payload), navigatorKey);
+
+  /// A tap, with the app in the background, on a notification the system
+  /// showed.
+  @visibleForTesting
+  static void openFromMessage(
+    RemoteMessage message,
+    GlobalKey<NavigatorState> navigatorKey,
+  ) => _open(NotificationRouting.forMessageData(message.data), navigatorKey);
+
+  static void _open(
+    NotificationTarget target,
+    GlobalKey<NavigatorState> navigatorKey,
+  ) {
+    navigatorKey.currentState?.pushNamed(
+      target.route,
+      arguments: target.arguments,
+    );
+  }
+
+  /// Remembers where to go once the app has started (see the splash screen):
+  /// the route and its arguments always together, so an earlier target's
+  /// arguments can't leak into a later one.
+  @visibleForTesting
+  static void setPendingTarget(NotificationTarget target) {
+    pendingRoute = target.route;
+    pendingRouteArguments = target.arguments;
   }
 
   /// Consumes and returns the pending route if any.
@@ -198,6 +249,13 @@ class NotificationManager {
       debugPrint('[FCM] Pending route consumed: $route');
     }
     return route;
+  }
+
+  /// Consumes and returns the arguments that go with the pending route.
+  static Object? consumePendingRouteArguments() {
+    final arguments = pendingRouteArguments;
+    pendingRouteArguments = null;
+    return arguments;
   }
 
   static Future<void> showLocalNotification(
@@ -241,16 +299,7 @@ class NotificationManager {
       return;
     }
 
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'temple_notifications',
-          'Temple Notifications',
-          channelDescription: 'Broadcast notifications for temple events',
-          importance: Importance.max,
-          priority: Priority.high,
-          showWhen: true,
-          styleInformation: BigTextStyleInformation(''),
-        );
+    final androidDetails = NotificationChannels.detailsFor(data);
 
     const DarwinNotificationDetails darwinDetails = DarwinNotificationDetails(
       presentAlert: true,
@@ -258,7 +307,7 @@ class NotificationManager {
       presentSound: true,
     );
 
-    const NotificationDetails notificationDetails = NotificationDetails(
+    final notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: darwinDetails,
     );
@@ -268,8 +317,22 @@ class NotificationManager {
       title: title,
       body: body,
       notificationDetails: notificationDetails,
-      payload: data['notification_id'] ?? message.messageId ?? data['id'],
+      payload: payloadFor(message),
     );
+  }
+
+  /// What a tap on the locally shown notification gets told: the sign-up for
+  /// a sign-up reminder, otherwise the notification's id.
+  @visibleForTesting
+  static String? payloadFor(RemoteMessage message) {
+    final data = message.data;
+    final signupId = data['signup_id'];
+    if (data['type'] == NotificationRouting.signupReminderType &&
+        signupId is String &&
+        signupId.isNotEmpty) {
+      return NotificationRouting.payloadForSignup(signupId);
+    }
+    return data['notification_id'] ?? message.messageId ?? data['id'];
   }
 
   static Future<void> requestPermissions(BuildContext context) async {
@@ -298,7 +361,8 @@ class NotificationManager {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          icon: Icon(Icons.notifications_active_outlined,
+          icon: Icon(
+            Icons.notifications_active_outlined,
             size: 48,
             color: theme.colorScheme.primary,
           ),

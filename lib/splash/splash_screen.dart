@@ -30,8 +30,10 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(milliseconds: 500), () {
       if (!mounted) return;
 
-      final groupProvider =
-          Provider.of<GroupSelectionProvider>(context, listen: false);
+      final groupProvider = Provider.of<GroupSelectionProvider>(
+        context,
+        listen: false,
+      );
 
       // 1. Check for Onboarding (First Launch) - Disable on Web
       if (groupProvider.shouldShowOnboarding && !SplashScreen.isWebOverride) {
@@ -61,7 +63,10 @@ class _SplashScreenState extends State<SplashScreen> {
           '[FCM] SplashScreen: Resolving push notification: $pendingRoute',
         );
         Navigator.of(context).pushReplacementNamed(Routes.home);
-        Navigator.of(context).pushNamed(pendingRoute);
+        Navigator.of(context).pushNamed(
+          pendingRoute,
+          arguments: NotificationManager.consumePendingRouteArguments(),
+        );
         return;
       }
 

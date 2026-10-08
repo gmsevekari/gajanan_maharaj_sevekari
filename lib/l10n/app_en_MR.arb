@@ -867,5 +867,9 @@
   "signupExportConfirm": "Export करा",
   "signupExportNoUpcomingSlots": "Export करण्यासाठी upcoming slots नाहीत.",
   "signupExportNoEntries": "निवडलेल्या slots वर अजून कोणीही sign up केलेले नाही.",
-  "signupExportPart": "Part {part} / {total}"
+  "signupExportPart": "Part {part} / {total}",
+  "signupReminders": "Sign-up Reminders",
+  "signupRemindersNote": "तुम्ही sign up केलेल्या प्रत्येक slot च्या १ दिवस आणि १ तास आधी आठवण मिळवा",
+  "signupRemindersPermissionHint": "Sign up ची आठवण मिळण्यासाठी notifications सुरू करा.",
+  "signupRemindersAllow": "परवानगी द्या"
 }

@@ -2776,4 +2776,18 @@ class AppLocalizationsMr extends AppLocalizations {
   String signupExportPart(String part, String total) {
     return 'भाग $part / $total';
   }
+
+  @override
+  String get signupReminders => 'साइन अप रिमाइंडर';
+
+  @override
+  String get signupRemindersNote =>
+      'तुम्ही साइन अप केलेल्या प्रत्येक स्लॉटच्या १ दिवस आणि १ तास आधी आठवण मिळवा';
+
+  @override
+  String get signupRemindersPermissionHint =>
+      'साइन अपची आठवण मिळण्यासाठी नोटिफिकेशन्स सुरू करा.';
+
+  @override
+  String get signupRemindersAllow => 'परवानगी द्या';
 }

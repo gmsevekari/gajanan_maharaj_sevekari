@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_permission_hint.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_subscriptions.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
@@ -18,6 +19,10 @@ import 'package:provider/provider.dart';
 class _MockAppConfigProvider extends Mock implements AppConfigProvider {}
 
 class _MockReminders extends Mock implements SignupReminderSubscriptions {}
+
+class _MockHint extends Mock implements SignupReminderPermissionHint {}
+
+class _FakeContext extends Fake implements BuildContext {}
 
 void main() {
   late FakeFirebaseFirestore firestore;
@@ -237,10 +242,18 @@ void main() {
 
   group('reminder subscriptions', () {
     late _MockReminders reminders;
+    late _MockHint hint;
+
+    setUpAll(() {
+      registerFallbackValue(_FakeContext());
+      registerFallbackValue(lookupAppLocalizations(const Locale('en')));
+    });
 
     setUp(() {
       reminders = _MockReminders();
       when(() => reminders.syncSignup(any())).thenAnswer((_) async {});
+      hint = _MockHint();
+      when(() => hint.showIfNeeded(any(), any())).thenAnswer((_) async {});
     });
 
     Future<void> openClaimDialog(WidgetTester tester) async {
@@ -254,6 +267,7 @@ void main() {
             firestore: firestore,
             signupService: service,
             reminders: reminders,
+            reminderHint: hint,
           ),
         ),
       );
@@ -286,6 +300,26 @@ void main() {
       await fillAndConfirm(tester);
 
       verify(() => reminders.syncSignup(signupId)).called(1);
+    });
+
+    testWidgets('signing up offers the notification hint, once, afterwards', (
+      tester,
+    ) async {
+      await openClaimDialog(tester);
+
+      await fillAndConfirm(tester);
+
+      verify(() => hint.showIfNeeded(any(), any())).called(1);
+      expect(find.text("You're signed up!"), findsOneWidget);
+    });
+
+    testWidgets('backing out of the dialog offers no hint', (tester) async {
+      await openClaimDialog(tester);
+
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      verifyNever(() => hint.showIfNeeded(any(), any()));
     });
 
     testWidgets('backing out of the dialog subscribes to nothing', (
