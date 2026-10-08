@@ -6,6 +6,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/app_config.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_subscriptions.dart';
 import 'package:gajanan_maharaj_sevekari/providers/app_config_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
@@ -15,6 +16,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
 
 class _MockAppConfigProvider extends Mock implements AppConfigProvider {}
+
+class _MockReminders extends Mock implements SignupReminderSubscriptions {}
 
 void main() {
   late FakeFirebaseFirestore firestore;
@@ -230,6 +233,103 @@ void main() {
     expect(find.text('1 of 3 claimed'), findsOneWidget);
     final entries = await service.getAllEntries(signupId).first;
     expect(entries.single.name, 'Jane');
+  });
+
+  group('reminder subscriptions', () {
+    late _MockReminders reminders;
+
+    setUp(() {
+      reminders = _MockReminders();
+      when(() => reminders.syncSignup(any())).thenAnswer((_) async {});
+    });
+
+    Future<void> openClaimDialog(WidgetTester tester) async {
+      await addSlot();
+      await tester.pumpWidget(
+        wrap(
+          SignupSlotsScreen(
+            signupId: signupId,
+            signup: signup,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+            reminders: reminders,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('signUpButton')));
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> fillAndConfirm(WidgetTester tester) async {
+      await tester.enterText(find.byKey(const Key('claimNameField')), 'Jane');
+      await tester.enterText(
+        find.byKey(const Key('claimPhoneField')),
+        '1234567890',
+      );
+      await tester.enterText(
+        find.byKey(const Key('claimEmailField')),
+        'jane@example.com',
+      );
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Yes'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('signing up subscribes this device to the slot', (
+      tester,
+    ) async {
+      await openClaimDialog(tester);
+
+      await fillAndConfirm(tester);
+
+      verify(() => reminders.syncSignup(signupId)).called(1);
+    });
+
+    testWidgets('backing out of the dialog subscribes to nothing', (
+      tester,
+    ) async {
+      await openClaimDialog(tester);
+
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      verifyNever(() => reminders.syncSignup(any()));
+    });
+
+    testWidgets('a sign-up that is refused subscribes to nothing', (
+      tester,
+    ) async {
+      await openClaimDialog(tester);
+      // Someone else takes the last places while the dialog is open.
+      final slotId = (await service.getSlots(signupId).first).single.id!;
+      for (var i = 0; i < 3; i++) {
+        await service.claimSlot(
+          signupId: signupId,
+          slotId: slotId,
+          name: 'Other $i',
+          deviceId: 'other_$i',
+        );
+      }
+
+      await fillAndConfirm(tester);
+
+      verifyNever(() => reminders.syncSignup(any()));
+    });
+
+    testWidgets('a failing sync does not spoil the sign-up', (tester) async {
+      when(
+        () => reminders.syncSignup(any()),
+      ).thenAnswer((_) async => throw Exception('offline'));
+      await openClaimDialog(tester);
+
+      await fillAndConfirm(tester);
+
+      expect(find.text('1 of 3 claimed'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
   });
 
   testWidgets('tapping home icon navigates to home', (tester) async {

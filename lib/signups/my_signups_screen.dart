@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
@@ -5,6 +7,7 @@ import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry_details.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_subscriptions.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_my_signup_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/my_signups_section.dart';
@@ -41,6 +44,11 @@ class MySignupsScreen extends StatefulWidget {
   @visibleForTesting
   final SignupService? signupService;
 
+  /// Injected for testing; keeps this device's reminder subscriptions in line
+  /// with its entries after a claim or a cancellation.
+  @visibleForTesting
+  final SignupReminderSubscriptions? reminders;
+
   const MySignupsScreen({
     super.key,
     required this.signupId,
@@ -49,6 +57,7 @@ class MySignupsScreen extends StatefulWidget {
     this.requiresJoinCode = false,
     this.firestore,
     this.signupService,
+    this.reminders,
   });
 
   @override
@@ -61,6 +70,7 @@ class _MySignupsScreenState extends State<MySignupsScreen>
   late final TabController _tabController;
   late final Stream<List<SignupEntry>> _entriesStream;
   late final Stream<List<SignupSlot>> _slotsStream;
+  late final SignupReminderSubscriptions _reminders;
 
   @override
   void initState() {
@@ -73,6 +83,15 @@ class _MySignupsScreenState extends State<MySignupsScreen>
       widget.deviceId,
     );
     _slotsStream = _service.getSlots(widget.signupId);
+    _reminders =
+        widget.reminders ??
+        SignupReminderSubscriptions(
+          signupService: _service,
+          deviceId: () async => widget.deviceId,
+        );
+    // Opening the sign-ups is a chance to catch up on what changed elsewhere:
+    // an admin removing an entry or giving a slot its date.
+    unawaited(_syncReminders());
   }
 
   @override
@@ -118,7 +137,9 @@ class _MySignupsScreenState extends State<MySignupsScreen>
         defaultCountryCode: defaultCountryCodeFor(context, widget.groupId),
       ),
     );
-    if (claimed != true || !mounted) return;
+    if (claimed != true) return;
+    unawaited(_syncReminders());
+    if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(l10n.signupClaimMySignupSuccess)));
@@ -175,9 +196,21 @@ class _MySignupsScreenState extends State<MySignupsScreen>
     }
   }
 
+  /// Brings this device's reminder subscriptions in line with its entries
+  /// (on opening, and after a claim or a cancellation). Best effort: the
+  /// change already worked, and the next app start tries again.
+  Future<void> _syncReminders() async {
+    try {
+      await _reminders.syncSignup(widget.signupId);
+    } on Exception catch (error) {
+      debugPrint('MySignupsScreen: reminder sync failed: $error');
+    }
+  }
+
   Future<void> _cancelEntry(SignupEntry entry, AppLocalizations l10n) async {
     try {
       await _service.cancelEntry(widget.signupId, entry.id!);
+      unawaited(_syncReminders());
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()

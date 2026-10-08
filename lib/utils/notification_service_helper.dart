@@ -6,6 +6,8 @@ import 'package:gajanan_maharaj_sevekari/providers/parayan_service.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_event.dart';
 import 'package:gajanan_maharaj_sevekari/models/parayan_participant.dart';
 import 'package:gajanan_maharaj_sevekari/parayan/parayan_type.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_subscriptions.dart';
+import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/unique_id_service.dart';
 import 'package:gajanan_maharaj_sevekari/notifications/notification_constants.dart';
 
@@ -14,6 +16,10 @@ class NotificationServiceHelper {
 
   @visibleForTesting
   static FirebaseMessaging? overrideMessaging;
+
+  /// Replaces the sign-up reminder subscriptions used at start-up, for tests.
+  @visibleForTesting
+  static SignupReminderSubscriptions? overrideSignupReminders;
 
   /// Add a list of topics to be subscribed to in the background.
   static Future<void> addPendingSubscriptions(
@@ -88,7 +94,24 @@ class NotificationServiceHelper {
       _processPendingSubscriptions();
       syncActiveParayanSubscriptions();
       cleanUpOldSubscriptions();
+      syncSignupReminders();
     });
+  }
+
+  /// Brings this device's sign-up slot reminder subscriptions in line with
+  /// its entries (see [SignupReminderSubscriptions.syncAll]). Never throws.
+  static Future<void> syncSignupReminders() async {
+    try {
+      final reminders =
+          overrideSignupReminders ??
+          SignupReminderSubscriptions(
+            signupService: SignupService(),
+            deviceId: UniqueIdService.getUniqueId,
+          );
+      await reminders.syncAll();
+    } catch (e) {
+      debugPrint('Error syncing sign-up reminder subscriptions: $e');
+    }
   }
 
   /// Syncs subscriptions for all active (upcoming/ongoing) parayan enrollments.

@@ -464,6 +464,50 @@ class SignupService {
         );
   }
 
+  /// A device's own entries on a signup, read from the server (never the
+  /// local cache) so a stale or empty cached copy can't pass for the truth.
+  /// Throws if the server can't be reached.
+  Future<List<SignupEntry>> fetchEntriesByDevice(
+    String signupId,
+    String deviceId,
+  ) async {
+    final snapshot = await _entriesRef(signupId)
+        .where('deviceId', isEqualTo: deviceId)
+        .get(const GetOptions(source: Source.server));
+    return [
+      for (final doc in snapshot.docs) SignupEntry.fromMap(doc.id, doc.data()),
+    ];
+  }
+
+  /// Every slot of a signup, read from the server (never the local cache).
+  /// Throws if the server can't be reached.
+  Future<List<SignupSlot>> fetchSlots(String signupId) async {
+    final snapshot = await _slotsRef(
+      signupId,
+    ).get(const GetOptions(source: Source.server));
+    return [
+      for (final doc in snapshot.docs) SignupSlot.fromMap(doc.id, doc.data()),
+    ];
+  }
+
+  /// Every entry linked to [deviceId], on any signup, read from the server.
+  /// Throws if the server can't be reached.
+  Future<List<({String signupId, SignupEntry entry})>> fetchEntriesForDevice(
+    String deviceId,
+  ) async {
+    final snapshot = await _db
+        .collectionGroup('entries')
+        .where('deviceId', isEqualTo: deviceId)
+        .get(const GetOptions(source: Source.server));
+    return [
+      for (final doc in snapshot.docs)
+        (
+          signupId: doc.reference.parent.parent!.id,
+          entry: SignupEntry.fromMap(doc.id, doc.data()),
+        ),
+    ];
+  }
+
   /// Overwrites an entry's editable fields (admin manual edit: name, phone,
   /// email, pledgeAmount, note). `slotId` is deliberately excluded from the
   /// write, mirroring [updateSlot]'s exclusion of `claimedCount` — moving

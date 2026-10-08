@@ -265,6 +265,15 @@ service cloud.firestore {
       }
     }
 
+    // A device finds every sign-up entry linked to it with one collection-group
+    // query (the app uses it to keep its sign-up reminder subscriptions right).
+    // Entries are already publicly readable one sign-up at a time (see
+    // signups/{signupId}/entries below), so this exposes nothing new. Read
+    // only: writes stay governed by the entries rules below.
+    match /{path=**}/entries/{entryId} {
+      allow read: if true;
+    }
+
     // Sign-Up Signups: Publicly readable; Admin writable at the signup level
     match /signups/{signupId} {
       allow read: if true;

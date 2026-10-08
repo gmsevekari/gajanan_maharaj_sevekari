@@ -9,6 +9,7 @@ import 'package:gajanan_maharaj_sevekari/models/claim_entries_result.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_entry.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_subscriptions.dart';
 import 'package:gajanan_maharaj_sevekari/providers/festival_provider.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/settings/theme_provider.dart';
@@ -20,6 +21,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
 
 class MockSignupService extends Mock implements SignupService {}
+
+class MockReminders extends Mock implements SignupReminderSubscriptions {}
 
 void main() {
   late FakeFirebaseFirestore firestore;
@@ -535,6 +538,229 @@ void main() {
         startAt: now.subtract(const Duration(days: 10)),
       );
       await expectOnUpcoming(tester);
+    });
+  });
+
+  group('reminder subscriptions', () {
+    late MockReminders reminders;
+
+    setUp(() {
+      reminders = MockReminders();
+      when(() => reminders.syncSignup(any())).thenAnswer((_) async {});
+    });
+
+    MySignupsScreen screen(SignupService signupService) => MySignupsScreen(
+      signupId: signupId,
+      deviceId: 'device_1',
+      signupService: signupService,
+      reminders: reminders,
+    );
+
+    Future<void> cancelFirstEntry(WidgetTester tester) async {
+      clearInteractions(reminders); // what opening the screen did
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Yes'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('cancelling an entry brings the subscriptions up to date', (
+      tester,
+    ) async {
+      final slotId = await addSlot(
+        date: DateTime.now().add(const Duration(days: 3)),
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+        deviceId: 'device_1',
+      );
+      await tester.pumpWidget(wrap(screen(service)));
+      await tester.pumpAndSettle();
+
+      await cancelFirstEntry(tester);
+
+      verify(() => reminders.syncSignup(signupId)).called(1);
+    });
+
+    testWidgets('opening the sign-ups catches up on what changed elsewhere', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrap(screen(service)));
+      await tester.pumpAndSettle();
+
+      verify(() => reminders.syncSignup(signupId)).called(1);
+    });
+
+    testWidgets('keeping the entry changes no subscription', (tester) async {
+      final slotId = await addSlot(
+        date: DateTime.now().add(const Duration(days: 3)),
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+        deviceId: 'device_1',
+      );
+      await tester.pumpWidget(wrap(screen(service)));
+      await tester.pumpAndSettle();
+
+      clearInteractions(reminders); // what opening the screen did
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('No'));
+      await tester.pumpAndSettle();
+
+      verifyNever(() => reminders.syncSignup(any()));
+    });
+
+    testWidgets('a cancellation that fails changes no subscription', (
+      tester,
+    ) async {
+      final entry = SignupEntry(
+        id: 'entry_1',
+        slotId: 'slot_1',
+        name: 'Jane',
+        deviceId: 'device_1',
+        joinedAt: DateTime.now(),
+      );
+      final mockService = MockSignupService();
+      when(
+        () => mockService.getSlots(signupId),
+      ).thenAnswer((_) => Stream.value(const []));
+      when(
+        () => mockService.getEntriesByDevice(signupId, 'device_1'),
+      ).thenAnswer((_) => Stream.value([entry]));
+      when(
+        () => mockService.cancelEntry(signupId, 'entry_1'),
+      ).thenThrow(Exception('network error'));
+      await tester.pumpWidget(wrap(screen(mockService)));
+      await tester.pumpAndSettle();
+
+      await cancelFirstEntry(tester);
+
+      verifyNever(() => reminders.syncSignup(any()));
+    });
+
+    testWidgets('a failing sync does not spoil the cancellation', (
+      tester,
+    ) async {
+      when(
+        () => reminders.syncSignup(any()),
+      ).thenAnswer((_) async => throw Exception('offline'));
+      final slotId = await addSlot(
+        date: DateTime.now().add(const Duration(days: 3)),
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+        deviceId: 'device_1',
+      );
+      await tester.pumpWidget(wrap(screen(service)));
+      await tester.pumpAndSettle();
+
+      await cancelFirstEntry(tester);
+
+      expect(find.text('Signup cancelled'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    group('claiming my sign up', () {
+      (MockSignupService, StreamController<List<SignupEntry>>) mockService() {
+        final entries = StreamController<List<SignupEntry>>.broadcast();
+        final mock = MockSignupService();
+        when(
+          () => mock.getSlots(signupId),
+        ).thenAnswer((_) => Stream.value(const []));
+        when(
+          () => mock.getEntriesByDevice(signupId, 'device_1'),
+        ).thenAnswer((_) => entries.stream.asBroadcastStream());
+        return (mock, entries);
+      }
+
+      Future<void> claim(
+        WidgetTester tester,
+        MockSignupService mock,
+        StreamController<List<SignupEntry>> entries,
+        ClaimEntriesResult result,
+      ) async {
+        when(
+          () => mock.claimMyEntries(
+            signupId: any(named: 'signupId'),
+            phone: any(named: 'phone'),
+            deviceId: any(named: 'deviceId'),
+            joinCode: any(named: 'joinCode'),
+          ),
+        ).thenAnswer((_) async => result);
+        await tester.pumpWidget(wrap(screen(mock)));
+        await tester.pump();
+        entries.add(const []);
+        await tester.pumpAndSettle();
+        clearInteractions(reminders); // what opening the screen did
+        await tester.tap(find.text('Claim My Sign Up'));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('claimMyPhoneField')),
+          '4255551234',
+        );
+        await tester.tap(find.text('Submit'));
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('subscribes to the claimed slots', (tester) async {
+        final (mock, entries) = mockService();
+        addTearDown(entries.close);
+
+        await claim(
+          tester,
+          mock,
+          entries,
+          const ClaimEntriesResult(ClaimEntriesStatus.success, count: 1),
+        );
+
+        verify(() => reminders.syncSignup(signupId)).called(1);
+        expect(
+          find.text('Your sign up is now linked to this device.'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('a refused claim subscribes to nothing', (tester) async {
+        final (mock, entries) = mockService();
+        addTearDown(entries.close);
+
+        await claim(
+          tester,
+          mock,
+          entries,
+          const ClaimEntriesResult(ClaimEntriesStatus.alreadyClaimed),
+        );
+
+        verifyNever(() => reminders.syncSignup(any()));
+      });
+
+      testWidgets('a failing sync does not spoil the claim', (tester) async {
+        when(
+          () => reminders.syncSignup(any()),
+        ).thenAnswer((_) async => throw Exception('offline'));
+        final (mock, entries) = mockService();
+        addTearDown(entries.close);
+
+        await claim(
+          tester,
+          mock,
+          entries,
+          const ClaimEntriesResult(ClaimEntriesStatus.success, count: 1),
+        );
+
+        expect(
+          find.text('Your sign up is now linked to this device.'),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      });
     });
   });
 

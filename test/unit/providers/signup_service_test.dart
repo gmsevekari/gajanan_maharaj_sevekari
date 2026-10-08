@@ -1021,6 +1021,98 @@ void main() {
     );
   });
 
+  group('SignupService reads that must come from the server', () {
+    Future<List<String>> slotIds(String signupId, int count) async => [
+      for (var i = 0; i < count; i++)
+        await service.addSlot(signupId, buildSlot(sortOrder: i)),
+    ];
+
+    test('fetchEntriesByDevice returns only that device\'s entries', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final slotId = await service.addSlot(signupId, buildSlot(capacity: 5));
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Mine',
+        deviceId: 'device_1',
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Theirs',
+        deviceId: 'device_2',
+      );
+      await service.adminAddEntry(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Phoned in',
+      );
+
+      final mine = await service.fetchEntriesByDevice(signupId, 'device_1');
+
+      expect(mine.map((e) => e.name), ['Mine']);
+    });
+
+    test(
+      'fetchEntriesByDevice is empty for a device with no entries',
+      () async {
+        final signupId = await service.createSignup(buildSignup());
+
+        expect(await service.fetchEntriesByDevice(signupId, 'nobody'), isEmpty);
+      },
+    );
+
+    test('fetchSlots returns every slot of the sign-up, by id', () async {
+      final signupId = await service.createSignup(buildSignup());
+      final ids = await slotIds(signupId, 3);
+      final other = await service.createSignup(buildSignup());
+      await service.addSlot(other, buildSlot());
+
+      final slots = await service.fetchSlots(signupId);
+
+      expect(slots.map((s) => s.id), unorderedEquals(ids));
+    });
+
+    test(
+      'fetchEntriesForDevice finds the device\'s entries on every sign-up',
+      () async {
+        final one = await service.createSignup(buildSignup());
+        final two = await service.createSignup(buildSignup());
+        final three = await service.createSignup(buildSignup());
+        for (final signupId in [one, two]) {
+          final slotId = await service.addSlot(signupId, buildSlot());
+          await service.claimSlot(
+            signupId: signupId,
+            slotId: slotId,
+            name: 'Mine',
+            deviceId: 'device_1',
+          );
+        }
+        final slotId = await service.addSlot(three, buildSlot());
+        await service.claimSlot(
+          signupId: three,
+          slotId: slotId,
+          name: 'Theirs',
+          deviceId: 'device_2',
+        );
+
+        final found = await service.fetchEntriesForDevice('device_1');
+
+        expect(found.map((e) => e.signupId), unorderedEquals([one, two]));
+        expect(found.every((e) => e.entry.deviceId == 'device_1'), isTrue);
+      },
+    );
+
+    test(
+      'fetchEntriesForDevice is empty for a device with no entries',
+      () async {
+        await service.createSignup(buildSignup());
+
+        expect(await service.fetchEntriesForDevice('nobody'), isEmpty);
+      },
+    );
+  });
+
   group('SignupService duplicateSignup', () {
     test(
       'copies title/description/requiresJoinCode and resets status to draft',

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup.dart';
 import 'package:gajanan_maharaj_sevekari/models/signup_slot.dart';
+import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_subscriptions.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_slot_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_slot_tile.dart';
@@ -30,6 +33,11 @@ class SignupSlotsScreen extends StatefulWidget {
   @visibleForTesting
   final SignupService? signupService;
 
+  /// Injected for testing; keeps this device's reminder subscriptions in line
+  /// with its entries after a sign-up.
+  @visibleForTesting
+  final SignupReminderSubscriptions? reminders;
+
   const SignupSlotsScreen({
     super.key,
     required this.signupId,
@@ -37,6 +45,7 @@ class SignupSlotsScreen extends StatefulWidget {
     required this.deviceId,
     this.firestore,
     this.signupService,
+    this.reminders,
   });
 
   @override
@@ -48,6 +57,7 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
   late final SignupService _service;
   late final TabController _tabController;
   late final Stream<List<SignupSlot>> _slotsStream;
+  late final SignupReminderSubscriptions? _reminders;
 
   @override
   void initState() {
@@ -56,6 +66,15 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
         widget.signupService ?? SignupService(firestore: widget.firestore);
     _tabController = TabController(length: 2, vsync: this);
     _slotsStream = _service.getSlots(widget.signupId);
+    final deviceId = widget.deviceId;
+    _reminders =
+        widget.reminders ??
+        (deviceId == null
+            ? null
+            : SignupReminderSubscriptions(
+                signupService: _service,
+                deviceId: () async => deviceId,
+              ));
   }
 
   @override
@@ -80,10 +99,22 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
       ),
     );
 
+    if (claimed == true) unawaited(_syncReminders());
     if (claimed == true && mounted) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.signupClaimSuccess)));
+    }
+  }
+
+  /// Subscribes this device to reminders for the slot it just signed up for.
+  /// Best effort: the sign-up already worked, and the next app start tries
+  /// again.
+  Future<void> _syncReminders() async {
+    try {
+      await _reminders?.syncSignup(widget.signupId);
+    } on Exception catch (error) {
+      debugPrint('SignupSlotsScreen: reminder sync failed: $error');
     }
   }
 

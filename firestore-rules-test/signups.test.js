@@ -21,6 +21,10 @@ const {
   deleteDoc,
   deleteField,
   Timestamp,
+  collectionGroup,
+  getDocs,
+  query,
+  where,
 } = require('firebase/firestore');
 
 const PROJECT_ID = 'demo-signup-signups-rules-test';
@@ -378,6 +382,51 @@ test('non-admin cannot clear a slot\'s reminder records', async () => {
       reminders: deleteField(),
     }),
   );
+});
+
+// A device finds its own entries across sign-ups with a collection-group
+// query on deviceId (entries are public anyway, one sign-up at a time).
+test('anyone can find the entries linked to a device across sign-ups', async () => {
+  await testEnv.withSecurityRulesDisabled(async (context) => {
+    const db = context.firestore();
+    await setDoc(doc(db, 'signups/signup2'), { titleEn: 'Other', status: 'published' });
+    await setDoc(doc(db, 'signups/signup2/entries/mine'), {
+      slotId: 's',
+      name: 'Also mine',
+      deviceId: 'device_abc',
+      joinedAt: Timestamp.now(),
+    });
+  });
+
+  const found = await assertSucceeds(
+    getDocs(
+      query(
+        collectionGroup(unauthedDb(), 'entries'),
+        where('deviceId', '==', 'device_abc'),
+      ),
+    ),
+  );
+
+  assert.deepEqual(
+    found.docs.map((d) => d.ref.parent.parent.id).sort(),
+    ['signup1', 'signup2'],
+  );
+});
+
+test('the collection-group read does not open up writing entries', async () => {
+  await assertFails(
+    setDoc(doc(unauthedDb(), 'signups/signup1/entries/forged'), {
+      slotId: 'slot1',
+      name: 'Forged',
+      deviceId: 'device_abc',
+      joinedAt: Timestamp.now(),
+      isAdmin: true,
+    }),
+  );
+});
+
+test('other collection groups stay closed to a collection-group read', async () => {
+  await assertFails(getDocs(collectionGroup(unauthedDb(), 'admin_allowlist')));
 });
 
 // --- entries subcollection ---
