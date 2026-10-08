@@ -626,6 +626,17 @@ void main() {
       expectUnsubscribed(signupId, slotId);
     });
 
+    test('never throws, even if the device cannot be identified', () async {
+      final unnamed = SignupReminderSubscriptions(
+        signupService: service,
+        deviceId: () async => throw Exception('no id'),
+        messaging: messaging,
+        now: () => now,
+      );
+
+      await unnamed.syncAll(); // does not throw
+    });
+
     test('does nothing at all for a device that never signed up', () async {
       await reminders.syncAll();
 

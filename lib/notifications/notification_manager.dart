@@ -107,40 +107,52 @@ class NotificationManager {
     });
 
     // 4. Handle notification tap when app was terminated
-    // A. Check for FCM terminated-state click
-    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-    if (initialMessage != null) {
-      debugPrint(
-        '[FCM] App launched from terminated state via FCM notification.',
-      );
-      setPendingTarget(NotificationRouting.forMessageData(initialMessage.data));
-    }
-
-    // B. Check for Local Notification terminated-state click (Common on Android)
-    final localLaunchDetails = await localNotifications
-        .getNotificationAppLaunchDetails();
-    if (localLaunchDetails?.didNotificationLaunchApp == true) {
-      debugPrint(
-        '[FCM] App launched from terminated state via local notification.',
-      );
-      setPendingTarget(
-        NotificationRouting.forPayload(
-          localLaunchDetails?.notificationResponse?.payload,
-        ),
-      );
-    }
+    // A. FCM terminated-state click; B. local notification terminated-state
+    // click (common on Android)
+    adoptLaunchNotification(
+      initialMessage: await FirebaseMessaging.instance.getInitialMessage(),
+      launchDetails: await localNotifications.getNotificationAppLaunchDetails(),
+    );
 
     // 5. Ensure topic subscription if already authorized
     _ensureSubscription();
 
     // 6. Register the sign-up reminders channel. Last, and not waited for, so
     // nothing above depends on it and a slow call can't hold up the app.
-    unawaited(_createChannels());
+    unawaited(createChannels());
+  }
+
+  /// If the app was launched by tapping a notification, remembers where that
+  /// tap goes (see [setPendingTarget]) for the splash screen to open. A
+  /// notification the system showed ([initialMessage]) is routed by its data;
+  /// one the app showed itself ([launchDetails]) by its payload.
+  @visibleForTesting
+  static void adoptLaunchNotification({
+    RemoteMessage? initialMessage,
+    NotificationAppLaunchDetails? launchDetails,
+  }) {
+    if (initialMessage != null) {
+      debugPrint(
+        '[FCM] App launched from terminated state via FCM notification.',
+      );
+      setPendingTarget(NotificationRouting.forMessageData(initialMessage.data));
+    }
+    if (launchDetails?.didNotificationLaunchApp == true) {
+      debugPrint(
+        '[FCM] App launched from terminated state via local notification.',
+      );
+      setPendingTarget(
+        NotificationRouting.forPayload(
+          launchDetails?.notificationResponse?.payload,
+        ),
+      );
+    }
   }
 
   /// Android needs the sign-up reminders channel to exist before a reminder
   /// arrives while the app is closed (the system shows it under that channel).
-  static Future<void> _createChannels() async {
+  @visibleForTesting
+  static Future<void> createChannels() async {
     if (kIsWeb) return;
     try {
       await NotificationChannels.createSignupReminders(localNotifications);
