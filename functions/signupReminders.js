@@ -1,6 +1,7 @@
 const {onSchedule} = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
+const {randomUUID} = require("node:crypto");
 const {DateTime} = require("luxon");
 const {groupNameEn} = require("./groups");
 
@@ -35,7 +36,16 @@ const MAX_NAME_LENGTH = 80;
 const MAX_LINE_LENGTH = 120;
 // Characters FCM allows in a topic name.
 const TOPIC_PART = /^[A-Za-z0-9\-_.~%]+$/;
-const UNDO_ATTEMPTS = 2;
+const RECORD_TRIES = 2;
+
+// An attempt that has been "in progress" this long is taken to have died with
+// its run (the function's timeout is 300 seconds), so the next run may try
+// the reminder again. Shorter than the 10 minutes between runs.
+const STALE_ATTEMPT = 6 * MINUTE;
+
+// A send that takes this long is treated as failed, so one hung call cannot
+// hold up every other slot until the function is killed.
+const SEND_TIMEOUT = 60 * 1000;
 
 /**
  * The FCM topic a device subscribes to when it has an entry on a slot.
@@ -236,89 +246,161 @@ function buildReminderMessage({kind, signupId, slotId, slot, signup}) {
 }
 
 /**
- * Records, in a transaction, that [kind] is being sent for the slot's current
- * start time, so no other run sends it too. Nothing is recorded (and null is
- * returned) if the slot is gone, has moved since it was read, or was already
- * reminded.
- * @param {Object} args The claim.
+ * Starts an attempt at sending [kind] for the slot's current start time,
+ * recorded in a transaction so that only one run attempts it at a time.
+ * Nothing is recorded (and null is returned) if the slot is gone, has moved
+ * since it was read, was already sent, or another run is attempting it right
+ * now (an attempt older than STALE_ATTEMPT counts as dead).
+ * @param {Object} args The attempt.
  * @param {Object} args.db Firestore.
  * @param {Object} args.ref The slot's document reference.
  * @param {string} args.kind "day" or "hour".
  * @param {number} args.start The start time that was read, in ms.
- * @return {Promise<?Object>} The slot's current data if claimed, else null.
+ * @param {number} args.now Now, in ms.
+ * @param {string} args.id A unique id for this attempt.
+ * @return {Promise<?Object>} The slot's current data if the attempt may go
+ *   ahead, else null.
  */
-function claimReminder({db, ref, kind, start}) {
+function beginAttempt({db, ref, kind, start, now, id}) {
   return db.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(ref);
     if (!snapshot.exists) return null;
     const data = snapshot.data();
-    const reminded = (data.reminders || {})[kind];
-    if (!data.startAt || data.startAt.toMillis() !== start ||
-        reminded === start) {
+    if (!data.startAt || data.startAt.toMillis() !== start) return null;
+    if ((data.reminders || {})[kind] === start) return null;
+    const attempt = (data.reminderAttempts || {})[kind];
+    if (attempt && attempt.start === start &&
+        now - attempt.at < STALE_ATTEMPT) {
       return null;
     }
-    transaction.update(ref, {[`reminders.${kind}`]: start});
+    transaction.update(ref, {
+      [`reminderAttempts.${kind}`]: {start, at: now, id},
+    });
     return data;
   });
 }
 
 /**
- * Takes back a record made by [claimReminder] after its send failed, so the
- * next run tries again - but only if the record is still the one made for
- * [start]: a slot moved since then has a newer record that must stay. Tries
- * twice; if both fail the reminder is lost for that start time, which is
- * logged.
- * @param {Object} args The record to undo.
+ * Gives up an attempt that failed, so the next run tries again - but only if
+ * it is still this attempt: a slot moved meanwhile has a newer one that must
+ * stay. Tried twice; if both fail the attempt expires on its own after
+ * STALE_ATTEMPT.
+ * @param {Object} args The attempt.
  * @param {Object} args.db Firestore.
  * @param {Object} args.ref The slot's document reference.
  * @param {string} args.kind "day" or "hour".
- * @param {number} args.start The start time the record was made for, in ms.
+ * @param {string} args.id The attempt's id.
  * @param {Object} args.FieldValue Firestore's FieldValue class.
- * @return {Promise<void>} Resolves once undone or given up.
+ * @return {Promise<void>} Resolves once done or given up.
  */
-async function releaseReminder({db, ref, kind, start, FieldValue}) {
-  for (let attempt = 1; attempt <= UNDO_ATTEMPTS; attempt++) {
+async function abandonAttempt({db, ref, kind, id, FieldValue}) {
+  for (let attempt = 1; attempt <= RECORD_TRIES; attempt++) {
     try {
       await db.runTransaction(async (transaction) => {
         const snapshot = await transaction.get(ref);
         if (!snapshot.exists) return;
-        if ((snapshot.data().reminders || {})[kind] !== start) return;
-        transaction.update(ref, {[`reminders.${kind}`]: FieldValue.delete()});
+        const current = (snapshot.data().reminderAttempts || {})[kind];
+        if (!current || current.id !== id) return;
+        transaction.update(ref, {
+          [`reminderAttempts.${kind}`]: FieldValue.delete(),
+        });
       });
       return;
     } catch (error) {
-      logger.error(`Could not undo the ${kind} reminder record ` +
-          `(attempt ${attempt} of ${UNDO_ATTEMPTS})`, error);
+      logger.error(`Could not give up the failed ${kind} attempt ` +
+          `(try ${attempt} of ${RECORD_TRIES})`, error);
     }
   }
 }
 
 /**
- * Sends one reminder, undoing its record if the send fails so the next run
- * tries again.
+ * Records that [kind] reached FCM for this start time, which is what stops
+ * it ever being sent again, and closes the attempt if it is still this one.
+ * Done in a transaction, and only while the slot still starts at [start]: a
+ * slot an admin has moved since has its own record, which a late write from
+ * here must not overwrite. Tried twice; if both fail the reminder will be
+ * sent a second time once the attempt expires, which is logged.
+ * @param {Object} args The sent reminder.
+ * @param {Object} args.db Firestore.
+ * @param {Object} args.ref The slot's document reference.
+ * @param {string} args.kind "day" or "hour".
+ * @param {number} args.start The start time it was for, in ms.
+ * @param {string} args.id The attempt's id.
+ * @param {Object} args.FieldValue Firestore's FieldValue class.
+ * @return {Promise<boolean>} False if it could not be recorded.
+ */
+async function confirmSent({db, ref, kind, start, id, FieldValue}) {
+  for (let attempt = 1; attempt <= RECORD_TRIES; attempt++) {
+    try {
+      await db.runTransaction(async (transaction) => {
+        const snapshot = await transaction.get(ref);
+        if (!snapshot.exists) return;
+        const data = snapshot.data();
+        if (!data.startAt || data.startAt.toMillis() !== start) return;
+        const fields = {[`reminders.${kind}`]: start};
+        const current = (data.reminderAttempts || {})[kind];
+        if (current && current.id === id) {
+          fields[`reminderAttempts.${kind}`] = FieldValue.delete();
+        }
+        transaction.update(ref, fields);
+      });
+      return true;
+    } catch (error) {
+      logger.error(`Could not record the sent ${kind} reminder ` +
+          `(try ${attempt} of ${RECORD_TRIES})`, error);
+    }
+  }
+  return false;
+}
+
+/**
+ * @param {Promise} promise What to wait for.
+ * @param {number} ms The longest to wait.
+ * @return {Promise} The promise's result, or a rejection after [ms].
+ */
+function withTimeout(promise, ms) {
+  let timer;
+  const timeout = new Promise((resolve, reject) => {
+    timer = setTimeout(() => reject(new Error(`Timed out after ${ms} ms`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+/**
+ * Sends one reminder so that exactly one send succeeds: an attempt is
+ * recorded first (so no other run sends it at the same time), a failed send
+ * gives the attempt up (so the next run tries again), and a successful one is
+ * recorded as sent (so it is never sent again). A run that dies mid-send
+ * leaves an attempt that expires after STALE_ATTEMPT, so the reminder is
+ * still retried.
  * @param {Object} args The reminder.
- * @param {Object} args.deps db, messaging and FieldValue.
+ * @param {Object} args.deps db, messaging, now and FieldValue.
  * @param {Object} args.doc The slot's query document.
  * @param {string} args.signupId The sign-up's id.
  * @param {Object} args.signup The sign-up's data.
  * @param {string} args.kind "day" or "hour".
- * @return {Promise<boolean>} True if sent, false if there was nothing to
- *   send; throws if the send failed.
+ * @return {Promise<?{recorded: boolean}>} Null if there was nothing to
+ *   send; otherwise that it was sent, and whether that was recorded. Throws
+ *   if the send failed.
  */
 async function sendOne({deps, doc, signupId, signup, kind}) {
-  const {db, messaging, FieldValue} = deps;
+  const {db, messaging, FieldValue, now, sendTimeout = SEND_TIMEOUT} = deps;
   const start = doc.data().startAt.toMillis();
-  const slot = await claimReminder({db, ref: doc.ref, kind, start});
-  if (slot === null) return false;
+  const id = randomUUID();
+  const slot = await beginAttempt({db, ref: doc.ref, kind, start, now, id});
+  if (slot === null) return null;
   try {
-    await messaging.send(buildReminderMessage({
+    await withTimeout(messaging.send(buildReminderMessage({
       kind, signupId, slotId: doc.id, slot, signup,
-    }));
+    })), sendTimeout);
   } catch (error) {
-    await releaseReminder({db, ref: doc.ref, kind, start, FieldValue});
+    await abandonAttempt({db, ref: doc.ref, kind, id, FieldValue});
     throw error;
   }
-  return true;
+  const recorded = await confirmSent({
+    db, ref: doc.ref, kind, start, id, FieldValue,
+  });
+  return {recorded};
 }
 
 /**
@@ -348,32 +430,37 @@ async function hasDeviceEntry({db, signupId, slotId}) {
  * @param {Object} args.deps db, messaging, now and FieldValue.
  * @param {Map} args.signups The run's cache of sign-up data by id.
  * @param {Object} args.doc The slot's query document.
- * @return {Promise<number>} How many reminders were sent.
+ * @return {Promise<{sent: number, unrecorded: number}>} How many reminders
+ *   were sent, and how many of those could not be recorded as sent.
  */
 async function remindSlot({deps, signups, doc}) {
   const {db, now} = deps;
   const kinds = dueReminders({slot: doc.data(), now});
-  if (kinds.length === 0) return 0;
+  const none = {sent: 0, unrecorded: 0};
+  if (kinds.length === 0) return none;
 
   const signupId = doc.ref.parent.parent.id;
   if (!TOPIC_PART.test(signupId) || !TOPIC_PART.test(doc.id)) {
     logger.warn(`Slot ${doc.id} of ${signupId} has an id that cannot be ` +
         "part of a topic name; skipped.");
-    return 0;
+    return none;
   }
   if (!signups.has(signupId)) {
     const snapshot = await db.collection("signups").doc(signupId).get();
     signups.set(signupId, snapshot.exists ? snapshot.data() : null);
   }
   const signup = signups.get(signupId);
-  if (!isSendable(signup)) return 0;
-  if (!await hasDeviceEntry({db, signupId, slotId: doc.id})) return 0;
+  if (!isSendable(signup)) return none;
+  if (!await hasDeviceEntry({db, signupId, slotId: doc.id})) return none;
 
-  let sent = 0;
+  const tally = {sent: 0, unrecorded: 0};
   for (const kind of kinds) {
-    if (await sendOne({deps, doc, signupId, signup, kind})) sent++;
+    const result = await sendOne({deps, doc, signupId, signup, kind});
+    if (result === null) continue;
+    tally.sent++;
+    if (!result.recorded) tally.unrecorded++;
   }
-  return sent;
+  return tally;
 }
 
 /**
@@ -384,7 +471,9 @@ async function remindSlot({deps, signups, doc}) {
  * @param {number} deps.now Now, in ms since the epoch.
  * @param {Object} deps.Timestamp Firestore's Timestamp class.
  * @param {Object} deps.FieldValue Firestore's FieldValue class.
- * @return {Promise<{checked: number, sent: number, failed: number}>} A tally.
+ * @return {Promise<{checked: number, sent: number, unrecorded: number,
+ *   failed: number}>} A tally; `unrecorded` counts reminders that were sent but
+ *   could not be recorded as sent, which will be sent again.
  */
 async function runSignupReminders(deps) {
   const {db, now, Timestamp} = deps;
@@ -394,10 +483,14 @@ async function runSignupReminders(deps) {
       .get();
 
   const signups = new Map();
-  const tally = {checked: snapshot.docs.length, sent: 0, failed: 0};
+  const tally = {
+    checked: snapshot.docs.length, sent: 0, unrecorded: 0, failed: 0,
+  };
   for (const doc of snapshot.docs) {
     try {
-      tally.sent += await remindSlot({deps, signups, doc});
+      const result = await remindSlot({deps, signups, doc});
+      tally.sent += result.sent;
+      tally.unrecorded += result.unrecorded;
     } catch (error) {
       tally.failed++;
       logger.error(`Sign-up reminder failed for slot ${doc.id}`, error);
@@ -412,7 +505,14 @@ async function runSignupReminders(deps) {
  * to it when they sign up or claim an entry).
  */
 exports.sendSignupReminders = onSchedule(
-    {schedule: "every 10 minutes", maxInstances: 1, timeoutSeconds: 300},
+    {
+      schedule: "every 10 minutes",
+      // One run at a time. The next run, 10 minutes on, is the retry, so the
+      // platform does not also retry a failed one.
+      maxInstances: 1,
+      retryCount: 0,
+      timeoutSeconds: 300,
+    },
     async () => {
       const tally = await runSignupReminders({
         db: admin.firestore(),

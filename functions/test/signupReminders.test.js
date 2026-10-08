@@ -422,14 +422,30 @@ describe("Sign-up reminders", () => {
      * @return {Object} The fake db, with `queries` and `signupReads`.
      */
     function fakeDb({signups, slots, entries = {}}) {
-      const db = {queries: [], signupReads: [], transactionError: null};
+      // Firestore hands out copies, not the stored objects.
+      const copy = (value) => {
+        if (Array.isArray(value)) return value.map(copy);
+        if (value && typeof value === "object") {
+          return Object.fromEntries(
+              Object.entries(value).map(([k, v]) => [k, copy(v)]));
+        }
+        return value;
+      };
+      const db = {
+        queries: [],
+        signupReads: [],
+        transactionError: null,
+      };
       const refFor = (key) => {
         const [signupId, slotId] = key.split("/");
         return {
           id: slotId,
           parent: {parent: {id: signupId}},
           key,
-          update: async (fields) => applyUpdate(key, fields),
+          update: async (fields) => {
+            if (!(key in slots)) throw new Error("5 NOT_FOUND");
+            applyUpdate(key, fields);
+          },
         };
       };
       const applyUpdate = (key, fields) => {
@@ -464,7 +480,7 @@ describe("Sign-up reminders", () => {
                 .map((key) => ({
                   id: key.split("/")[1],
                   ref: refFor(key),
-                  data: () => slots[key],
+                  data: () => copy(slots[key]),
                 })),
           }),
         };
@@ -504,20 +520,57 @@ describe("Sign-up reminders", () => {
         return fn({
           get: async (ref) => ({
             exists: ref.key in slots,
-            data: () => slots[ref.key],
+            data: () => copy(slots[ref.key]),
           }),
-          update: (ref, fields) => applyUpdate(ref.key, fields),
+          update: (ref, fields) => {
+            if (!(ref.key in slots)) throw new Error("5 NOT_FOUND");
+            applyUpdate(ref.key, fields);
+          },
         });
       };
       return db;
     }
 
-    const run = (db, messaging, now = NOW) =>
+    const run = (db, messaging, now = NOW, extra = {}) =>
       reminders.runSignupReminders({
-        db, messaging, now, Timestamp, FieldValue,
+        db, messaging, now, Timestamp, FieldValue, ...extra,
       });
 
+    /**
+     * Makes some of the db's transactions fail, numbering them from 1 in the
+     * order they are started.
+     * @param {Object} db The fake db.
+     * @param {number[]} numbers Which transactions to fail.
+     * @return {{count: function(): number}} Reads how many were started.
+     */
+    function failTransactions(db, numbers) {
+      const realRun = db.runTransaction;
+      let count = 0;
+      db.runTransaction = async (fn) => {
+        count++;
+        if (numbers.includes(count)) throw new Error("firestore blip");
+        return realRun(fn);
+      };
+      return {count: () => count};
+    }
+
     const okMessaging = () => ({send: sinon.stub().resolves("id")});
+
+    /**
+     * An error FCM answers with when it refuses a message outright, so
+     * nothing was sent.
+     * @param {string} code The Firebase Admin SDK error code.
+     * @return {Error} The error.
+     */
+    const rejected = (code = "messaging/invalid-argument") =>
+      Object.assign(new Error("rejected"), {code});
+
+    /**
+     * An error after which the message may or may not have been delivered.
+     * @return {Error} The error.
+     */
+    const unsure = () =>
+      Object.assign(new Error("timed out"), {code: "app/network-timeout"});
 
     it("sends a due reminder to the slot's topic, and records it", async () => {
       const slots = {"s1/a": slot(HOUR)};
@@ -599,84 +652,207 @@ describe("Sign-up reminders", () => {
       expect(slots["s1/a"].reminders.hour).to.equal(NOW + HOUR);
     });
 
-    describe("when sending fails", () => {
-      it("clears the record, so the next run retries", async () => {
+    describe("a successful send", () => {
+      it("is recorded as sent, and its attempt is closed", async () => {
         const slots = {"s1/a": slot(HOUR)};
         const db = fakeDb({signups: {s1: published}, slots});
-        const messaging = {send: sinon.stub().rejects(new Error("fcm down"))};
 
-        const summary = await run(db, messaging);
+        await run(db, okMessaging());
 
-        expect(slots["s1/a"].reminders).to.deep.equal({});
-        expect(summary.failed).to.equal(1);
-        messaging.send = sinon.stub().resolves("id");
-        await run(db, messaging, NOW + 5 * MINUTE);
+        expect(slots["s1/a"].reminders).to.deep.equal({hour: NOW + HOUR});
+        expect(slots["s1/a"].reminderAttempts).to.deep.equal({});
+      });
+
+      it("records the attempt before it sends", async () => {
+        const slots = {"s1/a": slot(HOUR)};
+        const db = fakeDb({signups: {s1: published}, slots});
+        let during;
+        const messaging = {
+          send: sinon.stub().callsFake(async () => {
+            during = slots["s1/a"].reminderAttempts;
+            return "id";
+          }),
+        };
+
+        await run(db, messaging, NOW);
+
+        expect(during.hour).to.include({start: NOW + HOUR, at: NOW});
+        expect(during.hour.id).to.be.a("string").with.length.above(10);
+      });
+
+      it("is never sent again, run after run", async () => {
+        const slots = {"s1/a": slot(HOUR)};
+        const db = fakeDb({signups: {s1: published}, slots});
+        const messaging = okMessaging();
+
+        await run(db, messaging);
+        await run(db, messaging, NOW + 10 * MINUTE);
+        await run(db, messaging, NOW + 20 * MINUTE);
+
         expect(messaging.send.calledOnce).to.equal(true);
       });
 
-      it("leaves a newer record alone if the slot has moved since",
+      it("is recorded on a second try if the first write fails", async () => {
+        const slots = {"s1/a": slot(HOUR)};
+        const db = fakeDb({signups: {s1: published}, slots});
+        failTransactions(db, [2]); // 1 begins the attempt, 2 and 3 record
+        const messaging = okMessaging();
+
+        const summary = await run(db, messaging);
+        await run(db, messaging, NOW + 7 * MINUTE); // past the attempt's life
+
+        expect(summary).to.include({sent: 1, unrecorded: 0, failed: 0});
+        expect(messaging.send.calledOnce).to.equal(true);
+        expect(slots["s1/a"].reminders).to.deep.equal({hour: NOW + HOUR});
+      });
+
+      it("is reported, and sent again after the attempt expires, if it " +
+          "can never be recorded", async () => {
+        const slots = {"s1/a": slot(HOUR)};
+        const db = fakeDb({signups: {s1: published}, slots});
+        failTransactions(db, [2, 3]);
+        const messaging = okMessaging();
+
+        const summary = await run(db, messaging);
+
+        expect(summary).to.include({sent: 1, unrecorded: 1, failed: 0});
+        // Nothing says it was sent, so once the attempt expires it is tried
+        // again: the one way a reminder can repeat, and it is logged.
+        await run(db, messaging, NOW + 7 * MINUTE);
+        expect(messaging.send.calledTwice).to.equal(true);
+      });
+
+      it("does not rewind a newer record when the slot has moved since",
+          async () => {
+            const slots = {"s1/a": slot(HOUR)};
+            const db = fakeDb({signups: {s1: published}, slots});
+            const messaging = {
+              send: sinon.stub().callsFake(async () => {
+                // While this run sends, an admin moves the slot and a later
+                // run sends and records the reminder for the new time.
+                slots["s1/a"] = {
+                  ...slots["s1/a"],
+                  startAt: ts(NOW + 2 * HOUR),
+                  endAt: ts(NOW + 4 * HOUR),
+                  reminders: {hour: NOW + 2 * HOUR},
+                };
+                return "id";
+              }),
+            };
+
+            const summary = await run(db, messaging);
+
+            expect(slots["s1/a"].reminders)
+                .to.deep.equal({hour: NOW + 2 * HOUR});
+            expect(summary.unrecorded).to.equal(0);
+          });
+
+      it("leaves another run's attempt alone, but still records its own " +
+          "send", async () => {
+        const slots = {"s1/a": slot(HOUR)};
+        const db = fakeDb({signups: {s1: published}, slots});
+        const other = {start: NOW + HOUR, at: NOW + 8 * MINUTE, id: "other"};
+        const messaging = {
+          send: sinon.stub().callsFake(async () => {
+            slots["s1/a"] = {...slots["s1/a"], reminderAttempts: {hour: other}};
+            return "id";
+          }),
+        };
+
+        await run(db, messaging);
+
+        expect(slots["s1/a"].reminders).to.deep.equal({hour: NOW + HOUR});
+        expect(slots["s1/a"].reminderAttempts).to.deep.equal({hour: other});
+      });
+
+      it("is not an error when the slot was deleted while sending",
+          async () => {
+            const slots = {"s1/a": slot(HOUR)};
+            const db = fakeDb({signups: {s1: published}, slots});
+            const transactions = failTransactions(db, []);
+            const messaging = {
+              send: sinon.stub().callsFake(async () => {
+                delete slots["s1/a"];
+                return "id";
+              }),
+            };
+
+            const summary = await run(db, messaging);
+
+            expect(summary).to.include({sent: 1, unrecorded: 0, failed: 0});
+            expect(transactions.count()).to.equal(2); // no pointless retry
+          });
+    });
+
+    describe("a failed send", () => {
+      const failures = {
+        "a message FCM refused": () => rejected(),
+        "a timeout, where delivery is unknown": () => unsure(),
+        "an error with no code": () => new Error("boom"),
+      };
+
+      for (const [name, makeError] of Object.entries(failures)) {
+        it(`is tried again on the next run: ${name}`, async () => {
+          const slots = {"s1/a": slot(HOUR)};
+          const db = fakeDb({signups: {s1: published}, slots});
+          const messaging = {send: sinon.stub().rejects(makeError())};
+
+          const summary = await run(db, messaging);
+
+          expect(summary.failed).to.equal(1);
+          expect(slots["s1/a"].reminders).to.equal(undefined);
+          expect(slots["s1/a"].reminderAttempts).to.deep.equal({});
+          messaging.send = sinon.stub().resolves("id");
+          await run(db, messaging, NOW + 10 * MINUTE);
+          expect(messaging.send.calledOnce).to.equal(true);
+          expect(slots["s1/a"].reminders).to.deep.equal({hour: NOW + HOUR});
+        });
+      }
+
+      it("gives up on a send that hangs, and still reminds the other slots",
+          async () => {
+            const slots = {"s1/a": slot(HOUR), "s1/b": slot(HOUR - MINUTE)};
+            const db = fakeDb({signups: {s1: published}, slots});
+            const messaging = {
+              send: sinon.stub()
+                  .onFirstCall().returns(new Promise(() => {}))
+                  .onSecondCall().resolves("id"),
+            };
+
+            const summary = await run(db, messaging, NOW, {sendTimeout: 20});
+
+            expect(summary).to.include({sent: 1, failed: 1});
+            expect(slots["s1/a"].reminderAttempts).to.deep.equal({});
+            expect(slots["s1/b"].reminders)
+                .to.deep.equal({hour: NOW + HOUR - MINUTE});
+          });
+
+      it("leaves a newer attempt alone if the slot has moved since",
           async () => {
             const slots = {"s1/a": slot(HOUR)};
             const db = fakeDb({signups: {s1: published}, slots});
             const messaging = {
               send: sinon.stub().callsFake(async () => {
                 // While the send is failing an admin moves the slot, and a
-                // later run records the reminder for the new time.
+                // later run starts an attempt for the new time.
                 slots["s1/a"] = {
                   ...slots["s1/a"],
-                  reminders: {hour: NOW + 2 * HOUR},
+                  reminderAttempts: {
+                    hour: {start: NOW + 2 * HOUR, at: NOW + MINUTE},
+                  },
                 };
-                throw new Error("fcm down");
+                throw rejected();
               }),
             };
 
             await run(db, messaging);
 
-            expect(slots["s1/a"].reminders)
-                .to.deep.equal({hour: NOW + 2 * HOUR});
+            expect(slots["s1/a"].reminderAttempts).to.deep.equal({
+              hour: {start: NOW + 2 * HOUR, at: NOW + MINUTE},
+            });
           });
 
-      it("does not retry the undo for a slot deleted meanwhile", async () => {
-        const slots = {"s1/a": slot(HOUR)};
-        const db = fakeDb({signups: {s1: published}, slots});
-        const realRun = db.runTransaction;
-        let calls = 0;
-        db.runTransaction = async (fn) => {
-          calls++;
-          return realRun(fn);
-        };
-        const messaging = {
-          send: sinon.stub().callsFake(async () => {
-            delete slots["s1/a"];
-            throw new Error("fcm down");
-          }),
-        };
-
-        await run(db, messaging);
-
-        expect(calls).to.equal(2); // the claim, and one undo that finds nothing
-      });
-
-      it("tries the undo twice if the first attempt fails", async () => {
-        const slots = {"s1/a": slot(HOUR)};
-        const db = fakeDb({signups: {s1: published}, slots});
-        const realRun = db.runTransaction;
-        let calls = 0;
-        db.runTransaction = async (fn) => {
-          calls++;
-          // 1: the claim. 2: the first undo, which fails. 3: the retry.
-          if (calls === 2) throw new Error("firestore blip");
-          return realRun(fn);
-        };
-        const messaging = {send: sinon.stub().rejects(new Error("fcm down"))};
-
-        await run(db, messaging);
-
-        expect(calls).to.equal(3);
-        expect(slots["s1/a"].reminders).to.deep.equal({});
-      });
-
-      it("gives up after two failed undos, still counting the failure",
+      it("is not undone for a slot deleted meanwhile, and not retried",
           async () => {
             const slots = {"s1/a": slot(HOUR)};
             const db = fakeDb({signups: {s1: published}, slots});
@@ -684,19 +860,283 @@ describe("Sign-up reminders", () => {
             let calls = 0;
             db.runTransaction = async (fn) => {
               calls++;
-              if (calls > 1) throw new Error("firestore down");
               return realRun(fn);
             };
             const messaging = {
-              send: sinon.stub().rejects(new Error("fcm down")),
+              send: sinon.stub().callsFake(async () => {
+                delete slots["s1/a"];
+                throw rejected();
+              }),
             };
 
             const summary = await run(db, messaging);
 
-            expect(calls).to.equal(3);
-            expect(summary.failed).to.equal(1);
-            expect(slots["s1/a"].reminders).to.deep.equal({hour: NOW + HOUR});
+            expect(calls).to.equal(2); // the attempt, and one give-up
+            expect(summary.failed).to.equal(1); // the send itself failed
           });
+
+      it("leaves an attempt that another run took over for the same start",
+          async () => {
+            const slots = {"s1/a": slot(HOUR)};
+            const db = fakeDb({signups: {s1: published}, slots});
+            const takenOver = {hour: {start: NOW + HOUR, at: NOW + 8 * MINUTE}};
+            const messaging = {
+              send: sinon.stub().callsFake(async () => {
+                // This run is slow; a later run has taken the reminder over.
+                slots["s1/a"] = {...slots["s1/a"], reminderAttempts: takenOver};
+                throw unsure();
+              }),
+            };
+
+            await run(db, messaging);
+
+            expect(slots["s1/a"].reminderAttempts).to.deep.equal(takenOver);
+          });
+
+      it("gives its attempt up on a second try if the first fails",
+          async () => {
+            const slots = {"s1/a": slot(HOUR)};
+            const db = fakeDb({signups: {s1: published}, slots});
+            const realRun = db.runTransaction;
+            let calls = 0;
+            db.runTransaction = async (fn) => {
+              calls++;
+              // 1: the attempt. 2: the first give-up, which fails.
+              if (calls === 2) throw new Error("firestore blip");
+              return realRun(fn);
+            };
+            const messaging = {send: sinon.stub().rejects(unsure())};
+
+            await run(db, messaging);
+
+            expect(calls).to.equal(3);
+            expect(slots["s1/a"].reminderAttempts).to.deep.equal({});
+          });
+
+      it("is tried again once its attempt expires, if it cannot be given up",
+          async () => {
+            const slots = {"s1/a": slot(HOUR)};
+            const db = fakeDb({signups: {s1: published}, slots});
+            const realRun = db.runTransaction;
+            let calls = 0;
+            db.runTransaction = async (fn) => {
+              calls++;
+              if (calls > 1 && calls < 4) throw new Error("firestore down");
+              return realRun(fn);
+            };
+            const messaging = {send: sinon.stub().rejects(unsure())};
+
+            const summary = await run(db, messaging);
+            messaging.send = sinon.stub().resolves("id");
+            await run(db, messaging, NOW + 3 * MINUTE); // attempt still fresh
+            expect(messaging.send.called).to.equal(false);
+            await run(db, messaging, NOW + 10 * MINUTE); // attempt expired
+
+            expect(summary.failed).to.equal(1);
+            expect(messaging.send.calledOnce).to.equal(true);
+          });
+    });
+
+    describe("while another run is sending", () => {
+      const start = NOW + HOUR;
+
+      it("waits for a recent attempt rather than send at the same time",
+          async () => {
+            const slots = {
+              "s1/a": slot(HOUR, {
+                reminderAttempts: {hour: {start, at: NOW - MINUTE}},
+              }),
+            };
+            const messaging = okMessaging();
+
+            await run(fakeDb({signups: {s1: published}, slots}), messaging);
+
+            expect(messaging.send.called).to.equal(false);
+          });
+
+      it("still waits for an attempt that is almost as old as the function " +
+          "may run (5 minutes)", async () => {
+        const slots = {
+          "s1/a": slot(HOUR, {
+            reminderAttempts: {hour: {start, at: NOW - 5.5 * MINUTE}},
+          }),
+        };
+        const messaging = okMessaging();
+
+        await run(fakeDb({signups: {s1: published}, slots}), messaging);
+
+        expect(messaging.send.called).to.equal(false);
+      });
+
+      it("takes over a dead attempt in time for the very next run (10 " +
+          "minutes on)", async () => {
+        const slots = {
+          "s1/a": slot(HOUR, {
+            reminderAttempts: {hour: {start, at: NOW - 9.5 * MINUTE}},
+          }),
+        };
+        const messaging = okMessaging();
+
+        await run(fakeDb({signups: {s1: published}, slots}), messaging);
+
+        expect(messaging.send.calledOnce).to.equal(true);
+      });
+
+      it("treats an attempt as dead from exactly 6 minutes old", async () => {
+        const make = (age) => ({
+          "s1/a": slot(HOUR, {
+            reminderAttempts: {hour: {start, at: NOW - age}},
+          }),
+        });
+        const early = okMessaging();
+        const exact = okMessaging();
+
+        const db = (slots) => fakeDb({signups: {s1: published}, slots});
+        await run(db(make(6 * MINUTE - 1)), early);
+        await run(db(make(6 * MINUTE)), exact);
+
+        expect(early.send.called).to.equal(false);
+        expect(exact.send.calledOnce).to.equal(true);
+      });
+
+      it("takes over an attempt whose run died", async () => {
+        const slots = {
+          "s1/a": slot(HOUR, {
+            reminderAttempts: {hour: {start, at: NOW - 7 * MINUTE}},
+          }),
+        };
+        const messaging = okMessaging();
+
+        await run(fakeDb({signups: {s1: published}, slots}), messaging);
+
+        expect(messaging.send.calledOnce).to.equal(true);
+        expect(slots["s1/a"].reminders).to.deep.equal({hour: start});
+      });
+
+      it("ignores an attempt made for another start time", async () => {
+        const slots = {
+          "s1/a": slot(HOUR, {
+            reminderAttempts: {hour: {start: start + 5 * HOUR, at: NOW}},
+          }),
+        };
+        const messaging = okMessaging();
+
+        await run(fakeDb({signups: {s1: published}, slots}), messaging);
+
+        expect(messaging.send.calledOnce).to.equal(true);
+      });
+
+      it("sends once when two runs start at the same moment", async () => {
+        const slots = {"s1/a": slot(HOUR)};
+        const db = fakeDb({signups: {s1: published}, slots});
+        // Firestore transactions that touch the same document take turns.
+        const realRun = db.runTransaction;
+        let turn = Promise.resolve();
+        db.runTransaction = (fn) => {
+          const mine = turn.then(() => realRun(fn));
+          turn = mine.catch(() => {});
+          return mine;
+        };
+        const messaging = okMessaging();
+
+        await Promise.all([run(db, messaging), run(db, messaging)]);
+
+        expect(messaging.send.calledOnce).to.equal(true);
+      });
+    });
+
+    describe("across a whole day of runs every 10 minutes", () => {
+      // A new slot each time: the fake store changes what it is given.
+      const thursdaySlot = () => slot(0, {
+        startAt: ts(Date.parse("2026-10-10T16:00:00Z")),
+        endAt: ts(Date.parse("2026-10-10T18:00:00Z")),
+      });
+      const START = Date.parse("2026-10-10T16:00:00Z");
+      const titles = (messaging) => messaging.send.getCalls()
+          .map((call) => call.args[0].notification.title);
+
+      /**
+       * Runs the schedule every 10 minutes across a slot's last 26 hours.
+       * @param {Object} data The slot.
+       * @param {Object} messaging What sends.
+       * @return {Promise<Object>} The slots store.
+       */
+      async function everyTenMinutes(data, messaging) {
+        const slots = {"s1/a": data};
+        const db = fakeDb({signups: {s1: published}, slots});
+        const start = data.startAt.toMillis();
+        for (let t = start - 26 * HOUR; t <= start + HOUR; t += 10 * MINUTE) {
+          await run(db, messaging, t);
+        }
+        return slots;
+      }
+
+      it("sends each reminder exactly once", async () => {
+        const messaging = okMessaging();
+
+        await everyTenMinutes(thursdaySlot(), messaging);
+
+        expect(titles(messaging)).to.deep.equal([
+          "Reminder: Prasad Seva is tomorrow",
+          "Reminder: Prasad Seva starts in 1 hour",
+        ]);
+      });
+
+      it("sends an all-day slot's reminder exactly once", async () => {
+        const midnight = Date.parse("2026-10-10T07:00:00Z");
+        const messaging = okMessaging();
+
+        await everyTenMinutes(slot(0, {
+          startAt: ts(midnight),
+          endAt: ts(midnight + 24 * HOUR - MINUTE),
+        }), messaging);
+
+        expect(messaging.send.calledOnce).to.equal(true);
+      });
+
+      it("keeps trying a failing reminder, and sends it once it works",
+          async () => {
+            // The first two sends fail (one unclear, one refused); after
+            // that FCM works again.
+            const messaging = {
+              send: sinon.stub()
+                  .onCall(0).rejects(unsure())
+                  .onCall(1).rejects(rejected())
+                  .resolves("id"),
+            };
+
+            const slots = await everyTenMinutes(thursdaySlot(), messaging);
+
+            // 2 failures + 1 success for the day reminder, 1 for the hour.
+            expect(messaging.send.callCount).to.equal(4);
+            expect(slots["s1/a"].reminders).to.deep.equal({
+              day: START,
+              hour: START,
+            });
+          });
+
+      it("retries a reminder whose run died mid-send, once, after the " +
+          "attempt expires", async () => {
+        // A run records its attempt and then dies: nothing is sent or
+        // recorded as sent.
+        const start = START;
+        const slots = {
+          "s1/a": {
+            ...thursdaySlot(),
+            reminderAttempts: {day: {start, at: start - 24 * HOUR + MINUTE}},
+          },
+        };
+        const db = fakeDb({signups: {s1: published}, slots});
+        const messaging = okMessaging();
+
+        for (let t = start - 24 * HOUR + 10 * MINUTE;
+          t < start - 22 * HOUR; t += 10 * MINUTE) {
+          await run(db, messaging, t);
+        }
+
+        expect(titles(messaging))
+            .to.deep.equal(["Reminder: Prasad Seva is tomorrow"]);
+      });
     });
 
     it("carries on with the other slots after one fails", async () => {
@@ -757,9 +1197,10 @@ describe("Sign-up reminders", () => {
       };
       const messaging = okMessaging();
 
-      await run(db, messaging);
+      const summary = await run(db, messaging);
 
       expect(messaging.send.called).to.equal(false);
+      expect(summary).to.include({sent: 0, failed: 0}); // not an error
     });
 
     describe("skips a due slot", () => {
@@ -872,6 +1313,19 @@ describe("Sign-up reminders", () => {
           .to.equal("every 10 minutes");
     });
 
+    it("runs one instance at a time", () => {
+      const index = require("../index.js");
+
+      expect(index.sendSignupReminders.__endpoint.maxInstances).to.equal(1);
+    });
+
+    it("is never retried by the platform, which could repeat a send", () => {
+      const index = require("../index.js");
+
+      const trigger = index.sendSignupReminders.__endpoint.scheduleTrigger;
+      expect(trigger.retryConfig.retryCount).to.equal(0);
+    });
+
     it("runs against the real Firestore and messaging services", async () => {
       const start = Date.now() + HOUR;
       const slotData = slot(0, {
@@ -901,7 +1355,16 @@ describe("Sign-up reminders", () => {
           }),
         }),
         runTransaction: async (fn) => fn({
-          get: async () => ({exists: true, data: () => slotData}),
+          get: async () => ({
+            exists: true,
+            // What the slot holds once the attempt has been recorded.
+            data: () => ({
+              ...slotData,
+              reminderAttempts: updates.length === 0 ?
+                undefined :
+                {hour: updates[0]["reminderAttempts.hour"]},
+            }),
+          }),
           update: (docRef, fields) => updates.push(fields),
         }),
       };
@@ -921,7 +1384,14 @@ describe("Sign-up reminders", () => {
 
       expect(send.calledOnce).to.equal(true);
       expect(send.firstCall.args[0].topic).to.equal("signup_slot_s1_a");
-      expect(updates).to.deep.equal([{"reminders.hour": start}]);
+      // The attempt is recorded before the send, then the send is recorded.
+      expect(updates).to.have.length(2);
+      expect(Object.keys(updates[0])).to.deep.equal(["reminderAttempts.hour"]);
+      expect(updates[0]["reminderAttempts.hour"].start).to.equal(start);
+      expect(updates[1]["reminders.hour"]).to.equal(start);
+      // ...and the attempt is closed with Firestore's real delete marker.
+      expect(updates[1]["reminderAttempts.hour"].isEqual(
+          admin.firestore.FieldValue.delete())).to.equal(true);
     });
   });
 });

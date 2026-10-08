@@ -1105,6 +1105,9 @@ void main() {
           .doc(slotId)
           .update({
             'reminders': {'day': 1, 'hour': 2},
+            'reminderAttempts': {
+              'day': {'start': 1, 'at': 2},
+            },
           });
 
       final newId = await service.duplicateSignup(signupId);
@@ -1114,7 +1117,9 @@ void main() {
           .doc(newId)
           .collection('slots')
           .get();
-      expect(copied.docs.single.data().containsKey('reminders'), isFalse);
+      final copy = copied.docs.single.data();
+      expect(copy.containsKey('reminders'), isFalse);
+      expect(copy.containsKey('reminderAttempts'), isFalse);
     });
 
     test('does not copy entries', () async {
@@ -1233,6 +1238,9 @@ void main() {
           .doc(slotId);
       await slotRef.update({
         'reminders': {'day': 1},
+        'reminderAttempts': {
+          'hour': {'start': 1, 'at': 2},
+        },
       });
       final loaded = (await service.getSlots(signupId).first).single;
 
@@ -1241,6 +1249,9 @@ void main() {
       final data = (await slotRef.get()).data()!;
       expect(data['capacity'], 4);
       expect(data['reminders'], {'day': 1});
+      expect(data['reminderAttempts'], {
+        'hour': {'start': 1, 'at': 2},
+      });
     });
   });
 
