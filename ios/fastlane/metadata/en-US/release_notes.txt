@@ -1,7 +1,7 @@
-• Added group-selection onboarding for a personalized experience.
-• Implemented multi-group event carousel and parallelized event fetching.
-• Added intelligent, group-aware routing for Parayan and Namjap.
-• Improved regional support with dynamic country codes for global groups.
-• Added pull-to-refresh for home screen events.
-• Refined Namjap counter UI and event lifecycle visibility.
-• Stability improvements and expanded test coverage.
+• New Sign Ups: reserve a slot for a seva, with its date and time shown.
+• Reminders 1 day and 1 hour before the slots you signed up for.
+• Edit or cancel your sign-ups, and link one made for you with "Claim My Sign Up".
+• See who has signed up in an easy table.
+• Admins can create, edit and export sign-ups.
+• Better Marathi language support.
+• Bug fixes and stability improvements.
