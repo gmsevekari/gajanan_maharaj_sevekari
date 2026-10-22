@@ -5312,6 +5312,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Allow'**
   String get signupRemindersAllow;
+
+  /// No description provided for @useMobileAppForSignups.
+  ///
+  /// In en, this message translates to:
+  /// **'Please use the mobile app to sign up'**
+  String get useMobileAppForSignups;
 }
 
 class _AppLocalizationsDelegate

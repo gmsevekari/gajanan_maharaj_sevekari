@@ -1031,5 +1031,6 @@
   "signupReminders": "साइन अप रिमाइंडर",
   "signupRemindersNote": "तुम्ही साइन अप केलेल्या प्रत्येक स्लॉटच्या १ दिवस आणि १ तास आधी आठवण मिळवा",
   "signupRemindersPermissionHint": "साइन अपची आठवण मिळण्यासाठी नोटिफिकेशन्स सुरू करा.",
-  "signupRemindersAllow": "परवानगी द्या"
+  "signupRemindersAllow": "परवानगी द्या",
+  "useMobileAppForSignups": "साइन अप करण्यासाठी कृपया मोबाईल ॲप वापरा"
 }

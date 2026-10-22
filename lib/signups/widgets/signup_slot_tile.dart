@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/app_theme.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
@@ -8,11 +9,22 @@ import 'package:gajanan_maharaj_sevekari/utils/marathi_utils.dart';
 /// A single claimable slot card on [SignupSlotsScreen]: its date and live
 /// fill status, and a Sign Up action (hidden once full). Who's already
 /// signed up is shown separately, in the signup's Entries table - not here.
+///
+/// On the web the Sign Up button is shown but disabled: signing up is done in
+/// the mobile app.
 class SignupSlotTile extends StatelessWidget {
   final SignupSlot slot;
   final VoidCallback? onTap;
 
-  const SignupSlotTile({super.key, required this.slot, required this.onTap});
+  /// Whether this is the web app; replaceable in tests.
+  final bool isWeb;
+
+  const SignupSlotTile({
+    super.key,
+    required this.slot,
+    required this.onTap,
+    this.isWeb = kIsWeb,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +73,7 @@ class SignupSlotTile extends StatelessWidget {
                 else
                   ElevatedButton(
                     key: const Key('signUpButton'),
-                    onPressed: onTap,
+                    onPressed: isWeb ? null : onTap,
                     child: Text(l10n.signUp),
                   ),
               ],

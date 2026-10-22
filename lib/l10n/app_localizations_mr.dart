@@ -2790,4 +2790,8 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get signupRemindersAllow => 'परवानगी द्या';
+
+  @override
+  String get useMobileAppForSignups =>
+      'साइन अप करण्यासाठी कृपया मोबाईल ॲप वापरा';
 }

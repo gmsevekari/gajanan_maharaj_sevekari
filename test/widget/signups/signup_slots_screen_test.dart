@@ -366,6 +366,88 @@ void main() {
     });
   });
 
+  group('on the web', () {
+    Future<void> pumpScreen(WidgetTester tester, {required bool isWeb}) async {
+      await tester.pumpWidget(
+        wrap(
+          SignupSlotsScreen(
+            signupId: signupId,
+            signup: signup,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+            isWeb: isWeb,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    const notice = 'Please use the mobile app to sign up';
+
+    testWidgets('slots show a disabled Sign Up button and a note to use the '
+        'app', (tester) async {
+      await addSlot();
+
+      await pumpScreen(tester, isWeb: true);
+
+      expect(find.text(notice), findsOneWidget);
+      expect(
+        tester
+            .widget<ElevatedButton>(find.byKey(const Key('signUpButton')))
+            .onPressed,
+        isNull,
+      );
+    });
+
+    testWidgets('tapping the disabled button opens nothing', (tester) async {
+      await addSlot();
+      await pumpScreen(tester, isWeb: true);
+
+      await tester.tap(
+        find.byKey(const Key('signUpButton')),
+        warnIfMissed: false,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.byKey(const Key('claimNameField')), findsNothing);
+    });
+
+    testWidgets('the note is not shown when there are no slots', (
+      tester,
+    ) async {
+      await pumpScreen(tester, isWeb: true);
+
+      expect(find.text(notice), findsNothing);
+    });
+
+    testWidgets('the slot list is still shown', (tester) async {
+      await addSlot(labelEn: 'Morning Seva');
+
+      await pumpScreen(tester, isWeb: true);
+
+      expect(find.text('Morning Seva'), findsOneWidget);
+      expect(find.text('0 of 3 claimed'), findsOneWidget);
+    });
+
+    testWidgets('off the web there is no note and the button works', (
+      tester,
+    ) async {
+      await addSlot();
+
+      await pumpScreen(tester, isWeb: false);
+
+      expect(find.text(notice), findsNothing);
+      expect(
+        tester
+            .widget<ElevatedButton>(find.byKey(const Key('signUpButton')))
+            .onPressed,
+        isNotNull,
+      );
+    });
+  });
+
   testWidgets('tapping home icon navigates to home', (tester) async {
     await tester.pumpWidget(
       wrap(

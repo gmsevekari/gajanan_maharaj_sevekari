@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
@@ -10,6 +11,7 @@ import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_permissio
 import 'package:gajanan_maharaj_sevekari/notifications/signup_reminder_subscriptions.dart';
 import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_slot_dialog.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_mobile_app_notice.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_slot_tile.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
@@ -44,6 +46,11 @@ class SignupSlotsScreen extends StatefulWidget {
   @visibleForTesting
   final SignupReminderPermissionHint reminderHint;
 
+  /// Whether this is the web app, where signing up is disabled (it is done in
+  /// the mobile app); replaceable in tests.
+  @visibleForTesting
+  final bool isWeb;
+
   const SignupSlotsScreen({
     super.key,
     required this.signupId,
@@ -53,6 +60,7 @@ class SignupSlotsScreen extends StatefulWidget {
     this.signupService,
     this.reminders,
     this.reminderHint = const SignupReminderPermissionHint(),
+    this.isWeb = kIsWeb,
   });
 
   @override
@@ -202,9 +210,15 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        if (widget.isWeb)
+          const Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: SignupMobileAppNotice(),
+          ),
         for (final slot in slots)
           SignupSlotTile(
             slot: slot,
+            isWeb: widget.isWeb,
             onTap: slot.claimedCount >= slot.capacity
                 ? null
                 : () => _claimSlot(slot, l10n),

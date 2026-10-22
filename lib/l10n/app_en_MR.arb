@@ -871,5 +871,6 @@
   "signupReminders": "Sign-up Reminders",
   "signupRemindersNote": "तुम्ही sign up केलेल्या प्रत्येक slot च्या १ दिवस आणि १ तास आधी आठवण मिळवा",
   "signupRemindersPermissionHint": "Sign up ची आठवण मिळण्यासाठी notifications सुरू करा.",
-  "signupRemindersAllow": "परवानगी द्या"
+  "signupRemindersAllow": "परवानगी द्या",
+  "useMobileAppForSignups": "Sign up करण्यासाठी कृपया mobile app वापरा"
 }

@@ -240,4 +240,81 @@ void main() {
       expect(find.text('6:00 PM – 7:30 PM PT'), findsOneWidget);
     });
   });
+
+  group('on the web', () {
+    testWidgets('shows the Sign Up button but disabled', (tester) async {
+      var taps = 0;
+      await tester.pumpWidget(
+        wrap(
+          SignupSlotTile(slot: buildSlot(), onTap: () => taps++, isWeb: true),
+        ),
+      );
+
+      final button = find.byKey(const Key('signUpButton'));
+      expect(button, findsOneWidget);
+      expect(find.text('Sign Up'), findsOneWidget);
+      expect(tester.widget<ElevatedButton>(button).onPressed, isNull);
+      await tester.tap(button, warnIfMissed: false);
+      expect(taps, 0);
+    });
+
+    testWidgets('still shows the slot\'s details', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          SignupSlotTile(
+            slot: buildSlot(claimedCount: 1),
+            onTap: () {},
+            isWeb: true,
+          ),
+        ),
+      );
+
+      expect(find.text('Week 1'), findsOneWidget);
+      expect(find.text('1 of 3 claimed'), findsOneWidget);
+    });
+
+    testWidgets('a full slot still shows Full, not a button', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          SignupSlotTile(
+            slot: buildSlot(claimedCount: 3),
+            onTap: null,
+            isWeb: true,
+          ),
+        ),
+      );
+
+      expect(find.byKey(const Key('signUpButton')), findsNothing);
+      expect(find.text('Full'), findsOneWidget);
+    });
+  });
+
+  group('off the web', () {
+    testWidgets('the Sign Up button can be tapped', (tester) async {
+      var taps = 0;
+      await tester.pumpWidget(
+        wrap(
+          SignupSlotTile(slot: buildSlot(), onTap: () => taps++, isWeb: false),
+        ),
+      );
+
+      await tester.tap(find.byKey(const Key('signUpButton')));
+
+      expect(taps, 1);
+    });
+
+    testWidgets('a button with no handler (a full-looking race) stays '
+        'disabled', (tester) async {
+      await tester.pumpWidget(
+        wrap(SignupSlotTile(slot: buildSlot(), onTap: null, isWeb: false)),
+      );
+
+      expect(
+        tester
+            .widget<ElevatedButton>(find.byKey(const Key('signUpButton')))
+            .onPressed,
+        isNull,
+      );
+    });
+  });
 }

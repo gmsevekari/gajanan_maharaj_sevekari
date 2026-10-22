@@ -808,6 +808,78 @@ void main() {
     });
   });
 
+  group('on the web', () {
+    const notice = 'Please use the mobile app to sign up';
+
+    Future<void> pumpScreen(WidgetTester tester, {required bool isWeb}) async {
+      final reminders = MockReminders();
+      when(() => reminders.syncSignup(any())).thenAnswer((_) async {});
+      await tester.pumpWidget(
+        wrap(
+          MySignupsScreen(
+            signupId: signupId,
+            deviceId: 'device_1',
+            firestore: firestore,
+            signupService: service,
+            reminders: reminders,
+            isWeb: isWeb,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    OutlinedButton claimButton(WidgetTester tester) => tester
+        .widget<OutlinedButton>(find.byKey(const Key('claimMySignupButton')));
+
+    testWidgets('Claim My Sign Up is shown but disabled, with a note to use '
+        'the app', (tester) async {
+      await pumpScreen(tester, isWeb: true);
+
+      expect(find.text('Claim My Sign Up'), findsOneWidget);
+      expect(claimButton(tester).onPressed, isNull);
+      expect(find.text(notice), findsOneWidget);
+    });
+
+    testWidgets('tapping the disabled button opens nothing', (tester) async {
+      await pumpScreen(tester, isWeb: true);
+
+      await tester.tap(
+        find.byKey(const Key('claimMySignupButton')),
+        warnIfMissed: false,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.byKey(const Key('claimMyPhoneField')), findsNothing);
+    });
+
+    testWidgets('the sign-ups themselves are still listed', (tester) async {
+      final slotId = await addSlot(
+        date: DateTime.now().add(const Duration(days: 3)),
+      );
+      await service.claimSlot(
+        signupId: signupId,
+        slotId: slotId,
+        name: 'Jane',
+        deviceId: 'device_1',
+      );
+
+      await pumpScreen(tester, isWeb: true);
+
+      expect(find.text('Jane'), findsOneWidget);
+    });
+
+    testWidgets('off the web there is no note and the button works', (
+      tester,
+    ) async {
+      await pumpScreen(tester, isWeb: false);
+
+      expect(claimButton(tester).onPressed, isNotNull);
+      expect(find.text(notice), findsNothing);
+    });
+  });
+
   group('claiming my sign up', () {
     MySignupsScreen screenWith(
       SignupService signupService, {

@@ -2782,6 +2782,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signupRemindersAllow => 'Allow';
+
+  @override
+  String get useMobileAppForSignups => 'Please use the mobile app to sign up';
 }
 
 /// The translations for English, as used in Mauritania (`en_MR`).
@@ -5572,4 +5575,8 @@ class AppLocalizationsEnMr extends AppLocalizationsEn {
 
   @override
   String get signupRemindersAllow => 'परवानगी द्या';
+
+  @override
+  String get useMobileAppForSignups =>
+      'Sign up करण्यासाठी कृपया mobile app वापरा';
 }

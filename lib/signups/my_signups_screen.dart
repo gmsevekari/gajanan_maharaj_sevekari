@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/fitted_app_bar_title.dart';
 import 'package:gajanan_maharaj_sevekari/l10n/app_localizations.dart';
@@ -13,6 +14,7 @@ import 'package:gajanan_maharaj_sevekari/providers/signup_service.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/claim_my_signup_dialog.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/my_signups_section.dart';
 import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_entry_edit_dialog.dart';
+import 'package:gajanan_maharaj_sevekari/signups/widgets/signup_mobile_app_notice.dart';
 import 'package:gajanan_maharaj_sevekari/utils/routes.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/phone_number_field.dart';
 import 'package:gajanan_maharaj_sevekari/widgets/themed_icon.dart';
@@ -55,6 +57,11 @@ class MySignupsScreen extends StatefulWidget {
   @visibleForTesting
   final SignupReminderPermissionHint reminderHint;
 
+  /// Whether this is the web app, where "Claim My Sign Up" is disabled (it
+  /// is done in the mobile app); replaceable in tests.
+  @visibleForTesting
+  final bool isWeb;
+
   const MySignupsScreen({
     super.key,
     required this.signupId,
@@ -65,6 +72,7 @@ class MySignupsScreen extends StatefulWidget {
     this.signupService,
     this.reminders,
     this.reminderHint = const SignupReminderPermissionHint(),
+    this.isWeb = kIsWeb,
   });
 
   @override
@@ -274,14 +282,23 @@ class _MySignupsScreenState extends State<MySignupsScreen>
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                key: const Key('claimMySignupButton'),
-                icon: const Icon(Icons.link),
-                label: Text(l10n.signupClaimMySignupButton),
-                onPressed: () => _claimMine(l10n),
-              ),
+            child: Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    key: const Key('claimMySignupButton'),
+                    icon: const Icon(Icons.link),
+                    label: Text(l10n.signupClaimMySignupButton),
+                    onPressed: widget.isWeb ? null : () => _claimMine(l10n),
+                  ),
+                ),
+                if (widget.isWeb)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: SignupMobileAppNotice(),
+                  ),
+              ],
             ),
           ),
           Expanded(
