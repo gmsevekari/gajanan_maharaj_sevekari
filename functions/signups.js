@@ -219,34 +219,40 @@ async function runSignupStatusUpdates({
 
   let closedCount = 0;
   for (const doc of publishedQuery.docs) {
-    const data = doc.data() || {};
-    let endDate = data.endDate && typeof data.endDate.toDate === "function" ?
-      data.endDate : null;
-    const updates = {};
+    try {
+      const data = doc.data() || {};
+      let endDate = data.endDate && typeof data.endDate.toDate === "function" ?
+        data.endDate : null;
+      const updates = {};
 
-    if (!endDate && doc.ref && typeof doc.ref.collection === "function") {
-      const slotsSnap = await doc.ref.collection("slots").get();
-      const derived = deriveSlotDateRange(slotsSnap.docs);
-      if (derived.endDate) {
+      if (!endDate && !data.dateRangeBackfilled &&
+          doc.ref && typeof doc.ref.collection === "function") {
+        const slotsSnap = await doc.ref.collection("slots").get();
+        const derived = deriveSlotDateRange(slotsSnap.docs);
+        updates.dateRangeBackfilled = true;
         if (derived.startDate) updates.startDate = derived.startDate;
-        updates.endDate = derived.endDate;
-        endDate = derived.endDate;
+        if (derived.endDate) {
+          updates.endDate = derived.endDate;
+          endDate = derived.endDate;
+        }
       }
-    }
 
-    if (endDate && endDate.toDate() < now) {
-      updates.status = "closed";
-      closedCount++;
-    }
-
-    if (Object.keys(updates).length > 0) {
-      updates.updatedAt = admin.firestore.FieldValue &&
-          typeof admin.firestore.FieldValue.serverTimestamp === "function" ?
-        admin.firestore.FieldValue.serverTimestamp() : now;
-      await doc.ref.update(updates);
-      if (updates.status === "closed") {
-        logger.info(`Auto-transitioned Signup ${doc.id} to closed.`);
+      if (endDate && endDate.toDate() < now) {
+        updates.status = "closed";
       }
+
+      if (Object.keys(updates).length > 0) {
+        updates.updatedAt = admin.firestore.FieldValue &&
+            typeof admin.firestore.FieldValue.serverTimestamp === "function" ?
+          admin.firestore.FieldValue.serverTimestamp() : now;
+        await doc.ref.update(updates);
+        if (updates.status === "closed") {
+          closedCount++;
+          logger.info(`Auto-transitioned Signup ${doc.id} to closed.`);
+        }
+      }
+    } catch (error) {
+      logger.error(`Failed to update status for Signup ${doc.id}`, error);
     }
   }
   return closedCount;

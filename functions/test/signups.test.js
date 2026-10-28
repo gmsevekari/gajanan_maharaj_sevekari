@@ -490,6 +490,7 @@ describe("Sign-up Cloud Functions", () => {
           .to.equal("2026-10-08T08:00:00.000Z");
       expect(written.endDate.toDate().toISOString())
           .to.equal("2026-10-15T22:00:00.000Z");
+      expect(written.dateRangeBackfilled).to.equal(true);
     });
 
     it("backfills startDate/endDate without closing when derived endDate " +
@@ -529,11 +530,14 @@ describe("Sign-up Cloud Functions", () => {
       expect(written.status).to.equal(undefined);
       expect(written.endDate.toDate().toISOString())
           .to.equal("2026-10-25T20:00:00.000Z");
+      expect(written.dateRangeBackfilled).to.equal(true);
     });
 
-    it("leaves a published signup open when slots are empty or any slot " +
-        "is undated", async () => {
-      const updateStub = sinon.stub().resolves();
+    it("stamps dateRangeBackfilled on legacy signups with undated or empty " +
+        "slots so future runs skip reading their slots", async () => {
+      const undatedUpdateStub = sinon.stub().resolves();
+      const emptyUpdateStub = sinon.stub().resolves();
+      const alreadyBackfilledCollectionStub = sinon.stub();
       const undatedDoc = {
         id: "undated_signup",
         data: () => ({status: "published"}),
@@ -545,7 +549,7 @@ describe("Sign-up Cloud Functions", () => {
               ],
             }),
           }),
-          update: updateStub,
+          update: undatedUpdateStub,
         },
       };
       const emptySlotsDoc = {
@@ -555,13 +559,23 @@ describe("Sign-up Cloud Functions", () => {
           collection: sinon.stub().withArgs("slots").returns({
             get: sinon.stub().resolves({docs: []}),
           }),
-          update: updateStub,
+          update: emptyUpdateStub,
+        },
+      };
+      const alreadyBackfilledDoc = {
+        id: "already_backfilled",
+        data: () => ({status: "published", dateRangeBackfilled: true}),
+        ref: {
+          collection: alreadyBackfilledCollectionStub,
+          update: sinon.stub().resolves(),
         },
       };
       const db = {
         collection: sinon.stub().withArgs("signups").returns({
           where: sinon.stub().withArgs("status", "==", "published").returns({
-            get: sinon.stub().resolves({docs: [undatedDoc, emptySlotsDoc]}),
+            get: sinon.stub().resolves({
+              docs: [undatedDoc, emptySlotsDoc, alreadyBackfilledDoc],
+            }),
           }),
         }),
       };
@@ -569,7 +583,52 @@ describe("Sign-up Cloud Functions", () => {
       const closedCount = await signups.runSignupStatusUpdates({db, now});
 
       expect(closedCount).to.equal(0);
-      expect(updateStub.called).to.equal(false);
+      expect(undatedUpdateStub.calledOnce).to.equal(true);
+      expect(undatedUpdateStub.firstCall.args[0].dateRangeBackfilled)
+          .to.equal(true);
+      expect(undatedUpdateStub.firstCall.args[0].startDate.toDate()
+          .toISOString()).to.equal("2026-10-01T08:00:00.000Z");
+      expect(emptyUpdateStub.calledOnce).to.equal(true);
+      expect(emptyUpdateStub.firstCall.args[0].dateRangeBackfilled)
+          .to.equal(true);
+      expect(alreadyBackfilledCollectionStub.called).to.equal(false);
     });
+
+    it("continues processing remaining signups when one document throws",
+        async () => {
+          const goodUpdateStub = sinon.stub().resolves();
+          const badDoc = {
+            id: "broken_signup",
+            data: () => ({
+              status: "published",
+              endDate: ts("2026-10-20T11:00:00Z"),
+            }),
+            ref: {
+              update: sinon.stub()
+                  .rejects(new Error("transient firestore err")),
+            },
+          };
+          const goodDoc = {
+            id: "good_signup",
+            data: () => ({
+              status: "published",
+              endDate: ts("2026-10-20T11:00:00Z"),
+            }),
+            ref: {update: goodUpdateStub},
+          };
+          const db = {
+            collection: sinon.stub().withArgs("signups").returns({
+              where: sinon.stub()
+                  .withArgs("status", "==", "published").returns({
+                    get: sinon.stub().resolves({docs: [badDoc, goodDoc]}),
+                  }),
+            }),
+          };
+
+          const closedCount = await signups.runSignupStatusUpdates({db, now});
+
+          expect(closedCount).to.equal(1);
+          expect(goodUpdateStub.calledOnce).to.equal(true);
+        });
   });
 });

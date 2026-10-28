@@ -2689,5 +2689,87 @@ void main() {
         expect(past.map((s) => s.id).toSet(), {closedId, expiredPublishedId});
       },
     );
+
+    test(
+      'duplicateSignup uses null endDate when slots include an undated slot, '
+      'ignoring any stale endDate on the source signup',
+      () async {
+        final signupId = await service.createSignup(
+          buildSignup().copyWith(endDate: DateTime.utc(2026, 10, 10, 20)),
+        );
+        // Write an undated slot directly so source.endDate remains stale
+        await fakeFirestore
+            .collection('signups')
+            .doc(signupId)
+            .collection('slots')
+            .add(buildSlot().toMap());
+
+        final dupId = await service.duplicateSignup(signupId);
+        final dup = (await service.getSignupById(dupId).first)!;
+        expect(dup.endDate, isNull);
+      },
+    );
+
+    test(
+      'claimSlot rejects claiming when the signup is closed or expired or the slot is past',
+      () async {
+        final now = DateTime.now().toUtc();
+
+        // 1. Manually closed signup with an undated slot
+        final closedSignupId = await service.createSignup(
+          buildSignup(status: SignupStatus.closed),
+        );
+        final closedSlotId = await service.addSlot(closedSignupId, buildSlot());
+        final closedResult = await service.claimSlot(
+          signupId: closedSignupId,
+          slotId: closedSlotId,
+          name: 'Devotee',
+        );
+        expect(closedResult, {'success': false, 'error': 'signup_closed'});
+
+        // 2. Published signup whose endDate has passed
+        final expiredSignupId = await service.createSignup(
+          buildSignup(status: SignupStatus.published),
+        );
+        final pastSlotId = await service.addSlot(
+          expiredSignupId,
+          buildSlot().copyWith(
+            startAt: now.subtract(const Duration(hours: 3)),
+            endAt: now.subtract(const Duration(hours: 1)),
+          ),
+        );
+        final expiredResult = await service.claimSlot(
+          signupId: expiredSignupId,
+          slotId: pastSlotId,
+          name: 'Devotee',
+        );
+        expect(expiredResult, {'success': false, 'error': 'signup_closed'});
+
+        // 3. Published signup with one past slot and one future slot -> claiming past slot is rejected
+        final mixedSignupId = await service.createSignup(
+          buildSignup(status: SignupStatus.published),
+        );
+        final mixedPastSlotId = await service.addSlot(
+          mixedSignupId,
+          buildSlot(labelEn: 'Past Slot').copyWith(
+            startAt: now.subtract(const Duration(hours: 3)),
+            endAt: now.subtract(const Duration(hours: 1)),
+          ),
+        );
+        await service.addSlot(
+          mixedSignupId,
+          buildSlot(labelEn: 'Future Slot').copyWith(
+            startAt: now.add(const Duration(hours: 1)),
+            endAt: now.add(const Duration(hours: 3)),
+          ),
+        );
+        final pastSlotResult = await service.claimSlot(
+          signupId: mixedSignupId,
+          slotId: mixedPastSlotId,
+          name: 'Devotee',
+        );
+        expect(pastSlotResult, {'success': false, 'error': 'signup_closed'});
+      },
+    );
   });
 }

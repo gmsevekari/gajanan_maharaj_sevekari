@@ -182,6 +182,9 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
 
           final slots = snapshot.data ?? const [];
           final now = DateTime.now();
+          final isSignupOpen =
+              widget.signup.status == SignupStatus.published &&
+              !widget.signup.isPast(now);
           final upcoming = slots.where((s) => !s.isPast(now)).toList();
           final past = slots.where((s) => s.isPast(now)).toList();
 
@@ -189,8 +192,8 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
             physics: const NeverScrollableScrollPhysics(),
             controller: _tabController,
             children: [
-              _buildSlotList(upcoming, l10n),
-              _buildSlotList(past, l10n),
+              _buildSlotList(upcoming, l10n, canClaim: isSignupOpen),
+              _buildSlotList(past, l10n, canClaim: false),
             ],
           );
         },
@@ -198,7 +201,11 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
     );
   }
 
-  Widget _buildSlotList(List<SignupSlot> slots, AppLocalizations l10n) {
+  Widget _buildSlotList(
+    List<SignupSlot> slots,
+    AppLocalizations l10n, {
+    required bool canClaim,
+  }) {
     if (slots.isEmpty) {
       return Center(
         child: Text(
@@ -219,7 +226,7 @@ class _SignupSlotsScreenState extends State<SignupSlotsScreen>
           SignupSlotTile(
             slot: slot,
             isWeb: widget.isWeb,
-            onTap: slot.claimedCount >= slot.capacity
+            onTap: (!canClaim || slot.claimedCount >= slot.capacity)
                 ? null
                 : () => _claimSlot(slot, l10n),
           ),

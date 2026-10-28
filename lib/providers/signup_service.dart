@@ -202,6 +202,10 @@ class SignupService {
   Stream<List<Signup>> getPastSignups(String groupId) {
     return _signupsRef
         .where('groupId', isEqualTo: groupId)
+        .where(
+          'status',
+          whereIn: [SignupStatus.closed.name, SignupStatus.published.name],
+        )
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
@@ -724,6 +728,13 @@ class SignupService {
 
       final signup = Signup.fromMap(signupSnapshot.id, signupSnapshot.data()!);
       final slot = SignupSlot.fromMap(slotSnapshot.id, slotSnapshot.data()!);
+      final now = DateTime.now();
+
+      if (signup.status == SignupStatus.closed ||
+          signup.isPast(now) ||
+          slot.isPast(now)) {
+        return {'success': false, 'error': 'signup_closed'};
+      }
 
       if (signup.requiresJoinCode && joinCode != signup.joinCode) {
         return {'success': false, 'error': 'invalid_join_code'};
@@ -907,8 +918,8 @@ class SignupService {
       status: SignupStatus.draft,
       requiresJoinCode: source.requiresJoinCode,
       joinCode: source.requiresJoinCode ? generateJoinCode() : null,
-      startDate: range.startDate ?? source.startDate,
-      endDate: range.endDate ?? source.endDate,
+      startDate: parsedSlots.isNotEmpty ? range.startDate : source.startDate,
+      endDate: parsedSlots.isNotEmpty ? range.endDate : source.endDate,
       createdAt: now,
       updatedAt: now,
       createdBy: source.createdBy,

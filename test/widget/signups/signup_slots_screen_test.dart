@@ -738,5 +738,56 @@ void main() {
         lessThan(tester.getTopLeft(find.text('Listed Second')).dy),
       );
     });
+
+    testWidgets(
+      'disables the Sign Up button on the Past tab and when the signup is closed or expired',
+      (tester) async {
+        // 1. Past slot on Past tab has disabled Sign Up button
+        await pumpSlotWith(
+          tester,
+          startAt: now.subtract(const Duration(hours: 5)),
+          endAt: now.subtract(const Duration(hours: 1)),
+        );
+        await tester.tap(find.text('Past'));
+        await tester.pumpAndSettle();
+
+        final pastButton = tester.widget<ElevatedButton>(
+          find.byKey(const Key('signUpButton')),
+        );
+        expect(pastButton.onPressed, isNull);
+
+        // 2. Closed signup with an upcoming/undated slot has disabled Sign Up button
+        final closedSignup = signup.copyWith(status: SignupStatus.closed);
+        final closedSlotId = await service.addSlot(
+          signupId,
+          SignupSlot(
+            labelEn: 'Open Date Slot',
+            labelMr: '',
+            capacity: 3,
+            sortOrder: 1,
+            createdAt: DateTime.now(),
+          ),
+        );
+        expect(closedSlotId, isNotEmpty);
+
+        await tester.pumpWidget(
+          wrap(
+            SignupSlotsScreen(
+              signupId: signupId,
+              signup: closedSignup,
+              deviceId: 'device_1',
+              firestore: firestore,
+              signupService: service,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final closedSignupButton = tester.widget<ElevatedButton>(
+          find.byKey(const Key('signUpButton')),
+        );
+        expect(closedSignupButton.onPressed, isNull);
+      },
+    );
   });
 }
