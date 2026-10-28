@@ -14,6 +14,30 @@ class FontProvider with ChangeNotifier {
   TextStyle get englishTextStyle =>
       GoogleFonts.getFont(_defaultEnglishFontFamily);
 
+  static TextTheme getTextTheme(String fontFamily, [TextTheme? textTheme]) {
+    final baseTheme = textTheme ?? ThemeData.light().textTheme;
+    TextStyle apply(TextStyle? style) =>
+        GoogleFonts.getFont(fontFamily, textStyle: style);
+
+    return TextTheme(
+      displayLarge: apply(baseTheme.displayLarge),
+      displayMedium: apply(baseTheme.displayMedium),
+      displaySmall: apply(baseTheme.displaySmall),
+      headlineLarge: apply(baseTheme.headlineLarge),
+      headlineMedium: apply(baseTheme.headlineMedium),
+      headlineSmall: apply(baseTheme.headlineSmall),
+      titleLarge: apply(baseTheme.titleLarge),
+      titleMedium: apply(baseTheme.titleMedium),
+      titleSmall: apply(baseTheme.titleSmall),
+      bodyLarge: apply(baseTheme.bodyLarge),
+      bodyMedium: apply(baseTheme.bodyMedium),
+      bodySmall: apply(baseTheme.bodySmall),
+      labelLarge: apply(baseTheme.labelLarge),
+      labelMedium: apply(baseTheme.labelMedium),
+      labelSmall: apply(baseTheme.labelSmall),
+    );
+  }
+
   final Map<String, String> availableMarathiFonts = {
     'Noto Sans Devanagari': 'नोटो सान्स देवनागरी - जय गजानन',
     'Gotu': 'गोटू - जय गजानन',

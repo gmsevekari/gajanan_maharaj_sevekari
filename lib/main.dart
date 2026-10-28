@@ -86,7 +86,6 @@ import 'package:gajanan_maharaj_sevekari/utils/navigator_service.dart';
 import 'package:gajanan_maharaj_sevekari/utils/deeplink_manager.dart';
 import 'package:gajanan_maharaj_sevekari/utils/notification_service_helper.dart';
 import 'package:gajanan_maharaj_sevekari/utils/group_utils.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:app_links/app_links.dart';
 import 'dart:async';
@@ -352,7 +351,7 @@ class _MyAppState extends State<MyApp> {
 
             final activePreset = themeProvider.themePreset;
 
-            final lightTextTheme = GoogleFonts.getTextTheme(
+            final lightTextTheme = FontProvider.getTextTheme(
               fontFamily,
               AppTheme.getTheme(
                 activePreset,
@@ -360,7 +359,7 @@ class _MyAppState extends State<MyApp> {
                 customColor: themeProvider.customColor,
               ).textTheme,
             );
-            final darkTextTheme = GoogleFonts.getTextTheme(
+            final darkTextTheme = FontProvider.getTextTheme(
               fontFamily,
               AppTheme.getTheme(
                 activePreset,
