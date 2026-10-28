@@ -728,11 +728,8 @@ class SignupService {
 
       final signup = Signup.fromMap(signupSnapshot.id, signupSnapshot.data()!);
       final slot = SignupSlot.fromMap(slotSnapshot.id, slotSnapshot.data()!);
-      final now = DateTime.now();
 
-      if (signup.status == SignupStatus.closed ||
-          signup.isPast(now) ||
-          slot.isPast(now)) {
+      if (signup.status == SignupStatus.closed) {
         return {'success': false, 'error': 'signup_closed'};
       }
 

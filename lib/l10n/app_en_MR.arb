@@ -829,6 +829,7 @@
   "signupsListTitle": "Sign Ups",
   "signupInvalidGroupError": "अवैध group",
   "signupNoActiveSignups": "कोणतेही सक्रिय sign up नाही",
+  "signupNoPastSignups": "कोणतेही मागील sign up नाही",
   "signupMySignupsHeading": "माझे Sign-ups",
   "signupNoMySignups": "आपण अद्याप कशासाठीही sign up केलेले नाही",
   "signupCancelSignupButton": "रद्द करा",
