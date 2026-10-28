@@ -125,6 +125,42 @@ class SignupSlot {
     return a.sortOrder.compareTo(b.sortOrder);
   }
 
+  /// Derives the overall `[startDate, endDate]` span across [slots].
+  ///
+  /// - `startDate`: earliest non-null [startAt] across [slots], or `null` if
+  ///   no slot has a start time.
+  /// - `endDate`: latest [endAt] if **every** slot in a non-empty [slots]
+  ///   collection has a non-null [endAt]. If [slots] is empty or any slot has
+  ///   `endAt == null` (an undated slot), `endDate` is `null` so the parent
+  ///   signup never auto-expires while an undated slot remains open.
+  static ({DateTime? startDate, DateTime? endDate}) deriveDateRange(
+    Iterable<SignupSlot> slots,
+  ) {
+    DateTime? minStart;
+    DateTime? maxEnd;
+    var hasAnySlot = false;
+    var hasUndatedEnd = false;
+
+    for (final slot in slots) {
+      hasAnySlot = true;
+      final start = slot.startAt;
+      if (start != null && (minStart == null || start.isBefore(minStart))) {
+        minStart = start;
+      }
+      final end = slot.endAt;
+      if (end == null) {
+        hasUndatedEnd = true;
+      } else if (maxEnd == null || end.isAfter(maxEnd)) {
+        maxEnd = end;
+      }
+    }
+
+    return (
+      startDate: minStart,
+      endDate: (hasAnySlot && !hasUndatedEnd) ? maxEnd : null,
+    );
+  }
+
   SignupSlot copyWith({
     String? id,
     String? labelEn,

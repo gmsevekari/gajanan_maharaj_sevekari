@@ -155,6 +155,10 @@ class Signup {
     );
   }
 
+  /// Whether the signup has finished by [now]: it has an [endDate], and that
+  /// end instant has passed. A signup without an [endDate] is never past.
+  bool isPast(DateTime now) => endDate != null && endDate!.isBefore(now);
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

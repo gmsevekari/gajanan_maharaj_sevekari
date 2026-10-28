@@ -2517,4 +2517,177 @@ void main() {
       expect(await service.getSignupById(signupId).first, isNotNull);
     });
   });
+
+  group('SignupService slot-derived startDate/endDate and past filtering', () {
+    test(
+      'createSignupWithSlots populates derived startDate and endDate on signup',
+      () async {
+        final s1Start = DateTime.utc(2026, 10, 12, 8);
+        final s1End = DateTime.utc(2026, 10, 12, 20);
+        final s2Start = DateTime.utc(2026, 10, 10, 8);
+        final s2End = DateTime.utc(2026, 10, 15, 22);
+
+        final signupId = await service.createSignupWithSlots(buildSignup(), [
+          buildSlot(
+            labelEn: 'Slot 1',
+            sortOrder: 0,
+          ).copyWith(startAt: s1Start, endAt: s1End),
+          buildSlot(
+            labelEn: 'Slot 2',
+            sortOrder: 1,
+          ).copyWith(startAt: s2Start, endAt: s2End),
+        ]);
+
+        final signup = (await service.getSignupById(signupId).first)!;
+        expect(signup.startDate?.toUtc(), s2Start);
+        expect(signup.endDate?.toUtc(), s2End);
+      },
+    );
+
+    test(
+      'addSlot, updateSlot, and deleteSlot recompute startDate and endDate on signup',
+      () async {
+        final signupId = await service.createSignup(buildSignup());
+        final s1Start = DateTime.utc(2026, 10, 10, 8);
+        final s1End = DateTime.utc(2026, 10, 10, 20);
+
+        final slot1Id = await service.addSlot(
+          signupId,
+          buildSlot(labelEn: 'Slot 1').copyWith(startAt: s1Start, endAt: s1End),
+        );
+
+        var signup = (await service.getSignupById(signupId).first)!;
+        expect(signup.startDate?.toUtc(), s1Start);
+        expect(signup.endDate?.toUtc(), s1End);
+
+        // Add an undated slot -> endDate becomes null, startDate remains s1Start
+        final slot2Id = await service.addSlot(
+          signupId,
+          buildSlot(labelEn: 'Undated Slot'),
+        );
+        signup = (await service.getSignupById(signupId).first)!;
+        expect(signup.startDate?.toUtc(), s1Start);
+        expect(signup.endDate, isNull);
+
+        // Update the undated slot to have a later endAt
+        final s2Start = DateTime.utc(2026, 10, 12, 8);
+        final s2End = DateTime.utc(2026, 10, 18, 22);
+        final slots = await service.getSlots(signupId).first;
+        final slot2 = slots.firstWhere((s) => s.id == slot2Id);
+        await service.updateSlot(
+          signupId,
+          slot2.copyWith(startAt: s2Start, endAt: s2End),
+        );
+
+        signup = (await service.getSignupById(signupId).first)!;
+        expect(signup.startDate?.toUtc(), s1Start);
+        expect(signup.endDate?.toUtc(), s2End);
+
+        // Delete slot 2 -> endDate reverts to s1End
+        await service.deleteSlot(signupId, slot2Id);
+        signup = (await service.getSignupById(signupId).first)!;
+        expect(signup.startDate?.toUtc(), s1Start);
+        expect(signup.endDate?.toUtc(), s1End);
+
+        // Delete last slot -> both startDate and endDate become null
+        await service.deleteSlot(signupId, slot1Id);
+        signup = (await service.getSignupById(signupId).first)!;
+        expect(signup.startDate, isNull);
+        expect(signup.endDate, isNull);
+      },
+    );
+
+    test(
+      'addSlot tolerates a missing parent signup doc when syncing date range',
+      () async {
+        final slotId = await service.addSlot(
+          'non_existent_signup',
+          buildSlot(),
+        );
+        expect(slotId, isNotEmpty);
+      },
+    );
+
+    test(
+      'duplicateSignup derives startDate and endDate from slots when missing on source',
+      () async {
+        final signupId = await service.createSignup(buildSignup());
+        final sStart = DateTime.utc(2026, 11, 1, 9);
+        final sEnd = DateTime.utc(2026, 11, 1, 17);
+        // Write a slot directly to simulate a legacy signup with null startDate/endDate
+        await fakeFirestore
+            .collection('signups')
+            .doc(signupId)
+            .collection('slots')
+            .add(buildSlot().copyWith(startAt: sStart, endAt: sEnd).toMap());
+
+        final dupId = await service.duplicateSignup(signupId);
+        final dup = (await service.getSignupById(dupId).first)!;
+        expect(dup.startDate?.toUtc(), sStart);
+        expect(dup.endDate?.toUtc(), sEnd);
+      },
+    );
+
+    test(
+      'getActiveSignups excludes published signups whose endDate has passed',
+      () async {
+        final now = DateTime.now().toUtc();
+        final futureSignupId = await service.createSignup(
+          buildSignup(
+            status: SignupStatus.published,
+          ).copyWith(endDate: now.add(const Duration(hours: 2))),
+        );
+        final undatedSignupId = await service.createSignup(
+          buildSignup(status: SignupStatus.published),
+        );
+        await service.createSignup(
+          buildSignup(
+            status: SignupStatus.published,
+          ).copyWith(endDate: now.subtract(const Duration(minutes: 1))),
+        );
+
+        final active = await service.getActiveSignups('group_1').first;
+        expect(active.map((s) => s.id).toSet(), {
+          futureSignupId,
+          undatedSignupId,
+        });
+      },
+    );
+
+    test(
+      'getPastSignups returns closed signups and expired published signups for the group',
+      () async {
+        final now = DateTime.now().toUtc();
+        final closedId = await service.createSignup(
+          buildSignup(status: SignupStatus.closed),
+        );
+        final expiredPublishedId = await service.createSignup(
+          buildSignup(
+            status: SignupStatus.published,
+          ).copyWith(endDate: now.subtract(const Duration(hours: 1))),
+        );
+        // Active published (future endDate) - should be excluded
+        await service.createSignup(
+          buildSignup(
+            status: SignupStatus.published,
+          ).copyWith(endDate: now.add(const Duration(hours: 2))),
+        );
+        // Active published (null endDate) - should be excluded
+        await service.createSignup(buildSignup(status: SignupStatus.published));
+        // Draft (even with past endDate) - should be excluded
+        await service.createSignup(
+          buildSignup(
+            status: SignupStatus.draft,
+          ).copyWith(endDate: now.subtract(const Duration(days: 1))),
+        );
+        // Another group's closed signup - should be excluded
+        await service.createSignup(
+          buildSignup(status: SignupStatus.closed, groupId: 'group_2'),
+        );
+
+        final past = await service.getPastSignups('group_1').first;
+        expect(past.map((s) => s.id).toSet(), {closedId, expiredPublishedId});
+      },
+    );
+  });
 }

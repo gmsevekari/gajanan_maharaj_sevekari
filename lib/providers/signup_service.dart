@@ -182,14 +182,38 @@ class SignupService {
     });
   }
 
-  /// Published signups for a group, most recently created first.
+  /// Active (upcoming) published signups for a group, most recently created
+  /// first. Excludes any signup whose [Signup.endDate] has already passed.
   Stream<List<Signup>> getActiveSignups(String groupId) {
     return _signupsRef
         .where('groupId', isEqualTo: groupId)
         .where('status', isEqualTo: SignupStatus.published.name)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map(_mapSignups);
+        .map((snapshot) {
+          final now = DateTime.now();
+          return _mapSignups(snapshot).where((s) => !s.isPast(now)).toList();
+        });
+  }
+
+  /// Past signups for a group (devotee "Past" tab), most recently created
+  /// first: includes `closed` signups and any `published` signup whose
+  /// [Signup.endDate] has passed.
+  Stream<List<Signup>> getPastSignups(String groupId) {
+    return _signupsRef
+        .where('groupId', isEqualTo: groupId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+          final now = DateTime.now();
+          return _mapSignups(snapshot)
+              .where(
+                (s) =>
+                    s.status == SignupStatus.closed ||
+                    (s.status == SignupStatus.published && s.isPast(now)),
+              )
+              .toList();
+        });
   }
 
   /// All signups for a group regardless of status (admin dashboard).
@@ -311,7 +335,31 @@ class SignupService {
   /// Adds a slot with a Firestore auto-generated ID and returns it.
   Future<String> addSlot(String signupId, SignupSlot slot) async {
     final docRef = await _slotsRef(signupId).add(slot.toMap());
+    await _syncSignupDateRange(signupId);
     return docRef.id;
+  }
+
+  /// Recomputes `startDate` and `endDate` on [signupId] from its current
+  /// slots so the parent signup's expiry span stays in sync with slot edits.
+  Future<void> _syncSignupDateRange(String signupId) async {
+    final signupRef = _signupsRef.doc(signupId);
+    final signupSnap = await signupRef.get();
+    if (!signupSnap.exists) return;
+
+    final slotsSnap = await _slotsRef(signupId).get();
+    final slots = [
+      for (final doc in slotsSnap.docs) SignupSlot.fromMap(doc.id, doc.data()),
+    ];
+    final range = SignupSlot.deriveDateRange(slots);
+    await signupRef.update({
+      'startDate': range.startDate != null
+          ? Timestamp.fromDate(range.startDate!)
+          : null,
+      'endDate': range.endDate != null
+          ? Timestamp.fromDate(range.endDate!)
+          : null,
+      'updatedAt': Timestamp.now(),
+    });
   }
 
   /// Slots for a signup, ordered by their admin-defined sortOrder.
@@ -368,6 +416,7 @@ class SignupService {
       }
       transaction.update(slotRef, fields);
     });
+    await _syncSignupDateRange(signupId);
   }
 
   /// Deletes a slot, refusing with [SlotHasClaimedEntriesException] if people
@@ -394,6 +443,7 @@ class SignupService {
       if (claimed > 0) throw SlotHasClaimedEntriesException(slotId, claimed);
       transaction.delete(slotRef);
     });
+    await _syncSignupDateRange(signupId);
   }
 
   /// Rewrites `sortOrder` on each slot to match its position in
@@ -425,8 +475,16 @@ class SignupService {
     final signupRef = signup.id != null
         ? _signupsRef.doc(signup.id)
         : _signupsRef.doc();
+    final range = SignupSlot.deriveDateRange(slots);
+    final signupMap = signup.toMap()
+      ..['startDate'] = range.startDate != null
+          ? Timestamp.fromDate(range.startDate!)
+          : null
+      ..['endDate'] = range.endDate != null
+          ? Timestamp.fromDate(range.endDate!)
+          : null;
     final batch = _db.batch();
-    batch.set(signupRef, signup.toMap());
+    batch.set(signupRef, signupMap);
 
     final slotsRef = _slotsRef(signupRef.id);
     for (final slot in slots) {
@@ -833,6 +891,12 @@ class SignupService {
       throw ArgumentError.value(signupId, 'signupId', 'signup not found');
     }
     final source = Signup.fromMap(sourceSnapshot.id, sourceSnapshot.data()!);
+    final sourceSlots = await _slotsRef(signupId).get();
+    final parsedSlots = [
+      for (final doc in sourceSlots.docs)
+        SignupSlot.fromMap(doc.id, doc.data()).copyWith(claimedCount: 0),
+    ];
+    final range = SignupSlot.deriveDateRange(parsedSlots);
     final now = DateTime.now();
     final duplicate = Signup(
       titleEn: source.titleEn,
@@ -843,22 +907,20 @@ class SignupService {
       status: SignupStatus.draft,
       requiresJoinCode: source.requiresJoinCode,
       joinCode: source.requiresJoinCode ? generateJoinCode() : null,
-      startDate: source.startDate,
-      endDate: source.endDate,
+      startDate: range.startDate ?? source.startDate,
+      endDate: range.endDate ?? source.endDate,
       createdAt: now,
       updatedAt: now,
       createdBy: source.createdBy,
     );
 
-    final sourceSlots = await _slotsRef(signupId).get();
     final newSignupRef = _signupsRef.doc();
     final batch = _db.batch();
     batch.set(newSignupRef, duplicate.toMap());
 
     final newSlotsRef = _slotsRef(newSignupRef.id);
-    for (final doc in sourceSlots.docs) {
-      final slot = SignupSlot.fromMap(doc.id, doc.data());
-      batch.set(newSlotsRef.doc(), slot.copyWith(claimedCount: 0).toMap());
+    for (final slot in parsedSlots) {
+      batch.set(newSlotsRef.doc(), slot.toMap());
     }
 
     await batch.commit();

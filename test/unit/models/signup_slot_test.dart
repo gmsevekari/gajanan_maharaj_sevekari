@@ -709,6 +709,67 @@ void main() {
           expect(SignupSlot.compareByStart(slot(), slot()), 0);
         });
       });
+
+      group('deriveDateRange', () {
+        test('returns null startDate and endDate when slots are empty', () {
+          final range = SignupSlot.deriveDateRange(const <SignupSlot>[]);
+          expect(range.startDate, isNull);
+          expect(range.endDate, isNull);
+        });
+
+        test(
+          'returns earliest startAt and latest endAt across dated slots',
+          () {
+            final s1 = slot(
+              id: '1',
+              startAt: DateTime.utc(2026, 10, 12, 8),
+              endAt: DateTime.utc(2026, 10, 12, 20),
+            );
+            final s2 = slot(
+              id: '2',
+              startAt: DateTime.utc(2026, 10, 10, 8),
+              endAt: DateTime.utc(2026, 10, 10, 20),
+            );
+            final s3 = slot(
+              id: '3',
+              startAt: DateTime.utc(2026, 10, 15, 8),
+              endAt: DateTime.utc(2026, 10, 18, 22),
+            );
+
+            final range = SignupSlot.deriveDateRange([s1, s2, s3]);
+            expect(range.startDate, DateTime.utc(2026, 10, 10, 8));
+            expect(range.endDate, DateTime.utc(2026, 10, 18, 22));
+          },
+        );
+
+        test(
+          'returns null endDate when any slot is undated (endAt is null)',
+          () {
+            final dated = slot(
+              id: '1',
+              startAt: DateTime.utc(2026, 10, 10, 8),
+              endAt: DateTime.utc(2026, 10, 10, 20),
+            );
+            final undated = slot(id: '2');
+
+            final range = SignupSlot.deriveDateRange([dated, undated]);
+            expect(range.startDate, DateTime.utc(2026, 10, 10, 8));
+            expect(range.endDate, isNull);
+          },
+        );
+
+        test(
+          'returns null startDate and endDate when all slots are undated',
+          () {
+            final range = SignupSlot.deriveDateRange([
+              slot(id: '1'),
+              slot(id: '2'),
+            ]);
+            expect(range.startDate, isNull);
+            expect(range.endDate, isNull);
+          },
+        );
+      });
     });
   });
 }

@@ -376,5 +376,38 @@ void main() {
         expect(signup.headerImageUrl, isNull);
       });
     });
+
+    group('isPast', () {
+      final base = Signup(
+        id: 'signup1',
+        titleEn: 'T',
+        titleMr: 'T',
+        groupId: 'g',
+        createdAt: DateTime.utc(2026, 1, 1),
+        updatedAt: DateTime.utc(2026, 1, 1),
+        createdBy: 'admin@example.com',
+      );
+
+      test('returns false when endDate is null', () {
+        expect(base.isPast(DateTime.utc(2030, 1, 1)), isFalse);
+      });
+
+      test('returns false when endDate is after or at now', () {
+        final end = DateTime.utc(2026, 10, 20, 12);
+        final signup = base.copyWith(endDate: end);
+        expect(signup.isPast(DateTime.utc(2026, 10, 20, 11, 59, 59)), isFalse);
+        expect(signup.isPast(end), isFalse);
+      });
+
+      test('returns true when endDate is strictly before now', () {
+        final end = DateTime.utc(2026, 10, 20, 12);
+        final signup = base.copyWith(endDate: end);
+        expect(signup.isPast(DateTime.utc(2026, 10, 20, 12, 0, 1)), isTrue);
+        expect(
+          signup.isPast(DateTime.utc(2026, 10, 20, 12, 0, 1).toLocal()),
+          isTrue,
+        );
+      });
+    });
   });
 }
