@@ -2639,6 +2639,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupNoActiveSignups => 'No active sign ups';
 
   @override
+  String get signupNoPastSignups => 'No past sign ups';
+
+  @override
   String get signupMySignupsHeading => 'My Signups';
 
   @override

@@ -36,19 +36,30 @@ class SignupsListScreen extends StatefulWidget {
   State<SignupsListScreen> createState() => _SignupsListScreenState();
 }
 
-class _SignupsListScreenState extends State<SignupsListScreen> {
+class _SignupsListScreenState extends State<SignupsListScreen>
+    with SingleTickerProviderStateMixin {
   late final SignupService _service;
-  Stream<List<Signup>>? _signupsStream;
+  late final TabController _tabController;
+  Stream<List<Signup>>? _upcomingStream;
+  Stream<List<Signup>>? _pastStream;
 
   @override
   void initState() {
     super.initState();
     _service =
         widget.signupService ?? SignupService(firestore: widget.firestore);
+    _tabController = TabController(length: 2, vsync: this);
     final groupId = widget.groupId;
     if (groupId != null && groupId.isNotEmpty) {
-      _signupsStream = _service.getActiveSignups(groupId);
+      _upcomingStream = _service.getActiveSignups(groupId);
+      _pastStream = _service.getPastSignups(groupId);
     }
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -57,10 +68,25 @@ class _SignupsListScreenState extends State<SignupsListScreen> {
   Widget _buildScreen(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final hasValidGroup = _upcomingStream != null && _pastStream != null;
 
     return Scaffold(
       appBar: AppBar(
         title: FittedAppBarTitle(widget.groupName ?? l10n.signupsListTitle),
+        bottom: hasValidGroup
+            ? TabBar(
+                controller: _tabController,
+                labelColor: theme.colorScheme.onPrimary,
+                unselectedLabelColor: theme.colorScheme.onPrimary.withValues(
+                  alpha: 0.7,
+                ),
+                indicatorColor: theme.colorScheme.onPrimary,
+                tabs: [
+                  Tab(text: l10n.signupUpcomingTab),
+                  Tab(text: l10n.signupPastTab),
+                ],
+              )
+            : null,
         actions: [
           IconButton(
             icon: const ThemedIcon(LogicalIcon.home),
@@ -76,7 +102,7 @@ class _SignupsListScreenState extends State<SignupsListScreen> {
           ),
         ],
       ),
-      body: _signupsStream == null
+      body: !hasValidGroup
           ? Center(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -89,33 +115,55 @@ class _SignupsListScreenState extends State<SignupsListScreen> {
                 ),
               ),
             )
-          : StreamBuilder<List<Signup>>(
-              stream: _signupsStream,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                final signups = snapshot.data ?? const [];
-                if (signups.isEmpty) {
-                  return Center(
-                    child: Text(
-                      l10n.signupNoActiveSignups,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.appColors.secondaryText,
-                      ),
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: signups.length,
-                  itemBuilder: (context, index) =>
-                      _SignupCard(signup: signups[index]),
-                );
-              },
+          : TabBarView(
+              controller: _tabController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                _buildSignupsList(
+                  stream: _upcomingStream!,
+                  emptyMessage: l10n.signupNoActiveSignups,
+                  theme: theme,
+                ),
+                _buildSignupsList(
+                  stream: _pastStream!,
+                  emptyMessage: l10n.signupNoPastSignups,
+                  theme: theme,
+                ),
+              ],
             ),
+    );
+  }
+
+  Widget _buildSignupsList({
+    required Stream<List<Signup>> stream,
+    required String emptyMessage,
+    required ThemeData theme,
+  }) {
+    return StreamBuilder<List<Signup>>(
+      stream: stream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final signups = snapshot.data ?? const [];
+        if (signups.isEmpty) {
+          return Center(
+            child: Text(
+              emptyMessage,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.appColors.secondaryText,
+              ),
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: signups.length,
+          itemBuilder: (context, index) => _SignupCard(signup: signups[index]),
+        );
+      },
     );
   }
 }

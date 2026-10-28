@@ -989,6 +989,7 @@
   "signupsListTitle": "साइन अप्स",
   "signupInvalidGroupError": "अवैध ग्रुप",
   "signupNoActiveSignups": "कोणतेही सक्रिय साइन अप नाही",
+  "signupNoPastSignups": "कोणतेही मागील साइन अप नाही",
   "signupMySignupsHeading": "माझे साइन-अप्स",
   "signupNoMySignups": "आपण अद्याप कशासाठीही साइन अप केलेले नाही",
   "signupCancelSignupButton": "रद्द करा",

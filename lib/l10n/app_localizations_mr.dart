@@ -2647,6 +2647,9 @@ class AppLocalizationsMr extends AppLocalizations {
   String get signupNoActiveSignups => 'कोणतेही सक्रिय साइन अप नाही';
 
   @override
+  String get signupNoPastSignups => 'कोणतेही मागील साइन अप नाही';
+
+  @override
   String get signupMySignupsHeading => 'माझे साइन-अप्स';
 
   @override

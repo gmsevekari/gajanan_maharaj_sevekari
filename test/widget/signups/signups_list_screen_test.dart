@@ -45,6 +45,7 @@ void main() {
     SignupStatus status = SignupStatus.published,
     String groupId = 'group_1',
     bool requiresJoinCode = false,
+    DateTime? endDate,
   }) {
     final now = DateTime.now();
     return service.createSignup(
@@ -57,6 +58,7 @@ void main() {
         status: status,
         requiresJoinCode: requiresJoinCode,
         joinCode: requiresJoinCode ? 'ABC123' : null,
+        endDate: endDate,
         createdAt: now,
         updatedAt: now,
         createdBy: 'admin@test.com',
@@ -274,5 +276,80 @@ void main() {
 
     expect(find.text('Sign Ups'), findsOneWidget);
     expect(find.text('No active sign ups'), findsOneWidget);
+  });
+
+  group('Upcoming and Past tabs', () {
+    testWidgets(
+      'renders Upcoming and Past tabs with contrasting labelColor and non-scrollable TabBarView',
+      (tester) async {
+        await tester.pumpWidget(
+          wrap(
+            SignupsListScreen(
+              groupId: 'group_1',
+              firestore: firestore,
+              signupService: service,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.widgetWithText(Tab, 'Upcoming'), findsOneWidget);
+        expect(find.widgetWithText(Tab, 'Past'), findsOneWidget);
+
+        final tabBar = tester.widget<TabBar>(find.byType(TabBar));
+        final theme = Theme.of(tester.element(find.byType(TabBar)));
+        expect(tabBar.labelColor, theme.colorScheme.onPrimary);
+
+        final tabBarView = tester.widget<TabBarView>(find.byType(TabBarView));
+        expect(tabBarView.physics, isA<NeverScrollableScrollPhysics>());
+      },
+    );
+
+    testWidgets(
+      'Past tab shows No past sign ups when empty, and lists closed and expired published signups',
+      (tester) async {
+        final now = DateTime.now().toUtc();
+        await createSignup(
+          titleEn: 'Active Seva',
+          status: SignupStatus.published,
+          endDate: now.add(const Duration(days: 1)),
+        );
+
+        await tester.pumpWidget(
+          wrap(
+            SignupsListScreen(
+              groupId: 'group_1',
+              firestore: firestore,
+              signupService: service,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Active Seva'), findsOneWidget);
+
+        await tester.tap(find.widgetWithText(Tab, 'Past'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('No past sign ups'), findsOneWidget);
+        expect(find.text('Active Seva'), findsNothing);
+
+        await createSignup(titleEn: 'Closed Seva', status: SignupStatus.closed);
+        await createSignup(
+          titleEn: 'Expired Published Seva',
+          status: SignupStatus.published,
+          endDate: now.subtract(const Duration(minutes: 5)),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Closed Seva'), findsOneWidget);
+        expect(find.text('Expired Published Seva'), findsOneWidget);
+
+        await tester.tap(find.text('Closed Seva'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Navigated to: /signup_detail'), findsOneWidget);
+      },
+    );
   });
 }

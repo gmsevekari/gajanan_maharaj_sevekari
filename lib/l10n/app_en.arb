@@ -1027,6 +1027,7 @@
   "signupsListTitle": "Sign Ups",
   "signupInvalidGroupError": "Invalid group",
   "signupNoActiveSignups": "No active sign ups",
+  "signupNoPastSignups": "No past sign ups",
   "signupMySignupsHeading": "My Signups",
   "signupNoMySignups": "You haven't signed up for anything yet",
   "signupCancelSignupButton": "Cancel",

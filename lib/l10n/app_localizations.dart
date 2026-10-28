@@ -5055,6 +5055,12 @@ abstract class AppLocalizations {
   /// **'No active sign ups'**
   String get signupNoActiveSignups;
 
+  /// No description provided for @signupNoPastSignups.
+  ///
+  /// In en, this message translates to:
+  /// **'No past sign ups'**
+  String get signupNoPastSignups;
+
   /// No description provided for @signupMySignupsHeading.
   ///
   /// In en, this message translates to:
