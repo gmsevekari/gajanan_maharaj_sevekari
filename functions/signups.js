@@ -1,4 +1,5 @@
 const {onCall, HttpsError} = require("firebase-functions/v2/https");
+const {onSchedule} = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 
@@ -161,5 +162,101 @@ async function claimSignupEntries(data) {
   }
 }
 
+/**
+ * Derives the [startDate, endDate] span from slot documents, matching
+ * `SignupSlot.deriveDateRange` in the Flutter client.
+ * @param {Array<Object>} slotDocs Firestore slot document snapshots.
+ * @return {{startDate: ?Object, endDate: ?Object}} Earliest startAt and
+ *   latest endAt Timestamp objects (endDate is null if slots are empty or any
+ *   slot is undated).
+ */
+function deriveSlotDateRange(slotDocs) {
+  if (!slotDocs || slotDocs.length === 0) {
+    return {startDate: null, endDate: null};
+  }
+  let minStart = null;
+  let maxEnd = null;
+  let hasUndatedEnd = false;
+
+  for (const slotDoc of slotDocs) {
+    const slot = slotDoc.data() || {};
+    if (slot.startAt && typeof slot.startAt.toDate === "function") {
+      if (!minStart || slot.startAt.toDate() < minStart.toDate()) {
+        minStart = slot.startAt;
+      }
+    }
+    if (!slot.endAt || typeof slot.endAt.toDate !== "function") {
+      hasUndatedEnd = true;
+    } else if (!maxEnd || slot.endAt.toDate() > maxEnd.toDate()) {
+      maxEnd = slot.endAt;
+    }
+  }
+
+  return {
+    startDate: minStart,
+    endDate: hasUndatedEnd ? null : maxEnd,
+  };
+}
+
+/**
+ * Transitions `published` signups to `closed` once their `endDate` has passed,
+ * backfilling `startDate` and `endDate` from `slots` for legacy signups that
+ * lack `endDate`.
+ * @param {Object} [options] Optional dependencies for testing.
+ * @param {Object} [options.db] Firestore instance.
+ * @param {Date} [options.now] Current time.
+ * @return {Promise<number>} Number of signups transitioned to `closed`.
+ */
+async function runSignupStatusUpdates({
+  db = admin.firestore(),
+  now = new Date(),
+} = {}) {
+  logger.info("Running Sign-Up status update.");
+  const publishedQuery = await db
+      .collection("signups")
+      .where("status", "==", "published")
+      .get();
+
+  let closedCount = 0;
+  for (const doc of publishedQuery.docs) {
+    const data = doc.data() || {};
+    let endDate = data.endDate && typeof data.endDate.toDate === "function" ?
+      data.endDate : null;
+    const updates = {};
+
+    if (!endDate && doc.ref && typeof doc.ref.collection === "function") {
+      const slotsSnap = await doc.ref.collection("slots").get();
+      const derived = deriveSlotDateRange(slotsSnap.docs);
+      if (derived.endDate) {
+        if (derived.startDate) updates.startDate = derived.startDate;
+        updates.endDate = derived.endDate;
+        endDate = derived.endDate;
+      }
+    }
+
+    if (endDate && endDate.toDate() < now) {
+      updates.status = "closed";
+      closedCount++;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      updates.updatedAt = admin.firestore.FieldValue &&
+          typeof admin.firestore.FieldValue.serverTimestamp === "function" ?
+        admin.firestore.FieldValue.serverTimestamp() : now;
+      await doc.ref.update(updates);
+      if (updates.status === "closed") {
+        logger.info(`Auto-transitioned Signup ${doc.id} to closed.`);
+      }
+    }
+  }
+  return closedCount;
+}
+
+exports.updateSignupStatuses = onSchedule("*/30 * * * *", async () => {
+  await runSignupStatusUpdates();
+});
+
 exports.normalizePhone = normalizePhone;
 exports.planClaim = planClaim;
+exports.deriveSlotDateRange = deriveSlotDateRange;
+exports.runSignupStatusUpdates = runSignupStatusUpdates;

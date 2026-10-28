@@ -389,4 +389,187 @@ describe("Sign-up Cloud Functions", () => {
       }
     });
   });
+
+  describe("updateSignupStatuses", () => {
+    const now = new Date("2026-10-20T12:00:00Z");
+    const ts = (iso) => ({toDate: () => new Date(iso), iso});
+
+    it("closes a published signup when endDate has passed", async () => {
+      const updateStub = sinon.stub().resolves();
+      const doc = {
+        id: "signup_expired",
+        data: () => ({
+          status: "published",
+          endDate: ts("2026-10-20T11:59:59Z"),
+        }),
+        ref: {update: updateStub},
+      };
+      const db = {
+        collection: sinon.stub().withArgs("signups").returns({
+          where: sinon.stub().withArgs("status", "==", "published").returns({
+            get: sinon.stub().resolves({docs: [doc]}),
+          }),
+        }),
+      };
+
+      const closedCount = await signups.runSignupStatusUpdates({db, now});
+
+      expect(closedCount).to.equal(1);
+      expect(updateStub.calledOnce).to.equal(true);
+      expect(updateStub.firstCall.args[0].status).to.equal("closed");
+    });
+
+    it("leaves a published signup open when endDate is in the future",
+        async () => {
+          const updateStub = sinon.stub().resolves();
+          const doc = {
+            id: "signup_future",
+            data: () => ({
+              status: "published",
+              endDate: ts("2026-10-20T12:00:01Z"),
+            }),
+            ref: {update: updateStub},
+          };
+          const db = {
+            collection: sinon.stub().withArgs("signups").returns({
+              where: sinon.stub()
+                  .withArgs("status", "==", "published").returns({
+                    get: sinon.stub().resolves({docs: [doc]}),
+                  }),
+            }),
+          };
+
+          const closedCount = await signups.runSignupStatusUpdates({db, now});
+
+          expect(closedCount).to.equal(0);
+          expect(updateStub.called).to.equal(false);
+        });
+
+    it("backfills startDate/endDate from slots when endDate is missing " +
+        "and closes if expired", async () => {
+      const updateStub = sinon.stub().resolves();
+      const slotDocs = [
+        {
+          data: () => ({
+            startAt: ts("2026-10-10T08:00:00Z"),
+            endAt: ts("2026-10-10T20:00:00Z"),
+          }),
+        },
+        {
+          data: () => ({
+            startAt: ts("2026-10-08T08:00:00Z"),
+            endAt: ts("2026-10-15T22:00:00Z"),
+          }),
+        },
+      ];
+      const doc = {
+        id: "rakhumai_navaratri",
+        data: () => ({status: "published"}),
+        ref: {
+          collection: sinon.stub().withArgs("slots").returns({
+            get: sinon.stub().resolves({docs: slotDocs}),
+          }),
+          update: updateStub,
+        },
+      };
+      const db = {
+        collection: sinon.stub().withArgs("signups").returns({
+          where: sinon.stub().withArgs("status", "==", "published").returns({
+            get: sinon.stub().resolves({docs: [doc]}),
+          }),
+        }),
+      };
+
+      const closedCount = await signups.runSignupStatusUpdates({db, now});
+
+      expect(closedCount).to.equal(1);
+      expect(updateStub.calledOnce).to.equal(true);
+      const written = updateStub.firstCall.args[0];
+      expect(written.status).to.equal("closed");
+      expect(written.startDate.toDate().toISOString())
+          .to.equal("2026-10-08T08:00:00.000Z");
+      expect(written.endDate.toDate().toISOString())
+          .to.equal("2026-10-15T22:00:00.000Z");
+    });
+
+    it("backfills startDate/endDate without closing when derived endDate " +
+        "is still in the future", async () => {
+      const updateStub = sinon.stub().resolves();
+      const slotDocs = [
+        {
+          data: () => ({
+            startAt: ts("2026-10-25T08:00:00Z"),
+            endAt: ts("2026-10-25T20:00:00Z"),
+          }),
+        },
+      ];
+      const doc = {
+        id: "future_legacy",
+        data: () => ({status: "published"}),
+        ref: {
+          collection: sinon.stub().withArgs("slots").returns({
+            get: sinon.stub().resolves({docs: slotDocs}),
+          }),
+          update: updateStub,
+        },
+      };
+      const db = {
+        collection: sinon.stub().withArgs("signups").returns({
+          where: sinon.stub().withArgs("status", "==", "published").returns({
+            get: sinon.stub().resolves({docs: [doc]}),
+          }),
+        }),
+      };
+
+      const closedCount = await signups.runSignupStatusUpdates({db, now});
+
+      expect(closedCount).to.equal(0);
+      expect(updateStub.calledOnce).to.equal(true);
+      const written = updateStub.firstCall.args[0];
+      expect(written.status).to.equal(undefined);
+      expect(written.endDate.toDate().toISOString())
+          .to.equal("2026-10-25T20:00:00.000Z");
+    });
+
+    it("leaves a published signup open when slots are empty or any slot " +
+        "is undated", async () => {
+      const updateStub = sinon.stub().resolves();
+      const undatedDoc = {
+        id: "undated_signup",
+        data: () => ({status: "published"}),
+        ref: {
+          collection: sinon.stub().withArgs("slots").returns({
+            get: sinon.stub().resolves({
+              docs: [
+                {data: () => ({startAt: ts("2026-10-01T08:00:00Z")})},
+              ],
+            }),
+          }),
+          update: updateStub,
+        },
+      };
+      const emptySlotsDoc = {
+        id: "empty_slots_signup",
+        data: () => ({status: "published"}),
+        ref: {
+          collection: sinon.stub().withArgs("slots").returns({
+            get: sinon.stub().resolves({docs: []}),
+          }),
+          update: updateStub,
+        },
+      };
+      const db = {
+        collection: sinon.stub().withArgs("signups").returns({
+          where: sinon.stub().withArgs("status", "==", "published").returns({
+            get: sinon.stub().resolves({docs: [undatedDoc, emptySlotsDoc]}),
+          }),
+        }),
+      };
+
+      const closedCount = await signups.runSignupStatusUpdates({db, now});
+
+      expect(closedCount).to.equal(0);
+      expect(updateStub.called).to.equal(false);
+    });
+  });
 });

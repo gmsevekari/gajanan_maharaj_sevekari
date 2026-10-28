@@ -29,6 +29,7 @@ exports.updateVaariStatuses = vaari.updateVaariStatuses;
 
 // Sign-Up Management
 exports.claimSignupEntries = signups.claimSignupEntries;
+exports.updateSignupStatuses = signups.updateSignupStatuses;
 
 // Notifications & Reminders
 exports.sendTempleNotification = notifications.sendTempleNotification;
