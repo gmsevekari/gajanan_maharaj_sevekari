@@ -28,7 +28,7 @@ void main() {
   setUp(() async {
     nextSortOrder = 0;
     firestore = FakeFirebaseFirestore();
-    service = SignupService(firestore: firestore);
+    service = SignupService(firestore: firestore, now: () => DateTime(2000));
     final now = DateTime.now();
     signupId = await service.createSignup(
       Signup(

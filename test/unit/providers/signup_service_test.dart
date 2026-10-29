@@ -2710,17 +2710,43 @@ void main() {
       },
     );
 
-    test('claimSlot rejects claiming when the signup is closed', () async {
-      final closedSignupId = await service.createSignup(
-        buildSignup(status: SignupStatus.closed),
-      );
-      final closedSlotId = await service.addSlot(closedSignupId, buildSlot());
-      final closedResult = await service.claimSlot(
-        signupId: closedSignupId,
-        slotId: closedSlotId,
-        name: 'Devotee',
-      );
-      expect(closedResult, {'success': false, 'error': 'signup_closed'});
-    });
+    test(
+      'claimSlot rejects claiming when the signup is closed or expired',
+      () async {
+        final closedSignupId = await service.createSignup(
+          buildSignup(status: SignupStatus.closed),
+        );
+        final closedSlotId = await service.addSlot(closedSignupId, buildSlot());
+        final closedResult = await service.claimSlot(
+          signupId: closedSignupId,
+          slotId: closedSlotId,
+          name: 'Devotee',
+        );
+        expect(closedResult, {'success': false, 'error': 'signup_closed'});
+
+        final pastTime = DateTime.now().subtract(const Duration(days: 2));
+        final pastSlotSignupId = await service.createSignup(
+          buildSignup(status: SignupStatus.published),
+        );
+        final pastSlotId = await service.addSlot(
+          pastSlotSignupId,
+          SignupSlot(
+            labelEn: 'Past Slot',
+            labelMr: 'जुना स्लॉट',
+            startAt: pastTime,
+            endAt: pastTime.add(const Duration(hours: 1)),
+            capacity: 2,
+            sortOrder: 0,
+            createdAt: pastTime,
+          ),
+        );
+        final pastResult = await service.claimSlot(
+          signupId: pastSlotSignupId,
+          slotId: pastSlotId,
+          name: 'Devotee',
+        );
+        expect(pastResult, {'success': false, 'error': 'signup_closed'});
+      },
+    );
   });
 }

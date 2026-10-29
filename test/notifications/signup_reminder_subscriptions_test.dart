@@ -39,7 +39,10 @@ void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     firestore = FakeFirebaseFirestore();
-    service = SignupService(firestore: firestore);
+    service = SignupService(
+      firestore: firestore,
+      now: () => DateTime.utc(2000),
+    );
     messaging = MockMessaging();
     when(() => messaging.subscribeToTopic(any())).thenAnswer((_) async {});
     when(() => messaging.unsubscribeFromTopic(any())).thenAnswer((_) async {});
