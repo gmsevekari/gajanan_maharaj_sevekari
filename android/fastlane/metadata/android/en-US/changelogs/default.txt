@@ -3,5 +3,6 @@
 • Edit or cancel your sign-ups, and link one made for you with "Claim My Sign Up".
 • See who has signed up in an easy table.
 • Admins can create, edit and export sign-ups.
+• Spelling corrections in the Gajanan Vijay Granth.
 • Better Marathi language support.
 • Bug fixes and stability improvements.
