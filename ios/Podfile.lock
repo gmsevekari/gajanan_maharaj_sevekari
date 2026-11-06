@@ -14,7 +14,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_app_badge_control/ios"
 
 SPEC CHECKSUMS:
-  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
   flutter_app_badge_control: 1f0ac37334d1a2da72bde7e4d3c6c8675517a471
 
 PODFILE CHECKSUM: 562284e7bfeae806189acdc97a92341fed7a4473
