@@ -8,6 +8,10 @@ const _requiredTextKeys = ['title_mr', 'title_en', 'content_mr', 'content_en'];
 const _kavachamFile =
     'resources/texts/datta_maharaj/stotras/dattatreya_kavacham.json';
 const _kavachamVerseCount = 12;
+const _prasadFile =
+    'resources/texts/other/other_stotras/prasad_ha_maja_dyava.json';
+const _prasadVideoId = 'UGMN4_6Ozq4';
+const _prasadStanzaCount = 5;
 
 Map<String, dynamic> _readJson(String path) =>
     json.decode(File(path).readAsStringSync()) as Map<String, dynamic>;
@@ -88,6 +92,32 @@ void main() {
 
       expect(marathiNumbers, expected);
       expect(englishNumbers, expected);
+    });
+  });
+
+  group('Other stotras', () {
+    test('lists Prasad Ha Maja Dyava', () {
+      final other = deityConfigs.firstWhere((c) => c['id'] == 'other');
+
+      expect(_listedTextFiles(other), contains(_prasadFile));
+    });
+
+    test('Prasad Ha Maja Dyava has its video, refrain and stanzas 1..5', () {
+      final data = _readJson(_prasadFile);
+      final marathi = data['content_mr'] as String;
+
+      expect(data['youtube_video_id'], _prasadVideoId);
+      expect(marathi, contains('धृ.'));
+      expect(
+        RegExp(r'॥ ([१-५]) ॥').allMatches(marathi).map((m) => m.group(1)),
+        ['१', '२', '३', '४', '५'],
+      );
+      expect(
+        RegExp(r'\|\| (\d) \|\|')
+            .allMatches(data['content_en'] as String)
+            .length,
+        _prasadStanzaCount,
+      );
     });
   });
 }
