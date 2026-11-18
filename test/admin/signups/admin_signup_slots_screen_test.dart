@@ -608,6 +608,14 @@ void main() {
         await tester.enterText(find.byKey(const Key('slotCapacity_0')), '4');
         await tester.tap(find.byKey(const Key('slotStartDate_0')));
         await tester.pumpAndSettle();
+        // Not the picker's default (today): a date-only slot ends at 23:59 in
+        // its zone, so one made for today moves to the Past tab at midnight
+        // and a run across that moment would not find it in Upcoming. The 15th
+        // of next month is always ahead, whatever day this runs.
+        await tester.tap(find.byTooltip('Next month'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('15'));
+        await tester.pumpAndSettle();
         await tester.tap(find.text('OK'));
         await tester.pumpAndSettle();
         await tester.ensureVisible(find.text('Save'));

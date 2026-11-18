@@ -1810,15 +1810,25 @@ void main() {
 
     /// Lets the real file write finish. Each step of it completes in real
     /// time but only continues on the next pump, so alternate the two until
-    /// the progress overlay is gone.
+    /// the progress overlay is gone. It waits on the clock, not a number of
+    /// rounds, so a busy machine (a full test run) only makes it slower, and
+    /// it fails with a clear message instead of leaving the spinner to hang
+    /// the final settle.
     Future<void> settleRealIo(WidgetTester tester) async {
-      for (var i = 0; i < 100; i++) {
+      const realTimeBudget = Duration(seconds: 30);
+      final clock = Stopwatch()..start();
+      do {
         await tester.runAsync(
           () => Future<void>.delayed(const Duration(milliseconds: 10)),
         );
         await tester.pump(const Duration(milliseconds: 50));
-        if (find.byType(CircularProgressIndicator).evaluate().isEmpty) break;
-      }
+      } while (find.byType(CircularProgressIndicator).evaluate().isNotEmpty &&
+          clock.elapsed < realTimeBudget);
+      expect(
+        find.byType(CircularProgressIndicator),
+        findsNothing,
+        reason: 'the export was still running after $realTimeBudget',
+      );
       await tester.pumpAndSettle();
     }
 
