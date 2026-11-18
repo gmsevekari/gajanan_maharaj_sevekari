@@ -30,13 +30,13 @@ subprojects {
     afterEvaluate {
         val androidExt = project.extensions.findByName("android")
         if (androidExt != null) {
-            // Force compileSdkVersion to 36 for all subprojects to support Java 17 and latest dependencies
+            // Force compileSdkVersion to 37 for all subprojects to support Java 17 and latest dependencies
             val setCompileSdk = androidExt.javaClass.methods.find { it.name == "setCompileSdk" || it.name == "compileSdk" }
             try {
-                setCompileSdk?.invoke(androidExt, 36)
+                setCompileSdk?.invoke(androidExt, 37)
             } catch (e: Exception) {
                 // Fallback for older AGP versions if necessary
-                androidExt.javaClass.getMethod("setCompileSdkVersion", Int::class.java).invoke(androidExt, 36)
+                androidExt.javaClass.getMethod("setCompileSdkVersion", Int::class.java).invoke(androidExt, 37)
             }
 
             val compileOptions = androidExt.javaClass.getMethod("getCompileOptions").invoke(androidExt)
